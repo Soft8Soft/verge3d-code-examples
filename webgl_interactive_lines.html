@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D webgl - interactive lines</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        font-family: Monospace;
+        background-color: #f0f0f0;
+        margin: 0px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+
+    <script src="../build/v3d.js"></script>
+
+    <script src="js/libs/stats.min.js"></script>
+
+    <script>
+
+      var container, stats;
+      var camera, scene, raycaster, renderer, parentTransform, sphereInter;
+
+      var mouse = new v3d.Vector2();
+      var radius = 100, theta = 0;
+
+      var currentIntersected;
+
+      init();
+      animate();
+
+      function init() {
+
+        container = document.createElement('div');
+        document.body.appendChild(container);
+
+        var info = document.createElement('div');
+        info.style.position = 'absolute';
+        info.style.top = '10px';
+        info.style.width = '100%';
+        info.style.textAlign = 'center';
+        info.innerHTML = '<a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - interactive lines';
+        container.appendChild(info);
+
+        camera = new v3d.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
+
+        scene = new v3d.Scene();
+        scene.background = new v3d.Color(0xf0f0f0);
+
+        var geometry = new v3d.SphereGeometry(5);
+        var material = new v3d.MeshBasicMaterial({ color: 0xff0000 });
+
+        sphereInter = new v3d.Mesh(geometry, material);
+        sphereInter.visible = false;
+        scene.add(sphereInter);
+
+        var geometry = new v3d.Geometry();
+
+        var point = new v3d.Vector3();
+        var direction = new v3d.Vector3();
+
+        for (var i = 0; i < 50; i++) {
+
+          direction.x += Math.random() - 0.5;
+          direction.y += Math.random() - 0.5;
+          direction.z += Math.random() - 0.5;
+          direction.normalize().multiplyScalar(10);
+
+          point.add(direction);
+
+          geometry.vertices.push(point.clone());
+
+        }
+
+        parentTransform = new v3d.Object3D();
+        parentTransform.position.x = Math.random() * 40 - 20;
+        parentTransform.position.y = Math.random() * 40 - 20;
+        parentTransform.position.z = Math.random() * 40 - 20;
+
+        parentTransform.rotation.x = Math.random() * 2 * Math.PI;
+        parentTransform.rotation.y = Math.random() * 2 * Math.PI;
+        parentTransform.rotation.z = Math.random() * 2 * Math.PI;
+
+        parentTransform.scale.x = Math.random() + 0.5;
+        parentTransform.scale.y = Math.random() + 0.5;
+        parentTransform.scale.z = Math.random() + 0.5;
+
+        for (var i = 0; i < 50; i++) {
+
+          var object;
+
+          if (Math.random() > 0.5) {
+
+            object = new v3d.Line(geometry);
+
+          } else {
+
+            object = new v3d.LineSegments(geometry);
+
+          }
+
+          object.position.x = Math.random() * 400 - 200;
+          object.position.y = Math.random() * 400 - 200;
+          object.position.z = Math.random() * 400 - 200;
+
+          object.rotation.x = Math.random() * 2 * Math.PI;
+          object.rotation.y = Math.random() * 2 * Math.PI;
+          object.rotation.z = Math.random() * 2 * Math.PI;
+
+          object.scale.x = Math.random() + 0.5;
+          object.scale.y = Math.random() + 0.5;
+          object.scale.z = Math.random() + 0.5;
+
+          parentTransform.add(object);
+
+        }
+
+        scene.add(parentTransform);
+
+        raycaster = new v3d.Raycaster();
+        raycaster.linePrecision = 3;
+
+        renderer = new v3d.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        stats = new Stats();
+        container.appendChild(stats.dom);
+
+        document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+        //
+
+        window.addEventListener('resize', onWindowResize, false);
+
+      }
+
+      function onWindowResize() {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+      }
+
+      function onDocumentMouseMove(event) {
+
+        event.preventDefault();
+
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+      }
+
+      //
+
+      function animate() {
+
+        requestAnimationFrame(animate);
+
+        render();
+        stats.update();
+
+      }
+
+      function render() {
+
+        theta += 0.1;
+
+        camera.position.x = radius * Math.sin(v3d.Math.degToRad(theta));
+        camera.position.y = radius * Math.sin(v3d.Math.degToRad(theta));
+        camera.position.z = radius * Math.cos(v3d.Math.degToRad(theta));
+        camera.lookAt(scene.position);
+
+        camera.updateMatrixWorld();
+
+        // find intersections
+
+        raycaster.setFromCamera(mouse, camera);
+
+        var intersects = raycaster.intersectObjects(parentTransform.children, true);
+
+        if (intersects.length > 0) {
+
+          if (currentIntersected !== undefined) {
+
+            currentIntersected.material.linewidth = 1;
+
+          }
+
+          currentIntersected = intersects[0].object;
+          currentIntersected.material.linewidth = 5;
+
+          sphereInter.visible = true;
+          sphereInter.position.copy(intersects[0].point);
+
+        } else {
+
+          if (currentIntersected !== undefined) {
+
+            currentIntersected.material.linewidth = 1;
+
+          }
+
+          currentIntersected = undefined;
+
+          sphereInter.visible = false;
+
+        }
+
+        renderer.render(scene, camera);
+
+      }
+
+    </script>
+
+  </body>
+</html>

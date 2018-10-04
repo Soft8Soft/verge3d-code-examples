@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D webgl - multiple canvases - complex</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        color: #808080;
+        font-family: Monospace;
+        font-size: 13px;
+        text-align: center;
+
+        background-color: #fff;
+        margin: 0px;
+        overflow: hidden;
+      }
+
+      #info {
+        position: absolute;
+        top: 0px; width: 100%;
+        padding: 5px;
+      }
+
+      #canvas1, #canvas2, #canvas3 {
+        position: relative;
+        display: block;
+        border: 1px solid red;
+      }
+
+      #canvas1 {
+        width: 300px;
+        height: 200px;
+      }
+
+      #canvas2 {
+        width: 400px;
+        height: 100px;
+        left: 150px;
+      }
+
+      #canvas3 {
+        width: 200px;
+        height: 300px;
+        left: 75px;
+      }
+
+      a {
+
+        color: #0080ff;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div id="container">
+      <canvas id="canvas1"></canvas>
+      <canvas id="canvas2"></canvas>
+      <canvas id="canvas3"></canvas>
+    </div>
+    <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - multiple canvases - complex</div>
+
+    <script src="../build/v3d.js"></script>
+
+    <script src="js/Detector.js"></script>
+
+    <script>
+
+      if (! Detector.webgl) Detector.addGetWebGLMessage();
+
+      var views = [];
+
+      var scene, renderer;
+
+      var mouseX = 0, mouseY = 0;
+
+      var windowHalfX = window.innerWidth / 2;
+      var windowHalfY = window.innerHeight / 2;
+
+      init();
+      animate();
+
+      //
+
+      function View(canvas, fullWidth, fullHeight, viewX, viewY, viewWidth, viewHeight) {
+
+        canvas.width = viewWidth * window.devicePixelRatio;
+        canvas.height = viewHeight * window.devicePixelRatio;
+
+        var context = canvas.getContext('2d');
+
+        var camera = new v3d.PerspectiveCamera(20, viewWidth / viewHeight, 1, 10000);
+        camera.setViewOffset(fullWidth, fullHeight, viewX, viewY, viewWidth, viewHeight);
+        camera.position.z = 1800;
+
+        this.render = function() {
+
+          camera.position.x += (mouseX - camera.position.x) * 0.05;
+          camera.position.y += (- mouseY - camera.position.y) * 0.05;
+          camera.lookAt(scene.position);
+
+          renderer.setViewport(0, 0, viewWidth, viewHeight);
+          renderer.render(scene, camera);
+
+          context.drawImage(renderer.domElement, 0, 0);
+
+        };
+
+      }
+
+      //
+
+      function init() {
+
+        var canvas1 = document.getElementById('canvas1');
+        var canvas2 = document.getElementById('canvas2');
+        var canvas3 = document.getElementById('canvas3');
+
+        var fullWidth = 550;
+        var fullHeight = 600;
+
+        views.push(new View(canvas1, fullWidth, fullHeight,   0,   0, canvas1.clientWidth, canvas1.clientHeight));
+        views.push(new View(canvas2, fullWidth, fullHeight, 150, 200, canvas2.clientWidth, canvas2.clientHeight));
+        views.push(new View(canvas3, fullWidth, fullHeight,  75, 300, canvas3.clientWidth, canvas3.clientHeight));
+
+        //
+
+        scene = new v3d.Scene();
+        scene.background = new v3d.Color(0xffffff);
+
+        var light = new v3d.DirectionalLight(0xffffff);
+        light.position.set(0, 0, 1).normalize();
+        scene.add(light);
+
+        // shadow
+
+        var canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
+
+        var context = canvas.getContext('2d');
+        var gradient = context.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2);
+        gradient.addColorStop(0.1, 'rgba(210,210,210,1)');
+        gradient.addColorStop(1, 'rgba(255,255,255,1)');
+
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        var shadowTexture = new v3d.CanvasTexture(canvas);
+
+        var shadowMaterial = new v3d.MeshBasicMaterial({ map: shadowTexture });
+        var shadowGeo = new v3d.PlaneBufferGeometry(300, 300, 1, 1);
+
+        var mesh = new v3d.Mesh(shadowGeo, shadowMaterial);
+        mesh.position.y = - 250;
+        mesh.rotation.x = - Math.PI / 2;
+        scene.add(mesh);
+
+        var mesh = new v3d.Mesh(shadowGeo, shadowMaterial);
+        mesh.position.x = - 400;
+        mesh.position.y = - 250;
+        mesh.rotation.x = - Math.PI / 2;
+        scene.add(mesh);
+
+        var mesh = new v3d.Mesh(shadowGeo, shadowMaterial);
+        mesh.position.x = 400;
+        mesh.position.y = - 250;
+        mesh.rotation.x = - Math.PI / 2;
+        scene.add(mesh);
+
+        var faceIndices = ['a', 'b', 'c'];
+
+        var radius = 200,
+
+          geometry1 = new v3d.IcosahedronGeometry(radius, 1),
+          geometry2 = new v3d.IcosahedronGeometry(radius, 1),
+          geometry3 = new v3d.IcosahedronGeometry(radius, 1);
+
+        for (var i = 0; i < geometry1.faces.length; i++) {
+
+          var f1 = geometry1.faces[i];
+          var f2 = geometry2.faces[i];
+          var f3 = geometry3.faces[i];
+
+          for (var j = 0; j < 3; j ++) {
+
+            var vertexIndex = f1[faceIndices[j]];
+
+            var p = geometry1.vertices[vertexIndex];
+
+            var color = new v3d.Color(0xffffff);
+            color.setHSL((p.y / radius + 1) / 2, 1.0, 0.5);
+
+            f1.vertexColors[j] = color;
+
+            var color = new v3d.Color(0xffffff);
+            color.setHSL(0.0, (p.y / radius + 1) / 2, 0.5);
+
+            f2.vertexColors[j] = color;
+
+            var color = new v3d.Color(0xffffff);
+            color.setHSL(0.125 * vertexIndex / geometry1.vertices.length, 1.0, 0.5);
+
+            f3.vertexColors[j] = color;
+
+          }
+
+        }
+
+        var materials = [
+
+          new v3d.MeshPhongMaterial({ color: 0xffffff, flatShading: true, vertexColors: v3d.VertexColors, shininess: 0 }),
+          new v3d.MeshBasicMaterial({ color: 0x000000, wireframe: true, transparent: true })
+
+        ];
+
+        var group1 = v3d.SceneUtils.createMultiMaterialObject(geometry1, materials);
+        group1.position.x = -400;
+        group1.rotation.x = -1.87;
+        scene.add(group1);
+
+        var group2 = v3d.SceneUtils.createMultiMaterialObject(geometry2, materials);
+        group2.position.x = 400;
+        scene.add(group2);
+
+        var group3 = v3d.SceneUtils.createMultiMaterialObject(geometry3, materials);
+        scene.add(group3);
+
+        renderer = new v3d.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(fullWidth, fullHeight);
+
+        document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+      }
+
+      function onDocumentMouseMove(event) {
+
+        mouseX = event.clientX - windowHalfX;
+        mouseY = event.clientY - windowHalfY;
+
+      }
+
+      function animate() {
+
+        for (var i = 0; i < views.length; ++i) {
+
+          views[i].render();
+
+        }
+
+        requestAnimationFrame(animate);
+
+      }
+
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D webgl - geometry - spline extrusion</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        font-family: Monospace;
+        background-color: #f0f0f0;
+        margin: 0px;
+        overflow: hidden;
+      }
+
+      #info {
+        position: absolute;
+        top: 0px;
+        width: 100%;
+        padding: 5px;
+        font-family:Monospace;
+        font-size:13px;
+        text-align:center;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="container"></div>
+    <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - geometry - spline extrusion examples by <a href="http://www.lab4games.net/zz85/blog" target="_blank" rel="noopener">zz85</a></div>
+
+    <script src="../build/v3d.js"></script>
+    <script src="js/controls/OrbitControls.js"></script>
+
+    <!-- where curves formulas are defined -->
+
+    <script src="js/CurveExtras.js"></script>
+
+    <script src="js/libs/stats.min.js"></script>
+    <script src="js/libs/dat.gui.min.js"></script>
+
+    <script>
+
+    var container, stats;
+
+    var camera, scene, renderer, splineCamera, cameraHelper, cameraEye;
+
+    var binormal = new v3d.Vector3();
+    var normal = new v3d.Vector3();
+
+    var pipeSpline = new v3d.CatmullRomCurve3([
+        new v3d.Vector3(0, 10, -10), new v3d.Vector3(10, 0, -10),
+        new v3d.Vector3(20, 0, 0), new v3d.Vector3(30, 0, 10),
+        new v3d.Vector3(30, 0, 20), new v3d.Vector3(20, 0, 30),
+        new v3d.Vector3(10, 0, 30), new v3d.Vector3(0, 0, 30),
+        new v3d.Vector3(-10, 10, 30), new v3d.Vector3(-10, 20, 30),
+        new v3d.Vector3(0, 30, 30), new v3d.Vector3(10, 30, 30),
+        new v3d.Vector3(20, 30, 15), new v3d.Vector3(10, 30, 10),
+        new v3d.Vector3(0, 30, 10), new v3d.Vector3(-10, 20, 10),
+        new v3d.Vector3(-10, 10, 10), new v3d.Vector3(0, 0, 10),
+        new v3d.Vector3(10, -10, 10), new v3d.Vector3(20, -15, 10),
+        new v3d.Vector3(30, -15, 10), new v3d.Vector3(40, -15, 10),
+        new v3d.Vector3(50, -15, 10), new v3d.Vector3(60, 0, 10),
+        new v3d.Vector3(70, 0, 0), new v3d.Vector3(80, 0, 0),
+        new v3d.Vector3(90, 0, 0), new v3d.Vector3(100, 0, 0)
+    ]);
+
+    var sampleClosedSpline = new v3d.CatmullRomCurve3([
+      new v3d.Vector3(0, -40, -40),
+      new v3d.Vector3(0, 40, -40),
+      new v3d.Vector3(0, 140, -40),
+      new v3d.Vector3(0, 40, 40),
+      new v3d.Vector3(0, -40, 40)
+    ]);
+
+    sampleClosedSpline.type = 'catmullrom';
+    sampleClosedSpline.closed = true;
+
+    // Keep a dictionary of Curve instances
+    var splines = {
+      GrannyKnot: new v3d.Curves.GrannyKnot(),
+      HeartCurve: new v3d.Curves.HeartCurve(3.5),
+      VivianiCurve: new v3d.Curves.VivianiCurve(70),
+      KnotCurve: new v3d.Curves.KnotCurve(),
+      HelixCurve: new v3d.Curves.HelixCurve(),
+      TrefoilKnot: new v3d.Curves.TrefoilKnot(),
+      TorusKnot: new v3d.Curves.TorusKnot(20),
+      CinquefoilKnot: new v3d.Curves.CinquefoilKnot(20),
+      TrefoilPolynomialKnot: new v3d.Curves.TrefoilPolynomialKnot(14),
+      FigureEightPolynomialKnot: new v3d.Curves.FigureEightPolynomialKnot(),
+      DecoratedTorusKnot4a: new v3d.Curves.DecoratedTorusKnot4a(),
+      DecoratedTorusKnot4b: new v3d.Curves.DecoratedTorusKnot4b(),
+      DecoratedTorusKnot5a: new v3d.Curves.DecoratedTorusKnot5a(),
+      DecoratedTorusKnot5c: new v3d.Curves.DecoratedTorusKnot5c(),
+      PipeSpline: pipeSpline,
+      SampleClosedSpline: sampleClosedSpline
+    };
+
+    var parent, tubeGeometry, group;
+
+    var params = {
+      spline: 'GrannyKnot',
+      scale: 4,
+      extrusionSegments: 100,
+      radiusSegments: 3,
+      closed: true,
+      animationView: false,
+      lookAhead: false,
+      cameraHelper: false,
+    };
+
+    var material = new v3d.MeshLambertMaterial({ color: 0xff00ff });
+
+    var wireframeMaterial = new v3d.MeshBasicMaterial({ color: 0x000000, opacity: 0.3, wireframe: true, transparent: true });
+
+    function addTube() {
+
+      if (group !== undefined) {
+
+        parent.remove(group);
+
+        group.children[0].geometry.dispose();
+        group.children[1].geometry.dispose();
+
+      }
+
+      var extrudePath = splines[params.spline];
+
+      tubeGeometry = new v3d.TubeBufferGeometry(extrudePath, params.extrusionSegments, 2, params.radiusSegments, params.closed);
+
+      addGeometry(tubeGeometry);
+
+      setScale();
+
+    }
+
+    function setScale() {
+
+      group.scale.set(params.scale, params.scale, params.scale);
+
+    }
+
+
+    function addGeometry(geometry) {
+
+      // 3D shape
+
+      group = v3d.SceneUtils.createMultiMaterialObject(geometry, [material, wireframeMaterial]);
+
+      parent.add(group);
+
+    }
+
+    function animateCamera() {
+
+      cameraHelper.visible = params.cameraHelper;
+      cameraEye.visible = params.cameraHelper;
+
+    }
+
+    init();
+    animate();
+
+    function init() {
+
+      container = document.getElementById('container');
+
+      // camera
+
+      camera = new v3d.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.01, 10000);
+      camera.position.set(0, 50, 500);
+
+      // scene
+
+      scene = new v3d.Scene();
+      scene.background = new v3d.Color(0xf0f0f0);
+
+      // light
+
+      var light = new v3d.DirectionalLight(0xffffff);
+      light.position.set(0, 0, 1);
+      scene.add(light);
+
+      // tube
+
+      parent = new v3d.Object3D();
+      scene.add(parent);
+
+      splineCamera = new v3d.PerspectiveCamera(84, window.innerWidth / window.innerHeight, 0.01, 1000);
+      parent.add(splineCamera);
+
+      cameraHelper = new v3d.CameraHelper(splineCamera);
+      scene.add(cameraHelper);
+
+      addTube();
+
+      // debug camera
+
+      cameraEye = new v3d.Mesh(new v3d.SphereGeometry(5), new v3d.MeshBasicMaterial({ color: 0xdddddd }));
+      parent.add(cameraEye);
+
+      cameraHelper.visible = params.cameraHelper;
+      cameraEye.visible = params.cameraHelper;
+
+      // renderer
+
+      renderer = new v3d.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      container.appendChild(renderer.domElement);
+
+      // stats
+
+      stats = new Stats();
+      container.appendChild(stats.dom);
+
+      // dat.GUI
+
+      var gui = new dat.GUI({ width: 300 });
+
+      var folderGeometry = gui.addFolder('Geometry');
+      folderGeometry.add(params, 'spline', Object.keys(splines)).onChange(function(value) { addTube(); });
+      folderGeometry.add(params, 'scale', 2, 10).step(2).onChange(function(value) { setScale(); });
+      folderGeometry.add(params, 'extrusionSegments', 50, 500).step(50).onChange(function(value) { addTube(); });
+      folderGeometry.add(params, 'radiusSegments', 2, 12).step(1).onChange(function(value) { addTube(); });
+      folderGeometry.add(params, 'closed').onChange(function(value) { addTube(); });
+      folderGeometry.open();
+
+      var folderCamera = gui.addFolder('Camera');
+      folderCamera.add(params, 'animationView').onChange(function(value) { animateCamera(true); });
+      folderCamera.add(params, 'lookAhead').onChange(function(value) { animateCamera(); });
+      folderCamera.add(params, 'cameraHelper').onChange(function(value) { animateCamera(); });
+      folderCamera.open();
+
+      // controls
+
+      var controls = new v3d.OrbitControls(camera, renderer.domElement);
+
+      // event listener
+
+      window.addEventListener('resize', onWindowResize, false);
+
+    }
+
+    function onWindowResize() {
+
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+    }
+
+    //
+
+    function animate() {
+
+      requestAnimationFrame(animate);
+
+      render();
+      stats.update();
+
+    }
+
+    function render() {
+
+      // animate camera along spline
+
+      var time = Date.now();
+      var looptime = 20 * 1000;
+      var t = (time % looptime) / looptime;
+
+      var pos = tubeGeometry.parameters.path.getPointAt(t);
+      pos.multiplyScalar(params.scale);
+
+      // interpolation
+
+      var segments = tubeGeometry.tangents.length;
+      var pickt = t * segments;
+      var pick = Math.floor(pickt);
+      var pickNext = (pick + 1) % segments;
+
+      binormal.subVectors(tubeGeometry.binormals[pickNext], tubeGeometry.binormals[pick]);
+      binormal.multiplyScalar(pickt - pick).add(tubeGeometry.binormals[pick]);
+
+      var dir = tubeGeometry.parameters.path.getTangentAt(t);
+      var offset = 15;
+
+      normal.copy(binormal).cross(dir);
+
+      // we move on a offset on its binormal
+
+      pos.add(normal.clone().multiplyScalar(offset));
+
+      splineCamera.position.copy(pos);
+      cameraEye.position.copy(pos);
+
+      // using arclength for stablization in look ahead
+
+      var lookAt = tubeGeometry.parameters.path.getPointAt((t + 30 / tubeGeometry.parameters.path.getLength()) % 1).multiplyScalar(params.scale);
+
+      // camera orientation 2 - up orientation via normal
+
+      if (! params.lookAhead) lookAt.copy(pos).add(dir);
+      splineCamera.matrix.lookAt(splineCamera.position, lookAt, normal);
+      splineCamera.rotation.setFromRotationMatrix(splineCamera.matrix, splineCamera.rotation.order);
+
+      cameraHelper.update();
+
+      renderer.render(scene, params.animationView === true ? splineCamera : camera);
+
+    }
+
+  </script>
+  </body>
+</html>

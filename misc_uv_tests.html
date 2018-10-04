@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D - uv mapping tests</title>
+    <meta charset=utf-8 />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  </head>
+
+  <body>
+
+    <script src="../build/v3d.js"></script>
+    <script src="js/utils/UVsDebug.js"></script>
+
+    <script>
+
+      /*
+       * This is to help debug UVs problems in geometry,
+       * as well as allow a new user to visualize what UVs are about.
+       */
+
+      function test(name, geometry) {
+
+        var d = document.createElement('div');
+
+        d.innerHTML = '<br><br>' + name + '<br>';
+
+        d.appendChild(v3d.UVsDebug(geometry));
+
+        document.body.appendChild(d);
+
+      }
+
+      test('new v3d.PlaneGeometry(100, 100, 4, 4)', new v3d.PlaneGeometry(100, 100, 4, 4));
+
+      test('new v3d.PlaneBufferGeometry(100, 100, 4, 4)', new v3d.PlaneBufferGeometry(100, 100, 4, 4));
+
+      test('new v3d.SphereGeometry(75, 12, 6)', new v3d.SphereGeometry(75, 12, 6));
+
+      test('new v3d.IcosahedronGeometry(30, 1)', new v3d.IcosahedronGeometry(30, 1));
+
+      test('new v3d.OctahedronGeometry(30, 2)', new v3d.OctahedronGeometry(30, 2));
+
+      test('new v3d.CylinderGeometry(25, 75, 100, 10, 5)', new v3d.CylinderGeometry(25, 75, 100, 10, 5));
+
+      test('new v3d.BoxGeometry(100, 100, 100, 4, 4, 4)', new v3d.BoxGeometry(100, 100, 100, 4, 4, 4));
+
+      var points = [];
+
+      for (var i = 0; i < 10; i++) {
+
+          points.push(new v3d.Vector2(Math.sin(i * 0.2) * 15 + 50, (i - 5) * 2));
+
+      }
+
+      test('new v3d.LatheGeometry(points, 8)', new v3d.LatheGeometry(points, 8));
+
+      test('new v3d.TorusGeometry(50, 20, 8, 8)', new v3d.TorusGeometry(50, 20, 8, 8));
+
+      test('new v3d.TorusKnotGeometry(50, 10, 12, 6)', new v3d.TorusKnotGeometry(50, 10, 12, 6));
+
+    </script>
+
+  </body>
+
+</html>

@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D - webgl</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        background:#fff;
+        padding:0;
+        margin:0;
+        overflow:hidden;
+      }
+
+    </style>
+  </head>
+
+  <body>
+
+    <script src="../build/v3d.js"></script>
+
+    <script>
+
+      var container;
+
+      var camera, scene, renderer;
+
+      init();
+      animate();
+
+      function init() {
+
+        container = document.createElement('div');
+        document.body.appendChild(container);
+
+        camera = new v3d.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000);
+        camera.position.z = 200;
+
+        scene = new v3d.Scene();
+        scene.background = new v3d.Color(0xffffff);
+
+        renderer = new v3d.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+      }
+
+      function createImage() {
+
+        var canvas = document.createElement('canvas');
+        canvas.width = 256;
+        canvas.height = 256;
+
+        var context = canvas.getContext('2d');
+        context.fillStyle = 'rgb(' + Math.floor(Math.random() * 256) + ',' + Math.floor(Math.random() * 256) + ',' + Math.floor(Math.random() * 256) + ')';
+        context.fillRect(0, 0, 256, 256);
+
+        return canvas;
+
+      }
+
+      //
+
+      function animate() {
+
+        requestAnimationFrame(animate);
+
+        render();
+
+      }
+
+      function render() {
+
+        var geometry = new v3d.SphereBufferGeometry(50, Math.random() * 64, Math.random() * 32);
+
+        var texture = new v3d.CanvasTexture(createImage());
+
+        var material = new v3d.MeshBasicMaterial({ map: texture, wireframe: true });
+
+        var mesh = new v3d.Mesh(geometry, material);
+
+        scene.add(mesh);
+
+        renderer.render(scene, camera);
+
+        scene.remove(mesh);
+
+        // clean up
+
+        geometry.dispose();
+        material.dispose();
+        texture.dispose();
+
+      }
+
+    </script>
+
+  </body>
+</html>
