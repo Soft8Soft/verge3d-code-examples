@@ -2,47 +2,65 @@
  * @author sunag / http://www.sunag.com.br/
  */
 
-v3d.UVTransformNode = function() {
+import { ExpressionNode } from '../core/ExpressionNode.js';
+import { Matrix3Node } from '../inputs/Matrix3Node.js';
+import { UVNode } from '../accessors/UVNode.js';
 
-    v3d.FunctionNode.call(this, "(uvTransform * vec4(uvNode, 0, 1)).xy", "vec2");
+function UVTransformNode(uv, position) {
 
-    this.uv = new v3d.UVNode();
-    this.transform = new v3d.Matrix4Node();
+    ExpressionNode.call(this, "(uvTransform * vec3(uvNode, 1)).xy", "vec2");
 
-};
+    this.uv = uv || new UVNode();
+    this.position = position || new Matrix3Node();
 
-v3d.UVTransformNode.prototype = Object.create(v3d.FunctionNode.prototype);
-v3d.UVTransformNode.prototype.constructor = v3d.UVTransformNode;
+}
 
-v3d.UVTransformNode.prototype.generate = function(builder, output) {
+UVTransformNode.prototype = Object.create(ExpressionNode.prototype);
+UVTransformNode.prototype.constructor = UVTransformNode;
+UVTransformNode.prototype.nodeType = "UVTransform";
+
+UVTransformNode.prototype.generate = function(builder, output) {
 
     this.keywords["uvNode"] = this.uv;
-    this.keywords["uvTransform"] = this.transform;
+    this.keywords["uvTransform"] = this.position;
 
-    return v3d.FunctionNode.prototype.generate.call(this, builder, output);
+    return ExpressionNode.prototype.generate.call(this, builder, output);
 
 };
 
-v3d.UVTransformNode.prototype.compose = function() {
+UVTransformNode.prototype.setUvTransform = function(tx, ty, sx, sy, rotation, cx, cy) {
 
-    var defaultPivot = new v3d.Vector2(.5, .5),
-        tempVector = new v3d.Vector3(),
-        tempMatrix = new v3d.Matrix4();
+    cx = cx !== undefined ? cx : .5;
+    cy = cy !== undefined ? cy : .5;
 
-    return function compose(translate, rotate, scale, optionalCenter) {
+    this.position.value.setUvTransform(tx, ty, sx, sy, rotation, cx, cy);
 
-        optionalCenter = optionalCenter !== undefined ? optionalCenter : defaultPivot;
+};
 
-        var matrix = this.transform.value;
+UVTransformNode.prototype.copy = function(source) {
 
-        matrix.identity()
-            .setPosition(tempVector.set(- optionalCenter.x, - optionalCenter.y, 0))
-            .premultiply(tempMatrix.makeRotationZ(rotate))
-            .multiply(tempMatrix.makeScale(scale.x, scale.y, 0))
-            .multiply(tempMatrix.makeTranslation(translate.x, translate.y, 0));
+    ExpressionNode.prototype.copy.call(this, source);
 
-        return this;
+    this.uv = source.uv;
+    this.position = source.position;
 
-    };
+};
 
-}();
+UVTransformNode.prototype.toJSON = function(meta) {
+
+    var data = this.getJSONNode(meta);
+
+    if (!data) {
+
+        data = this.createJSONNode(meta);
+
+        data.uv = this.uv.toJSON(meta).uuid;
+        data.position = this.position.toJSON(meta).uuid;
+
+    }
+
+    return data;
+
+};
+
+export { UVTransformNode };

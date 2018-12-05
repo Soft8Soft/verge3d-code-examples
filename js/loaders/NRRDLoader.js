@@ -14,12 +14,20 @@ v3d.NRRDLoader.prototype = {
         var scope = this;
 
         var loader = new v3d.FileLoader(scope.manager);
+        loader.setPath(scope.path);
         loader.setResponseType('arraybuffer');
         loader.load(url, function(data) {
 
             onLoad(scope.parse(data));
 
         }, onProgress, onError);
+
+    },
+
+    setPath: function(value) {
+
+        this.path = value;
+        return this;
 
     },
 
@@ -165,7 +173,7 @@ v3d.NRRDLoader.prototype = {
                 }
 
             }
-            if (! headerObject.isNrrd) {
+            if (!headerObject.isNrrd) {
 
                 throw new Error('Not an NRRD file');
 
@@ -175,7 +183,7 @@ v3d.NRRDLoader.prototype = {
                 throw new Error('Bzip is not supported');
 
             }
-            if (! headerObject.vectors) {
+            if (!headerObject.vectors) {
 
                 //if no space direction is set, let's use the identity
                 headerObject.vectors = [new v3d.Vector3(1, 0, 0), new v3d.Vector3(0, 1, 0), new v3d.Vector3(0, 0, 1)];
@@ -184,7 +192,7 @@ v3d.NRRDLoader.prototype = {
 
                     for (i = 0; i <= 2; i++) {
 
-                        if (! isNaN(headerObject.spacings[i])) {
+                        if (!isNaN(headerObject.spacings[i])) {
 
                             headerObject.vectors[i].multiplyScalar(headerObject.spacings[i]);
 
@@ -357,7 +365,7 @@ v3d.NRRDLoader.prototype = {
         }
 
 
-        if (! headerObject.vectors) {
+        if (!headerObject.vectors) {
 
             volume.matrix.set(
                 _spaceX, 0, 0, 0,

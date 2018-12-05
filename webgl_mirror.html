@@ -35,7 +35,7 @@
     </div>
 
     <script src="../build/v3d.js"></script>
-    <script src="js/objects/Mirror.js"></script>
+    <script src="js/objects/Reflector.js"></script>
     <script src="js/controls/OrbitControls.js"></script>
 
     <script>
@@ -64,7 +64,7 @@
         var container = document.getElementById('container');
 
         // renderer
-        renderer = new v3d.WebGLRenderer();
+        renderer = new v3d.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(WIDTH, HEIGHT);
         container.appendChild(renderer.domElement);
@@ -86,40 +86,43 @@
 
         var planeGeo = new v3d.PlaneBufferGeometry(100.1, 100.1);
 
-        // MIRROR planes
+        // reflectors/mirrors
 
-        var groundMirror = new v3d.Mirror(100, 100, {
+        var geometry = new v3d.CircleBufferGeometry(40, 64);
+        var groundMirror = new v3d.Reflector(geometry, {
           clipBias: 0.003,
           textureWidth: WIDTH * window.devicePixelRatio,
           textureHeight: HEIGHT * window.devicePixelRatio,
           color: 0x777777,
           recursion: 1
         });
+        groundMirror.position.y = 0.5;
         groundMirror.rotateX(- Math.PI / 2);
         scene.add(groundMirror);
 
-        var verticalMirror = new v3d.Mirror(60, 60, {
+        var geometry = new v3d.PlaneBufferGeometry(100, 100);
+        var verticalMirror = new v3d.Reflector(geometry, {
           clipBias: 0.003,
           textureWidth: WIDTH * window.devicePixelRatio,
           textureHeight: HEIGHT * window.devicePixelRatio,
           color: 0x889999,
           recursion: 1
         });
-        verticalMirror.position.y = 35;
-        verticalMirror.position.z = -45;
+        verticalMirror.position.y = 50;
+        verticalMirror.position.z = - 50;
         scene.add(verticalMirror);
 
 
         sphereGroup = new v3d.Object3D();
         scene.add(sphereGroup);
 
-        var geometry = new v3d.CylinderGeometry(0.1, 15 * Math.cos(Math.PI / 180 * 30), 0.1, 24, 1);
+        var geometry = new v3d.CylinderBufferGeometry(0.1, 15 * Math.cos(Math.PI / 180 * 30), 0.1, 24, 1);
         var material = new v3d.MeshPhongMaterial({ color: 0xffffff, emissive: 0x444444 });
         var sphereCap = new v3d.Mesh(geometry, material);
-        sphereCap.position.y = -15 * Math.sin(Math.PI / 180 * 30) - 0.05;
-        sphereCap.rotateX(-Math.PI);
+        sphereCap.position.y = - 15 * Math.sin(Math.PI / 180 * 30) - 0.05;
+        sphereCap.rotateX(- Math.PI);
 
-        var geometry = new v3d.SphereGeometry(15, 24, 24, Math.PI / 2, Math.PI * 2, 0, Math.PI / 180 * 120);
+        var geometry = new v3d.SphereBufferGeometry(15, 24, 24, Math.PI / 2, Math.PI * 2, 0, Math.PI / 180 * 120);
         var halfSphere = new v3d.Mesh(geometry, material);
         halfSphere.add(sphereCap);
         halfSphere.rotateX(- Math.PI / 180 * 135);
@@ -128,7 +131,7 @@
 
         sphereGroup.add(halfSphere);
 
-        var geometry = new v3d.IcosahedronGeometry(5, 0);
+        var geometry = new v3d.IcosahedronBufferGeometry(5, 0);
         var material = new v3d.MeshPhongMaterial({ color: 0xffffff, emissive: 0x333333, flatShading: true });
         smallSphere = new v3d.Mesh(geometry, material);
         scene.add(smallSphere);
@@ -139,10 +142,9 @@
         planeTop.rotateX(Math.PI / 2);
         scene.add(planeTop);
 
-        var planeBack = new v3d.Mesh(planeGeo, new v3d.MeshPhongMaterial({ color: 0xffffff }));
-        planeBack.position.z = -50;
-        planeBack.position.y = 50;
-        scene.add(planeBack);
+        var planeBottom = new v3d.Mesh(planeGeo, new v3d.MeshPhongMaterial({ color: 0xffffff }));
+        planeBottom.rotateX(- Math.PI / 2);
+        scene.add(planeBottom);
 
         var planeFront = new v3d.Mesh(planeGeo, new v3d.MeshPhongMaterial({ color: 0x7f7fff }));
         planeFront.position.z = 50;
@@ -157,7 +159,7 @@
         scene.add(planeRight);
 
         var planeLeft = new v3d.Mesh(planeGeo, new v3d.MeshPhongMaterial({ color: 0xff0000 }));
-        planeLeft.position.x = -50;
+        planeLeft.position.x = - 50;
         planeLeft.position.y = 50;
         planeLeft.rotateY(Math.PI / 2);
         scene.add(planeLeft);

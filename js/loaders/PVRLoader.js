@@ -10,7 +10,7 @@
 
 v3d.PVRLoader = function(manager) {
 
-    this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+    v3d.CompressedTextureLoader.call(this, manager);
 
     this._parser = v3d.PVRLoader.parse;
 

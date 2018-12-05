@@ -88,7 +88,7 @@ SEA3D.LZMA = function() {
 
     LZMA.OutWindow.prototype.init = function(solid) {
 
-        if (! solid) {
+        if (!solid) {
 
             this._streamPos = 0;
             this._pos = 0;
@@ -702,7 +702,7 @@ SEA3D.LZMA = function() {
         lp = value % 5;
         pb = ~~ (value / 5);
 
-        if (! this.setLcLpPb(lc, lp, pb)) {
+        if (!this.setLcLpPb(lc, lp, pb)) {
 
             return false;
 
@@ -721,13 +721,13 @@ SEA3D.LZMA = function() {
 
         var decoder = new LZMA.Decoder();
 
-        if (! decoder.setDecoderProperties(properties)) {
+        if (!decoder.setDecoderProperties(properties)) {
 
             throw "Incorrect stream properties";
 
         }
 
-        if (! decoder.decode(inStream, outStream, outSize)) {
+        if (!decoder.decode(inStream, outStream, outSize)) {
 
             throw "Error in data stream";
 
@@ -741,7 +741,7 @@ SEA3D.LZMA = function() {
 
         var decoder = new LZMA.Decoder(), outSize;
 
-        if (! decoder.setDecoderProperties(inStream)) {
+        if (!decoder.setDecoderProperties(inStream)) {
 
             throw "Incorrect stream properties";
 
@@ -757,7 +757,7 @@ SEA3D.LZMA = function() {
         inStream.readByte();
         inStream.readByte();
 
-        if (! decoder.decode(inStream, outStream, outSize)) {
+        if (!decoder.decode(inStream, outStream, outSize)) {
 
             throw "Error in data stream";
 

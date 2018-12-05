@@ -33,7 +33,7 @@
 
     <script src="../build/v3d.js"></script>
 
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script>
@@ -74,7 +74,9 @@
         // BEGIN Clara.io JSON loader code
         var objectLoader = new v3d.ObjectLoader();
         objectLoader.load("models/json/teapot-claraio.json", function(obj) {
+
            scene.add(obj);
+
         });
         // END Clara.io JSON loader code
 

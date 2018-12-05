@@ -42,7 +42,7 @@ v3d.SSAARenderPass = function(scene, camera, clearColor, clearAlpha) {
 
     this.camera2 = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
     this.scene2    = new v3d.Scene();
-    this.quad2 = new v3d.Mesh(new v3d.PlaneGeometry(2, 2), this.copyMaterial);
+    this.quad2 = new v3d.Mesh(new v3d.PlaneBufferGeometry(2, 2), this.copyMaterial);
     this.quad2.frustumCulled = false; // Avoid getting clipped
     this.scene2.add(this.quad2);
 
@@ -71,7 +71,7 @@ v3d.SSAARenderPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), 
 
     render: function(renderer, writeBuffer, readBuffer) {
 
-        if (! this.sampleRenderTarget) {
+        if (!this.sampleRenderTarget) {
 
             this.sampleRenderTarget = new v3d.WebGLRenderTarget(readBuffer.width, readBuffer.height, { minFilter: v3d.LinearFilter, magFilter: v3d.LinearFilter, format: v3d.RGBAFormat });
             this.sampleRenderTarget.texture.name = "SSAARenderPass.sample";

@@ -473,7 +473,7 @@ v3d.MD2CharacterComplex = function() {
 
         // speed decay
 
-        if (! (controls.moveForward || controls.moveBackward)) {
+        if (!(controls.moveForward || controls.moveBackward)) {
 
             if (this.speed > 0) {
 

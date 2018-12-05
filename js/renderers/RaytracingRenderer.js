@@ -1,6 +1,6 @@
 /**
  * RaytracingRenderer renders by raytracing it's scene. However, it does not
- * compute the pixels itself but it hands off and coordinates the taks for workers.
+ * compute the pixels itself but it hands off and coordinates the tasks for workers.
  * The workers compute the pixel values and this renderer simply paints it to the Canvas.
  *
  * @author zz85 / http://github.com/zz85
@@ -20,8 +20,6 @@ v3d.RaytracingRenderer = function(parameters) {
     var context = canvas.getContext('2d', {
         alpha: parameters.alpha === true
     });
-
-    var maxRecursionDepth = 3;
 
     var canvasWidth, canvasHeight;
 
@@ -44,14 +42,15 @@ v3d.RaytracingRenderer = function(parameters) {
         workers = w || navigator.hardwareConcurrency || 4;
 
         while (pool.length < workers) {
+
             var worker = new Worker(parameters.workerPath);
-            worker.id = workerId++;
+            worker.id = workerId ++;
 
             worker.onmessage = function(e) {
 
                 var data = e.data;
 
-                if (! data) return;
+                if (!data) return;
 
                 if (data.blockSize && sceneId == data.sceneId) { // we match sceneId here to be sure
 
@@ -75,12 +74,12 @@ v3d.RaytracingRenderer = function(parameters) {
 
             };
 
-            worker.color = new v3d.Color().setHSL(Math.random() , 0.8, 0.8).getHexString();
+            worker.color = new v3d.Color().setHSL(Math.random(), 0.8, 0.8).getHexString();
             pool.push(worker);
 
-            if (renderering) {
+            updateSettings(worker);
 
-                updateSettings(worker);
+            if (renderering) {
 
                 worker.postMessage({
                     scene: sceneJSON,
@@ -95,7 +94,7 @@ v3d.RaytracingRenderer = function(parameters) {
 
         }
 
-        if (! renderering) {
+        if (!renderering) {
 
             while (pool.length > workers) {
 
@@ -109,7 +108,7 @@ v3d.RaytracingRenderer = function(parameters) {
 
     this.setWorkers(workers);
 
-    this.setClearColor = function(color, alpha) {
+    this.setClearColor = function(color /*, alpha */) {
 
         clearColor.set(color);
 
@@ -155,7 +154,8 @@ v3d.RaytracingRenderer = function(parameters) {
     }
 
     function renderNext(worker) {
-        if (! toRender.length) {
+
+        if (!toRender.length) {
 
             renderering = false;
             return scope.dispatchEvent({ type: "complete" });
@@ -199,7 +199,7 @@ v3d.RaytracingRenderer = function(parameters) {
 
         var mat = o.material;
 
-        if (! mat || mat.uuid in materials) return;
+        if (!mat || mat.uuid in materials) return;
 
         var props = {};
         for (var m in _annex) {
@@ -213,6 +213,7 @@ v3d.RaytracingRenderer = function(parameters) {
         }
 
         materials[mat.uuid] = props;
+
     }
 
     this.render = function(scene, camera) {
@@ -242,6 +243,7 @@ v3d.RaytracingRenderer = function(parameters) {
                 annex: materials,
                 sceneId: sceneId
             });
+
         });
 
         context.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -266,7 +268,7 @@ v3d.RaytracingRenderer = function(parameters) {
 
             for (var i = 0; i < totalBlocks; i++) {
 
-                var swap = Math.random()  * totalBlocks | 0;
+                var swap = Math.random() * totalBlocks | 0;
                 var tmp = toRender[swap];
                 toRender[swap] = toRender[i];
                 toRender[i] = tmp;

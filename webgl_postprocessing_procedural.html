@@ -40,8 +40,7 @@
       }
     </script>
     <script id="noiseRandom1D-frag" type="x-shader/x-fragment">
-    #include <common>
-    #include <packing>
+      #include <common>
 
       varying vec2 vUv;
 
@@ -52,7 +51,6 @@
     </script>
     <script id="noiseRandom2D-frag" type="x-shader/x-fragment">
       #include <common>
-      #include <packing>
 
       varying vec2 vUv;
 
@@ -64,7 +62,6 @@
     </script>
     <script id="noiseRandom3D-frag" type="x-shader/x-fragment">
       #include <common>
-      #include <packing>
 
       varying vec2 vUv;
 
@@ -84,10 +81,11 @@
 
     <script>
 
-      var camera, postScene, renderer, postMaterial, noiseRandom1DMaterial, noiseRandon2DMaterial, noiseRandom3DMaterial, postQuad;
-      var gui, stats, texture;
+      var postCamera, postScene, renderer;
+      var postMaterial, noiseRandom1DMaterial, noiseRandom2DMaterial, noiseRandom3DMaterial, postQuad;
+      var stats;
 
-      var params = { procedure: "noiseRandom3D" };
+      var params = { procedure: 'noiseRandom3D' };
 
       init();
       animate();
@@ -105,7 +103,7 @@
 
         var container = document.getElementById("container");
 
-        renderer = new v3d.WebGLRenderer({ antialias: false });
+        renderer = new v3d.WebGLRenderer();
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
@@ -114,7 +112,7 @@
         container.appendChild(stats.dom);
 
         // Setup post processing stage
-        postCamera = new v3d.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        postCamera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
         noiseRandom1DMaterial = new v3d.ShaderMaterial({
           vertexShader: document.querySelector('#procedural-vert').textContent.trim(),
           fragmentShader: document.querySelector('#noiseRandom1D-frag').textContent.trim()
@@ -128,11 +126,10 @@
           fragmentShader: document.querySelector('#noiseRandom3D-frag').textContent.trim()
         });
         postMaterial = noiseRandom3DMaterial;
-        var postPlane = new v3d.PlaneGeometry(2, 2);
+        var postPlane = new v3d.PlaneBufferGeometry(2, 2);
         postQuad = new v3d.Mesh(postPlane, postMaterial);
         postScene = new v3d.Scene();
         postScene.add(postQuad);
-
 
         window.addEventListener('resize', onWindowResize, false);
 
@@ -152,11 +149,7 @@
 
       function animate() {
 
-        this.index = this.index || 0;
-
         requestAnimationFrame(animate);
-
-        this.index ++;
 
         switch (params.procedure) {
 
@@ -167,7 +160,6 @@
         }
 
         postQuad.material = postMaterial;
-
 
         // render post FX
         renderer.render(postScene, postCamera);

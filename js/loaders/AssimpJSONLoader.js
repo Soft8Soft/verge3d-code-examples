@@ -21,15 +21,16 @@ v3d.AssimpJSONLoader.prototype = {
 
     constructor: v3d.AssimpJSONLoader,
 
-    crossOrigin: 'Anonymous',
+    crossOrigin: 'anonymous',
 
     load: function(url, onLoad, onProgress, onError) {
 
         var scope = this;
 
-        var path = v3d.Loader.prototype.extractUrlBase(url);
+        var path = (scope.path === undefined) ? v3d.LoaderUtils.extractUrlBase(url) : scope.path;
 
         var loader = new v3d.FileLoader(this.manager);
+        loader.setPath(scope.path);
         loader.load(url, function(text) {
 
             var json = JSON.parse(text);
@@ -47,7 +48,7 @@ v3d.AssimpJSONLoader.prototype = {
                     onError('v3d.AssimpJSONLoader: Not an assimp2json scene.');
                     return;
 
-                // check major format version
+                    // check major format version
 
                 } else if (metadata.version < 100 && metadata.version >= 200) {
 
@@ -64,9 +65,24 @@ v3d.AssimpJSONLoader.prototype = {
 
     },
 
+    setPath: function(value) {
+
+        this.path = value;
+        return this;
+
+    },
+
+    setResourcePath: function(value) {
+
+        this.resourcePath = value;
+        return this;
+
+    },
+
     setCrossOrigin: function(value) {
 
         this.crossOrigin = value;
+        return this;
 
     },
 
@@ -219,6 +235,15 @@ v3d.AssimpJSONLoader.prototype = {
                         material.flatShading = (value === 1) ? true : false;
                         break;
 
+                    case '$mat.opacity':
+                        if (value < 1) {
+
+                            material.opacity = value;
+                            material.transparent = true;
+
+                        }
+                        break;
+
                 }
 
             }
@@ -253,7 +278,7 @@ v3d.AssimpJSONLoader.prototype = {
         }
 
         var textureLoader = new v3d.TextureLoader(this.manager);
-        textureLoader.setPath(path).setCrossOrigin(this.crossOrigin);
+        textureLoader.setPath(this.resourcePath || path).setCrossOrigin(this.crossOrigin);
 
         var meshes = parseList(json.meshes, parseMesh);
         var materials = parseList(json.materials, parseMaterial);

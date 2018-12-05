@@ -25,7 +25,7 @@ v3d.Sky = function() {
         side: v3d.BackSide
     });
 
-    v3d.Mesh.call(this, new v3d.SphereBufferGeometry(1, 32, 15), material);
+    v3d.Mesh.call(this, new v3d.BoxBufferGeometry(1, 1, 1), material);
 
 };
 
@@ -96,6 +96,7 @@ v3d.Sky.SkyShader = {
         '    vWorldPosition = worldPosition.xyz;',
 
         '    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
+        '    gl_Position.z = gl_Position.w;', // set z to camera.far
 
         '    vSunDirection = normalize(sunPosition);',
 

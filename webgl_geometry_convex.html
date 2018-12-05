@@ -32,12 +32,16 @@
     <script src="js/controls/OrbitControls.js"></script>
     <script src="js/QuickHull.js"></script>
     <script src="js/geometries/ConvexGeometry.js"></script>
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script>
 
-      if (! Detector.webgl) Detector.addGetWebGLMessage();
+      if (WEBGL.isWebGLAvailable() === false) {
+
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+      }
 
       var group, camera, scene, renderer;
 
@@ -75,7 +79,7 @@
 
         // helper
 
-        scene.add(new v3d.AxisHelper(20));
+        scene.add(new v3d.AxesHelper(20));
 
         // textures
 
@@ -87,11 +91,11 @@
 
         // points
 
-        var pointsGeometry = new v3d.DodecahedronGeometry(10);
+        var vertices = new v3d.DodecahedronGeometry(10).vertices;
 
-        for (var i = 0; i < pointsGeometry.vertices.length; i++) {
+        for (var i = 0; i < vertices.length; i++) {
 
-          //pointsGeometry.vertices[i].add(randomPoint().multiplyScalar(2)); // wiggle the points
+          //vertices[i].add(randomPoint().multiplyScalar(2)); // wiggle the points
 
         }
 
@@ -104,6 +108,8 @@
 
         });
 
+        var pointsGeometry = new v3d.BufferGeometry().setFromPoints(vertices);
+
         var points = new v3d.Points(pointsGeometry, pointsMaterial);
         group.add(points);
 
@@ -115,7 +121,7 @@
           transparent: true
         });
 
-        var meshGeometry = new v3d.ConvexBufferGeometry(pointsGeometry.vertices);
+        var meshGeometry = new v3d.ConvexBufferGeometry(vertices);
 
         var mesh = new v3d.Mesh(meshGeometry, meshMaterial);
         mesh.material.side = v3d.BackSide; // back faces
@@ -133,11 +139,11 @@
 
       }
 
-      function randomPoint() {
+      // function randomPoint() {
 
-        return new v3d.Vector3(v3d.Math.randFloat(- 1, 1), v3d.Math.randFloat(- 1, 1), v3d.Math.randFloat(- 1, 1));
+      //   return new v3d.Vector3(v3d.Math.randFloat(- 1, 1), v3d.Math.randFloat(- 1, 1), v3d.Math.randFloat(- 1, 1));
 
-      }
+      // }
 
       function onWindowResize() {
 

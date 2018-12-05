@@ -11,9 +11,7 @@
         overflow: hidden;
       }
 
-      a {
-        color: #0078ff;
-      }
+      a { color: #0078ff; }
 
       #info {
         position: absolute;
@@ -148,7 +146,7 @@
             clone = scene.clone();
             clone.autoUpdate = false;
 
-            bounces ++
+            bounces ++;
             currentVertex = 0;
 
           }
@@ -159,7 +157,7 @@
 
         requestAnimationFrame(compute);
 
-      }
+      };
 
       //
 
@@ -226,7 +224,7 @@
 
         new SimpleGI(renderer, scene);
 
-        controls = new v3d.OrbitControls(camera);
+        var controls = new v3d.OrbitControls(camera);
 
         window.addEventListener('resize', onWindowResize, false);
 

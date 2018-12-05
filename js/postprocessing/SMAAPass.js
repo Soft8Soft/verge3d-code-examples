@@ -27,9 +27,14 @@ v3d.SMAAPass = function(width, height) {
     this.weightsRT.texture.name = "SMAAPass.weights";
 
     // textures
+    var scope = this;
 
     var areaTextureImage = new Image();
     areaTextureImage.src = this.getAreaTexture();
+    areaTextureImage.onload = function() {
+        // assigning data to HTMLImageElement.src is asynchronous (see #15162)
+        scope.areaTexture.needsUpdate = true;
+    };
 
     this.areaTexture = new v3d.Texture();
     this.areaTexture.name = "SMAAPass.area";
@@ -37,11 +42,14 @@ v3d.SMAAPass = function(width, height) {
     this.areaTexture.format = v3d.RGBFormat;
     this.areaTexture.minFilter = v3d.LinearFilter;
     this.areaTexture.generateMipmaps = false;
-    this.areaTexture.needsUpdate = true;
     this.areaTexture.flipY = false;
 
     var searchTextureImage = new Image();
     searchTextureImage.src = this.getSearchTexture();
+    searchTextureImage.onload = function() {
+        // assigning data to HTMLImageElement.src is asynchronous (see #15162)
+        scope.searchTexture.needsUpdate = true;
+    };
 
     this.searchTexture = new v3d.Texture();
     this.searchTexture.name = "SMAAPass.search";
@@ -49,7 +57,6 @@ v3d.SMAAPass = function(width, height) {
     this.searchTexture.magFilter = v3d.NearestFilter;
     this.searchTexture.minFilter = v3d.NearestFilter;
     this.searchTexture.generateMipmaps = false;
-    this.searchTexture.needsUpdate = true;
     this.searchTexture.flipY = false;
 
     // materials - pass 1
@@ -63,7 +70,7 @@ v3d.SMAAPass = function(width, height) {
     this.uniformsEdges["resolution"].value.set(1 / width, 1 / height);
 
     this.materialEdges = new v3d.ShaderMaterial({
-        defines: v3d.SMAAShader[0].defines,
+        defines: Object.assign({}, v3d.SMAAShader[0].defines),
         uniforms: this.uniformsEdges,
         vertexShader: v3d.SMAAShader[0].vertexShader,
         fragmentShader: v3d.SMAAShader[0].fragmentShader
@@ -79,7 +86,7 @@ v3d.SMAAPass = function(width, height) {
     this.uniformsWeights["tSearch"].value = this.searchTexture;
 
     this.materialWeights = new v3d.ShaderMaterial({
-        defines: v3d.SMAAShader[1].defines,
+        defines: Object.assign({}, v3d.SMAAShader[1].defines),
         uniforms: this.uniformsWeights,
         vertexShader: v3d.SMAAShader[1].vertexShader,
         fragmentShader: v3d.SMAAShader[1].fragmentShader

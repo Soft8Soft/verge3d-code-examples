@@ -23,12 +23,20 @@ v3d.TTFLoader.prototype = {
         var scope = this;
 
         var loader = new v3d.FileLoader(this.manager);
+        loader.setPath(this.path);
         loader.setResponseType('arraybuffer');
         loader.load(url, function(buffer) {
 
             onLoad(scope.parse(buffer));
 
         }, onProgress, onError);
+
+    },
+
+    setPath: function(value) {
+
+        this.path = value;
+        return this;
 
     },
 

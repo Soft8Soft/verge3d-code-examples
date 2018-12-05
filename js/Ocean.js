@@ -1,4 +1,4 @@
-﻿v3d.Ocean = function(renderer, camera, scene, options) {
+v3d.Ocean = function(renderer, camera, scene, options) {
 
     // flag used to trigger parameter changes
     this.changed = true;

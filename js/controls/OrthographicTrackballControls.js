@@ -43,21 +43,21 @@ v3d.OrthographicTrackballControls = function(object, domElement) {
     var _changed = true;
 
     var _state = STATE.NONE,
-    _prevState = STATE.NONE,
+        _prevState = STATE.NONE,
 
-    _eye = new v3d.Vector3(),
+        _eye = new v3d.Vector3(),
 
-    _rotateStart = new v3d.Vector3(),
-    _rotateEnd = new v3d.Vector3(),
+        _rotateStart = new v3d.Vector3(),
+        _rotateEnd = new v3d.Vector3(),
 
-    _zoomStart = new v3d.Vector2(),
-    _zoomEnd = new v3d.Vector2(),
+        _zoomStart = new v3d.Vector2(),
+        _zoomEnd = new v3d.Vector2(),
 
-    _touchZoomDistanceStart = 0,
-    _touchZoomDistanceEnd = 0,
+        _touchZoomDistanceStart = 0,
+        _touchZoomDistanceEnd = 0,
 
-    _panStart = new v3d.Vector2(),
-    _panEnd = new v3d.Vector2();
+        _panStart = new v3d.Vector2(),
+        _panEnd = new v3d.Vector2();
 
     // for reset
 
@@ -106,16 +106,6 @@ v3d.OrthographicTrackballControls = function(object, domElement) {
         this.right0 = this.object.right;
         this.top0 = this.object.top;
         this.bottom0 = this.object.bottom;
-
-    };
-
-    this.handleEvent = function(event) {
-
-        if (typeof this[event.type] == 'function') {
-
-            this[event.type](event);
-
-        }
 
     };
 
@@ -224,7 +214,7 @@ v3d.OrthographicTrackballControls = function(object, domElement) {
 
             }
 
-        }
+        };
 
     }());
 
@@ -303,7 +293,7 @@ v3d.OrthographicTrackballControls = function(object, domElement) {
 
             }
 
-        }
+        };
 
     }());
 
@@ -311,13 +301,13 @@ v3d.OrthographicTrackballControls = function(object, domElement) {
 
         _eye.subVectors(_this.object.position, _this.target);
 
-        if (! _this.noRotate) {
+        if (!_this.noRotate) {
 
             _this.rotateCamera();
 
         }
 
-        if (! _this.noZoom) {
+        if (!_this.noZoom) {
 
             _this.zoomCamera();
 
@@ -329,7 +319,7 @@ v3d.OrthographicTrackballControls = function(object, domElement) {
 
         }
 
-        if (! _this.noPan) {
+        if (!_this.noPan) {
 
             _this.panCamera();
 
@@ -439,7 +429,7 @@ v3d.OrthographicTrackballControls = function(object, domElement) {
         } else if (_state === STATE.PAN && ! _this.noPan) {
 
             _panStart.copy(getMouseOnScreen(event.pageX, event.pageY));
-            _panEnd.copy(_panStart)
+            _panEnd.copy(_panStart);
 
         }
 

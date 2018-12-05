@@ -17,7 +17,7 @@ v3d.AsciiEffect = function(renderer, charSet, options) {
     // darker bolder character set from https://github.com/saw/Canvas-ASCII-Art/
     // ' .\'`^",:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$'.split('');
 
-    if (! options) options = {};
+    if (!options) options = {};
 
     // Some ASCII settings
 
@@ -118,14 +118,14 @@ v3d.AsciiEffect = function(renderer, charSet, options) {
     var oCanvasImg = renderer.domElement;
 
     var oCanvas = document.createElement("canvas");
-    if (! oCanvas.getContext) {
+    if (!oCanvas.getContext) {
 
         return;
 
     }
 
     var oCtx = oCanvas.getContext("2d");
-    if (! oCtx.getImageData) {
+    if (!oCtx.getImageData) {
 
         return;
 

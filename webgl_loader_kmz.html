@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D webgl - KMZ</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        font-family: Monospace;
+        background-color: #000000;
+        margin: 0px;
+        overflow: hidden;
+      }
+
+      #info {
+        color: #fff;
+        position: absolute;
+        top: 10px;
+        width: 100%;
+        text-align: center;
+        z-index: 100;
+        display:block;
+
+      }
+
+      a { color: red }
+
+      span {
+        display: inline-block;
+        width: 60px;
+        text-align: center;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div id="info">
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a>
+      <a href="https://developers.google.com/kml/documentation/kmzarchives" target="_blank" rel="noopener">KMZ File format</a>
+    </div>
+
+    <script src="../build/v3d.js"></script>
+    <script src="js/loaders/KMZLoader.js"></script>
+    <script src="js/loaders/ColladaLoader.js"></script>
+
+    <script src="js/WebGL.js"></script>
+    <script src="js/controls/OrbitControls.js"></script>
+
+    <script src="js/libs/jszip.min.js"></script>
+
+    <script>
+
+      if (WEBGL.isWebGLAvailable() === false) {
+
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+      }
+
+      var camera, scene, renderer;
+
+      init();
+
+      function init() {
+
+        scene = new v3d.Scene();
+        scene.background = new v3d.Color(0x999999);
+
+        var light = new v3d.DirectionalLight(0xffffff);
+        light.position.set(0.5, 1.0, 0.5).normalize();
+
+        scene.add(light);
+
+        camera = new v3d.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 500);
+
+        camera.position.y = 5;
+        camera.position.z = 10;
+
+        scene.add(camera);
+
+        var grid = new v3d.GridHelper(50, 50, 0xffffff, 0x555555);
+        scene.add(grid);
+
+        renderer = new v3d.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        var loader = new v3d.KMZLoader();
+        loader.load('./models/kmz/Box.kmz', function(kmz) {
+
+          kmz.scene.position.y = 0.5;
+          scene.add(kmz.scene);
+          render();
+
+        });
+
+        var controls = new v3d.OrbitControls(camera, renderer.domElement);
+        controls.addEventListener('change', render);
+        controls.update();
+
+        window.addEventListener('resize', onWindowResize, false);
+
+      }
+
+      function onWindowResize() {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        render();
+
+      }
+
+      function render() {
+
+        renderer.render(scene, camera);
+
+      }
+
+    </script>
+  </body>
+</html>

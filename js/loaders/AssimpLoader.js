@@ -12,15 +12,16 @@ v3d.AssimpLoader.prototype = {
 
     constructor: v3d.AssimpLoader,
 
-    crossOrigin: 'Anonymous',
+    crossOrigin: 'anonymous',
 
     load: function(url, onLoad, onProgress, onError) {
 
         var scope = this;
 
-        var path = v3d.Loader.prototype.extractUrlBase(url);
+        var path = (scope.path === undefined) ? v3d.LoaderUtils.extractUrlBase(url) : scope.path;
 
         var loader = new v3d.FileLoader(this.manager);
+        loader.setPath(scope.path);
         loader.setResponseType('arraybuffer');
 
         loader.load(url, function(buffer) {
@@ -31,16 +32,31 @@ v3d.AssimpLoader.prototype = {
 
     },
 
+    setPath: function(value) {
+
+        this.path = value;
+        return this;
+
+    },
+
+    setResourcePath: function(value) {
+
+        this.resourcePath = value;
+        return this;
+
+    },
+
     setCrossOrigin: function(value) {
 
         this.crossOrigin = value;
+        return this;
 
     },
 
     parse: function(buffer, path) {
 
         var textureLoader = new v3d.TextureLoader(this.manager);
-        textureLoader.setPath(path).setCrossOrigin(this.crossOrigin);
+        textureLoader.setPath(this.resourcePath || path).setCrossOrigin(this.crossOrigin);
 
         var Virtulous = {};
 
@@ -110,7 +126,7 @@ v3d.AssimpLoader.prototype = {
                 else
                     this.length = 0;
 
-                if (! this.fps) return;
+                if (!this.fps) return;
 
                 for (var j = 0; j < this.length * this.fps; j ++) {
 
@@ -195,7 +211,7 @@ v3d.AssimpLoader.prototype = {
 
             this.reTarget = function(root, compareitor) {
 
-                if (! compareitor) compareitor = Virtulous.TrackTargetNodeNameCompare;
+                if (!compareitor) compareitor = Virtulous.TrackTargetNodeNameCompare;
                 this.target = compareitor(root, this.target);
 
             };
@@ -308,7 +324,7 @@ v3d.AssimpLoader.prototype = {
 
             this.clone = function(target, compareitor) {
 
-                if (! compareitor) compareitor = Virtulous.TrackTargetNodeNameCompare;
+                if (!compareitor) compareitor = Virtulous.TrackTargetNodeNameCompare;
                 var n = new Virtulous.Animation();
                 n.target = target;
                 for (var i = 0; i < this.tracks.length; i++) {
@@ -516,7 +532,7 @@ v3d.AssimpLoader.prototype = {
             scene.nodeCount ++;
             rootBone.name = "bone_" + root.name + scene.nodeCount.toString();
 
-            if (! scene.nodeToBoneMap[root.name])
+            if (!scene.nodeToBoneMap[root.name])
                 scene.nodeToBoneMap[root.name] = [];
             scene.nodeToBoneMap[root.name].push(rootBone);
             for (var i in root.children) {
@@ -650,7 +666,7 @@ v3d.AssimpLoader.prototype = {
                     } else {
 
                         var skeletonRoot = scene.findNode(this.mBones[i].mName);
-                        if (! skeletonRoot) return;
+                        if (!skeletonRoot) return;
                         var threeSkeletonRoot = skeletonRoot.tov3d(scene);
                         var threeSkeletonRootParent = threeSkeletonRoot.parent;
                         var threeSkeletonRootBone = cloneTreeToBones(threeSkeletonRoot, scene);
@@ -706,8 +722,8 @@ v3d.AssimpLoader.prototype = {
                             var weight = this.mBones[i].mWeights[j];
                             if (weight) {
 
-                                if (! weights[weight.mVertexId]) weights[weight.mVertexId] = [];
-                                if (! bones[weight.mVertexId]) bones[weight.mVertexId] = [];
+                                if (!weights[weight.mVertexId]) weights[weight.mVertexId] = [];
+                                if (!bones[weight.mVertexId]) bones[weight.mVertexId] = [];
                                 weights[weight.mVertexId].push(weight.mWeight);
                                 bones[weight.mVertexId].push(parseInt(i));
 
@@ -1021,17 +1037,6 @@ v3d.AssimpLoader.prototype = {
 
         };
 
-        var nameTexMapping = {
-
-            "$tex.ambient": "ambientMap",
-            "$clr.diffuse": "map",
-            "$clr.specular": "specMap",
-            "$clr.emissive": "emissive",
-            "$clr.transparent": "alphaMap",
-            "$clr.reflective": "reflectMap",
-
-        };
-
         var nameTypeMapping = {
 
             "?mat.name": "string",
@@ -1139,9 +1144,22 @@ v3d.AssimpLoader.prototype = {
 
             }
 
-            if (! key) return null;
+            if (!key) {
 
-            if (key && nextKey) {
+                return null;
+
+            } else if (nextKey) {
+
+                var dT = nextKey.mTime - key.mTime;
+                var T = key.mTime - time;
+                var l = T / dT;
+
+                return lerp(key.mValue.tov3d(), nextKey.mValue.tov3d(), l);
+
+            } else {
+
+                nextKey = keys[0].clone();
+                nextKey.mTime += lne;
 
                 var dT = nextKey.mTime - key.mTime;
                 var T = key.mTime - time;
@@ -1150,15 +1168,6 @@ v3d.AssimpLoader.prototype = {
                 return lerp(key.mValue.tov3d(), nextKey.mValue.tov3d(), l);
 
             }
-
-            nextKey = keys[0].clone();
-            nextKey.mTime += lne;
-
-            var dT = nextKey.mTime - key.mTime;
-            var T = key.mTime - time;
-            var l = T / dT;
-
-            return lerp(key.mValue.tov3d(), nextKey.mValue.tov3d(), l);
 
         }
 
@@ -1175,7 +1184,7 @@ v3d.AssimpLoader.prototype = {
             this.mPostState = "";
             this.init = function(tps) {
 
-                if (! tps) tps = 1;
+                if (!tps) tps = 1;
 
                 function t(t) {
 
@@ -1359,7 +1368,7 @@ v3d.AssimpLoader.prototype = {
             this.nodeToBoneMap = {};
             this.findNode = function(name, root) {
 
-                if (! root) {
+                if (!root) {
 
                     root = this.mRootNode;
 
@@ -1656,7 +1665,7 @@ v3d.AssimpLoader.prototype = {
 
         function ai_assert(bool) {
 
-            if (! bool)
+            if (!bool)
                 throw ("asset failed");
 
         }
@@ -1809,7 +1818,7 @@ v3d.AssimpLoader.prototype = {
 
             for (var n = 0; n < AI_MAX_NUMBER_OF_COLOR_SETS; ++ n) {
 
-                if (! (c & ASSBIN_MESH_HAS_COLOR(n))) break;
+                if (!(c & ASSBIN_MESH_HAS_COLOR(n))) break;
 
                 if (shortened) {
 
@@ -1831,7 +1840,7 @@ v3d.AssimpLoader.prototype = {
 
             for (var n = 0; n < AI_MAX_NUMBER_OF_TEXTURECOORDS; ++ n) {
 
-                if (! (c & ASSBIN_MESH_HAS_TEXCOORD(n))) break;
+                if (!(c & ASSBIN_MESH_HAS_TEXCOORD(n))) break;
 
                 // write number of UV components
                 mesh.mNumUVComponents[n] = Read_unsigned_int(stream);
@@ -2091,9 +2100,9 @@ v3d.AssimpLoader.prototype = {
             tex.mHeight = Read_unsigned_int(stream);
             stream.ReadBytes(tex.achFormatHint, 1, 4);
 
-            if (! shortened) {
+            if (!shortened) {
 
-                if (! tex.mHeight) {
+                if (!tex.mHeight) {
 
                     tex.pcData = [];
                     stream.ReadBytes(tex.pcData, 1, tex.mWidth);

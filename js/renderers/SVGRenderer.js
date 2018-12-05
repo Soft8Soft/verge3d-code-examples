@@ -18,38 +18,38 @@ v3d.SVGRenderer = function() {
     console.log('v3d.SVGRenderer', v3d.REVISION);
 
     var _this = this,
-    _renderData, _elements, _lights,
-    _projector = new v3d.Projector(),
-    _svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
-    _svgWidth, _svgHeight, _svgWidthHalf, _svgHeightHalf,
+        _renderData, _elements, _lights,
+        _projector = new v3d.Projector(),
+        _svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+        _svgWidth, _svgHeight, _svgWidthHalf, _svgHeightHalf,
 
-    _v1, _v2, _v3, _v4,
+        _v1, _v2, _v3,
 
-    _clipBox = new v3d.Box2(),
-    _elemBox = new v3d.Box2(),
+        _clipBox = new v3d.Box2(),
+        _elemBox = new v3d.Box2(),
 
-    _color = new v3d.Color(),
-    _diffuseColor = new v3d.Color(),
-    _ambientLight = new v3d.Color(),
-    _directionalLights = new v3d.Color(),
-    _pointLights = new v3d.Color(),
-    _clearColor = new v3d.Color(),
-    _clearAlpha = 1,
+        _color = new v3d.Color(),
+        _diffuseColor = new v3d.Color(),
+        _ambientLight = new v3d.Color(),
+        _directionalLights = new v3d.Color(),
+        _pointLights = new v3d.Color(),
+        _clearColor = new v3d.Color(),
+        _clearAlpha = 1,
 
-    _vector3 = new v3d.Vector3(), // Needed for PointLight
-    _centroid = new v3d.Vector3(),
-    _normal = new v3d.Vector3(),
-    _normalViewMatrix = new v3d.Matrix3(),
+        _vector3 = new v3d.Vector3(), // Needed for PointLight
+        _centroid = new v3d.Vector3(),
+        _normal = new v3d.Vector3(),
+        _normalViewMatrix = new v3d.Matrix3(),
 
-    _viewMatrix = new v3d.Matrix4(),
-    _viewProjectionMatrix = new v3d.Matrix4(),
+        _viewMatrix = new v3d.Matrix4(),
+        _viewProjectionMatrix = new v3d.Matrix4(),
 
-    _svgPathPool = [],
-    _svgNode, _pathCount = 0,
+        _svgPathPool = [],
+        _svgNode, _pathCount = 0,
 
-    _currentPath, _currentStyle,
+        _currentPath, _currentStyle,
 
-    _quality = 1, _precision = null;
+        _quality = 1, _precision = null;
 
     this.domElement = _svg;
 
@@ -78,11 +78,6 @@ v3d.SVGRenderer = function() {
         }
 
     };
-
-    // WebGLRenderer compatibility
-
-    this.supportsVertexTextures = function() {};
-    this.setFaceCulling = function() {};
 
     this.setClearColor = function(color, alpha) {
 
@@ -125,7 +120,7 @@ v3d.SVGRenderer = function() {
 
     }
 
-    function getSvgColor (color, opacity) {
+    function getSvgColor(color, opacity) {
 
         var arg = Math.floor(color.r * 255) + ',' + Math.floor(color.g * 255) + ',' + Math.floor(color.b * 255);
 
@@ -135,7 +130,7 @@ v3d.SVGRenderer = function() {
 
     }
 
-    function convert (c) {
+    function convert(c) {
 
         return _precision !== null ? c.toFixed(_precision) : c;
 
@@ -257,7 +252,7 @@ v3d.SVGRenderer = function() {
                 _vector3.setFromMatrixPosition(object.matrixWorld);
                 _vector3.applyMatrix4(_viewProjectionMatrix);
 
-                var x =   _vector3.x * _svgWidthHalf;
+                var x = _vector3.x * _svgWidthHalf;
                 var y = - _vector3.y * _svgHeightHalf;
 
                 var node = object.node;
@@ -282,19 +277,19 @@ v3d.SVGRenderer = function() {
             var light = lights[l];
             var lightColor = light.color;
 
-            if (light instanceof v3d.AmbientLight) {
+            if (light.isAmbientLight) {
 
                 _ambientLight.r += lightColor.r;
                 _ambientLight.g += lightColor.g;
                 _ambientLight.b += lightColor.b;
 
-            } else if (light instanceof v3d.DirectionalLight) {
+            } else if (light.isDirectionalLight) {
 
                 _directionalLights.r += lightColor.r;
                 _directionalLights.g += lightColor.g;
                 _directionalLights.b += lightColor.b;
 
-            } else if (light instanceof v3d.PointLight) {
+            } else if (light.isPointLight) {
 
                 _pointLights.r += lightColor.r;
                 _pointLights.g += lightColor.g;
@@ -313,7 +308,7 @@ v3d.SVGRenderer = function() {
             var light = lights[l];
             var lightColor = light.color;
 
-            if (light instanceof v3d.DirectionalLight) {
+            if (light.isDirectionalLight) {
 
                 var lightPosition = _vector3.setFromMatrixPosition(light.matrixWorld).normalize();
 
@@ -327,7 +322,7 @@ v3d.SVGRenderer = function() {
                 color.g += lightColor.g * amount;
                 color.b += lightColor.b * amount;
 
-            } else if (light instanceof v3d.PointLight) {
+            } else if (light.isPointLight) {
 
                 var lightPosition = _vector3.setFromMatrixPosition(light.matrixWorld);
 
@@ -357,11 +352,13 @@ v3d.SVGRenderer = function() {
         var scaleY = element.scale.y * _svgHeightHalf;
 
         if (material.isPointsMaterial) {
+
             scaleX *= material.size;
             scaleY *= material.size;
+
         }
 
-        var path = 'M' + convert(v1.x - scaleX * 0.5) + ',' + convert(v1.y - scaleY * 0.5) + 'h' + convert(scaleX) + 'v' + convert(scaleY) + 'h' + convert(-scaleX) + 'z';
+        var path = 'M' + convert(v1.x - scaleX * 0.5) + ',' + convert(v1.y - scaleY * 0.5) + 'h' + convert(scaleX) + 'v' + convert(scaleY) + 'h' + convert(- scaleX) + 'z';
         var style = "";
 
         if (material.isSpriteMaterial || material.isPointsMaterial) {
@@ -402,21 +399,21 @@ v3d.SVGRenderer = function() {
         var path = 'M' + convert(v1.positionScreen.x) + ',' + convert(v1.positionScreen.y) + 'L' + convert(v2.positionScreen.x) + ',' + convert(v2.positionScreen.y) + 'L' + convert(v3.positionScreen.x) + ',' + convert(v3.positionScreen.y) + 'z';
         var style = '';
 
-        if (material instanceof v3d.MeshBasicMaterial) {
+        if (material.isMeshBasicMaterial) {
 
             _color.copy(material.color);
 
-            if (material.vertexColors === v3d.FaceColors) {
+            if (material.vertexColors === v3d.FaceColors || material.vertexColors === v3d.VertexColors) {
 
                 _color.multiply(element.color);
 
             }
 
-        } else if (material instanceof v3d.MeshLambertMaterial || material instanceof v3d.MeshPhongMaterial) {
+        } else if (material.isMeshLambertMaterial || material.isMeshPhongMaterial || material.isMeshStandardMaterial) {
 
             _diffuseColor.copy(material.color);
 
-            if (material.vertexColors === v3d.FaceColors) {
+            if (material.vertexColors === v3d.FaceColors || material.vertexColors === v3d.VertexColors) {
 
                 _diffuseColor.multiply(element.color);
 
@@ -430,7 +427,7 @@ v3d.SVGRenderer = function() {
 
             _color.multiply(_diffuseColor).add(material.emissive);
 
-        } else if (material instanceof v3d.MeshNormalMaterial) {
+        } else if (material.isMeshNormalMaterial) {
 
             _normal.copy(element.normalModel).applyMatrix3(_normalViewMatrix);
 
@@ -452,11 +449,11 @@ v3d.SVGRenderer = function() {
 
     }
 
-    function addPath (style, path) {
+    function addPath(style, path) {
 
         if (_currentStyle === style) {
 
-            _currentPath += path
+            _currentPath += path;
 
         } else {
 

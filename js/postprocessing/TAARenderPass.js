@@ -35,7 +35,7 @@ v3d.TAARenderPass.prototype = Object.assign(Object.create(v3d.SSAARenderPass.pro
 
     render: function(renderer, writeBuffer, readBuffer, delta) {
 
-        if (! this.accumulate) {
+        if (!this.accumulate) {
 
             v3d.SSAARenderPass.prototype.render.call(this, renderer, writeBuffer, readBuffer, delta);
 
@@ -46,14 +46,14 @@ v3d.TAARenderPass.prototype = Object.assign(Object.create(v3d.SSAARenderPass.pro
 
         var jitterOffsets = v3d.TAARenderPass.JitterVectors[5];
 
-        if (! this.sampleRenderTarget) {
+        if (!this.sampleRenderTarget) {
 
             this.sampleRenderTarget = new v3d.WebGLRenderTarget(readBuffer.width, readBuffer.height, this.params);
             this.sampleRenderTarget.texture.name = "TAARenderPass.sample";
 
         }
 
-        if (! this.holdRenderTarget) {
+        if (!this.holdRenderTarget) {
 
             this.holdRenderTarget = new v3d.WebGLRenderTarget(readBuffer.width, readBuffer.height, this.params);
             this.holdRenderTarget.texture.name = "TAARenderPass.hold";

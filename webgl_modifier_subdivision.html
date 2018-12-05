@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>Verge3D webgl - modifier - Subdivisions using Loop Subdivision Scheme</title>
@@ -17,16 +17,23 @@
 
     <script src="../build/v3d.js"></script>
     <script src="js/controls/OrbitControls.js"></script>
-    <script src="js/modifiers/BufferSubdivisionModifier.js"></script>
+    <script src="js/modifiers/SubdivisionModifier.js"></script>
     <script src="js/libs/stats.min.js"></script>
+    <script src="js/WebGL.js"></script>
 
     <script>
+
+      if (WEBGL.isWebGLAvailable() === false) {
+
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+      }
 
       var container, stats;
 
       var camera, controls, scene, renderer;
 
-      var cube, mesh, material;
+      var cube, mesh, material, geometry, smooth, group;
 
       // Create new object by parameters
 
@@ -44,6 +51,9 @@
 
       };
 
+      var wireframeMaterial = new v3d.MeshBasicMaterial({ color: 0x000000, wireframe: true, opacity: 0.15, transparent: true });
+      var material = new v3d.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
+      var smoothMaterial = new v3d.MeshPhongMaterial({ color: 0xffffff, flatShading: true, vertexColors: v3d.VertexColors });
 
       // Cube
 
@@ -60,23 +70,23 @@
       var geometriesParams = [
 
         { type: 'BoxGeometry', args: [200, 200, 200, 2, 2, 2, materials] },
-        { type: 'TorusGeometry', args: [100, 60, 4, 8, Math.PI*2] },
-        { type: 'TorusKnotGeometry', args: [], scale:0.25, meshScale:4 },
-        { type: 'SphereGeometry', args: [100, 3, 3], meshScale:2 },
-        { type: 'IcosahedronGeometry', args: [100, 1], meshScale:2 },
-        { type: 'CylinderGeometry', args: [25, 75, 200, 8, 3]} ,
-        { type: 'OctahedronGeometry', args: [200, 0], meshScale:2 },
+        { type: 'TorusGeometry', args: [100, 60, 4, 8, Math.PI * 2] },
+        { type: 'TorusKnotGeometry', args: [100, 30], scale: 0.25, meshScale: 4 },
+        { type: 'SphereGeometry', args: [100, 3, 3], meshScale: 2 },
+        { type: 'IcosahedronGeometry', args: [100, 1], meshScale: 2 },
+        { type: 'CylinderGeometry', args: [25, 75, 200, 8, 3] },
+        { type: 'OctahedronGeometry', args: [200, 0], meshScale: 2 },
         { type: 'LatheGeometry', args: [[
-          new v3d.Vector2(0,0),
-          new v3d.Vector2(50,50),
-          new v3d.Vector2(10,100),
-          new v3d.Vector2(50,150),
-          new v3d.Vector2(0,200)]]},
+          new v3d.Vector2(0, 0),
+          new v3d.Vector2(50, 50),
+          new v3d.Vector2(10, 100),
+          new v3d.Vector2(50, 150),
+          new v3d.Vector2(0, 200)]] },
         { type: 'TextGeometry', args: ['&', {
-            size: 200,
-            height: 50,
-            curveSegments: 1
-          }]},
+          size: 200,
+          height: 50,
+          curveSegments: 1
+        }] },
         { type: 'PlaneGeometry', args: [200, 200, 4, 4] }
 
       ];
@@ -88,29 +98,37 @@
 
       });
 
-      var loader = new v3d.JSONLoader();
-      loader.load('obj/WaltHeadLo.js', function(geometry) {
+      var loader = new v3d.BufferGeometryLoader();
+      loader.load('models/json/WaltHeadLo_buffergeometry.json', function(geometry) {
 
-        geometriesParams.push({type: 'WaltHead', args: [], meshScale: 6 });
+        geometry = new v3d.Geometry().fromBufferGeometry(geometry);
+
+        geometriesParams.push({ type: 'WaltHead', args: [], meshScale: 6 });
 
         v3d.WaltHead = function() {
-          return geometry.clone();
-        };
 
-        updateInfo()
+          return geometry.clone();
+
+  };
+
+        updateInfo();
 
       });
 
-      var loader2 = new v3d.JSONLoader();
-      loader2.load('obj/Suzanne.js', function(geometry) {
+      var loader2 = new v3d.BufferGeometryLoader();
+      loader2.load('models/json/suzanne_buffergeometry.json', function(geometry) {
 
-        geometriesParams.push({type: 'Suzanne', args: [], scale: 100, meshScale:2 });
+        geometry = new v3d.Geometry().fromBufferGeometry(geometry);
+
+        geometriesParams.push({ type: 'Suzanne', args: [], scale: 100, meshScale: 2 });
 
         v3d.Suzanne = function() {
-          return geometry.clone();
-        };
 
-        updateInfo()
+          return geometry.clone();
+
+  };
+
+        updateInfo();
 
       });
 
@@ -150,6 +168,7 @@
         geometryIndex = i;
 
         addStuff();
+
       }
 
       function updateInfo() {
@@ -159,11 +178,13 @@
         var dropdown = '<select id="dropdown" onchange="switchGeometry(this.value)">';
 
         for (var i = 0; i < geometriesParams.length; i++) {
+
           dropdown += '<option value="' + i + '"';
 
           dropdown += (geometryIndex == i) ? ' selected' : '';
 
           dropdown += '>' + geometriesParams[i].type + '</option>';
+
         }
 
         dropdown += '</select>';
@@ -173,8 +194,8 @@
           '<br><br>Subdivisions: ' + subdivisions +
           ' <a href="#" onclick="nextSubdivision(1); return false;">more</a>/<a href="#" onclick="nextSubdivision(-1); return false;">less</a>' +
           '<br>Geometry: ' + dropdown + ' <a href="#" onclick="nextGeometry();return false;">next</a>' +
-          '<br><br>Vertices count: before ' + geometry.vertices.length + ' after ' + (smooth.attributes.position.array.length/3) +
-          '<br>Face count: before ' + geometry.faces.length + ' after ' + (smooth.attributes.position.array.length / 3)
+          '<br><br>Vertices count: before ' + geometry.vertices.length + ' after ' + smooth.vertices.length +
+          '<br>Face count: before ' + geometry.faces.length + ' after ' + smooth.faces.length;
 
       }
 
@@ -183,7 +204,6 @@
         if (cube !== undefined) {
 
           geometry.dispose();
-          material.dispose();
           smooth.dispose();
 
           scene.remove(group);
@@ -191,9 +211,7 @@
 
         }
 
-
-        var modifier = new v3d.BufferSubdivisionModifier(subdivisions);
-
+        var modifier = new v3d.SubdivisionModifier(subdivisions);
 
         var params = geometriesParams[geometryIndex];
 
@@ -209,37 +227,38 @@
 
         smooth = modifier.modify(geometry);
 
-        updateInfo();
+        var faceIndices = ['a', 'b', 'c'];
 
-        var faceABCD = "abcd";
+        for (var i = 0; i < smooth.faces.length; i++) {
 
-        // var TypedArrayHelper = function(size, registers, register_type, array_type, unit_size, accessors)
-        var colors = new TypedArrayHelper(0, 1, v3d.Color, Float32Array, 3, ['r', 'g', 'b']);
+          var face = smooth.faces[i];
 
-        for (var i = 0; i < smooth.attributes.position.array.length / 3; i++) {
+          for (var j = 0; j < 3; j ++) {
 
-          var hue = (smooth.attributes.position.array[(i * 3) + 1] / 200) + 0.5;
-          colors.register[0].setHSL(hue, 1, 0.5);
-          colors.push_element(colors.register[0]);
+            var vertexIndex = face[faceIndices[j]];
+            var vertex = smooth.vertices[vertexIndex];
+
+            var hue = (vertex.y / 200) + 0.5;
+            var color = new v3d.Color().setHSL(hue, 1, 0.5);
+
+            face.vertexColors[j] = color;
+
+          }
 
         }
 
-        colors.trim_size();
-        smooth.addAttribute('color', new v3d.BufferAttribute(colors.buffer, 3));
+        updateInfo();
 
         group = new v3d.Group();
         scene.add(group);
 
-        material = new v3d.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
         mesh = new v3d.Mesh(geometry, material);
         group.add(mesh);
 
-        var meshmaterials = [
-          new v3d.MeshPhongMaterial({ color: 0xffffff, flatShading: true, vertexColors: v3d.VertexColors }),
-          new v3d.MeshBasicMaterial({ color: 0x000000, wireframe: true, opacity: 0.15, transparent: true })
-        ];
+        cube = new v3d.Mesh(smooth, smoothMaterial);
+        var wireframe = new v3d.Mesh(smooth, wireframeMaterial);
+        cube.add(wireframe);
 
-        cube = v3d.SceneUtils.createMultiMaterialObject(smooth, meshmaterials);
         cube.scale.setScalar(params.meshScale ? params.meshScale : 1);
         scene.add(cube);
 

@@ -214,7 +214,7 @@ v3d.FirstPersonControls = function(object, domElement) {
 
         var actualLookSpeed = delta * this.lookSpeed;
 
-        if (! this.activeLook) {
+        if (!this.activeLook) {
 
             actualLookSpeed = 0;
 

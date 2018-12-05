@@ -6,96 +6,113 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <style>
       body {
-        font-family: Monospace;
+        color: #eee;
+        font-family:Monospace;
+        font-size:13px;
+        text-align:center;
+
         background-color: #000;
         margin: 0px;
+        padding: 0px;
         overflow: hidden;
+      }
+
+      #info {
+        position: absolute;
+        top: 0px; width: 100%;
+        padding: 5px;
+      }
+
+      a {
+        color: #0080ff;
       }
     </style>
   </head>
   <body>
 
+    <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - geometries</div>
+
     <script src="../build/v3d.js"></script>
 
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script>
 
-      if (! Detector.webgl) Detector.addGetWebGLMessage();
+      if (WEBGL.isWebGLAvailable() === false) {
 
-      var container, stats;
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
 
-      var camera, scene, renderer;
+      }
+
+      var camera, scene, renderer, stats;
 
       init();
       animate();
 
       function init() {
 
-        container = document.createElement('div');
-        document.body.appendChild(container);
-
         camera = new v3d.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
         camera.position.y = 400;
 
         scene = new v3d.Scene();
 
-        var light, object;
+        var object;
 
-        scene.add(new v3d.AmbientLight(0x404040));
+        var ambientLight = new v3d.AmbientLight(0xcccccc, 0.4);
+        scene.add(ambientLight);
 
-        light = new v3d.DirectionalLight(0xffffff);
-        light.position.set(0, 1, 0);
-        scene.add(light);
+        var pointLight = new v3d.PointLight(0xffffff, 0.8);
+        camera.add(pointLight);
+        scene.add(camera);
 
         var map = new v3d.TextureLoader().load('textures/UV_Grid_Sm.jpg');
         map.wrapS = map.wrapT = v3d.RepeatWrapping;
         map.anisotropy = 16;
 
-        var material = new v3d.MeshLambertMaterial({ map: map, side: v3d.DoubleSide });
+        var material = new v3d.MeshPhongMaterial({ map: map, side: v3d.DoubleSide });
 
         //
 
-        object = new v3d.Mesh(new v3d.SphereGeometry(75, 20, 10), material);
-        object.position.set(-400, 0, 200);
+        object = new v3d.Mesh(new v3d.SphereBufferGeometry(75, 20, 10), material);
+        object.position.set(- 300, 0, 200);
         scene.add(object);
 
-        object = new v3d.Mesh(new v3d.IcosahedronGeometry(75, 1), material);
-        object.position.set(-200, 0, 200);
+        object = new v3d.Mesh(new v3d.IcosahedronBufferGeometry(75, 1), material);
+        object.position.set(- 100, 0, 200);
         scene.add(object);
 
-        object = new v3d.Mesh(new v3d.OctahedronGeometry(75, 2), material);
-        object.position.set(0, 0, 200);
+        object = new v3d.Mesh(new v3d.OctahedronBufferGeometry(75, 2), material);
+        object.position.set(100, 0, 200);
         scene.add(object);
 
-        object = new v3d.Mesh(new v3d.TetrahedronGeometry(75, 0), material);
-        object.position.set(200, 0, 200);
+        object = new v3d.Mesh(new v3d.TetrahedronBufferGeometry(75, 0), material);
+        object.position.set(300, 0, 200);
+        scene.add(object);
+
+        //
+
+        object = new v3d.Mesh(new v3d.PlaneBufferGeometry(100, 100, 4, 4), material);
+        object.position.set(- 300, 0, 0);
+        scene.add(object);
+
+        object = new v3d.Mesh(new v3d.BoxBufferGeometry(100, 100, 100, 4, 4, 4), material);
+        object.position.set(- 100, 0, 0);
+        scene.add(object);
+
+        object = new v3d.Mesh(new v3d.CircleBufferGeometry(50, 20, 0, Math.PI * 2), material);
+        object.position.set(100, 0, 0);
+        scene.add(object);
+
+        object = new v3d.Mesh(new v3d.RingBufferGeometry(10, 50, 20, 5, 0, Math.PI * 2), material);
+        object.position.set(300, 0, 0);
         scene.add(object);
 
         //
 
-        object = new v3d.Mesh(new v3d.PlaneGeometry(100, 100, 4, 4), material);
-        object.position.set(-400, 0, 0);
+        object = new v3d.Mesh(new v3d.CylinderBufferGeometry(25, 75, 100, 40, 5), material);
+        object.position.set(- 300, 0, - 200);
         scene.add(object);
-
-        object = new v3d.Mesh(new v3d.BoxGeometry(100, 100, 100, 4, 4, 4), material);
-        object.position.set(-200, 0, 0);
-        scene.add(object);
-
-        object = new v3d.Mesh(new v3d.CircleGeometry(50, 20, 0, Math.PI * 2), material);
-        object.position.set(0, 0, 0);
-        scene.add(object);
-
-        object = new v3d.Mesh(new v3d.RingGeometry(10, 50, 20, 5, 0, Math.PI * 2), material);
-        object.position.set(200, 0, 0);
-        scene.add(object);
-
-        object = new v3d.Mesh(new v3d.CylinderGeometry(25, 75, 100, 40, 5), material);
-        object.position.set(400, 0, 0);
-        scene.add(object);
-
-        //
 
         var points = [];
 
@@ -105,24 +122,16 @@
 
         }
 
-        object = new v3d.Mesh(new v3d.LatheGeometry(points, 20), material);
-        object.position.set(-400, 0, -200);
+        object = new v3d.Mesh(new v3d.LatheBufferGeometry(points, 20), material);
+        object.position.set(- 100, 0, - 200);
         scene.add(object);
 
-        object = new v3d.Mesh(new v3d.TorusGeometry(50, 20, 20, 20), material);
-        object.position.set(-200, 0, -200);
+        object = new v3d.Mesh(new v3d.TorusBufferGeometry(50, 20, 20, 20), material);
+        object.position.set(100, 0, - 200);
         scene.add(object);
 
-        object = new v3d.Mesh(new v3d.TorusKnotGeometry(50, 10, 50, 20), material);
-        object.position.set(0, 0, -200);
-        scene.add(object);
-
-        object = new v3d.AxisHelper(50);
-        object.position.set(200, 0, -200);
-        scene.add(object);
-
-        object = new v3d.ArrowHelper(new v3d.Vector3(0, 1, 0), new v3d.Vector3(0, 0, 0), 50);
-        object.position.set(400, 0, -200);
+        object = new v3d.Mesh(new v3d.TorusKnotBufferGeometry(50, 10, 50, 20), material);
+        object.position.set(300, 0, - 200);
         scene.add(object);
 
         //
@@ -130,11 +139,10 @@
         renderer = new v3d.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
-
-        container.appendChild(renderer.domElement);
+        document.body.appendChild(renderer.domElement);
 
         stats = new Stats();
-        container.appendChild(stats.dom);
+        document.body.appendChild(stats.dom);
 
         //
 
@@ -171,14 +179,16 @@
 
         camera.lookAt(scene.position);
 
-        for (var i = 0, l = scene.children.length; i < l; i++) {
+        scene.traverse(function(object) {
 
-          var object = scene.children[i];
+          if (object.isMesh === true) {
 
-          object.rotation.x = timer * 5;
-          object.rotation.y = timer * 2.5;
+            object.rotation.x = timer * 5;
+            object.rotation.y = timer * 2.5;
 
-        }
+          }
+
+        });
 
         renderer.render(scene, camera);
 

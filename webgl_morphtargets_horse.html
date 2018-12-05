@@ -17,6 +17,7 @@
 
     <script src="../build/v3d.js"></script>
     <script src="js/libs/stats.min.js"></script>
+    <script src="js/loaders/GLTFLoader.js"></script>
 
     <script>
 
@@ -59,20 +60,16 @@
         light.position.set(-1, -1, -1).normalize();
         scene.add(light);
 
-        var loader = new v3d.JSONLoader();
-        loader.load("models/animated/horse.js", function(geometry) {
+        var loader = new v3d.GLTFLoader();
+        loader.load("models/gltf/Horse.glb", function(gltf) {
 
-          mesh = new v3d.Mesh(geometry, new v3d.MeshLambertMaterial({
-            vertexColors: v3d.FaceColors,
-            morphTargets: true
-          }));
+          mesh = gltf.scene.children[0];
           mesh.scale.set(1.5, 1.5, 1.5);
           scene.add(mesh);
 
           mixer = new v3d.AnimationMixer(mesh);
 
-          var clip = v3d.AnimationClip.CreateFromMorphTargetSequence('gallop', geometry.morphTargets, 30);
-          mixer.clipAction(clip).setDuration(1).play();
+          mixer.clipAction(gltf.animations[0]).setDuration(1).play();
 
         });
 

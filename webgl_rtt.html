@@ -22,9 +22,7 @@
         padding: 5px;
       }
 
-      a {
-        color: #ffffff;
-      }
+      a { color: #ffffff; }
 
     </style>
   </head>
@@ -35,7 +33,7 @@
 
     <script src="../build/v3d.js"></script>
 
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script id="fragment_shader_screen" type="x-shader/x-fragment">
@@ -85,7 +83,11 @@
 
     <script>
 
-      if (! Detector.webgl) Detector.addGetWebGLMessage();
+      if (WEBGL.isWebGLAvailable() === false) {
+
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+      }
 
       var container, stats;
 
@@ -110,7 +112,7 @@
         camera = new v3d.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = 100;
 
-        cameraRTT = new v3d.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, -10000, 10000);
+        cameraRTT = new v3d.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, - 10000, 10000);
         cameraRTT.position.z = 100;
 
         //
@@ -124,7 +126,7 @@
         sceneRTT.add(light);
 
         light = new v3d.DirectionalLight(0xffaaaa, 1.5);
-        light.position.set(0, 0, -1).normalize();
+        light.position.set(0, 0, - 1).normalize();
         sceneRTT.add(light);
 
         rtTexture = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight, { minFilter: v3d.LinearFilter, magFilter: v3d.NearestFilter, format: v3d.RGBFormat });
@@ -150,10 +152,10 @@
         var plane = new v3d.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
 
         quad = new v3d.Mesh(plane, material);
-        quad.position.z = -100;
+        quad.position.z = - 100;
         sceneRTT.add(quad);
 
-        var geometry = new v3d.TorusGeometry(100, 25, 15, 30);
+        var geometry = new v3d.TorusBufferGeometry(100, 25, 15, 30);
 
         var mat1 = new v3d.MeshPhongMaterial({ color: 0x555555, specular: 0xffaa00, shininess: 5 });
         var mat2 = new v3d.MeshPhongMaterial({ color: 0x550000, specular: 0xff2200, shininess: 5 });
@@ -169,16 +171,16 @@
         sceneRTT.add(zmesh2);
 
         quad = new v3d.Mesh(plane, materialScreen);
-        quad.position.z = -100;
+        quad.position.z = - 100;
         sceneScreen.add(quad);
 
         var n = 5,
-          geometry = new v3d.SphereGeometry(10, 64, 32),
+          geometry = new v3d.SphereBufferGeometry(10, 64, 32),
           material2 = new v3d.MeshBasicMaterial({ color: 0xffffff, map: rtTexture.texture });
 
-        for(var j = 0; j < n; j ++) {
+        for (var j = 0; j < n; j ++) {
 
-          for(var i = 0; i < n; i++) {
+          for (var i = 0; i < n; i++) {
 
             var mesh = new v3d.Mesh(geometry, material2);
 
@@ -244,7 +246,7 @@
 
         if (material.uniforms.time.value > 1 || material.uniforms.time.value < 0) {
 
-          delta *= -1;
+          delta *= - 1;
 
         }
 

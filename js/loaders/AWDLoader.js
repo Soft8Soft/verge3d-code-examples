@@ -116,12 +116,20 @@
             this._baseDir = url.substr(0, url.lastIndexOf('/') + 1);
 
             var loader = new v3d.FileLoader(this.manager);
+            loader.setPath(this.path);
             loader.setResponseType('arraybuffer');
             loader.load(url, function(text) {
 
                 onLoad(scope.parse(text));
 
             }, onProgress, onError);
+
+        },
+
+        setPath: function(value) {
+
+            this.path = value;
+            return this;
 
         },
 
@@ -140,7 +148,7 @@
 
             }
 
-            if (! this._streaming && this._bodylen != data.byteLength - this._ptr) {
+            if (!this._streaming && this._bodylen != data.byteLength - this._ptr) {
 
                 console.error('AWDLoader: body len does not match file length', this._bodylen, blen - this._ptr);
 
@@ -878,7 +886,7 @@
             geom = mesh.geometry;
             geom.morphTargets = [];
 
-            if (! poseOnly)
+            if (!poseOnly)
                 num_frames = this.readU16();
 
             num_submeshes = this.readU16();

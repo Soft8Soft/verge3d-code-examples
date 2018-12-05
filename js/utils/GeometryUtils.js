@@ -168,7 +168,7 @@ v3d.GeometryUtils = {
 
             result[i] = v3d.GeometryUtils.randomPointInFace(faces[index], geometry);
 
-            if (! stats[index]) {
+            if (!stats[index]) {
 
                 stats[index] = 1;
 

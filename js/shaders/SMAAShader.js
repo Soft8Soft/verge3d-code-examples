@@ -204,7 +204,7 @@ v3d.SMAAShader = [{
             "for (int i = 0; i < SMAA_MAX_SEARCH_STEPS; i++) {", // WebGL port note: Changed while to for
                 "e = texture2D(edgesTex, texcoord, 0.0).rg;",
                 "texcoord -= vec2(2.0, 0.0) * resolution;",
-                "if (! (texcoord.x > end && e.g > 0.8281 && e.r == 0.0)) break;",
+                "if (!(texcoord.x > end && e.g > 0.8281 && e.r == 0.0)) break;",
             "}",
 
             // We correct the previous (-0.25, -0.125) offset we applied:
@@ -226,7 +226,7 @@ v3d.SMAAShader = [{
             "for (int i = 0; i < SMAA_MAX_SEARCH_STEPS; i++) {", // WebGL port note: Changed while to for
                 "e = texture2D(edgesTex, texcoord, 0.0).rg;",
                 "texcoord += vec2(2.0, 0.0) * resolution;",
-                "if (! (texcoord.x < end && e.g > 0.8281 && e.r == 0.0)) break;",
+                "if (!(texcoord.x < end && e.g > 0.8281 && e.r == 0.0)) break;",
             "}",
 
             "texcoord.x -= 0.25 * resolution.x;",
@@ -243,7 +243,7 @@ v3d.SMAAShader = [{
             "for (int i = 0; i < SMAA_MAX_SEARCH_STEPS; i++) {", // WebGL port note: Changed while to for
                 "e = texture2D(edgesTex, texcoord, 0.0).rg;",
                 "texcoord += vec2(0.0, 2.0) * resolution;", // WebGL port note: Changed sign
-                "if (! (texcoord.y > end && e.r > 0.8281 && e.g == 0.0)) break;",
+                "if (!(texcoord.y > end && e.r > 0.8281 && e.g == 0.0)) break;",
             "}",
 
             "texcoord.y -= 0.25 * resolution.y;", // WebGL port note: Changed sign
@@ -260,7 +260,7 @@ v3d.SMAAShader = [{
             "for (int i = 0; i < SMAA_MAX_SEARCH_STEPS; i++) {", // WebGL port note: Changed while to for
                 "e = texture2D(edgesTex, texcoord, 0.0).rg;",
                 "texcoord -= vec2(0.0, 2.0) * resolution;", // WebGL port note: Changed sign
-                "if (! (texcoord.y < end && e.r > 0.8281 && e.g == 0.0)) break;",
+                "if (!(texcoord.y < end && e.r > 0.8281 && e.g == 0.0)) break;",
             "}",
 
             "texcoord.y += 0.25 * resolution.y;", // WebGL port note: Changed sign

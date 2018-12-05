@@ -74,16 +74,19 @@ v3d.SAOPass = function(scene, camera, depthTexture, useNormals, resolution) {
 
     }
 
-    this.saoMaterial = new v3d.ShaderMaterial(v3d.SAOShader);
+    this.saoMaterial = new v3d.ShaderMaterial({
+        defines: Object.assign({}, v3d.SAOShader.defines),
+        fragmentShader: v3d.SAOShader.fragmentShader,
+        vertexShader: v3d.SAOShader.vertexShader,
+        uniforms: v3d.UniformsUtils.clone(v3d.SAOShader.uniforms)
+    });
     this.saoMaterial.extensions.derivatives = true;
-    this.saoMaterial.extensions.drawBuffers = true;
     this.saoMaterial.defines['DEPTH_PACKING'] = this.supportsDepthTextureExtension ? 0 : 1;
     this.saoMaterial.defines['NORMAL_TEXTURE'] = this.supportsNormalTexture ? 1 : 0;
+    this.saoMaterial.defines['PERSPECTIVE_CAMERA'] = this.camera.isPerspectiveCamera ? 1 : 0;
     this.saoMaterial.uniforms['tDepth'].value = (this.supportsDepthTextureExtension) ? depthTexture : this.depthRenderTarget.texture;
     this.saoMaterial.uniforms['tNormal'].value = this.normalRenderTarget.texture;
     this.saoMaterial.uniforms['size'].value.set(this.resolution.x, this.resolution.y);
-    this.saoMaterial.uniforms['cameraNear'].value = this.camera.near;
-    this.saoMaterial.uniforms['cameraFar'].value = this.camera.far;
     this.saoMaterial.uniforms['cameraInverseProjectionMatrix'].value.getInverse(this.camera.projectionMatrix);
     this.saoMaterial.uniforms['cameraProjectionMatrix'].value = this.camera.projectionMatrix;
     this.saoMaterial.blending = v3d.NoBlending;
@@ -96,29 +99,27 @@ v3d.SAOPass = function(scene, camera, depthTexture, useNormals, resolution) {
 
     this.vBlurMaterial = new v3d.ShaderMaterial({
         uniforms: v3d.UniformsUtils.clone(v3d.DepthLimitedBlurShader.uniforms),
-        defines: v3d.DepthLimitedBlurShader.defines,
+        defines: Object.assign({}, v3d.DepthLimitedBlurShader.defines),
         vertexShader: v3d.DepthLimitedBlurShader.vertexShader,
         fragmentShader: v3d.DepthLimitedBlurShader.fragmentShader
     });
     this.vBlurMaterial.defines['DEPTH_PACKING'] = this.supportsDepthTextureExtension ? 0 : 1;
+    this.vBlurMaterial.defines['PERSPECTIVE_CAMERA'] = this.camera.isPerspectiveCamera ? 1 : 0;
     this.vBlurMaterial.uniforms['tDiffuse'].value = this.saoRenderTarget.texture;
     this.vBlurMaterial.uniforms['tDepth'].value = (this.supportsDepthTextureExtension) ? depthTexture : this.depthRenderTarget.texture;
-    this.vBlurMaterial.uniforms['cameraNear'].value = this.camera.near;
-    this.vBlurMaterial.uniforms['cameraFar'].value = this.camera.far;
     this.vBlurMaterial.uniforms['size'].value.set(this.resolution.x, this.resolution.y);
     this.vBlurMaterial.blending = v3d.NoBlending;
 
     this.hBlurMaterial = new v3d.ShaderMaterial({
         uniforms: v3d.UniformsUtils.clone(v3d.DepthLimitedBlurShader.uniforms),
-        defines: v3d.DepthLimitedBlurShader.defines,
+        defines: Object.assign({}, v3d.DepthLimitedBlurShader.defines),
         vertexShader: v3d.DepthLimitedBlurShader.vertexShader,
         fragmentShader: v3d.DepthLimitedBlurShader.fragmentShader
     });
     this.hBlurMaterial.defines['DEPTH_PACKING'] = this.supportsDepthTextureExtension ? 0 : 1;
+    this.hBlurMaterial.defines['PERSPECTIVE_CAMERA'] = this.camera.isPerspectiveCamera ? 1 : 0;
     this.hBlurMaterial.uniforms['tDiffuse'].value = this.blurIntermediateRenderTarget.texture;
     this.hBlurMaterial.uniforms['tDepth'].value = (this.supportsDepthTextureExtension) ? depthTexture : this.depthRenderTarget.texture;
-    this.hBlurMaterial.uniforms['cameraNear'].value = this.camera.near;
-    this.hBlurMaterial.uniforms['cameraFar'].value = this.camera.far;
     this.hBlurMaterial.uniforms['size'].value.set(this.resolution.x, this.resolution.y);
     this.hBlurMaterial.blending = v3d.NoBlending;
 
@@ -160,7 +161,7 @@ v3d.SAOPass = function(scene, camera, depthTexture, useNormals, resolution) {
 
     this.quadCamera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
     this.quadScene = new v3d.Scene();
-    this.quad = new v3d.Mesh(new v3d.PlaneGeometry(2, 2), null);
+    this.quad = new v3d.Mesh(new v3d.PlaneBufferGeometry(2, 2), null);
     this.quadScene.add(this.quad);
 
 };
@@ -188,7 +189,7 @@ v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         }
 
-        if (this.params.output == 1) {
+        if (this.params.output === 1) {
 
             return;
 
@@ -199,18 +200,26 @@ v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
         var oldAutoClear = renderer.autoClear;
         renderer.autoClear = false;
 
-        renderer.clearTarget(this.depthRenderTarget);
+        renderer.setRenderTarget(this.depthRenderTarget);
+        renderer.clear();
 
         this.saoMaterial.uniforms['bias'].value = this.params.saoBias;
         this.saoMaterial.uniforms['intensity'].value = this.params.saoIntensity;
         this.saoMaterial.uniforms['scale'].value = this.params.saoScale;
         this.saoMaterial.uniforms['kernelRadius'].value = this.params.saoKernelRadius;
         this.saoMaterial.uniforms['minResolution'].value = this.params.saoMinResolution;
+        this.saoMaterial.uniforms['cameraNear'].value = this.camera.near;
+        this.saoMaterial.uniforms['cameraFar'].value = this.camera.far;
         // this.saoMaterial.uniforms['randomSeed'].value = Math.random();
 
         var depthCutoff = this.params.saoBlurDepthCutoff * (this.camera.far - this.camera.near);
         this.vBlurMaterial.uniforms['depthCutoff'].value = depthCutoff;
         this.hBlurMaterial.uniforms['depthCutoff'].value = depthCutoff;
+
+        this.vBlurMaterial.uniforms['cameraNear'].value = this.camera.near;
+        this.vBlurMaterial.uniforms['cameraFar'].value = this.camera.far;
+        this.hBlurMaterial.uniforms['cameraNear'].value = this.camera.near;
+        this.hBlurMaterial.uniforms['cameraFar'].value = this.camera.far;
 
         this.params.saoBlurRadius = Math.floor(this.params.saoBlurRadius);
         if ((this.prevStdDev !== this.params.saoBlurStdDev) || (this.prevNumSamples !== this.params.saoBlurRadius)) {
@@ -227,10 +236,10 @@ v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
         renderer.render(this.scene, this.camera, this.beautyRenderTarget, true);
 
         // Re-render scene if depth texture extension is not supported
-        if (! this.supportsDepthTextureExtension) {
+        if (!this.supportsDepthTextureExtension) {
 
             // Clear rule : far clipping plane in both RGBA and Basic encoding
-            this.renderOverride(renderer, this.depthMaterial, this.depthRenderTarget, 0xffffff, 1.0);
+            this.renderOverride(renderer, this.depthMaterial, this.depthRenderTarget, 0x000000, 1.0);
 
         }
 
@@ -254,7 +263,7 @@ v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         var outputMaterial = this.materialCopy;
         // Setting up SAO rendering
-        if (this.params.output == 3) {
+        if (this.params.output === 3) {
 
             if (this.supportsDepthTextureExtension) {
 
@@ -269,7 +278,7 @@ v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
             }
 
-        } else if (this.params.output == 4) {
+        } else if (this.params.output === 4) {
 
             this.materialCopy.uniforms['tDiffuse'].value = this.normalRenderTarget.texture;
             this.materialCopy.needsUpdate = true;
@@ -282,7 +291,7 @@ v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
         }
 
         // Blending depends on output, only want a CustomBlending when showing SAO
-        if (this.params.output == 0) {
+        if (this.params.output === 0) {
 
             outputMaterial.blending = v3d.CustomBlending;
 

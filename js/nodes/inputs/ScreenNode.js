@@ -2,23 +2,29 @@
  * @author sunag / http://www.sunag.com.br/
  */
 
-v3d.ScreenNode = function(coord) {
+import { InputNode } from '../core/InputNode.js';
+import { TextureNode } from './TextureNode.js';
 
-    v3d.TextureNode.call(this, undefined, coord);
+function ScreenNode(uv) {
 
-};
+    TextureNode.call(this, undefined, uv);
 
-v3d.ScreenNode.prototype = Object.create(v3d.TextureNode.prototype);
-v3d.ScreenNode.prototype.constructor = v3d.ScreenNode;
+}
 
-v3d.ScreenNode.prototype.isUnique = function() {
+ScreenNode.prototype = Object.create(TextureNode.prototype);
+ScreenNode.prototype.constructor = ScreenNode;
+ScreenNode.prototype.nodeType = "Screen";
+
+ScreenNode.prototype.isUnique = function() {
 
     return true;
 
 };
 
-v3d.ScreenNode.prototype.getTexture = function(builder, output) {
+ScreenNode.prototype.getTexture = function(builder, output) {
 
-    return v3d.InputNode.prototype.generate.call(this, builder, output, this.getUuid(), 't', 'renderTexture');
+    return InputNode.prototype.generate.call(this, builder, output, this.getUuid(), 't', 'renderTexture');
 
 };
+
+export { ScreenNode };

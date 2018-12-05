@@ -51,18 +51,22 @@
     <script src="js/loaders/sea3d/SEA3DLZMA.js"></script>
     <script src="js/loaders/sea3d/SEA3DLoader.js"></script>
 
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script>
 
-      if (! Detector.webgl) Detector.addGetWebGLMessage();
+      if (WEBGL.isWebGLAvailable() === false) {
+
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+      }
 
       console.log("Visit https://github.com/sunag/sea3d to all codes and builds under development.");
 
       var container, stats;
 
-      var camera, scene, renderer, composer, controls, player, hat;
+      var camera, scene, renderer, composer, player, hat;
 
       var loader;
 
@@ -76,13 +80,13 @@
 
       loader = new v3d.SEA3D({
 
-        autoPlay : true, // Auto play animations
-        container : scene, // Container to add models
-        multiplier : .6 // Light multiplier
+        autoPlay: true, // Auto play animations
+        container: scene, // Container to add models
+        multiplier: .6 // Light multiplier
 
       });
 
-      loader.onComplete = function(e) {
+      loader.onComplete = function() {
 
         // Get the first camera from SEA3D Studio
         // use loader.get... to get others objects
@@ -91,7 +95,7 @@
         camera.position.copy(cam.position);
         camera.rotation.copy(cam.rotation);
 
-        controls = new v3d.OrbitControls(camera);
+        var controls = new v3d.OrbitControls(camera);
 
         // get meshes
         player = loader.getMesh("Player");
@@ -109,7 +113,7 @@
 
         });
 
-        window.addEventListener('click', onMouseClick);
+        window.addEventListener('mousedown', onMouseClick);
         window.addEventListener('contextmenu', onRightClick);
 
         animate();
@@ -136,22 +140,22 @@
 
           updatePlayerCountDescription(count);
 
-          var PHI = Math.PI * 2 * (Math.sqrt(5) + 1) / 2;  // golden ratio
-          var angle = PHI * count++;
+          var PHI = Math.PI * 2 * (Math.sqrt(5) + 1) / 2; // golden ratio
+          var angle = PHI * count ++;
 
           var container = new v3d.Object3D();
           container.position.z = (size * count) * Math.cos(angle);
           container.position.x = (size * count) * Math.sin(angle);
 
           scene.add(container);
-          
-          var domain = loader.clone({ 
-            autoPlay : true, 
-            container : container, 
-            lights : false 
+
+          var domain = loader.clone({
+            autoPlay: true,
+            container: container,
+            lights: false
           });
 
-        }
+        };
 
       }();
 
@@ -218,7 +222,7 @@
 
         if (e.button === 0) {
 
-          hat.visible = !hat.visible;
+          hat.visible = ! hat.visible;
 
         } else if (e.button === 1) {
 

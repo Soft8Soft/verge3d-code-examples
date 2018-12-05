@@ -63,17 +63,21 @@
 
     <script src="../build/v3d.js"></script>
 
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script>
 
-      if (! Detector.webgl) Detector.addGetWebGLMessage();
+      if (WEBGL.isWebGLAvailable() === false) {
+
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+      }
 
       var SCREEN_WIDTH = window.innerWidth;
       var SCREEN_HEIGHT = window.innerHeight;
 
-      var container,stats;
+      var container, stats;
 
       var camera, scene, scene2, renderer;
 
@@ -172,14 +176,14 @@
             zscene.add(meshFrame);
 
             var meshShadow = new v3d.Mesh(geometry, new v3d.MeshBasicMaterial({ color: 0x000000, opacity: 0.75, transparent: true }));
-            meshShadow.position.y = - 1.1 * image.height/2;
-            meshShadow.position.z = - 1.1 * image.height/2;
+            meshShadow.position.y = - 1.1 * image.height / 2;
+            meshShadow.position.z = - 1.1 * image.height / 2;
             meshShadow.rotation.x = - Math.PI / 2;
             meshShadow.scale.x = 1.1 * image.width / 100;
             meshShadow.scale.y = 1.1 * image.height / 100;
             zscene.add(meshShadow);
 
-            var floorHeight = - 1.117 * image.height/2;
+            var floorHeight = - 1.117 * image.height / 2;
             meshCanvas.position.y = meshCanvas2.position.y = floorHeight;
 
           }
@@ -240,10 +244,10 @@
         renderer.clear();
         renderer.setScissorTest(true);
 
-        renderer.setScissor(0, 0, SCREEN_WIDTH/2 - 2, SCREEN_HEIGHT);
+        renderer.setScissor(0, 0, SCREEN_WIDTH / 2 - 2, SCREEN_HEIGHT);
         renderer.render(scene, camera);
 
-        renderer.setScissor(SCREEN_WIDTH/2, 0, SCREEN_WIDTH/2 - 2, SCREEN_HEIGHT  );
+        renderer.setScissor(SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2 - 2, SCREEN_HEIGHT);
         renderer.render(scene2, camera);
 
         renderer.setScissorTest(false);

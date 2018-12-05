@@ -2,16 +2,28 @@
  * @author sunag / http://www.sunag.com.br/
  */
 
-v3d.SpriteNodeMaterial = function() {
+import { SpriteNode } from './nodes/SpriteNode.js';
+import { NodeMaterial } from './NodeMaterial.js';
+import { NodeUtils } from '../core/NodeUtils.js';
 
-    this.node = new v3d.SpriteNode();
+function SpriteNodeMaterial() {
 
-    v3d.NodeMaterial.call(this, this.node, this.node);
+    var node = new SpriteNode();
 
-};
+    NodeMaterial.call(this, node, node);
 
-v3d.SpriteNodeMaterial.prototype = Object.create(v3d.NodeMaterial.prototype);
-v3d.SpriteNodeMaterial.prototype.constructor = v3d.SpriteNodeMaterial;
+    this.type = "SpriteNodeMaterial";
 
-v3d.NodeMaterial.addShortcuts(v3d.SpriteNodeMaterial.prototype, 'node',
-['color', 'alpha', 'transform', 'spherical']);
+}
+
+SpriteNodeMaterial.prototype = Object.create(NodeMaterial.prototype);
+SpriteNodeMaterial.prototype.constructor = SpriteNodeMaterial;
+
+NodeUtils.addShortcuts(SpriteNodeMaterial.prototype, 'fragment', [
+    'color',
+    'alpha',
+    'position',
+    'spherical'
+]);
+
+export { SpriteNodeMaterial };

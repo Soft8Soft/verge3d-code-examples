@@ -17,12 +17,20 @@ v3d.ThreeMFLoader.prototype = {
 
         var scope = this;
         var loader = new v3d.FileLoader(scope.manager);
+        loader.setPath(scope.path);
         loader.setResponseType('arraybuffer');
         loader.load(url, function(buffer) {
 
             onLoad(scope.parse(buffer));
 
         }, onProgress, onError);
+
+    },
+
+    setPath: function(value) {
+
+        this.path = value;
+        return this;
 
     },
 
@@ -88,23 +96,16 @@ v3d.ThreeMFLoader.prototype = {
 
             }
 
-            if (window.TextDecoder === undefined) {
-
-                console.error('v3d.ThreeMFLoader: TextDecoder not present. Please use a TextDecoder polyfill.');
-                return null;
-
-            }
-
-            var relsView = new DataView(zip.file(relsName).asArrayBuffer());
-            var relsFileText = new TextDecoder('utf-8').decode(relsView);
+            var relsView = new Uint8Array(zip.file(relsName).asArrayBuffer());
+            var relsFileText = v3d.LoaderUtils.decodeText(relsView);
             rels = parseRelsXml(relsFileText);
 
             for (var i = 0; i < modelPartNames.length; i++) {
 
                 var modelPart = modelPartNames[i];
-                var view = new DataView(zip.file(modelPart).asArrayBuffer());
+                var view = new Uint8Array(zip.file(modelPart).asArrayBuffer());
 
-                var fileText = new TextDecoder('utf-8').decode(view);
+                var fileText = v3d.LoaderUtils.decodeText(view);
                 var xmlData = new DOMParser().parseFromString(fileText, 'application/xml');
 
                 if (xmlData.documentElement.nodeName.toLowerCase() !== 'model') {
@@ -506,7 +507,7 @@ v3d.ThreeMFLoader.prototype = {
 
         function applyExtensions(extensions, meshData, modelXml, data3mf) {
 
-            if (! extensions) {
+            if (!extensions) {
 
                 return;
 

@@ -24,9 +24,7 @@
         z-index:1000;
       }
 
-      a {
-        color: #ffffff;
-      }
+      a { color: #ffffff; }
 
     </style>
   </head>
@@ -47,8 +45,6 @@
       var container, stats;
 
       var camera, scene, renderer;
-
-      var mesh, zmesh, lightMesh, geometry;
 
       var mouseX = 0, mouseY = 0;
 
@@ -96,7 +92,7 @@
 
         ];
 
-        var geometry = new v3d.SphereGeometry(50, 32, 16);
+        var geometry = new v3d.SphereBufferGeometry(50, 32, 16);
 
         for (var i = 0; i < 5000; i++) {
 
@@ -123,7 +119,7 @@
 
         }
 
-        renderer = new v3d.WebGLRenderer();
+        renderer = new v3d.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
@@ -172,9 +168,9 @@
           y = x == 0 ? y + 1 : y;
           p = Math.floor(x ^ y);
 
-          image.data[i] = ~~ p * r;
-          image.data[i + 1] = ~~ p * g;
-          image.data[i + 2] = ~~ p * b;
+          image.data[i] = ~ ~ p * r;
+          image.data[i + 1] = ~ ~ p * g;
+          image.data[i + 2] = ~ ~ p * b;
           image.data[i + 3] = 255;
 
         }

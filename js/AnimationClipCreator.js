@@ -6,8 +6,7 @@
  * @author David Sarno / http://lighthaus.us/
  */
 
-v3d.AnimationClipCreator = function() {
-};
+v3d.AnimationClipCreator = function() {};
 
 v3d.AnimationClipCreator.CreateRotationAnimation = function(period, axis) {
 
@@ -39,7 +38,7 @@ v3d.AnimationClipCreator.CreateShakeAnimation = function(duration, shakeScale) {
 
     var times = [], values = [], tmp = new v3d.Vector3();
 
-    for(var i = 0; i < duration * 10; i++) {
+    for (var i = 0; i < duration * 10; i++) {
 
         times.push(i / 10);
 
@@ -62,7 +61,7 @@ v3d.AnimationClipCreator.CreatePulsationAnimation = function(duration, pulseScal
 
     var times = [], values = [], tmp = new v3d.Vector3();
 
-    for(var i = 0; i < duration * 10; i++) {
+    for (var i = 0; i < duration * 10; i++) {
 
         times.push(i / 10);
 
@@ -74,7 +73,7 @@ v3d.AnimationClipCreator.CreatePulsationAnimation = function(duration, pulseScal
 
     var trackName = '.scale';
 
-    var track = new v3d.VectorKeyframeTrack(trackName, keys);
+    var track = new v3d.VectorKeyframeTrack(trackName, times, values);
 
     return new v3d.AnimationClip(null, duration, [track]);
 
@@ -94,14 +93,14 @@ v3d.AnimationClipCreator.CreateVisibilityAnimation = function(duration) {
 };
 
 
-v3d.AnimationClipCreator.CreateMaterialColorAnimation = function(duration, colors, loop) {
+v3d.AnimationClipCreator.CreateMaterialColorAnimation = function(duration, colors) {
 
     var times = [], values = [],
         timeStep = duration / colors.length;
 
-    for(var i = 0; i <= colors.length; i++) {
+    for (var i = 0; i <= colors.length; i++) {
 
-        timees.push(i * timeStep);
+        times.push(i * timeStep);
         values.push(colors[i % colors.length]);
 
     }

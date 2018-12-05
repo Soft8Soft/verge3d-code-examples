@@ -71,9 +71,9 @@
         var loader = new v3d.TextureLoader();
         loader.load('textures/land_ocean_ice_cloud_2048.jpg', function(texture) {
 
-          var geometry = new v3d.SphereGeometry(200, 20, 20);
+          var geometry = new v3d.SphereBufferGeometry(200, 20, 20);
 
-          var material = new v3d.MeshLambertMaterial({ map: texture, overdraw: 0.5 });
+          var material = new v3d.MeshLambertMaterial({ map: texture });
           var mesh = new v3d.Mesh(geometry, material);
           group.add(mesh);
 
@@ -103,7 +103,7 @@
         var texture = new v3d.CanvasTexture(canvas);
 
         var geometry = new v3d.PlaneBufferGeometry(300, 300, 3, 3);
-        var material = new v3d.MeshBasicMaterial({ map: texture, overdraw: 0.5 });
+        var material = new v3d.MeshBasicMaterial({ map: texture });
 
         var mesh = new v3d.Mesh(geometry, material);
         mesh.position.y = - 250;

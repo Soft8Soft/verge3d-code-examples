@@ -13,11 +13,9 @@
  * The arrangement of the faces is fixed, as assuming this arrangement, the sampling function has been written.
  */
 
-
-v3d.PMREMCubeUVPacker = function(cubeTextureLods, numLods) {
+v3d.PMREMCubeUVPacker = function(cubeTextureLods) {
 
     this.cubeLods = cubeTextureLods;
-    this.numLods = numLods;
     var size = cubeTextureLods[0].width * 4;
 
     var sourceTexture = cubeTextureLods[0].texture;
@@ -41,12 +39,13 @@ v3d.PMREMCubeUVPacker = function(cubeTextureLods, numLods) {
     this.CubeUVRenderTarget = new v3d.WebGLRenderTarget(size, size, params);
     this.CubeUVRenderTarget.texture.name = "PMREMCubeUVPacker.cubeUv";
     this.CubeUVRenderTarget.texture.mapping = v3d.CubeUVReflectionMapping;
-    this.camera = new v3d.OrthographicCamera(- size * 0.5, size * 0.5, - size * 0.5, size * 0.5, 0.0, 1000);
+    this.camera = new v3d.OrthographicCamera(- size * 0.5, size * 0.5, - size * 0.5, size * 0.5, 0, 1); // top and bottom are swapped for some reason?
 
     this.scene = new v3d.Scene();
-    this.scene.add(this.camera);
 
     this.objects = [];
+
+    var geometry = new v3d.PlaneBufferGeometry(1, 1);
 
     var faceOffsets = [];
     faceOffsets.push(new v3d.Vector2(0, 0));
@@ -82,12 +81,12 @@ v3d.PMREMCubeUVPacker = function(cubeTextureLods, numLods) {
                 material.envMap = this.cubeLods[i].texture;
                 material.uniforms['faceIndex'].value = k;
                 material.uniforms['mapSize'].value = mipSize;
-                var planeMesh = new v3d.Mesh(
-                new v3d.PlaneGeometry(mipSize, mipSize, 0),
-                material);
+
+                var planeMesh = new v3d.Mesh(geometry, material);
                 planeMesh.position.x = faceOffsets[k].x * mipSize - offset1 + mipOffsetX;
                 planeMesh.position.y = faceOffsets[k].y * mipSize - offset1 + offset2 + mipOffsetY;
-                planeMesh.material.side = v3d.DoubleSide;
+                planeMesh.material.side = v3d.BackSide;
+                planeMesh.scale.setScalar(mipSize);
                 this.scene.add(planeMesh);
                 this.objects.push(planeMesh);
 
@@ -114,12 +113,15 @@ v3d.PMREMCubeUVPacker.prototype = {
         var gammaOutput = renderer.gammaOutput;
         var toneMapping = renderer.toneMapping;
         var toneMappingExposure = renderer.toneMappingExposure;
+        var currentRenderTarget = renderer.getRenderTarget();
+
         renderer.gammaInput = false;
         renderer.gammaOutput = false;
         renderer.toneMapping = v3d.LinearToneMapping;
         renderer.toneMappingExposure = 1.0;
         renderer.render(this.scene, this.camera, this.CubeUVRenderTarget, false);
 
+        renderer.setRenderTarget(currentRenderTarget);
         renderer.toneMapping = toneMapping;
         renderer.toneMappingExposure = toneMappingExposure;
         renderer.gammaInput = gammaInput;
@@ -176,17 +178,25 @@ v3d.PMREMCubeUVPacker.prototype = {
                     gl_FragColor = linearToOutputTexel(color);\
                 }",
 
-            blending: v3d.CustomBlending,
-            premultipliedAlpha: false,
-            blendSrc: v3d.OneFactor,
-            blendDst: v3d.ZeroFactor,
-            blendSrcAlpha: v3d.OneFactor,
-            blendDstAlpha: v3d.ZeroFactor,
-            blendEquation: v3d.AddEquation
+            blending: v3d.NoBlending
 
         });
 
+        shaderMaterial.type = 'PMREMCubeUVPacker';
+
         return shaderMaterial;
+
+    },
+
+    dispose: function() {
+
+        for (var i = 0, l = this.objects.length; i < l; i++) {
+
+            this.objects[i].material.dispose();
+
+        }
+
+        this.objects[0].geometry.dispose();
 
     }
 

@@ -32,7 +32,7 @@ v3d.PaintViveController = function(id) {
             var x = ((j % 256) / 256) - 0.5;
             var y = (Math.floor(j / 256) / 256) - 0.5;
 
-            swatchColor.setHSL(Math.atan2(y, x) / PI2, 1,(0.5 - Math.sqrt(x * x + y * y)) * 2.0);
+            swatchColor.setHSL(Math.atan2(y, x) / PI2, 1, (0.5 - Math.sqrt(x * x + y * y)) * 2.0);
 
             data[i + 0] = swatchColor.r * 256;
             data[i + 1] = swatchColor.g * 256;
@@ -49,7 +49,7 @@ v3d.PaintViveController = function(id) {
 
     // COLOR UI
 
-    var geometry = new v3d.CircleGeometry(1, 32);
+    var geometry = new v3d.CircleBufferGeometry(1, 32);
     var material = new v3d.MeshBasicMaterial({ map: generateHueTexture() });
     var colorUI = new v3d.Mesh(geometry, material);
     colorUI.position.set(0, 0.005, 0.0495);
@@ -57,7 +57,7 @@ v3d.PaintViveController = function(id) {
     colorUI.scale.setScalar(0.02);
     this.add(colorUI);
 
-    var geometry = new v3d.IcosahedronGeometry(0.1, 2);
+    var geometry = new v3d.IcosahedronBufferGeometry(0.1, 2);
     var material = new v3d.MeshBasicMaterial();
     material.color = color;
     var ball = new v3d.Mesh(geometry, material);
@@ -72,21 +72,21 @@ v3d.PaintViveController = function(id) {
     this.add(sizeUI);
 
     var triangleShape = new v3d.Shape();
-    triangleShape.moveTo(0, -1);
+    triangleShape.moveTo(0, - 1);
     triangleShape.lineTo(1, 1);
-    triangleShape.lineTo(-1, 1);
+    triangleShape.lineTo(- 1, 1);
 
-    var geometry = new v3d.ShapeGeometry(triangleShape);
-    var material = new v3d.MeshBasicMaterial({ color: 0x222222, wireframe:true });
-    var sizeUIOutline = new v3d.Mesh(geometry, material) ;
+    var geometry = new v3d.ShapeBufferGeometry(triangleShape);
+    var material = new v3d.MeshBasicMaterial({ color: 0x222222, wireframe: true });
+    var sizeUIOutline = new v3d.Mesh(geometry, material);
     sizeUIOutline.position.z = 0.001;
     resizeTriangleGeometry(sizeUIOutline.geometry, 1.0);
     sizeUI.add(sizeUIOutline);
 
-    var geometry = new v3d.ShapeGeometry(triangleShape);
-    var material = new v3d.MeshBasicMaterial({side: v3d.DoubleSide });
+    var geometry = new v3d.ShapeBufferGeometry(triangleShape);
+    var material = new v3d.MeshBasicMaterial({ side: v3d.DoubleSide });
     material.color = color;
-    var sizeUIFill = new v3d.Mesh(geometry, material) ;
+    var sizeUIFill = new v3d.Mesh(geometry, material);
     sizeUIFill.position.z = 0.0011;
     resizeTriangleGeometry(sizeUIFill.geometry, 0.5);
     sizeUI.add(sizeUIFill);
@@ -103,16 +103,20 @@ v3d.PaintViveController = function(id) {
         var y = - event.axes[1] / 2.0;
 
         if (mode === MODES.COLOR) {
+
             color.setHSL(Math.atan2(y, x) / PI2, 1, (0.5 - Math.sqrt(x * x + y * y)) * 2.0);
 
             ball.position.set(event.axes[0], event.axes[1], 0);
+
         }
 
         if (mode === MODES.SIZE) {
-            var ratio = (0.5 - y);
+
+            var ratio = 0.5 - y;
             size = ratio * 2;
 
             resizeTriangleGeometry(sizeUIFill.geometry, ratio);
+
         }
 
     }
@@ -127,34 +131,49 @@ v3d.PaintViveController = function(id) {
         var height = fullHeight * ratio;
         var width = (Math.tan(angle) * height) * 2;
 
-        geometry.vertices[0].set(x, bottomY, 0);
-        geometry.vertices[1].set(x + width / 2, bottomY + height, 0);
-        geometry.vertices[2].set(x - width / 2, bottomY + height, 0);
+        var position = geometry.attributes.position;
 
-        geometry.verticesNeedUpdate = true;
+        position.setXYZ(0, x, bottomY, 0);
+        position.setXYZ(1, x + width / 2, bottomY + height, 0);
+        position.setXYZ(2, x - width / 2, bottomY + height, 0);
+
+        position.needsUpdate = true;
 
     }
 
-    function onGripsDown(event) {
+    function onGripsDown() {
 
         if (mode === MODES.COLOR) {
+
             mode = MODES.SIZE;
             colorUI.visible = false;
             sizeUI.visible = true;
             return;
+
         }
 
         if (mode === MODES.SIZE) {
+
             mode = MODES.COLOR;
             colorUI.visible = true;
             sizeUI.visible = false;
             return;
+
         }
 
     }
 
-    this.getColor = function() { return color; };
-    this.getSize = function() { return size; };
+    this.getColor = function() {
+
+        return color;
+
+    };
+
+    this.getSize = function() {
+
+        return size;
+
+     };
 
     this.addEventListener('axischanged', onAxisChanged);
     this.addEventListener('gripsdown', onGripsDown);

@@ -16,6 +16,8 @@
 
     <script src="../build/v3d.js"></script>
 
+    <script src="js/loaders/GLTFLoader.js"></script>
+
     <script>
 
       var scene, renderer;
@@ -55,10 +57,10 @@
         polarGridHelper.position.x = 200;
         scene.add(polarGridHelper);
 
-        var loader = new v3d.JSONLoader();
-        loader.load('obj/leeperrysmith/LeePerrySmith.js', function(geometry, materials) {
+        var loader = new v3d.GLTFLoader();
+        loader.load('models/gltf/LeePerrySmith/LeePerrySmith.glb', function(gltf) {
 
-          var material = new v3d.MeshLambertMaterial();
+          var mesh = gltf.scene.children[0];
 
           var group = new v3d.Group();
           group.scale.multiplyScalar(50);
@@ -67,18 +69,14 @@
           // To make sure that the matrixWorld is up to date for the boxhelpers
           group.updateMatrixWorld(true);
 
-          var mesh = new v3d.Mesh(geometry, material);
           group.add(mesh);
-
-          fnh = new v3d.FaceNormalsHelper(mesh, 5);
-          scene.add(fnh);
 
           vnh = new v3d.VertexNormalsHelper(mesh, 5);
           scene.add(vnh);
 
           scene.add(new v3d.BoxHelper(mesh));
 
-          var wireframe = new v3d.WireframeGeometry(geometry);
+          var wireframe = new v3d.WireframeGeometry(mesh.geometry);
           var line = new v3d.LineSegments(wireframe);
           line.material.depthTest = false;
           line.material.opacity = 0.25;
@@ -87,12 +85,12 @@
           group.add(line);
           scene.add(new v3d.BoxHelper(line));
 
-          var edges = new v3d.EdgesGeometry(geometry);
+          var edges = new v3d.EdgesGeometry(mesh.geometry);
           var line = new v3d.LineSegments(edges);
           line.material.depthTest = false;
           line.material.opacity = 0.25;
           line.material.transparent = true;
-          line.position.x = -4;
+          line.position.x = - 4;
           group.add(line);
           scene.add(new v3d.BoxHelper(line));
 

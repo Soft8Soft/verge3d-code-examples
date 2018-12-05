@@ -7,9 +7,9 @@
     <style>
       body {
         color: #fff;
-        font-family:Monospace;
-        font-size:13px;
-        text-align:center;
+        font-family: Monospace;
+        font-size: 13px;
+        text-align: center;
 
         background-color: #000;
         margin: 0px;
@@ -33,12 +33,16 @@
 
     <script src="js/effects/OutlineEffect.js"></script>
 
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script>
 
-      if (! Detector.webgl) Detector.addGetWebGLMessage();
+      if (WEBGL.isWebGLAvailable() === false) {
+
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+      }
 
       var container, stats;
 
@@ -78,10 +82,7 @@
         imgTexture.anisotropy = 16;
         imgTexture = null;
 
-        var shininess = 50, specular = 0x333333, bumpScale = 1;
-
-        var materials = [];
-
+        var bumpScale = 1;
         var cubeWidth = 400;
         var numberOfSphersPerSide = 5;
         var sphereRadius = (cubeWidth / numberOfSphersPerSide) * 0.8 * 0.5;
@@ -100,7 +101,7 @@
             for (var gamma = 0; gamma <= 1.0; gamma += stepSize) {
 
               // basic monochromatic energy preservation
-              var diffuseColor = new v3d.Color().setHSL(alpha, 0.5, gamma * 0.5).multiplyScalar(1 - beta * 0.2);
+              var diffuseColor = new v3d.Color().setHSL(alpha, 0.5, gamma * 0.5 + 0.1).multiplyScalar(1 - beta * 0.2);
 
               var material = new v3d.MeshToonMaterial({
                 map: imgTexture,
@@ -146,13 +147,13 @@
 
         }
 
-        addLabel("-shininess", new v3d.Vector3(-350, 0, 0));
+        addLabel("-shininess", new v3d.Vector3(- 350, 0, 0));
         addLabel("+shininess", new v3d.Vector3(350, 0, 0));
 
-        addLabel("-specular, -reflectivity", new v3d.Vector3(0, -300, 0));
+        addLabel("-specular, -reflectivity", new v3d.Vector3(0, - 300, 0));
         addLabel("+specular, +reflectivity", new v3d.Vector3(0, 300, 0));
 
-        addLabel("-diffuse", new v3d.Vector3(0, 0, -300));
+        addLabel("-diffuse", new v3d.Vector3(0, 0, - 300));
         addLabel("+diffuse", new v3d.Vector3(0, 0, 300));
 
         particleLight = new v3d.Mesh(new v3d.SphereBufferGeometry(4, 8, 8), new v3d.MeshBasicMaterial({ color: 0xffffff }));

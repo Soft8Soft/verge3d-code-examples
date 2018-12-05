@@ -114,7 +114,7 @@ v3d.Lut.prototype = {
 
         alpha = (alpha - this.minV) / (this.maxV - this.minV);
 
-        var colorPosition = Math.round (alpha * this.n);
+        var colorPosition = Math.round(alpha * this.n);
         colorPosition == this.n ? colorPosition -= 1 : colorPosition;
 
         return this.lut[colorPosition];
@@ -139,7 +139,7 @@ v3d.Lut.prototype = {
 
         this.legend.layout = parameters.hasOwnProperty('layout') ? parameters['layout'] : 'vertical';
 
-        this.legend.position = parameters.hasOwnProperty('position') ? parameters['position'] : { 'x': 21.5, 'y': 8, 'z': 5 };
+        this.legend.position = parameters.hasOwnProperty('position') ? parameters['position'] : { 'x': 4, 'y': 0, 'z': 0 };
 
         this.legend.dimensions = parameters.hasOwnProperty('dimensions') ? parameters['dimensions'] : { 'width': 0.5, 'height': 3 };
 
@@ -152,7 +152,7 @@ v3d.Lut.prototype = {
 
         this.legend.ctx = this.legend.canvas.getContext('2d');
 
-        this.legend.canvas.setAttribute('width',  1);
+        this.legend.canvas.setAttribute('width', 1);
         this.legend.canvas.setAttribute('height', this.n);
 
         this.legend.texture = new v3d.Texture(this.legend.canvas);
@@ -171,7 +171,7 @@ v3d.Lut.prototype = {
 
             for (var j = this.map.length - 1; j >= 0; j --) {
 
-                if (i < this.map[j][0] && i >= this.map[j - 1][0]  ) {
+                if (i < this.map[j][0] && i >= this.map[j - 1][0]) {
 
                     var min = this.map[j - 1][0];
                     var max = this.map[j][0];
@@ -198,7 +198,7 @@ v3d.Lut.prototype = {
         this.legend.texture.needsUpdate = true;
 
         this.legend.legendGeometry = new v3d.PlaneBufferGeometry(this.legend.dimensions.width, this.legend.dimensions.height);
-        this.legend.legendMaterial = new v3d.MeshBasicMaterial({ map : this.legend.texture, side : v3d.DoubleSide });
+        this.legend.legendMaterial = new v3d.MeshBasicMaterial({ map: this.legend.texture, side: v3d.DoubleSide });
 
         this.legend.mesh = new v3d.Mesh(this.legend.legendGeometry, this.legend.legendMaterial);
 
@@ -224,7 +224,7 @@ v3d.Lut.prototype = {
 
     setLegendLayout: function(layout) {
 
-        if (! this.legend) {
+        if (!this.legend) {
 
             return false;
 
@@ -270,7 +270,7 @@ v3d.Lut.prototype = {
 
     setLegendLabels: function(parameters, callback) {
 
-        if (! this.legend) {
+        if (!this.legend) {
 
             return false;
 
@@ -305,7 +305,7 @@ v3d.Lut.prototype = {
         this.legend.labels.notation = parameters.hasOwnProperty('notation') ? parameters['notation'] : 'standard';
 
         var backgroundColor = { r: 255, g: 100, b: 100, a: 0.8 };
-        var borderColor =  { r: 255, g: 0, b: 0, a: 1.0 };
+        var borderColor = { r: 255, g: 0, b: 0, a: 1.0 };
         var borderThickness = 4;
 
         var canvasTitle = document.createElement('canvas');
@@ -313,10 +313,7 @@ v3d.Lut.prototype = {
 
         contextTitle.font = 'Normal ' + this.legend.labels.fontsize * 1.2 + 'px ' + this.legend.labels.fontface;
 
-        var metrics = contextTitle.measureText(this.legend.labels.title.toString() + this.legend.labels.um.toString());
-        var textWidth = metrics.width;
-
-        contextTitle.fillStyle   = 'rgba(' + backgroundColor.r + ',' + backgroundColor.g + ',' + backgroundColor.b + ',' + backgroundColor.a + ')';
+        contextTitle.fillStyle = 'rgba(' + backgroundColor.r + ',' + backgroundColor.g + ',' + backgroundColor.b + ',' + backgroundColor.a + ')';
 
         contextTitle.strokeStyle = 'rgba(' + borderColor.r + ',' + borderColor.g + ',' + borderColor.b + ',' + borderColor.a + ')';
 
@@ -362,17 +359,17 @@ v3d.Lut.prototype = {
             if (this.legend.layout == 'horizontal') {
 
                 var topPositionX = this.legend.position.x + (this.legend.dimensions.height * 0.75);
-                var bottomPositionX = this.legend.position.x - (this.legend.dimensions.width * 1.2  ) ;
+                var bottomPositionX = this.legend.position.x - (this.legend.dimensions.width * 1.2);
 
             }
 
             for (var i = 0; i < this.legend.labels.ticks; i++) {
 
-                var value = (this.maxV - this.minV) / (this.legend.labels.ticks - 1  ) * i + this.minV;
+                var value = (this.maxV - this.minV) / (this.legend.labels.ticks - 1) * i + this.minV;
 
                 if (callback) {
 
-                    value = callback (value);
+                    value = callback(value);
 
                 } else {
 
@@ -393,10 +390,7 @@ v3d.Lut.prototype = {
 
                 contextTick.font = 'Normal ' + this.legend.labels.fontsize + 'px ' + this.legend.labels.fontface;
 
-                var metrics = contextTick.measureText(value.toString());
-                var textWidth = metrics.width;
-
-                contextTick.fillStyle   = 'rgba(' + backgroundColor.r + ',' + backgroundColor.g + ',' + backgroundColor.b + ',' + backgroundColor.a + ')';
+                contextTick.fillStyle = 'rgba(' + backgroundColor.r + ',' + backgroundColor.g + ',' + backgroundColor.b + ',' + backgroundColor.a + ')';
 
                 contextTick.strokeStyle = 'rgba(' + borderColor.r + ',' + borderColor.g + ',' + borderColor.b + ',' + borderColor.a + ')';
 
@@ -451,16 +445,16 @@ v3d.Lut.prototype = {
 
                 var material = new v3d.LineBasicMaterial({ color: 0x000000, linewidth: 2 });
 
-                var geometry = new v3d.Geometry();
+                var points = [];
 
 
                 if (this.legend.layout == 'vertical') {
 
                     var linePosition = (this.legend.position.y - (this.legend.dimensions.height * 0.5) + 0.01) + (this.legend.dimensions.height) * ((value - this.minV) / (this.maxV - this.minV) * 0.99);
 
-                    geometry.vertices.push(new v3d.Vector3(this.legend.position.x + this.legend.dimensions.width * 0.55, linePosition, this.legend.position.z  ));
+                    points.push(new v3d.Vector3(this.legend.position.x + this.legend.dimensions.width * 0.55, linePosition, this.legend.position.z));
 
-                    geometry.vertices.push(new v3d.Vector3(this.legend.position.x + this.legend.dimensions.width * 0.7, linePosition, this.legend.position.z  ));
+                    points.push(new v3d.Vector3(this.legend.position.x + this.legend.dimensions.width * 0.7, linePosition, this.legend.position.z));
 
                 }
 
@@ -468,11 +462,13 @@ v3d.Lut.prototype = {
 
                     var linePosition = (this.legend.position.x - (this.legend.dimensions.height * 0.5) + 0.01) + (this.legend.dimensions.height) * ((value - this.minV) / (this.maxV - this.minV) * 0.99);
 
-                    geometry.vertices.push(new v3d.Vector3(linePosition, this.legend.position.y - this.legend.dimensions.width * 0.55, this.legend.position.z  ));
+                    points.push(new v3d.Vector3(linePosition, this.legend.position.y - this.legend.dimensions.width * 0.55, this.legend.position.z));
 
-                    geometry.vertices.push(new v3d.Vector3(linePosition, this.legend.position.y - this.legend.dimensions.width * 0.7, this.legend.position.z  ));
+                    points.push(new v3d.Vector3(linePosition, this.legend.position.y - this.legend.dimensions.width * 0.7, this.legend.position.z));
 
                 }
+
+                var geometry = new v3d.BufferGeometry().setFromPoints(points);
 
                 var line = new v3d.Line(geometry, material);
 
@@ -483,7 +479,7 @@ v3d.Lut.prototype = {
 
         }
 
-        return { 'title': spriteTitle,  'ticks': ticks, 'lines': lines };
+        return { 'title': spriteTitle, 'ticks': ticks, 'lines': lines };
 
     }
 
@@ -492,9 +488,9 @@ v3d.Lut.prototype = {
 
 v3d.ColorMapKeywords = {
 
-    "rainbow":    [[ 0.0, '0x0000FF'], [0.2, '0x00FFFF'], [0.5, '0x00FF00'], [0.8, '0xFFFF00'],  [1.0, '0xFF0000']],
-    "cooltowarm": [[ 0.0, '0x3C4EC2'], [0.2, '0x9BBCFF'], [0.5, '0xDCDCDC'], [0.8, '0xF6A385'],  [1.0, '0xB40426']],
-    "blackbody" : [[ 0.0, '0x000000'], [0.2, '0x780000'], [0.5, '0xE63200'], [0.8, '0xFFFF00'],  [1.0, '0xFFFFFF']],
-    "grayscale" : [[ 0.0, '0x000000'], [0.2, '0x404040'], [0.5, '0x7F7F80'], [0.8, '0xBFBFBF'],  [1.0, '0xFFFFFF']]
+    "rainbow": [[0.0, '0x0000FF'], [0.2, '0x00FFFF'], [0.5, '0x00FF00'], [0.8, '0xFFFF00'], [1.0, '0xFF0000']],
+    "cooltowarm": [[0.0, '0x3C4EC2'], [0.2, '0x9BBCFF'], [0.5, '0xDCDCDC'], [0.8, '0xF6A385'], [1.0, '0xB40426']],
+    "blackbody": [[0.0, '0x000000'], [0.2, '0x780000'], [0.5, '0xE63200'], [0.8, '0xFFFF00'], [1.0, '0xFFFFFF']],
+    "grayscale": [[0.0, '0x000000'], [0.2, '0x404040'], [0.5, '0x7F7F80'], [0.8, '0xBFBFBF'], [1.0, '0xFFFFFF']]
 
 };

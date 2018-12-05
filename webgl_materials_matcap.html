@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D webgl - materials - matcap</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        font-family: Monospace;
+        background-color: #000;
+        color: #fff;
+        margin: 0px;
+        overflow: hidden;
+      }
+
+      a {
+        color: #ffa;
+        font-weight: bold;
+      }
+
+      #info {
+        color: #fff;
+        position: absolute;
+        top: 10px;
+        width: 100%;
+        text-align: center;
+        z-index: 0; /* to not conflict with dat.gui */
+        display:block;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="info">
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - webgl materials matcap<br />
+      Drag-and-drop alternate MatCap image files<br/>
+    </div>
+
+    <script src="../build/v3d.js"></script>
+
+    <script src="js/controls/OrbitControls.js"></script>
+    <script src="js/loaders/GLTFLoader.js"></script>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+
+    <script src="js/WebGL.js"></script>
+
+    <script>
+
+      if (WEBGL.isWebGLAvailable() === false) {
+
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+      }
+
+      var mesh, renderer, scene, camera;
+
+      var image;
+
+      var API = {
+        color: 0xffffff,
+        exposure: 1.0
+      };
+
+      init();
+
+      function init() {
+
+        // renderer
+        renderer = new v3d.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // tone mapping
+        renderer.toneMapping = v3d.LinearToneMapping;
+         renderer.toneMappingExposure = API.exposure;
+
+        renderer.gammaOutput = true;
+
+        // scene
+        scene = new v3d.Scene();
+
+        // camera
+        camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 100);
+        camera.position.set(0, 0, 12);
+
+        // controls
+        var controls = new v3d.OrbitControls(camera, renderer.domElement);
+        controls.addEventListener('change', render);
+        controls.enableZoom = false;
+
+        // manager
+        var manager = new v3d.LoadingManager(render);
+
+        // matcap
+        var loader = new v3d.TextureLoader(manager);
+
+        var matcap = loader.load('textures/matcaps/matcap-porcelain-white.jpg', function() {
+
+          matcap.encoding = v3d.sRGBEncoding;
+
+          if (mesh) mesh.material.needsUpdate = true;
+
+        });
+
+        // model
+        new v3d.GLTFLoader(manager).load('models/gltf/LeePerrySmith/LeePerrySmith.glb', function(gltf) {
+
+          mesh = gltf.scene.children[0];
+
+          mesh.material = new v3d.MeshMatcapMaterial({
+
+            color: API.color,
+            matcap: matcap
+
+          });
+
+          scene.add(mesh);
+
+        });
+
+        // gui
+        var gui = new dat.GUI();
+
+        gui.addColor(API, 'color')
+          .listen()
+          .onChange(function() {
+
+            mesh.material.color.set(API.color); render();
+
+          });
+
+        gui.add(API, 'exposure', 0, 2)
+          .onChange(function() {
+
+            renderer.toneMappingExposure = API.exposure; render();
+
+          });
+
+        gui.domElement.style.webkitUserSelect = 'none';
+
+        // drag 'n drop
+        initDragAndDrop();
+
+        // corner div
+        var div = document.createElement('div');
+        div.style.position = 'absolute';
+        div.style.top = '10px';
+        div.style.left = '10px';
+        document.body.appendChild(div);
+
+        image = document.createElement('img');
+        image.style.width = '128px';
+        image.style.height = '128px';
+        image.style.display = 'block';
+        image.style.margin = '0 0 10px 0';
+        image.src = 'textures/matcaps/matcap-porcelain-white.jpg';
+        div.appendChild(image);
+
+        window.addEventListener('resize', onWindowResize, false);
+
+      }
+
+      function onWindowResize() {
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        render();
+
+      }
+
+      function render() {
+
+        renderer.render(scene, camera);
+
+      }
+
+      //
+
+      // drag and drop anywhere in document
+
+      function imgCallback(event) {
+
+        var matcap = mesh.material.matcap;
+
+        matcap.image = event.target;
+
+        matcap.needsUpdate = true;
+
+        API.color = 0xffffff;
+        mesh.material.color.set(API.color);
+
+        render();
+
+        image.src = matcap.image.src; // corner div
+
+      }
+
+      function initDragAndDrop() {
+
+        document.addEventListener('dragover', function(event) {
+
+          event.preventDefault();
+          event.dataTransfer.dropEffect = 'copy';
+
+        }, false);
+
+        document.addEventListener('drop', function(event) {
+
+          event.preventDefault();
+
+          var reader = new FileReader();
+
+          reader.addEventListener('load', function(event) {
+
+            var img = new Image();
+
+            img.onload = imgCallback;
+
+            img.src = event.currentTarget.result;
+
+          }, false);
+
+          reader.readAsDataURL(event.dataTransfer.files[0]);
+
+        }, false);
+
+      }
+
+    </script>
+
+  </body>
+</html>

@@ -21,26 +21,17 @@
 
     <script>
 
-      var container, stats;
-
-      var camera, scene, renderer;
-
-      var geometry, group;
+      var camera, scene, renderer, stats, group;
 
       var mouseX = 0, mouseY = 0;
 
       var windowHalfX = window.innerWidth / 2;
       var windowHalfY = window.innerHeight / 2;
 
-      document.addEventListener('mousemove', onDocumentMouseMove, false);
-
       init();
       animate();
 
       function init() {
-
-        container = document.createElement('div');
-        document.body.appendChild(container);
 
         camera = new v3d.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = 500;
@@ -49,7 +40,7 @@
         scene.background = new v3d.Color(0xffffff);
         scene.fog = new v3d.Fog(0xffffff, 1, 10000);
 
-        var geometry = new v3d.BoxGeometry(100, 100, 100);
+        var geometry = new v3d.BoxBufferGeometry(100, 100, 100);
         var material = new v3d.MeshNormalMaterial();
 
         group = new v3d.Group();
@@ -73,18 +64,25 @@
 
         scene.add(group);
 
-        renderer = new v3d.WebGLRenderer();
+        //
+
+        renderer = new v3d.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-        container.appendChild(renderer.domElement);
+        //
 
         stats = new Stats();
-        container.appendChild(stats.dom);
+        document.body.appendChild(stats.dom);
 
-      //
+        //
 
-      window.addEventListener('resize', onWindowResize, false);
+        document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+        //
+
+        window.addEventListener('resize', onWindowResize, false);
 
       }
 
@@ -126,8 +124,8 @@
           ry = Math.sin(time * 0.3) * 0.5,
           rz = Math.sin(time * 0.2) * 0.5;
 
-        camera.position.x += (mouseX - camera.position.x) * .05;
-        camera.position.y += (- mouseY - camera.position.y) * .05;
+        camera.position.x += (mouseX - camera.position.x) * 0.05;
+        camera.position.y += (- mouseY - camera.position.y) * 0.05;
 
         camera.lookAt(scene.position);
 

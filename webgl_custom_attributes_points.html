@@ -33,7 +33,7 @@
 
     <script src="../build/v3d.js"></script>
 
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script type="x-shader/x-vertex" id="vertexshader">
@@ -77,13 +77,15 @@
 
     <script>
 
-    if (! Detector.webgl) Detector.addGetWebGLMessage();
+    if (WEBGL.isWebGLAvailable() === false) {
+
+      document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+    }
 
     var renderer, scene, camera, stats;
 
     var sphere;
-
-    var noise = [];
 
     var WIDTH = window.innerWidth;
     var HEIGHT = window.innerHeight;
@@ -142,15 +144,15 @@
 
         uniforms: {
           amplitude: { value: 1.0 },
-          color:     { value: new v3d.Color(0xffffff) },
-          texture:   { value: new v3d.TextureLoader().load("textures/sprites/spark1.png") }
+          color: { value: new v3d.Color(0xffffff) },
+          texture: { value: new v3d.TextureLoader().load("textures/sprites/spark1.png") }
         },
-        vertexShader:   document.getElementById('vertexshader').textContent,
+        vertexShader: document.getElementById('vertexshader').textContent,
         fragmentShader: document.getElementById('fragmentshader').textContent,
 
-        blending:       v3d.AdditiveBlending,
-        depthTest:      false,
-        transparent:    true
+        blending: v3d.AdditiveBlending,
+        depthTest: false,
+        transparent: true
 
       });
 

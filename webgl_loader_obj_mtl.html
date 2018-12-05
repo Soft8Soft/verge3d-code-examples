@@ -36,7 +36,6 @@
     <script src="js/loaders/MTLLoader.js"></script>
     <script src="js/loaders/OBJLoader.js"></script>
 
-    <script src="js/Detector.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script>
@@ -67,43 +66,47 @@
 
         scene = new v3d.Scene();
 
-        var ambient = new v3d.AmbientLight(0x444444);
-        scene.add(ambient);
+        var ambientLight = new v3d.AmbientLight(0xcccccc, 0.4);
+        scene.add(ambientLight);
 
-        var directionalLight = new v3d.DirectionalLight(0xffeedd);
-        directionalLight.position.set(0, 0, 1).normalize();
-        scene.add(directionalLight);
+        var pointLight = new v3d.PointLight(0xffffff, 0.8);
+        camera.add(pointLight);
+        scene.add(camera);
 
         // model
 
         var onProgress = function(xhr) {
+
           if (xhr.lengthComputable) {
+
             var percentComplete = xhr.loaded / xhr.total * 100;
             console.log(Math.round(percentComplete, 2) + '% downloaded');
+
           }
+
         };
 
-        var onError = function(xhr) { };
+        var onError = function() { };
 
         v3d.Loader.Handlers.add(/\.dds$/i, new v3d.DDSLoader());
 
-        var mtlLoader = new v3d.MTLLoader();
-        mtlLoader.setPath('obj/male02/');
-        mtlLoader.load('male02_dds.mtl', function(materials) {
+        new v3d.MTLLoader()
+          .setPath('models/obj/male02/')
+          .load('male02_dds.mtl', function(materials) {
 
-          materials.preload();
+            materials.preload();
 
-          var objLoader = new v3d.OBJLoader();
-          objLoader.setMaterials(materials);
-          objLoader.setPath('obj/male02/');
-          objLoader.load('male02.obj', function(object) {
+            new v3d.OBJLoader()
+              .setMaterials(materials)
+              .setPath('models/obj/male02/')
+              .load('male02.obj', function(object) {
 
-            object.position.y = - 95;
-            scene.add(object);
+                object.position.y = - 95;
+                scene.add(object);
 
-          }, onProgress, onError);
+              }, onProgress, onError);
 
-        });
+          });
 
         //
 

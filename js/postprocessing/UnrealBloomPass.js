@@ -1,6 +1,6 @@
 /**
  * @author spidersharma / http://eduperiment.com/
- * 
+ *
  * Inspired from Unreal Engine
  * https://docs.unrealengine.com/latest/INT/Engine/Rendering/PostProcessEffects/Bloom/
  */
@@ -12,6 +12,9 @@ v3d.UnrealBloomPass = function(resolution, strength, radius, threshold) {
     this.radius = radius;
     this.threshold = threshold;
     this.resolution = (resolution !== undefined) ? new v3d.Vector2(resolution.x, resolution.y) : new v3d.Vector2(256, 256);
+
+    // create color only once here, reuse it later inside the render function
+    this.clearColor = new v3d.Color(0, 0, 0);
 
     // render targets
     var pars = { minFilter: v3d.LinearFilter, magFilter: v3d.LinearFilter, format: v3d.RGBAFormat };
@@ -189,7 +192,7 @@ v3d.UnrealBloomPass.prototype = Object.assign(Object.create(v3d.Pass.prototype),
         var oldAutoClear = renderer.autoClear;
         renderer.autoClear = false;
 
-        renderer.setClearColor(new v3d.Color(0, 0, 0), 0);
+        renderer.setClearColor(this.clearColor, 0);
 
         if (maskActive) renderer.context.disable(renderer.context.STENCIL_TEST);
 

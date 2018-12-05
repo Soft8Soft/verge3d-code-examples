@@ -36,8 +36,9 @@
     <script src="../build/v3d.js"></script>
 
     <script src="js/controls/TrackballControls.js"></script>
+    <script src="js/loaders/GLTFLoader.js"></script>
 
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script src='js/libs/dat.gui.min.js'></script>
@@ -48,7 +49,7 @@
 
       var camera, scene, renderer;
 
-      var mesh, geometry;
+      var mesh;
 
       var controls;
 
@@ -66,7 +67,7 @@
         shadowCameraNear: 750,
         shadowCameraFar: 4000,
         shadowCameraFov: 30,
-        shadowBias: -0.0002
+        shadowBias: - 0.0002
 
       };
 
@@ -111,18 +112,6 @@
         textureLava.wrapS = textureLava.wrapT = v3d.RepeatWrapping;
         textureLava.format = v3d.RGBFormat;
 
-        //
-
-        var path = "textures/cube/SwedishRoyalCastle/";
-        var format = '.jpg';
-        var urls = [
-            path + 'px' + format, path + 'nx' + format,
-            path + 'py' + format, path + 'ny' + format,
-            path + 'pz' + format, path + 'nz' + format
-          ];
-
-        var reflectionCube = new v3d.CubeTextureLoader().load(urls);
-
         // GROUND
 
         var groundMaterial = new v3d.MeshPhongMaterial({
@@ -149,14 +138,14 @@
 
         // OBJECTS
 
-        var sphereGeometry = new v3d.SphereGeometry(100, 64, 32);
-        var torusGeometry = new v3d.TorusGeometry(240, 60, 32, 64);
-        var cubeGeometry = new v3d.BoxGeometry(150, 150, 150);
+        var sphereGeometry = new v3d.SphereBufferGeometry(100, 64, 32);
+        var torusGeometry = new v3d.TorusBufferGeometry(240, 60, 32, 64);
+        var cubeGeometry = new v3d.BoxBufferGeometry(150, 150, 150);
 
         addObject(torusGeometry, materialPhong, 0, 100, 0, 0);
         addObject(cubeGeometry, materialLambert, 350, 75, 300, 0);
 
-        mesh = addObject(sphereGeometry, materialPhongCube, 350, 100, -350, 0);
+        mesh = addObject(sphereGeometry, materialPhongCube, 350, 100, - 350, 0);
         mesh.add(cubeCamera);
 
         function addObjectColor(geometry, color, x, y, z, ry) {
@@ -171,7 +160,7 @@
 
           var tmpMesh = new v3d.Mesh(geometry, material);
 
-          tmpMesh.material.color.offsetHSL(0.1, -0.1, 0);
+          tmpMesh.material.color.offsetHSL(0.1, - 0.1, 0);
 
           tmpMesh.position.set(x, y, z);
 
@@ -186,40 +175,38 @@
 
         }
 
-        var bigCube = new v3d.BoxGeometry(50, 500, 50);
-        var midCube = new v3d.BoxGeometry(50, 200, 50);
-        var smallCube = new v3d.BoxGeometry(100, 100, 100);
+        var bigCube = new v3d.BoxBufferGeometry(50, 500, 50);
+        var midCube = new v3d.BoxBufferGeometry(50, 200, 50);
+        var smallCube = new v3d.BoxBufferGeometry(100, 100, 100);
 
-        addObjectColor(bigCube,   0xff0000, -500, 250, 0, 0);
-        addObjectColor(smallCube, 0xff0000, -500, 50, -150, 0);
+        addObjectColor(bigCube, 0xff0000, - 500, 250, 0, 0);
+        addObjectColor(smallCube, 0xff0000, - 500, 50, - 150, 0);
 
-        addObjectColor(midCube,   0x00ff00, 500, 100, 0, 0);
-        addObjectColor(smallCube, 0x00ff00, 500, 50, -150, 0);
+        addObjectColor(midCube, 0x00ff00, 500, 100, 0, 0);
+        addObjectColor(smallCube, 0x00ff00, 500, 50, - 150, 0);
 
-        addObjectColor(midCube,   0x0000ff, 0, 100, -500, 0);
-        addObjectColor(smallCube, 0x0000ff, -150, 50, -500, 0);
+        addObjectColor(midCube, 0x0000ff, 0, 100, - 500, 0);
+        addObjectColor(smallCube, 0x0000ff, - 150, 50, - 500, 0);
 
-        addObjectColor(midCube,   0xff00ff, 0, 100, 500, 0);
-        addObjectColor(smallCube, 0xff00ff, -150, 50, 500, 0);
+        addObjectColor(midCube, 0xff00ff, 0, 100, 500, 0);
+        addObjectColor(smallCube, 0xff00ff, - 150, 50, 500, 0);
 
-        addObjectColor(new v3d.BoxGeometry(500, 10, 10), 0xffff00, 0, 600, 0, Math.PI/4);
-        addObjectColor(new v3d.BoxGeometry(250, 10, 10), 0xffff00, 0, 600, 0, 0);
+        addObjectColor(new v3d.BoxBufferGeometry(500, 10, 10), 0xffff00, 0, 600, 0, Math.PI / 4);
+        addObjectColor(new v3d.BoxBufferGeometry(250, 10, 10), 0xffff00, 0, 600, 0, 0);
 
-        addObjectColor(new v3d.SphereGeometry(100, 32, 26), 0xffffff, -300, 100, 300, 0);
+        addObjectColor(new v3d.SphereBufferGeometry(100, 32, 26), 0xffffff, - 300, 100, 300, 0);
 
         // MORPHS
 
-        var loader = new v3d.JSONLoader();
+        var loader = new v3d.GLTFLoader();
 
-        loader.load("models/animated/sittingBox.js", function(geometry) {
+        loader.load("models/gltf/SittingBox.glb", function(gltf) {
 
-          var morphMaterial = new v3d.MeshPhongMaterial({ color: 0x000000, specular: 0xff9900, shininess: 50, morphTargets: true, side: v3d.DoubleSide, flatShading: true });
-
-          var mesh = new v3d.Mesh(geometry, morphMaterial);
+          var mesh = gltf.scene.children[0];
 
           mixer = new v3d.AnimationMixer(mesh);
 
-          mixer.clipAction(geometry.animations[0]).setDuration(10).play();
+          mixer.clipAction(gltf.animations[0]).setDuration(10).play();
 
           var s = 200;
           mesh.scale.set(s, s, s);
@@ -242,7 +229,7 @@
         pointLight = new v3d.PointLight(0xffaa00, 1, 5000);
         scene.add(pointLight);
 
-        sunLight = new v3d.SpotLight(0xffffff, 0.3, 0, Math.PI/2);
+        sunLight = new v3d.SpotLight(0xffffff, 0.3, 0, Math.PI / 2);
         sunLight.position.set(1000, 2000, 1000);
 
         sunLight.castShadow = true;
@@ -340,7 +327,7 @@
 
         });
 
-        shadowGUI.add(shadowConfig, 'shadowBias', -0.01, 0.01).onChange(function() {
+        shadowGUI.add(shadowConfig, 'shadowBias', - 0.01, 0.01).onChange(function() {
 
           sunLight.shadow.bias = shadowConfig.shadowBias;
 
@@ -352,7 +339,7 @@
 
       //
 
-      function onWindowResize(event) {
+      function onWindowResize() {
 
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();

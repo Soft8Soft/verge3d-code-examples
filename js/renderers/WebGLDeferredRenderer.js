@@ -120,7 +120,7 @@ v3d.WebGLDeferredRenderer = function(parameters) {
 
     function init(parameters) {
 
-        _this.renderer = parameters.renderer !== undefined ? parameters.renderer : new v3d.WebGLRenderer({ antialias: false });
+        _this.renderer = parameters.renderer !== undefined ? parameters.renderer : new v3d.WebGLRenderer();
         _this.domElement = _this.renderer.domElement;
 
         _gl = _this.renderer.context;
@@ -444,7 +444,7 @@ v3d.WebGLDeferredRenderer = function(parameters) {
 
     function updateDeferredNormalDepthUniforms(renderer, scene, camera, geometry, material, group) {
 
-        if (! _lightPrePass) return;
+        if (!_lightPrePass) return;
 
         var originalMaterial = _originalMaterialsTable[material.uuid];
 
@@ -797,7 +797,7 @@ v3d.WebGLDeferredRenderer = function(parameters) {
 
     function createDeferredPointLight(light) {
 
-        var mesh = createDeferredLightMesh(light, new v3d.SphereGeometry(1, 16, 8));
+        var mesh = createDeferredLightMesh(light, new v3d.SphereBufferGeometry(1, 16, 8));
         mesh.onBeforeRender = updateDeferredPointLightUniforms;
         return mesh;
 
@@ -953,7 +953,7 @@ v3d.WebGLDeferredRenderer = function(parameters) {
         // _hasTransparentObject is used only for Classic Deferred Rendering
         if (_hasTransparentObject || _lightPrePass) return;
 
-        if (! object.visible) return;
+        if (!object.visible) return;
 
         if (Array.isArray(object.material)) {
 
@@ -1402,7 +1402,7 @@ v3d.WebGLDeferredRenderer = function(parameters) {
 
     function renderFinal(scene, camera) {
 
-        if (! _lightPrePass && _hasTransparentObject) {
+        if (!_lightPrePass && _hasTransparentObject) {
 
             scene.traverse(setVisibleForForwardRendering);
             scene.traverse(restoreOriginalOnBeforeRender);
@@ -1419,7 +1419,7 @@ v3d.WebGLDeferredRenderer = function(parameters) {
 
         _compFinal.render();
 
-        if (! _lightPrePass && _hasTransparentObject) {
+        if (!_lightPrePass && _hasTransparentObject) {
 
             scene.traverse(restoreVisible);
 

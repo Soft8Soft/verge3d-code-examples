@@ -22,12 +22,20 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
         var scope = this;
 
         var loader = new v3d.FileLoader(scope.manager);
+        loader.setPath(scope.path);
         loader.setResponseType('arraybuffer');
         loader.load(url, function(text) {
 
             onLoad(scope.parse(text));
 
         }, onProgress, onError);
+
+    },
+
+    setPath: function(value) {
+
+        this.path = value;
+        return this;
 
     },
 
@@ -250,76 +258,50 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
 
             }
 
-            var geometry;
-            var stagger = 'point';
+            var geometry = new v3d.BufferGeometry();
+            geometry.setIndex(indices);
+            geometry.addAttribute('position', new v3d.Float32BufferAttribute(positions, 3));
 
-            if (colors.length == indices.length) {
+            if (normals.length === positions.length) {
 
-                stagger = 'cell';
+                geometry.addAttribute('normal', new v3d.Float32BufferAttribute(normals, 3));
 
             }
 
-            if (stagger == 'point') {
+            if (colors.length !== indices.length) {
 
-                // Nodal. Use BufferGeometry
-                geometry = new v3d.BufferGeometry();
-                geometry.setIndex(new v3d.BufferAttribute(new Uint32Array(indices), 1));
-                geometry.addAttribute('position', new v3d.BufferAttribute(new Float32Array(positions), 3));
+                // stagger
 
-                if (colors.length == positions.length) {
+                if (colors.length === positions.length) {
 
-                    geometry.addAttribute('color', new v3d.BufferAttribute(new Float32Array(colors), 3));
-
-                }
-
-                if (normals.length == positions.length) {
-
-                    geometry.addAttribute('normal', new v3d.BufferAttribute(new Float32Array(normals), 3));
+                    geometry.addAttribute('color', new v3d.Float32BufferAttribute(colors, 3));
 
                 }
 
             } else {
 
-                // Cell centered colors. The only way to attach a solid color to each triangle
-                // is to use Geometry, which is less efficient than BufferGeometry
-                geometry = new v3d.Geometry();
+                // cell
 
-                var numTriangles = indices.length / 3;
-                var numPoints = positions.length / 3;
-                var face;
-                var ia, ib, ic;
-                var x, y, z;
-                var r, g, b;
+                geometry = geometry.toNonIndexed();
+                var numTriangles = geometry.attributes.position.count / 3;
 
-                for (var j = 0; j < numPoints; ++ j) {
+                if (colors.length === (numTriangles * 3)) {
 
-                    x = positions[3 * j + 0];
-                    y = positions[3 * j + 1];
-                    z = positions[3 * j + 2];
-                    geometry.vertices.push(new v3d.Vector3(x, y, z));
+                    var newColors = [];
 
-                }
+                    for (var i = 0; i < numTriangles; i++) {
 
-                for (var i = 0; i < numTriangles; ++ i) {
+                        var r = colors[3 * i + 0];
+                        var g = colors[3 * i + 1];
+                        var b = colors[3 * i + 2];
 
-                    ia = indices[3 * i + 0];
-                    ib = indices[3 * i + 1];
-                    ic = indices[3 * i + 2];
-                    geometry.faces.push(new v3d.Face3(ia, ib, ic));
-
-                }
-
-                if (colors.length == numTriangles * 3) {
-
-                    for (var i = 0; i < numTriangles; ++ i) {
-
-                        face = geometry.faces[i];
-                        r = colors[3 * i + 0];
-                        g = colors[3 * i + 1];
-                        b = colors[3 * i + 2];
-                        face.color = new v3d.Color().setRGB(r, g, b);
+                        newColors.push(r, g, b);
+                        newColors.push(r, g, b);
+                        newColors.push(r, g, b);
 
                     }
+
+                    geometry.addAttribute('color', new v3d.Float32BufferAttribute(newColors, 3));
 
                 }
 
@@ -349,7 +331,7 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
                 var index = start;
                 var c = buffer[index];
                 var s = [];
-                while (c != 10) {
+                while (c !== 10) {
 
                     s.push(String.fromCharCode(c));
                     index ++;
@@ -521,7 +503,7 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
             geometry.setIndex(new v3d.BufferAttribute(indices, 1));
             geometry.addAttribute('position', new v3d.BufferAttribute(points, 3));
 
-            if (normals.length == points.length) {
+            if (normals.length === points.length) {
 
                 geometry.addAttribute('normal', new v3d.BufferAttribute(normals, 3));
 
@@ -562,7 +544,7 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
                 // Create the return object
                 var obj = {};
 
-                if (xml.nodeType == 1) { // element
+                if (xml.nodeType === 1) { // element
 
                     // do attributes
 
@@ -583,7 +565,7 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
 
                     }
 
-                } else if (xml.nodeType == 3) { // text
+                } else if (xml.nodeType === 3) { // text
 
                     obj = xml.nodeValue.trim();
 
@@ -696,11 +678,11 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
 
                 var numBytes = 0;
 
-                if (json.attributes.header_type == 'UInt64') {
+                if (json.attributes.header_type === 'UInt64') {
 
                     numBytes = 8;
 
-                }    else if (json.attributes.header_type == 'UInt32') {
+                }    else if (json.attributes.header_type === 'UInt32') {
 
                     numBytes = 4;
 
@@ -708,11 +690,11 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
 
 
                 // Check the format
-                if (ele.attributes.format == 'binary' && compressed) {
+                if (ele.attributes.format === 'binary' && compressed) {
 
                     var rawData, content, byteData, blocks, cSizeStart, headerSize, padding, dataOffsets, currentOffset;
 
-                    if (ele.attributes.type == 'Float32') {
+                    if (ele.attributes.type === 'Float32') {
 
                         var txt = new Float32Array();
 
@@ -779,7 +761,7 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
                         content = inflate.decompress();
                         content = content.buffer;
 
-                        if (ele.attributes.type == 'Float32') {
+                        if (ele.attributes.type === 'Float32') {
 
                             content = new Float32Array(content);
                             txt = Float32Concat(txt, content);
@@ -795,36 +777,9 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
 
                     delete ele['#text'];
 
-                    // Get the content and optimize it
-                    if (ele.attributes.type == 'Float32') {
+                    if (ele.attributes.type === 'Int64') {
 
-                        if (ele.attributes.format == 'binary') {
-
-                            if (! compressed) {
-
-                                txt = txt.filter(function(el, idx) {
-
-                                    if (idx !== 0) return true;
-
-                                });
-
-                            }
-
-                        }
-
-                    } else if (ele.attributes.type === 'Int64') {
-
-                        if (ele.attributes.format == 'binary') {
-
-                            if (! compressed) {
-
-                                txt = txt.filter(function(el, idx) {
-
-                                    if (idx !== 0) return true;
-
-                                });
-
-                            }
+                        if (ele.attributes.format === 'binary') {
 
                             txt = txt.filter(function(el, idx) {
 
@@ -838,7 +793,7 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
 
                 } else {
 
-                    if (ele.attributes.format == 'binary' && ! compressed) {
+                    if (ele.attributes.format === 'binary' && ! compressed) {
 
                         var content = Base64toByteArray(ele['#text']);
 
@@ -851,7 +806,7 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
 
                         if (ele['#text']) {
 
-                            var content = ele['#text'].replace(/\n/g, ' ').split(' ').filter(function(el) {
+                            var content = ele['#text'].split(/\s+/).filter(function(el) {
 
                                 if (el !== '') return el;
 
@@ -868,15 +823,19 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
                     delete ele['#text'];
 
                     // Get the content and optimize it
-                    if (ele.attributes.type == 'Float32') {
+                    if (ele.attributes.type === 'Float32') {
 
                         var txt = new Float32Array(content);
+
+                    } else if (ele.attributes.type === 'Int32') {
+
+                        var txt = new Int32Array(content);
 
                     } else if (ele.attributes.type === 'Int64') {
 
                         var txt = new Int32Array(content);
 
-                        if (ele.attributes.format == 'binary') {
+                        if (ele.attributes.format === 'binary') {
 
                             txt = txt.filter(function(el, idx) {
 
@@ -888,7 +847,7 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
 
                     }
 
-                } // endif (ele.attributes.format == 'binary' && compressed)
+                } // endif (ele.attributes.format === 'binary' && compressed)
 
                 return txt;
 
@@ -917,7 +876,7 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
                     dom = new ActiveXObject('Microsoft.XMLDOM'); // eslint-disable-line no-undef
                     dom.async = false;
 
-                    if (! dom.loadXML(/* xml */)) {
+                    if (!dom.loadXML(/* xml */)) {
 
                         throw new Error(dom.parseError.reason + dom.parseError.srcText);
 
@@ -959,7 +918,7 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
 
                     // If it has a DataArray in it
 
-                    if (section.DataArray) {
+                    if (section && section.DataArray) {
 
                         // Depending on the number of DataArrays
 
@@ -1000,7 +959,7 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
 
                                     for (var i = 0, len = arr.length; i < len; i++) {
 
-                                        if (normalsName == arr[i].attributes.Name) {
+                                        if (normalsName === arr[i].attributes.Name) {
 
                                             var components = arr[i].attributes.NumberOfComponents;
                                             normals = new Float32Array(numberOfPoints * components);
@@ -1148,7 +1107,7 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
                 geometry.setIndex(new v3d.BufferAttribute(indices, 1));
                 geometry.addAttribute('position', new v3d.BufferAttribute(points, 3));
 
-                if (normals.length == points.length) {
+                if (normals.length === points.length) {
 
                     geometry.addAttribute('normal', new v3d.BufferAttribute(normals, 3));
 
@@ -1182,7 +1141,7 @@ Object.assign(v3d.VTKLoader.prototype, v3d.EventDispatcher.prototype, {
         }
 
         // get the 5 first lines of the files to check if there is the key word binary
-        var meta = String.fromCharCode.apply(null, new Uint8Array(data, 0, 250)).split('\n');
+        var meta = v3d.LoaderUtils.decodeText(new Uint8Array(data, 0, 250)).split('\n');
 
         if (meta[0].indexOf('xml') !== - 1) {
 

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D webgl - materials - HDR texture loader</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        color: #fff;
+        font-family:Monospace;
+        font-size:13px;
+        text-align:center;
+        font-weight: bold;
+
+        background-color: #000;
+        margin: 0px;
+        overflow: hidden;
+      }
+
+      #info {
+        color:#fff;
+        position: absolute;
+        top: 0px; width: 100%;
+        padding: 5px;
+
+      }
+
+      a { color: red; }
+
+    </style>
+  </head>
+  <body>
+
+    <div id="info">
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - webgl HDR (RGBE) texture loader example
+    </div>
+
+    <script src="../build/v3d.js"></script>
+    <script src="js/loaders/RGBELoader.js"></script>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+
+    <script src="js/WebGL.js"></script>
+
+    <script>
+
+      if (WEBGL.isWebGLAvailable() === false) {
+
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+      }
+
+      var params = {
+        exposure: 1.0
+      };
+
+      var renderer, scene, camera;
+
+      init();
+
+      function init() {
+
+        renderer = new v3d.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        renderer.toneMapping = v3d.ReinhardToneMapping;
+        renderer.toneMappingExposure = params.exposure;
+
+        renderer.gammaOutput = true;
+
+        scene = new v3d.Scene();
+
+        var aspect = window.innerWidth / window.innerHeight;
+
+        camera = new v3d.OrthographicCamera(- aspect, aspect, 1, - 1, 0, 1);
+
+        new v3d.RGBELoader().load('textures/miranda_uncropped.hdr', function(texture, textureData) {
+
+          //console.log(textureData);
+          //console.log(texture);
+
+          texture.encoding = v3d.RGBEEncoding;
+          texture.minFilter = v3d.NearestFilter;
+          texture.magFilter = v3d.NearestFilter;
+          texture.flipY = true;
+
+          var material = new v3d.MeshBasicMaterial({ map: texture });
+
+          var quad = new v3d.PlaneBufferGeometry(textureData.width / textureData.height, 1);
+
+          var mesh = new v3d.Mesh(quad, material);
+
+          scene.add(mesh);
+
+          render();
+
+        });
+
+        //
+
+        var gui = new dat.GUI();
+
+        gui.add(params, 'exposure', 0, 2).onChange(render);
+        gui.open();
+
+        //
+
+        window.addEventListener('resize', onWindowResize, false);
+
+      }
+
+      function onWindowResize() {
+
+        var aspect = window.innerWidth / window.innerHeight;
+
+        var frustumHeight = camera.top - camera.bottom;
+
+        camera.left = - frustumHeight * aspect / 2;
+        camera.right = frustumHeight * aspect / 2;
+
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        render();
+
+      }
+
+      //
+
+      function render() {
+
+        renderer.toneMappingExposure = params.exposure;
+
+        renderer.render(scene, camera);
+
+      }
+
+    </script>
+  </body>
+</html>

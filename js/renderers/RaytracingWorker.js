@@ -1,6 +1,5 @@
-var worker;
 var BLOCK = 128;
-var startX, startY, division, completed = 0;
+var startX, startY;
 
 var scene, camera, renderer, loader, sceneId;
 
@@ -10,7 +9,7 @@ importScripts('../../../build/v3d.js');
 self.onmessage = function(e) {
 
     var data = e.data;
-    if (! data) return;
+    if (!data) return;
 
     if (data.init) {
 
@@ -18,18 +17,15 @@ self.onmessage = function(e) {
             width = data.init[0],
             height = data.init[1];
 
-        worker = data.worker;
         BLOCK = data.blockSize;
 
-        if (! renderer) renderer = new v3d.RaytracingRendererWorker();
-        if (! loader) loader = new v3d.ObjectLoader();
+        if (!renderer) renderer = new v3d.RaytracingRendererWorker();
+        if (!loader) loader = new v3d.ObjectLoader();
 
         renderer.setSize(width, height);
 
         // TODO fix passing maxRecursionDepth as parameter.
         // if (data.maxRecursionDepth) maxRecursionDepth = data.maxRecursionDepth;
-
-        completed = 0;
 
     }
 
@@ -52,6 +48,7 @@ self.onmessage = function(e) {
             if (!mat) return;
 
             var material = meta[mat.uuid];
+
             for (var m in material) {
 
                 mat[m] = material[m];
@@ -61,6 +58,7 @@ self.onmessage = function(e) {
         });
 
         sceneId = data.sceneId;
+
     }
 
     if (data.render && scene && camera) {
@@ -71,7 +69,7 @@ self.onmessage = function(e) {
 
     }
 
-}
+};
 
 /**
  * DOM-less version of Raytracing Renderer
@@ -83,8 +81,6 @@ self.onmessage = function(e) {
 v3d.RaytracingRendererWorker = function() {
 
     console.log('v3d.RaytracingRendererWorker', v3d.REVISION);
-
-    var scope = this;
 
     var maxRecursionDepth = 3;
 
@@ -479,21 +475,16 @@ v3d.RaytracingRendererWorker = function() {
                 blockY: blockY,
                 blockSize: blockSize,
                 sceneId: sceneId,
-                time: Date.now() - reallyThen, // time for this renderer
+                time: Date.now(), // time for this renderer
             }, [data.buffer]);
 
             data = new Uint8ClampedArray(blockSize * blockSize * 4);
-
-            // OK Done!
-            completed ++;
 
         };
 
     }());
 
     this.render = function(scene, camera) {
-
-        reallyThen = Date.now()
 
         // update scene graph
 

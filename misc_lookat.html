@@ -37,11 +37,9 @@
 
     <script>
 
-      var container, stats;
+      var camera, scene, renderer, stats;
 
-      var camera, scene, renderer;
-
-      var mesh, geometry, sphere;
+      var sphere;
 
       var mouseX = 0, mouseY = 0;
 
@@ -56,19 +54,16 @@
 
       function init() {
 
-        container = document.createElement('div');
-        document.body.appendChild(container);
-
         camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 15000);
         camera.position.z = 3200;
 
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0xffffff);
 
-        sphere = new v3d.Mesh(new v3d.SphereGeometry(100, 20, 20), new v3d.MeshNormalMaterial());
+        sphere = new v3d.Mesh(new v3d.SphereBufferGeometry(100, 20, 20), new v3d.MeshNormalMaterial());
         scene.add(sphere);
 
-        var geometry = new v3d.CylinderGeometry(0, 10, 100, 12);
+        var geometry = new v3d.CylinderBufferGeometry(0, 10, 100, 12);
         geometry.rotateX(Math.PI / 2);
 
         var material = new v3d.MeshNormalMaterial();
@@ -89,10 +84,10 @@
         renderer = new v3d.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
-        container.appendChild(renderer.domElement);
+        document.body.appendChild(renderer.domElement);
 
         stats = new Stats();
-        container.appendChild(stats.dom);
+        document.body.appendChild(stats.dom);
 
         //
 

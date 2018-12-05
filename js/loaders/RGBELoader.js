@@ -8,6 +8,7 @@
 v3d.HDRLoader = v3d.RGBELoader = function(manager) {
 
     this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+    this.type = v3d.UnsignedByteType;
 
 };
 
@@ -130,7 +131,7 @@ v3d.RGBELoader.prototype._parser = function(buffer) {
 
             }
             /* if you want to require the magic token then uncomment the next line */
-            if (! (match = line.match(magic_token_re))) {
+            if (!(match = line.match(magic_token_re))) {
 
                 return rgbe_error(rgbe_format_error, "bad initial token");
 
@@ -180,12 +181,12 @@ v3d.RGBELoader.prototype._parser = function(buffer) {
 
             }
 
-            if (! (header.valid & RGBE_VALID_FORMAT)) {
+            if (!(header.valid & RGBE_VALID_FORMAT)) {
 
                 return rgbe_error(rgbe_format_error, "missing format specifier");
 
             }
-            if (! (header.valid & RGBE_VALID_DIMENSIONS)) {
+            if (!(header.valid & RGBE_VALID_DIMENSIONS)) {
 
                 return rgbe_error(rgbe_format_error, "missing image size specifier");
 
@@ -222,7 +223,7 @@ v3d.RGBELoader.prototype._parser = function(buffer) {
 
             data_rgba = new Uint8Array(4 * w * h);
 
-            if (! data_rgba || ! data_rgba.length) {
+            if (!data_rgba || ! data_rgba.length) {
 
                 return rgbe_error(rgbe_memory_error, "unable to allocate buffer space");
 
@@ -328,19 +329,68 @@ v3d.RGBELoader.prototype._parser = function(buffer) {
         ;
         if (RGBE_RETURN_FAILURE !== image_rgba_data) {
 
+            if (this.type === v3d.UnsignedByteType) {
+
+                var data = image_rgba_data;
+                var format = v3d.RGBEFormat; // handled as v3d.RGBAFormat in shaders
+                var type = v3d.UnsignedByteType;
+
+            } else if (this.type === v3d.FloatType) {
+
+                var RGBEByteToRGBFloat = function(sourceArray, sourceOffset, destArray, destOffset) {
+
+                    var e = sourceArray[sourceOffset + 3];
+                    var scale = Math.pow(2.0, e - 128.0) / 255.0;
+
+                    destArray[destOffset + 0] = sourceArray[sourceOffset + 0] * scale;
+                    destArray[destOffset + 1] = sourceArray[sourceOffset + 1] * scale;
+                    destArray[destOffset + 2] = sourceArray[sourceOffset + 2] * scale;
+
+                };
+
+                var numElements = (image_rgba_data.length / 4) * 3;
+                var floatArray = new Float32Array(numElements);
+
+                for (var j = 0; j < numElements; j ++) {
+
+                    RGBEByteToRGBFloat(image_rgba_data, j * 4, floatArray, j * 3);
+
+                }
+
+                var data = floatArray;
+                var format = v3d.RGBFormat;
+                var type = v3d.FloatType;
+
+
+            } else {
+
+                console.error('v3d.RGBELoader: unsupported type: ', this.type);
+
+            }
+
             return {
                 width: w, height: h,
-                data: image_rgba_data,
+                data: data,
                 header: rgbe_header_info.string,
                 gamma: rgbe_header_info.gamma,
                 exposure: rgbe_header_info.exposure,
-                format: v3d.RGBEFormat, // handled as v3d.RGBAFormat in shaders
-                type: v3d.UnsignedByteType
+                format: format,
+                type: type
             };
 
         }
 
     }
+
     return null;
 
 };
+
+v3d.RGBELoader.prototype.setType = function(value) {
+
+    this.type = value;
+    return this;
+
+};
+
+

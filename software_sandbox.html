@@ -82,26 +82,26 @@
         // Cube with texture
         var loader = new v3d.TextureLoader();
         var map = loader.load('textures/brick_diffuse.jpg');
-        texCube = new v3d.Mesh(geometry, new v3d.MeshLambertMaterial({ map: map, overdraw: 0.5 }));
-        texCube.position.set(-300, 0, 0);
+        texCube = new v3d.Mesh(geometry, new v3d.MeshLambertMaterial({ map: map }));
+        texCube.position.set(- 300, 0, 0);
         scene.add(texCube);
 
         // Sprite
         var sprite = new v3d.Sprite(new v3d.SpriteMaterial({ color: 0xff0040 }));
         sprite.scale.set(100, 100, 1);
-        sprite.position.set(-100, 200, 0);
+        sprite.position.set(- 100, 200, 0);
         scene.add(sprite);
 
         // Sprite with texture
         var texLoader = new v3d.TextureLoader();
         map = texLoader.load('textures/sprite1.png');
-        var texSprite = new v3d.Sprite(new v3d.SpriteMaterial({ map: map,transparent: true }));
+        var texSprite = new v3d.Sprite(new v3d.SpriteMaterial({ map: map, transparent: true }));
         texSprite.scale.set(100, 100, 1);
         texSprite.position.set(100, 200, 0);
         scene.add(texSprite);
 
         // Line
-        var points = hilbert3D(new v3d.Vector3(0,0,0), 200.0, 1, 0, 1, 2, 3, 4, 5, 6, 7);
+        var points = hilbert3D(new v3d.Vector3(0, 0, 0), 200.0, 1, 0, 1, 2, 3, 4, 5, 6, 7);
         var spline = new v3d.CatmullRomCurve3(points);
         var n_sub = 6, colors = [];
 
@@ -110,9 +110,8 @@
 
         for (var i = 0; i < points.length * n_sub; i++) {
 
-          var index = i / (points.length * n_sub);
-
-          vertices[i] = spline.getPoint(index);
+          var t = i / (points.length * n_sub);
+          vertices[i] = spline.getPoint(t);
           colors[i] = new v3d.Color(0x88aaff);
 
         }
@@ -122,7 +121,7 @@
         var material = new v3d.LineBasicMaterial({ opacity: 1, linewidth: 3, vertexColors: v3d.VertexColors });
         var line = new v3d.Line(lineGeometry, material);
         line.scale.set(0.5, 0.5, 0.5);
-        line.position.set(0, -200, 0);
+        line.position.set(0, - 200, 0);
         scene.add(line);
 
         renderer = new v3d.SoftwareRenderer();

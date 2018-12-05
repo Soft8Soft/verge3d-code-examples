@@ -2,1148 +2,1469 @@
  * @author arodic / https://github.com/arodic
  */
 
-(function() {
+v3d.TransformControls = function(camera, domElement) {
 
-    'use strict';
+    v3d.Object3D.call(this);
 
-    var GizmoMaterial = function(parameters) {
+    domElement = (domElement !== undefined) ? domElement : document;
 
-        v3d.MeshBasicMaterial.call(this);
+    this.visible = false;
 
-        this.depthTest = false;
-        this.depthWrite = false;
-        this.side = v3d.FrontSide;
-        this.transparent = true;
+    var _gizmo = new v3d.TransformControlsGizmo();
+    this.add(_gizmo);
 
-        this.setValues(parameters);
+    var _plane = new v3d.TransformControlsPlane();
+    this.add(_plane);
 
-        this.oldColor = this.color.clone();
-        this.oldOpacity = this.opacity;
+    var scope = this;
 
-        this.highlight = function(highlighted) {
+    // Define properties with getters/setter
+    // Setting the defined property will automatically trigger change event
+    // Defined properties are passed down to gizmo and plane
 
-            if (highlighted) {
+    defineProperty("camera", camera);
+    defineProperty("object", undefined);
+    defineProperty("enabled", true);
+    defineProperty("axis", null);
+    defineProperty("mode", "translate");
+    defineProperty("translationSnap", null);
+    defineProperty("rotationSnap", null);
+    defineProperty("space", "world");
+    defineProperty("size", 1);
+    defineProperty("dragging", false);
+    defineProperty("showX", true);
+    defineProperty("showY", true);
+    defineProperty("showZ", true);
 
-                this.color.setRGB(1, 1, 0);
-                this.opacity = 1;
+    var changeEvent = { type: "change" };
+    var mouseDownEvent = { type: "mouseDown" };
+    var mouseUpEvent = { type: "mouseUp", mode: scope.mode };
+    var objectChangeEvent = { type: "objectChange" };
 
-            } else {
+    // Reusable utility variables
 
-                this.color.copy(this.oldColor);
-                this.opacity = this.oldOpacity;
+    var ray = new v3d.Raycaster();
 
-            }
+    var _tempVector = new v3d.Vector3();
+    var _tempVector2 = new v3d.Vector3();
+    var _tempQuaternion = new v3d.Quaternion();
+    var _unit = {
+        X: new v3d.Vector3(1, 0, 0),
+        Y: new v3d.Vector3(0, 1, 0),
+        Z: new v3d.Vector3(0, 0, 1)
+    };
+    var _identityQuaternion = new v3d.Quaternion();
+    var _alignVector = new v3d.Vector3();
 
-        };
+    var pointStart = new v3d.Vector3();
+    var pointEnd = new v3d.Vector3();
+    var rotationAxis = new v3d.Vector3();
+    var rotationAngle = 0;
+
+    var cameraPosition = new v3d.Vector3();
+    var cameraQuaternion = new v3d.Quaternion();
+    var cameraScale = new v3d.Vector3();
+
+    var parentPosition = new v3d.Vector3();
+    var parentQuaternion = new v3d.Quaternion();
+    var parentScale = new v3d.Vector3();
+
+    var worldPositionStart = new v3d.Vector3();
+    var worldQuaternionStart = new v3d.Quaternion();
+    var worldScaleStart = new v3d.Vector3();
+
+    var worldPosition = new v3d.Vector3();
+    var worldQuaternion = new v3d.Quaternion();
+    var worldScale = new v3d.Vector3();
+
+    var eye = new v3d.Vector3();
+
+    var _positionStart = new v3d.Vector3();
+    var _quaternionStart = new v3d.Quaternion();
+    var _scaleStart = new v3d.Vector3();
+
+    // TODO: remove properties unused in plane and gizmo
+
+    defineProperty("parentQuaternion", parentQuaternion);
+    defineProperty("worldPosition", worldPosition);
+    defineProperty("worldPositionStart", worldPositionStart);
+    defineProperty("worldQuaternion", worldQuaternion);
+    defineProperty("worldQuaternionStart", worldQuaternionStart);
+    defineProperty("cameraPosition", cameraPosition);
+    defineProperty("cameraQuaternion", cameraQuaternion);
+    defineProperty("pointStart", pointStart);
+    defineProperty("pointEnd", pointEnd);
+    defineProperty("rotationAxis", rotationAxis);
+    defineProperty("rotationAngle", rotationAngle);
+    defineProperty("eye", eye);
+
+    {
+
+        domElement.addEventListener("mousedown", onPointerDown, false);
+        domElement.addEventListener("touchstart", onPointerDown, false);
+        domElement.addEventListener("mousemove", onPointerHover, false);
+        domElement.addEventListener("touchmove", onPointerHover, false);
+        document.addEventListener("mousemove", onPointerMove, false);
+        domElement.addEventListener("touchmove", onPointerMove, false);
+        document.addEventListener("mouseup", onPointerUp, false);
+        domElement.addEventListener("touchend", onPointerUp, false);
+        domElement.addEventListener("touchcancel", onPointerUp, false);
+        domElement.addEventListener("touchleave", onPointerUp, false);
+        domElement.addEventListener("contextmenu", onContext, false);
+
+    }
+
+    this.dispose = function() {
+
+        domElement.removeEventListener("mousedown", onPointerDown);
+        domElement.removeEventListener("touchstart", onPointerDown);
+        domElement.removeEventListener("mousemove", onPointerHover);
+        domElement.removeEventListener("touchmove", onPointerHover);
+        document.removeEventListener("mousemove", onPointerMove);
+        domElement.removeEventListener("touchmove", onPointerMove);
+        document.removeEventListener("mouseup", onPointerUp);
+        domElement.removeEventListener("touchend", onPointerUp);
+        domElement.removeEventListener("touchcancel", onPointerUp);
+        domElement.removeEventListener("touchleave", onPointerUp);
+        domElement.removeEventListener("contextmenu", onContext);
 
     };
 
-    GizmoMaterial.prototype = Object.create(v3d.MeshBasicMaterial.prototype);
-    GizmoMaterial.prototype.constructor = GizmoMaterial;
+    // Set current object
+    this.attach = function(object) {
 
-
-    var GizmoLineMaterial = function(parameters) {
-
-        v3d.LineBasicMaterial.call(this);
-
-        this.depthTest = false;
-        this.depthWrite = false;
-        this.transparent = true;
-        this.linewidth = 1;
-
-        this.setValues(parameters);
-
-        this.oldColor = this.color.clone();
-        this.oldOpacity = this.opacity;
-
-        this.highlight = function(highlighted) {
-
-            if (highlighted) {
-
-                this.color.setRGB(1, 1, 0);
-                this.opacity = 1;
-
-            } else {
-
-                this.color.copy(this.oldColor);
-                this.opacity = this.oldOpacity;
-
-            }
-
-        };
+        this.object = object;
+        this.visible = true;
 
     };
 
-    GizmoLineMaterial.prototype = Object.create(v3d.LineBasicMaterial.prototype);
-    GizmoLineMaterial.prototype.constructor = GizmoLineMaterial;
+    // Detatch from object
+    this.detach = function() {
 
-
-    var pickerMaterial = new GizmoMaterial({ visible: false, transparent: false });
-
-
-    v3d.TransformGizmo = function() {
-
-        this.init = function() {
-
-            v3d.Object3D.call(this);
-
-            this.handles = new v3d.Object3D();
-            this.pickers = new v3d.Object3D();
-            this.planes = new v3d.Object3D();
-
-            this.add(this.handles);
-            this.add(this.pickers);
-            this.add(this.planes);
-
-            //// PLANES
-
-            var planeGeometry = new v3d.PlaneBufferGeometry(50, 50, 2, 2);
-            var planeMaterial = new v3d.MeshBasicMaterial({ visible: false, side: v3d.DoubleSide });
-
-            var planes = {
-                "XY":   new v3d.Mesh(planeGeometry, planeMaterial),
-                "YZ":   new v3d.Mesh(planeGeometry, planeMaterial),
-                "XZ":   new v3d.Mesh(planeGeometry, planeMaterial),
-                "XYZE": new v3d.Mesh(planeGeometry, planeMaterial)
-            };
-
-            this.activePlane = planes["XYZE"];
-
-            planes["YZ"].rotation.set(0, Math.PI / 2, 0);
-            planes["XZ"].rotation.set(- Math.PI / 2, 0, 0);
-
-            for (var i in planes) {
-
-                planes[i].name = i;
-                this.planes.add(planes[i]);
-                this.planes[i] = planes[i];
-
-            }
-
-            //// HANDLES AND PICKERS
-
-            var setupGizmos = function(gizmoMap, parent) {
-
-                for (var name in gizmoMap) {
-
-                    for (i = gizmoMap[name].length; i --;) {
-
-                        var object = gizmoMap[name][i][0];
-                        var position = gizmoMap[name][i][1];
-                        var rotation = gizmoMap[name][i][2];
-
-                        object.name = name;
-
-                        if (position) object.position.set(position[0], position[1], position[2]);
-                        if (rotation) object.rotation.set(rotation[0], rotation[1], rotation[2]);
-
-                        parent.add(object);
-
-                    }
-
-                }
-
-            };
-
-            setupGizmos(this.handleGizmos, this.handles);
-            setupGizmos(this.pickerGizmos, this.pickers);
-
-            // reset Transformations
-
-            this.traverse(function(child) {
-
-                if (child instanceof v3d.Mesh) {
-
-                    child.updateMatrix();
-
-                    var tempGeometry = child.geometry.clone();
-                    tempGeometry.applyMatrix(child.matrix);
-                    child.geometry = tempGeometry;
-
-                    child.position.set(0, 0, 0);
-                    child.rotation.set(0, 0, 0);
-                    child.scale.set(1, 1, 1);
-
-                }
-
-            });
-
-        };
-
-        this.highlight = function(axis) {
-
-            this.traverse(function(child) {
-
-                if (child.material && child.material.highlight) {
-
-                    if (child.name === axis) {
-
-                        child.material.highlight(true);
-
-                    } else {
-
-                        child.material.highlight(false);
-
-                    }
-
-                }
-
-            });
-
-        };
+        this.object = undefined;
+        this.visible = false;
+        this.axis = null;
 
     };
 
-    v3d.TransformGizmo.prototype = Object.create(v3d.Object3D.prototype);
-    v3d.TransformGizmo.prototype.constructor = v3d.TransformGizmo;
+    // Defined getter, setter and store for a property
+    function defineProperty(propName, defaultValue) {
 
-    v3d.TransformGizmo.prototype.update = function(rotation, eye) {
+        var propValue = defaultValue;
 
-        var vec1 = new v3d.Vector3(0, 0, 0);
-        var vec2 = new v3d.Vector3(0, 1, 0);
-        var lookAtMatrix = new v3d.Matrix4();
+        Object.defineProperty(scope, propName, {
 
-        this.traverse(function(child) {
+            get: function() {
 
-            if (child.name.search("E") !== - 1) {
+                return propValue !== undefined ? propValue : defaultValue;
 
-                child.quaternion.setFromRotationMatrix(lookAtMatrix.lookAt(eye, vec1, vec2));
+            },
 
-            } else if (child.name.search("X") !== - 1 || child.name.search("Y") !== - 1 || child.name.search("Z") !== - 1) {
+            set: function(value) {
 
-                child.quaternion.setFromEuler(rotation);
+                if (propValue !== value) {
+
+                    propValue = value;
+                    _plane[propName] = value;
+                    _gizmo[propName] = value;
+
+                    scope.dispatchEvent({ type: propName + "-changed", value: value });
+                    scope.dispatchEvent(changeEvent);
+
+                }
 
             }
 
         });
 
-    };
+        scope[propName] = defaultValue;
+        _plane[propName] = defaultValue;
+        _gizmo[propName] = defaultValue;
 
-    v3d.TransformGizmoTranslate = function() {
+    }
 
-        v3d.TransformGizmo.call(this);
+    // updateMatrixWorld  updates key transformation variables
+    this.updateMatrixWorld = function() {
 
-        var arrowGeometry = new v3d.Geometry();
-        var mesh = new v3d.Mesh(new v3d.CylinderGeometry(0, 0.05, 0.2, 12, 1, false));
-        mesh.position.y = 0.5;
-        mesh.updateMatrix();
+        if (this.object !== undefined) {
 
-        arrowGeometry.merge(mesh.geometry, mesh.matrix);
-
-        var lineXGeometry = new v3d.BufferGeometry();
-        lineXGeometry.addAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0,  1, 0, 0], 3));
-
-        var lineYGeometry = new v3d.BufferGeometry();
-        lineYGeometry.addAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0,  0, 1, 0], 3));
-
-        var lineZGeometry = new v3d.BufferGeometry();
-        lineZGeometry.addAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0,  0, 0, 1], 3));
-
-        this.handleGizmos = {
-
-            X: [
-                [new v3d.Mesh(arrowGeometry, new GizmoMaterial({ color: 0xff0000 })), [0.5, 0, 0], [0, 0, - Math.PI / 2]],
-                [new v3d.Line(lineXGeometry, new GizmoLineMaterial({ color: 0xff0000 }))]
-            ],
-
-            Y: [
-                [new v3d.Mesh(arrowGeometry, new GizmoMaterial({ color: 0x00ff00 })), [0, 0.5, 0]],
-                [    new v3d.Line(lineYGeometry, new GizmoLineMaterial({ color: 0x00ff00 }))]
-            ],
-
-            Z: [
-                [new v3d.Mesh(arrowGeometry, new GizmoMaterial({ color: 0x0000ff })), [0, 0, 0.5], [Math.PI / 2, 0, 0]],
-                [new v3d.Line(lineZGeometry, new GizmoLineMaterial({ color: 0x0000ff }))]
-            ],
-
-            XYZ: [
-                [new v3d.Mesh(new v3d.OctahedronGeometry(0.1, 0), new GizmoMaterial({ color: 0xffffff, opacity: 0.25 })), [0, 0, 0], [0, 0, 0]]
-            ],
-
-            XY: [
-                [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.29, 0.29), new GizmoMaterial({ color: 0xffff00, opacity: 0.25 })), [0.15, 0.15, 0]]
-            ],
-
-            YZ: [
-                [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.29, 0.29), new GizmoMaterial({ color: 0x00ffff, opacity: 0.25 })), [0, 0.15, 0.15], [0, Math.PI / 2, 0]]
-            ],
-
-            XZ: [
-                [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.29, 0.29), new GizmoMaterial({ color: 0xff00ff, opacity: 0.25 })), [0.15, 0, 0.15], [- Math.PI / 2, 0, 0]]
-            ]
-
-        };
-
-        this.pickerGizmos = {
-
-            X: [
-                [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 1, 4, 1, false), pickerMaterial), [0.6, 0, 0], [0, 0, - Math.PI / 2]]
-            ],
-
-            Y: [
-                [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 1, 4, 1, false), pickerMaterial), [0, 0.6, 0]]
-            ],
-
-            Z: [
-                [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 1, 4, 1, false), pickerMaterial), [0, 0, 0.6], [Math.PI / 2, 0, 0]]
-            ],
-
-            XYZ: [
-                [new v3d.Mesh(new v3d.OctahedronGeometry(0.2, 0), pickerMaterial)]
-            ],
-
-            XY: [
-                [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.4, 0.4), pickerMaterial), [0.2, 0.2, 0]]
-            ],
-
-            YZ: [
-                [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.4, 0.4), pickerMaterial), [0, 0.2, 0.2], [0, Math.PI / 2, 0]]
-            ],
-
-            XZ: [
-                [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.4, 0.4), pickerMaterial), [0.2, 0, 0.2], [- Math.PI / 2, 0, 0]]
-            ]
-
-        };
-
-        this.setActivePlane = function(axis, eye) {
-
-            var tempMatrix = new v3d.Matrix4();
-            eye.applyMatrix4(tempMatrix.getInverse(tempMatrix.extractRotation(this.planes["XY"].matrixWorld)));
-
-            if (axis === "X") {
-
-                this.activePlane = this.planes["XY"];
-
-                if (Math.abs(eye.y) > Math.abs(eye.z)) this.activePlane = this.planes["XZ"];
-
-            }
-
-            if (axis === "Y") {
-
-                this.activePlane = this.planes["XY"];
-
-                if (Math.abs(eye.x) > Math.abs(eye.z)) this.activePlane = this.planes["YZ"];
-
-            }
-
-            if (axis === "Z") {
-
-                this.activePlane = this.planes["XZ"];
-
-                if (Math.abs(eye.x) > Math.abs(eye.y)) this.activePlane = this.planes["YZ"];
-
-            }
-
-            if (axis === "XYZ") this.activePlane = this.planes["XYZE"];
-
-            if (axis === "XY") this.activePlane = this.planes["XY"];
-
-            if (axis === "YZ") this.activePlane = this.planes["YZ"];
-
-            if (axis === "XZ") this.activePlane = this.planes["XZ"];
-
-        };
-
-        this.init();
-
-    };
-
-    v3d.TransformGizmoTranslate.prototype = Object.create(v3d.TransformGizmo.prototype);
-    v3d.TransformGizmoTranslate.prototype.constructor = v3d.TransformGizmoTranslate;
-
-    v3d.TransformGizmoRotate = function() {
-
-        v3d.TransformGizmo.call(this);
-
-        var CircleGeometry = function(radius, facing, arc) {
-
-            var geometry = new v3d.BufferGeometry();
-            var vertices = [];
-            arc = arc ? arc : 1;
-
-            for (var i = 0; i <= 64 * arc; ++ i) {
-
-                if (facing === 'x') vertices.push(0, Math.cos(i / 32 * Math.PI) * radius, Math.sin(i / 32 * Math.PI) * radius);
-                if (facing === 'y') vertices.push(Math.cos(i / 32 * Math.PI) * radius, 0, Math.sin(i / 32 * Math.PI) * radius);
-                if (facing === 'z') vertices.push(Math.sin(i / 32 * Math.PI) * radius, Math.cos(i / 32 * Math.PI) * radius, 0);
-
-            }
-
-            geometry.addAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
-            return geometry;
-
-        };
-
-        this.handleGizmos = {
-
-            X: [
-                [new v3d.Line(new CircleGeometry(1, 'x', 0.5), new GizmoLineMaterial({ color: 0xff0000 }))]
-            ],
-
-            Y: [
-                [new v3d.Line(new CircleGeometry(1, 'y', 0.5), new GizmoLineMaterial({ color: 0x00ff00 }))]
-            ],
-
-            Z: [
-                [new v3d.Line(new CircleGeometry(1, 'z', 0.5), new GizmoLineMaterial({ color: 0x0000ff }))]
-            ],
-
-            E: [
-                [new v3d.Line(new CircleGeometry(1.25, 'z', 1), new GizmoLineMaterial({ color: 0xcccc00 }))]
-            ],
-
-            XYZE: [
-                [new v3d.Line(new CircleGeometry(1, 'z', 1), new GizmoLineMaterial({ color: 0x787878 }))]
-            ]
-
-        };
-
-        this.pickerGizmos = {
-
-            X: [
-                [new v3d.Mesh(new v3d.TorusBufferGeometry(1, 0.12, 4, 12, Math.PI), pickerMaterial), [0, 0, 0], [0, - Math.PI / 2, - Math.PI / 2]]
-            ],
-
-            Y: [
-                [new v3d.Mesh(new v3d.TorusBufferGeometry(1, 0.12, 4, 12, Math.PI), pickerMaterial), [0, 0, 0], [Math.PI / 2, 0, 0]]
-            ],
-
-            Z: [
-                [new v3d.Mesh(new v3d.TorusBufferGeometry(1, 0.12, 4, 12, Math.PI), pickerMaterial), [0, 0, 0], [0, 0, - Math.PI / 2]]
-            ],
-
-            E: [
-                [new v3d.Mesh(new v3d.TorusBufferGeometry(1.25, 0.12, 2, 24), pickerMaterial)]
-            ],
-
-            XYZE: [
-                [new v3d.Mesh()]// TODO
-            ]
-
-        };
-
-        this.setActivePlane = function(axis) {
-
-            if (axis === "E") this.activePlane = this.planes["XYZE"];
-
-            if (axis === "X") this.activePlane = this.planes["YZ"];
-
-            if (axis === "Y") this.activePlane = this.planes["XZ"];
-
-            if (axis === "Z") this.activePlane = this.planes["XY"];
-
-        };
-
-        this.update = function(rotation, eye2) {
-
-            v3d.TransformGizmo.prototype.update.apply(this, arguments);
-
-            var tempMatrix = new v3d.Matrix4();
-            var worldRotation = new v3d.Euler(0, 0, 1);
-            var tempQuaternion = new v3d.Quaternion();
-            var unitX = new v3d.Vector3(1, 0, 0);
-            var unitY = new v3d.Vector3(0, 1, 0);
-            var unitZ = new v3d.Vector3(0, 0, 1);
-            var quaternionX = new v3d.Quaternion();
-            var quaternionY = new v3d.Quaternion();
-            var quaternionZ = new v3d.Quaternion();
-            var eye = eye2.clone();
-
-            worldRotation.copy(this.planes["XY"].rotation);
-            tempQuaternion.setFromEuler(worldRotation);
-
-            tempMatrix.makeRotationFromQuaternion(tempQuaternion).getInverse(tempMatrix);
-            eye.applyMatrix4(tempMatrix);
-
-            this.traverse(function(child) {
-
-                tempQuaternion.setFromEuler(worldRotation);
-
-                if (child.name === "X") {
-
-                    quaternionX.setFromAxisAngle(unitX, Math.atan2(- eye.y, eye.z));
-                    tempQuaternion.multiplyQuaternions(tempQuaternion, quaternionX);
-                    child.quaternion.copy(tempQuaternion);
-
-                }
-
-                if (child.name === "Y") {
-
-                    quaternionY.setFromAxisAngle(unitY, Math.atan2(eye.x, eye.z));
-                    tempQuaternion.multiplyQuaternions(tempQuaternion, quaternionY);
-                    child.quaternion.copy(tempQuaternion);
-
-                }
-
-                if (child.name === "Z") {
-
-                    quaternionZ.setFromAxisAngle(unitZ, Math.atan2(eye.y, eye.x));
-                    tempQuaternion.multiplyQuaternions(tempQuaternion, quaternionZ);
-                    child.quaternion.copy(tempQuaternion);
-
-                }
-
-            });
-
-        };
-
-        this.init();
-
-    };
-
-    v3d.TransformGizmoRotate.prototype = Object.create(v3d.TransformGizmo.prototype);
-    v3d.TransformGizmoRotate.prototype.constructor = v3d.TransformGizmoRotate;
-
-    v3d.TransformGizmoScale = function() {
-
-        v3d.TransformGizmo.call(this);
-
-        var arrowGeometry = new v3d.Geometry();
-        var mesh = new v3d.Mesh(new v3d.BoxGeometry(0.125, 0.125, 0.125));
-        mesh.position.y = 0.5;
-        mesh.updateMatrix();
-
-        arrowGeometry.merge(mesh.geometry, mesh.matrix);
-
-        var lineXGeometry = new v3d.BufferGeometry();
-        lineXGeometry.addAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0,  1, 0, 0], 3));
-
-        var lineYGeometry = new v3d.BufferGeometry();
-        lineYGeometry.addAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0,  0, 1, 0], 3));
-
-        var lineZGeometry = new v3d.BufferGeometry();
-        lineZGeometry.addAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0,  0, 0, 1], 3));
-
-        this.handleGizmos = {
-
-            X: [
-                [new v3d.Mesh(arrowGeometry, new GizmoMaterial({ color: 0xff0000 })), [0.5, 0, 0], [0, 0, - Math.PI / 2]],
-                [new v3d.Line(lineXGeometry, new GizmoLineMaterial({ color: 0xff0000 }))]
-            ],
-
-            Y: [
-                [new v3d.Mesh(arrowGeometry, new GizmoMaterial({ color: 0x00ff00 })), [0, 0.5, 0]],
-                [new v3d.Line(lineYGeometry, new GizmoLineMaterial({ color: 0x00ff00 }))]
-            ],
-
-            Z: [
-                [new v3d.Mesh(arrowGeometry, new GizmoMaterial({ color: 0x0000ff })), [0, 0, 0.5], [Math.PI / 2, 0, 0]],
-                [new v3d.Line(lineZGeometry, new GizmoLineMaterial({ color: 0x0000ff }))]
-            ],
-
-            XYZ: [
-                [new v3d.Mesh(new v3d.BoxBufferGeometry(0.125, 0.125, 0.125), new GizmoMaterial({ color: 0xffffff, opacity: 0.25 }))]
-            ]
-
-        };
-
-        this.pickerGizmos = {
-
-            X: [
-                [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 1, 4, 1, false), pickerMaterial), [0.6, 0, 0], [0, 0, - Math.PI / 2]]
-            ],
-
-            Y: [
-                [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 1, 4, 1, false), pickerMaterial), [0, 0.6, 0]]
-            ],
-
-            Z: [
-                [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 1, 4, 1, false), pickerMaterial), [0, 0, 0.6], [Math.PI / 2, 0, 0]]
-            ],
-
-            XYZ: [
-                [new v3d.Mesh(new v3d.BoxBufferGeometry(0.4, 0.4, 0.4), pickerMaterial)]
-            ]
-
-        };
-
-        this.setActivePlane = function(axis, eye) {
-
-            var tempMatrix = new v3d.Matrix4();
-            eye.applyMatrix4(tempMatrix.getInverse(tempMatrix.extractRotation(this.planes["XY"].matrixWorld)));
-
-            if (axis === "X") {
-
-                this.activePlane = this.planes["XY"];
-                if (Math.abs(eye.y) > Math.abs(eye.z)) this.activePlane = this.planes["XZ"];
-
-            }
-
-            if (axis === "Y") {
-
-                this.activePlane = this.planes["XY"];
-                if (Math.abs(eye.x) > Math.abs(eye.z)) this.activePlane = this.planes["YZ"];
-
-            }
-
-            if (axis === "Z") {
-
-                this.activePlane = this.planes["XZ"];
-                if (Math.abs(eye.x) > Math.abs(eye.y)) this.activePlane = this.planes["YZ"];
-
-            }
-
-            if (axis === "XYZ") this.activePlane = this.planes["XYZE"];
-
-        };
-
-        this.init();
-
-    };
-
-    v3d.TransformGizmoScale.prototype = Object.create(v3d.TransformGizmo.prototype);
-    v3d.TransformGizmoScale.prototype.constructor = v3d.TransformGizmoScale;
-
-    v3d.TransformControls = function(camera, domElement) {
-
-        // TODO: Make non-uniform scale and rotate play nice in hierarchies
-        // TODO: ADD RXYZ contol
-
-        v3d.Object3D.call(this);
-
-        domElement = (domElement !== undefined) ? domElement : document;
-
-        this.object = undefined;
-        this.visible = false;
-        this.translationSnap = null;
-        this.rotationSnap = null;
-        this.space = "world";
-        this.size = 1;
-        this.axis = null;
-
-        var scope = this;
-
-        var _mode = "translate";
-        var _dragging = false;
-        var _gizmo = {
-
-            "translate": new v3d.TransformGizmoTranslate(),
-            "rotate": new v3d.TransformGizmoRotate(),
-            "scale": new v3d.TransformGizmoScale()
-        };
-
-        for (var type in _gizmo) {
-
-            var gizmoObj = _gizmo[type];
-
-            gizmoObj.visible = (type === _mode);
-            this.add(gizmoObj);
+            this.object.updateMatrixWorld();
+            this.object.parent.matrixWorld.decompose(parentPosition, parentQuaternion, parentScale);
+            this.object.matrixWorld.decompose(worldPosition, worldQuaternion, worldScale);
 
         }
 
-        var changeEvent = { type: "change" };
-        var mouseDownEvent = { type: "mouseDown" };
-        var mouseUpEvent = { type: "mouseUp", mode: _mode };
-        var objectChangeEvent = { type: "objectChange" };
+        this.camera.updateMatrixWorld();
+        this.camera.matrixWorld.decompose(cameraPosition, cameraQuaternion, cameraScale);
 
-        var ray = new v3d.Raycaster();
-        var pointerVector = new v3d.Vector2();
+        if (this.camera instanceof v3d.PerspectiveCamera) {
 
-        var point = new v3d.Vector3();
-        var offset = new v3d.Vector3();
+            eye.copy(cameraPosition).sub(worldPosition).normalize();
 
-        var rotation = new v3d.Vector3();
-        var offsetRotation = new v3d.Vector3();
-        var scale = 1;
+        } else if (this.camera instanceof v3d.OrthographicCamera) {
 
-        var lookAtMatrix = new v3d.Matrix4();
-        var eye = new v3d.Vector3();
+            eye.copy(cameraPosition).normalize();
 
-        var tempMatrix = new v3d.Matrix4();
-        var tempVector = new v3d.Vector3();
-        var tempQuaternion = new v3d.Quaternion();
-        var unitX = new v3d.Vector3(1, 0, 0);
-        var unitY = new v3d.Vector3(0, 1, 0);
-        var unitZ = new v3d.Vector3(0, 0, 1);
+        }
 
-        var quaternionXYZ = new v3d.Quaternion();
-        var quaternionX = new v3d.Quaternion();
-        var quaternionY = new v3d.Quaternion();
-        var quaternionZ = new v3d.Quaternion();
-        var quaternionE = new v3d.Quaternion();
+        v3d.Object3D.prototype.updateMatrixWorld.call(this);
 
-        var oldPosition = new v3d.Vector3();
-        var oldScale = new v3d.Vector3();
-        var oldRotationMatrix = new v3d.Matrix4();
+    };
 
-        var parentRotationMatrix  = new v3d.Matrix4();
-        var parentScale = new v3d.Vector3();
+    this.pointerHover = function(pointer) {
 
-        var worldPosition = new v3d.Vector3();
-        var worldRotation = new v3d.Euler();
-        var worldRotationMatrix  = new v3d.Matrix4();
-        var camPosition = new v3d.Vector3();
-        var camRotation = new v3d.Euler();
+        if (this.object === undefined || this.dragging === true || (pointer.button !== undefined && pointer.button !== 0)) return;
 
-        domElement.addEventListener("mousedown", onPointerDown, false);
-        domElement.addEventListener("touchstart", onPointerDown, false);
+        ray.setFromCamera(pointer, this.camera);
 
-        domElement.addEventListener("mousemove", onPointerHover, false);
-        domElement.addEventListener("touchmove", onPointerHover, false);
+        var intersect = ray.intersectObjects(_gizmo.picker[this.mode].children, true)[0] || false;
 
-        domElement.addEventListener("mousemove", onPointerMove, false);
-        domElement.addEventListener("touchmove", onPointerMove, false);
+        if (intersect) {
 
-        domElement.addEventListener("mouseup", onPointerUp, false);
-        domElement.addEventListener("mouseout", onPointerUp, false);
-        domElement.addEventListener("touchend", onPointerUp, false);
-        domElement.addEventListener("touchcancel", onPointerUp, false);
-        domElement.addEventListener("touchleave", onPointerUp, false);
+            this.axis = intersect.object.name;
 
-        this.dispose = function() {
+        } else {
 
-            domElement.removeEventListener("mousedown", onPointerDown);
-            domElement.removeEventListener("touchstart", onPointerDown);
-
-            domElement.removeEventListener("mousemove", onPointerHover);
-            domElement.removeEventListener("touchmove", onPointerHover);
-
-            domElement.removeEventListener("mousemove", onPointerMove);
-            domElement.removeEventListener("touchmove", onPointerMove);
-
-            domElement.removeEventListener("mouseup", onPointerUp);
-            domElement.removeEventListener("mouseout", onPointerUp);
-            domElement.removeEventListener("touchend", onPointerUp);
-            domElement.removeEventListener("touchcancel", onPointerUp);
-            domElement.removeEventListener("touchleave", onPointerUp);
-
-        };
-
-        this.attach = function(object) {
-
-            this.object = object;
-            this.visible = true;
-            this.update();
-
-        };
-
-        this.detach = function() {
-
-            this.object = undefined;
-            this.visible = false;
             this.axis = null;
 
-        };
+        }
 
-        this.getMode = function() {
+    };
 
-            return _mode;
+    this.pointerDown = function(pointer) {
 
-        };
+        if (this.object === undefined || this.dragging === true || (pointer.button !== undefined && pointer.button !== 0)) return;
 
-        this.setMode = function(mode) {
+        if ((pointer.button === 0 || pointer.button === undefined) && this.axis !== null) {
 
-            _mode = mode ? mode : _mode;
+            ray.setFromCamera(pointer, this.camera);
 
-            if (_mode === "scale") scope.space = "local";
+            var planeIntersect = ray.intersectObjects([_plane], true)[0] || false;
 
-            for (var type in _gizmo) _gizmo[type].visible = (type === _mode);
+            if (planeIntersect) {
 
-            this.update();
-            scope.dispatchEvent(changeEvent);
+                var space = this.space;
 
-        };
+                if (this.mode === 'scale') {
 
-        this.setTranslationSnap = function(translationSnap) {
+                    space = 'local';
 
-            scope.translationSnap = translationSnap;
+                } else if (this.axis === 'E' ||  this.axis === 'XYZE' ||  this.axis === 'XYZ') {
 
-        };
+                    space = 'world';
 
-        this.setRotationSnap = function(rotationSnap) {
+                }
 
-            scope.rotationSnap = rotationSnap;
+                if (space === 'local' && this.mode === 'rotate') {
 
-        };
+                    var snap = this.rotationSnap;
 
-        this.setSize = function(size) {
+                    if (this.axis === 'X' && snap) this.object.rotation.x = Math.round(this.object.rotation.x / snap) * snap;
+                    if (this.axis === 'Y' && snap) this.object.rotation.y = Math.round(this.object.rotation.y / snap) * snap;
+                    if (this.axis === 'Z' && snap) this.object.rotation.z = Math.round(this.object.rotation.z / snap) * snap;
 
-            scope.size = size;
-            this.update();
-            scope.dispatchEvent(changeEvent);
+                }
 
-        };
+                this.object.updateMatrixWorld();
+                this.object.parent.updateMatrixWorld();
 
-        this.setSpace = function(space) {
+                _positionStart.copy(this.object.position);
+                _quaternionStart.copy(this.object.quaternion);
+                _scaleStart.copy(this.object.scale);
 
-            scope.space = space;
-            this.update();
-            scope.dispatchEvent(changeEvent);
+                this.object.matrixWorld.decompose(worldPositionStart, worldQuaternionStart, worldScaleStart);
 
-        };
+                pointStart.copy(planeIntersect.point).sub(worldPositionStart);
 
-        this.update = function() {
-
-            if (scope.object === undefined) return;
-
-            scope.object.updateMatrixWorld();
-            worldPosition.setFromMatrixPosition(scope.object.matrixWorld);
-            worldRotation.setFromRotationMatrix(tempMatrix.extractRotation(scope.object.matrixWorld));
-
-            camera.updateMatrixWorld();
-            camPosition.setFromMatrixPosition(camera.matrixWorld);
-            camRotation.setFromRotationMatrix(tempMatrix.extractRotation(camera.matrixWorld));
-
-            scale = worldPosition.distanceTo(camPosition) / 6 * scope.size;
-            this.position.copy(worldPosition);
-            this.scale.set(scale, scale, scale);
-
-            if (camera instanceof v3d.PerspectiveCamera) {
-
-                eye.copy(camPosition).sub(worldPosition).normalize();
-
-            } else if (camera instanceof v3d.OrthographicCamera) {
-
-                eye.copy(camPosition).normalize();
+                if (space === 'local') pointStart.applyQuaternion(worldQuaternionStart.clone().inverse());
 
             }
 
-            if (scope.space === "local") {
-
-                _gizmo[_mode].update(worldRotation, eye);
-
-            } else if (scope.space === "world") {
-
-                _gizmo[_mode].update(new v3d.Euler(), eye);
-
-            }
-
-            _gizmo[_mode].highlight(scope.axis);
-
-        };
-
-        function onPointerHover(event) {
-
-            if (scope.object === undefined || _dragging === true || (event.button !== undefined && event.button !== 0)) return;
-
-            var pointer = event.changedTouches ? event.changedTouches[0] : event;
-
-            var intersect = intersectObjects(pointer, _gizmo[_mode].pickers.children);
-
-            var axis = null;
-
-            if (intersect) {
-
-                axis = intersect.object.name;
-
-                event.preventDefault();
-
-            }
-
-            if (scope.axis !== axis) {
-
-                scope.axis = axis;
-                scope.update();
-                scope.dispatchEvent(changeEvent);
-
-            }
+            this.dragging = true;
+            mouseDownEvent.mode = this.mode;
+            this.dispatchEvent(mouseDownEvent);
 
         }
 
-        function onPointerDown(event) {
+    };
 
-            if (scope.object === undefined || _dragging === true || (event.button !== undefined && event.button !== 0)) return;
+    this.pointerMove = function(pointer) {
 
-            var pointer = event.changedTouches ? event.changedTouches[0] : event;
+        var axis = this.axis;
+        var mode = this.mode;
+        var object = this.object;
+        var space = this.space;
 
-            if (pointer.button === 0 || pointer.button === undefined) {
+        if (mode === 'scale') {
 
-                var intersect = intersectObjects(pointer, _gizmo[_mode].pickers.children);
+            space = 'local';
 
-                if (intersect) {
+        } else if (axis === 'E' ||  axis === 'XYZE' ||  axis === 'XYZ') {
 
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    scope.dispatchEvent(mouseDownEvent);
-
-                    scope.axis = intersect.object.name;
-
-                    scope.update();
-
-                    eye.copy(camPosition).sub(worldPosition).normalize();
-
-                    _gizmo[_mode].setActivePlane(scope.axis, eye);
-
-                    var planeIntersect = intersectObjects(pointer, [_gizmo[_mode].activePlane]);
-
-                    if (planeIntersect) {
-
-                        oldPosition.copy(scope.object.position);
-                        oldScale.copy(scope.object.scale);
-
-                        oldRotationMatrix.extractRotation(scope.object.matrix);
-                        worldRotationMatrix.extractRotation(scope.object.matrixWorld);
-
-                        parentRotationMatrix.extractRotation(scope.object.parent.matrixWorld);
-                        parentScale.setFromMatrixScale(tempMatrix.getInverse(scope.object.parent.matrixWorld));
-
-                        offset.copy(planeIntersect.point);
-
-                    }
-
-                }
-
-            }
-
-            _dragging = true;
+            space = 'world';
 
         }
 
-        function onPointerMove(event) {
+        if (object === undefined || axis === null || this.dragging === false || (pointer.button !== undefined && pointer.button !== 0)) return;
 
-            if (scope.object === undefined || scope.axis === null || _dragging === false || (event.button !== undefined && event.button !== 0)) return;
+        ray.setFromCamera(pointer, this.camera);
 
-            var pointer = event.changedTouches ? event.changedTouches[0] : event;
+        var planeIntersect = ray.intersectObjects([_plane], true)[0] || false;
 
-            var planeIntersect = intersectObjects(pointer, [_gizmo[_mode].activePlane]);
+        if (planeIntersect === false) return;
 
-            if (planeIntersect === false) return;
+        pointEnd.copy(planeIntersect.point).sub(worldPositionStart);
 
-            event.preventDefault();
-            event.stopPropagation();
+        if (space === 'local') pointEnd.applyQuaternion(worldQuaternionStart.clone().inverse());
 
-            point.copy(planeIntersect.point);
+        if (mode === 'translate') {
 
-            if (_mode === "translate") {
+            if (axis.search('X') === -1) {
+                pointEnd.x = pointStart.x;
+            }
+            if (axis.search('Y') === -1) {
+                pointEnd.y = pointStart.y;
+            }
+            if (axis.search('Z') === -1) {
+                pointEnd.z = pointStart.z;
+            }
 
-                point.sub(offset);
-                point.multiply(parentScale);
+            // Apply translate
 
-                if (scope.space === "local") {
+            if (space === 'local') {
+                object.position.copy(pointEnd).sub(pointStart).applyQuaternion(_quaternionStart);
+            } else {
+                object.position.copy(pointEnd).sub(pointStart);
+            }
 
-                    point.applyMatrix4(tempMatrix.getInverse(worldRotationMatrix));
+            object.position.add(_positionStart);
 
-                    if (scope.axis.search("X") === - 1) point.x = 0;
-                    if (scope.axis.search("Y") === - 1) point.y = 0;
-                    if (scope.axis.search("Z") === - 1) point.z = 0;
+            // Apply translation snap
 
-                    point.applyMatrix4(oldRotationMatrix);
+            if (this.translationSnap) {
 
-                    scope.object.position.copy(oldPosition);
-                    scope.object.position.add(point);
+                if (space === 'local') {
+
+                    object.position.applyQuaternion(_tempQuaternion.copy(_quaternionStart).inverse());
+
+                    if (axis.search('X') !== -1) {
+                        object.position.x = Math.round(object.position.x / this.translationSnap) * this.translationSnap;
+                    }
+
+                    if (axis.search('Y') !== -1) {
+                        object.position.y = Math.round(object.position.y / this.translationSnap) * this.translationSnap;
+                    }
+
+                    if (axis.search('Z') !== -1) {
+                        object.position.z = Math.round(object.position.z / this.translationSnap) * this.translationSnap;
+                    }
+
+                    object.position.applyQuaternion(_quaternionStart);
 
                 }
 
-                if (scope.space === "world" || scope.axis.search("XYZ") !== - 1) {
+                if (space === 'world') {
 
-                    if (scope.axis.search("X") === - 1) point.x = 0;
-                    if (scope.axis.search("Y") === - 1) point.y = 0;
-                    if (scope.axis.search("Z") === - 1) point.z = 0;
-
-                    point.applyMatrix4(tempMatrix.getInverse(parentRotationMatrix));
-
-                    scope.object.position.copy(oldPosition);
-                    scope.object.position.add(point);
-
-                }
-
-                if (scope.translationSnap !== null) {
-
-                    if (scope.space === "local") {
-
-                        scope.object.position.applyMatrix4(tempMatrix.getInverse(worldRotationMatrix));
-
+                    if (object.parent) {
+                        object.position.add(_tempVector.setFromMatrixPosition(object.parent.matrixWorld));
                     }
 
-                    if (scope.axis.search("X") !== - 1) scope.object.position.x = Math.round(scope.object.position.x / scope.translationSnap) * scope.translationSnap;
-                    if (scope.axis.search("Y") !== - 1) scope.object.position.y = Math.round(scope.object.position.y / scope.translationSnap) * scope.translationSnap;
-                    if (scope.axis.search("Z") !== - 1) scope.object.position.z = Math.round(scope.object.position.z / scope.translationSnap) * scope.translationSnap;
-
-                    if (scope.space === "local") {
-
-                        scope.object.position.applyMatrix4(worldRotationMatrix);
-
+                    if (axis.search('X') !== -1) {
+                        object.position.x = Math.round(object.position.x / this.translationSnap) * this.translationSnap;
                     }
 
-                }
-
-            } else if (_mode === "scale") {
-
-                point.sub(offset);
-                point.multiply(parentScale);
-
-                if (scope.space === "local") {
-
-                    if (scope.axis === "XYZ") {
-
-                        scale = 1 + ((point.y) / Math.max(oldScale.x, oldScale.y, oldScale.z));
-
-                        scope.object.scale.x = oldScale.x * scale;
-                        scope.object.scale.y = oldScale.y * scale;
-                        scope.object.scale.z = oldScale.z * scale;
-
-                    } else {
-
-                        point.applyMatrix4(tempMatrix.getInverse(worldRotationMatrix));
-
-                        if (scope.axis === "X") scope.object.scale.x = oldScale.x * (1 + point.x / oldScale.x);
-                        if (scope.axis === "Y") scope.object.scale.y = oldScale.y * (1 + point.y / oldScale.y);
-                        if (scope.axis === "Z") scope.object.scale.z = oldScale.z * (1 + point.z / oldScale.z);
-
+                    if (axis.search('Y') !== -1) {
+                        object.position.y = Math.round(object.position.y / this.translationSnap) * this.translationSnap;
                     }
 
-                }
-
-            } else if (_mode === "rotate") {
-
-                point.sub(worldPosition);
-                point.multiply(parentScale);
-                tempVector.copy(offset).sub(worldPosition);
-                tempVector.multiply(parentScale);
-
-                if (scope.axis === "E") {
-
-                    point.applyMatrix4(tempMatrix.getInverse(lookAtMatrix));
-                    tempVector.applyMatrix4(tempMatrix.getInverse(lookAtMatrix));
-
-                    rotation.set(Math.atan2(point.z, point.y), Math.atan2(point.x, point.z), Math.atan2(point.y, point.x));
-                    offsetRotation.set(Math.atan2(tempVector.z, tempVector.y), Math.atan2(tempVector.x, tempVector.z), Math.atan2(tempVector.y, tempVector.x));
-
-                    tempQuaternion.setFromRotationMatrix(tempMatrix.getInverse(parentRotationMatrix));
-
-                    quaternionE.setFromAxisAngle(eye, rotation.z - offsetRotation.z);
-                    quaternionXYZ.setFromRotationMatrix(worldRotationMatrix);
-
-                    tempQuaternion.multiplyQuaternions(tempQuaternion, quaternionE);
-                    tempQuaternion.multiplyQuaternions(tempQuaternion, quaternionXYZ);
-
-                    scope.object.quaternion.copy(tempQuaternion);
-
-                } else if (scope.axis === "XYZE") {
-
-                    quaternionE.setFromEuler(point.clone().cross(tempVector).normalize()); // rotation axis
-
-                    tempQuaternion.setFromRotationMatrix(tempMatrix.getInverse(parentRotationMatrix));
-                    quaternionX.setFromAxisAngle(quaternionE, - point.clone().angleTo(tempVector));
-                    quaternionXYZ.setFromRotationMatrix(worldRotationMatrix);
-
-                    tempQuaternion.multiplyQuaternions(tempQuaternion, quaternionX);
-                    tempQuaternion.multiplyQuaternions(tempQuaternion, quaternionXYZ);
-
-                    scope.object.quaternion.copy(tempQuaternion);
-
-                } else if (scope.space === "local") {
-
-                    point.applyMatrix4(tempMatrix.getInverse(worldRotationMatrix));
-
-                    tempVector.applyMatrix4(tempMatrix.getInverse(worldRotationMatrix));
-
-                    rotation.set(Math.atan2(point.z, point.y), Math.atan2(point.x, point.z), Math.atan2(point.y, point.x));
-                    offsetRotation.set(Math.atan2(tempVector.z, tempVector.y), Math.atan2(tempVector.x, tempVector.z), Math.atan2(tempVector.y, tempVector.x));
-
-                    quaternionXYZ.setFromRotationMatrix(oldRotationMatrix);
-
-                    if (scope.rotationSnap !== null) {
-
-                        quaternionX.setFromAxisAngle(unitX, Math.round((rotation.x - offsetRotation.x) / scope.rotationSnap) * scope.rotationSnap);
-                        quaternionY.setFromAxisAngle(unitY, Math.round((rotation.y - offsetRotation.y) / scope.rotationSnap) * scope.rotationSnap);
-                        quaternionZ.setFromAxisAngle(unitZ, Math.round((rotation.z - offsetRotation.z) / scope.rotationSnap) * scope.rotationSnap);
-
-                    } else {
-
-                        quaternionX.setFromAxisAngle(unitX, rotation.x - offsetRotation.x);
-                        quaternionY.setFromAxisAngle(unitY, rotation.y - offsetRotation.y);
-                        quaternionZ.setFromAxisAngle(unitZ, rotation.z - offsetRotation.z);
-
+                    if (axis.search('Z') !== -1) {
+                        object.position.z = Math.round(object.position.z / this.translationSnap) * this.translationSnap;
                     }
 
-                    if (scope.axis === "X") quaternionXYZ.multiplyQuaternions(quaternionXYZ, quaternionX);
-                    if (scope.axis === "Y") quaternionXYZ.multiplyQuaternions(quaternionXYZ, quaternionY);
-                    if (scope.axis === "Z") quaternionXYZ.multiplyQuaternions(quaternionXYZ, quaternionZ);
-
-                    scope.object.quaternion.copy(quaternionXYZ);
-
-                } else if (scope.space === "world") {
-
-                    rotation.set(Math.atan2(point.z, point.y), Math.atan2(point.x, point.z), Math.atan2(point.y, point.x));
-                    offsetRotation.set(Math.atan2(tempVector.z, tempVector.y), Math.atan2(tempVector.x, tempVector.z), Math.atan2(tempVector.y, tempVector.x));
-
-                    tempQuaternion.setFromRotationMatrix(tempMatrix.getInverse(parentRotationMatrix));
-
-                    if (scope.rotationSnap !== null) {
-
-                        quaternionX.setFromAxisAngle(unitX, Math.round((rotation.x - offsetRotation.x) / scope.rotationSnap) * scope.rotationSnap);
-                        quaternionY.setFromAxisAngle(unitY, Math.round((rotation.y - offsetRotation.y) / scope.rotationSnap) * scope.rotationSnap);
-                        quaternionZ.setFromAxisAngle(unitZ, Math.round((rotation.z - offsetRotation.z) / scope.rotationSnap) * scope.rotationSnap);
-
-                    } else {
-
-                        quaternionX.setFromAxisAngle(unitX, rotation.x - offsetRotation.x);
-                        quaternionY.setFromAxisAngle(unitY, rotation.y - offsetRotation.y);
-                        quaternionZ.setFromAxisAngle(unitZ, rotation.z - offsetRotation.z);
-
+                    if (object.parent) {
+                        object.position.sub(_tempVector.setFromMatrixPosition(object.parent.matrixWorld));
                     }
-
-                    quaternionXYZ.setFromRotationMatrix(worldRotationMatrix);
-
-                    if (scope.axis === "X") tempQuaternion.multiplyQuaternions(tempQuaternion, quaternionX);
-                    if (scope.axis === "Y") tempQuaternion.multiplyQuaternions(tempQuaternion, quaternionY);
-                    if (scope.axis === "Z") tempQuaternion.multiplyQuaternions(tempQuaternion, quaternionZ);
-
-                    tempQuaternion.multiplyQuaternions(tempQuaternion, quaternionXYZ);
-
-                    scope.object.quaternion.copy(tempQuaternion);
 
                 }
 
             }
 
-            scope.update();
-            scope.dispatchEvent(changeEvent);
-            scope.dispatchEvent(objectChangeEvent);
+        } else if (mode === 'scale') {
 
-        }
+            if (axis.search('XYZ') !== -1) {
 
-        function onPointerUp(event) {
+                var d = pointEnd.length() / pointStart.length();
 
-            event.preventDefault(); // Prevent MouseEvent on mobile
+                if (pointEnd.dot(pointStart) < 0) d *= -1;
 
-            if (event.button !== undefined && event.button !== 0) return;
-
-            if (_dragging && (scope.axis !== null)) {
-
-                mouseUpEvent.mode = _mode;
-                scope.dispatchEvent(mouseUpEvent);
-
-            }
-
-            _dragging = false;
-
-            if ('TouchEvent' in window && event instanceof TouchEvent) {
-
-                // Force "rollover"
-
-                scope.axis = null;
-                scope.update();
-                scope.dispatchEvent(changeEvent);
+                _tempVector.set(d, d, d);
 
             } else {
 
-                onPointerHover(event);
+                _tempVector.copy(pointEnd).divide(pointStart);
+
+                if (axis.search('X') === -1) {
+                    _tempVector.x = 1;
+                }
+                if (axis.search('Y') === -1) {
+                    _tempVector.y = 1;
+                }
+                if (axis.search('Z') === -1) {
+                    _tempVector.z = 1;
+                }
+
+            }
+
+            // Apply scale
+
+            object.scale.copy(_scaleStart).multiply(_tempVector);
+
+        } else if (mode === 'rotate') {
+
+            var ROTATION_SPEED = 20 / worldPosition.distanceTo(_tempVector.setFromMatrixPosition(this.camera.matrixWorld));
+
+            var quaternion = this.space === "local" ? worldQuaternion : _identityQuaternion;
+
+            var unit = _unit[axis];
+
+            if (axis === 'E') {
+
+                _tempVector.copy(pointEnd).cross(pointStart);
+                rotationAxis.copy(eye);
+                rotationAngle = pointEnd.angleTo(pointStart) * (_tempVector.dot(eye) < 0 ? 1 : -1);
+
+            } else if (axis === 'XYZE') {
+
+                _tempVector.copy(pointEnd).sub(pointStart).cross(eye).normalize();
+                rotationAxis.copy(_tempVector);
+                rotationAngle = pointEnd.sub(pointStart).dot(_tempVector.cross(eye)) * ROTATION_SPEED;
+
+            } else if (axis === 'X' || axis === 'Y' || axis === 'Z') {
+
+                _alignVector.copy(unit).applyQuaternion(quaternion);
+
+                rotationAxis.copy(unit);
+
+                _tempVector = unit.clone();
+                _tempVector2 = pointEnd.clone().sub(pointStart);
+                if (space === 'local') {
+                    _tempVector.applyQuaternion(quaternion);
+                    _tempVector2.applyQuaternion(worldQuaternionStart);
+                }
+                rotationAngle = _tempVector2.dot(_tempVector.cross(eye).normalize()) * ROTATION_SPEED;
+
+            }
+
+            // Apply rotation snap
+
+            if (this.rotationSnap) rotationAngle = Math.round(rotationAngle / this.rotationSnap) * this.rotationSnap;
+
+            this.rotationAngle = rotationAngle;
+
+            // Apply rotate
+
+            if (space === 'local') {
+
+                object.quaternion.copy(_quaternionStart);
+                object.quaternion.multiply(_tempQuaternion.setFromAxisAngle(rotationAxis, rotationAngle));
+
+            } else {
+
+                object.quaternion.copy(_tempQuaternion.setFromAxisAngle(rotationAxis, rotationAngle));
+                object.quaternion.multiply(_quaternionStart);
 
             }
 
         }
 
-        function intersectObjects(pointer, objects) {
-
-            var rect = domElement.getBoundingClientRect();
-            var x = (pointer.clientX - rect.left) / rect.width;
-            var y = (pointer.clientY - rect.top) / rect.height;
-
-            pointerVector.set((x * 2) - 1, - (y * 2) + 1);
-            ray.setFromCamera(pointerVector, camera);
-
-            var intersections = ray.intersectObjects(objects, true);
-            return intersections[0] ? intersections[0] : false;
-
-        }
+        this.dispatchEvent(changeEvent);
+        this.dispatchEvent(objectChangeEvent);
 
     };
 
-    v3d.TransformControls.prototype = Object.create(v3d.Object3D.prototype);
-    v3d.TransformControls.prototype.constructor = v3d.TransformControls;
+    this.pointerUp = function(pointer) {
 
-}());
+        if (pointer.button !== undefined && pointer.button !== 0) return;
+
+        if (this.dragging && (this.axis !== null)) {
+
+            mouseUpEvent.mode = this.mode;
+            this.dispatchEvent(mouseUpEvent);
+
+        }
+
+        this.dragging = false;
+
+        if (pointer.button === undefined) this.axis = null;
+
+    };
+
+    // normalize mouse / touch pointer and remap {x,y} to view space.
+
+    function getPointer(event) {
+
+        var pointer = event.changedTouches ? event.changedTouches[0] : event;
+
+        var rect = domElement.getBoundingClientRect();
+
+        return {
+            x: (pointer.clientX - rect.left) / rect.width * 2 - 1,
+            y: - (pointer.clientY - rect.top) / rect.height * 2 + 1,
+            button: event.button
+        };
+
+    }
+
+    // mouse / touch event handlers
+
+    function onContext(event) {
+
+        event.preventDefault();
+
+    }
+
+    function onPointerHover(event) {
+
+        if (!scope.enabled) return;
+
+        scope.pointerHover(getPointer(event));
+
+    }
+
+    function onPointerDown(event) {
+
+        if (!scope.enabled) return;
+
+        event.preventDefault();
+
+        scope.pointerHover(getPointer(event));
+        scope.pointerDown(getPointer(event));
+
+    }
+
+    function onPointerMove(event) {
+
+        if (!scope.enabled) return;
+
+        event.preventDefault();
+
+        scope.pointerMove(getPointer(event));
+
+    }
+
+    function onPointerUp(event) {
+
+        if (!scope.enabled) return;
+
+        event.preventDefault(); // Prevent MouseEvent on mobile
+
+        scope.pointerUp(getPointer(event));
+
+    }
+
+    // TODO: depricate
+
+    this.getMode = function() {
+
+        return scope.mode;
+
+    };
+
+    this.setMode = function(mode) {
+
+        scope.mode = mode;
+
+    };
+
+    this.setTranslationSnap = function(translationSnap) {
+
+        scope.translationSnap = translationSnap;
+
+    };
+
+    this.setRotationSnap = function(rotationSnap) {
+
+        scope.rotationSnap = rotationSnap;
+
+    };
+
+    this.setSize = function(size) {
+
+        scope.size = size;
+
+    };
+
+    this.setSpace = function(space) {
+
+        scope.space = space;
+
+    };
+
+    this.update = function() {
+
+        console.warn('v3d.TransformControls: update function has been depricated.');
+
+    };
+
+};
+
+v3d.TransformControls.prototype = Object.assign(Object.create(v3d.Object3D.prototype), {
+
+  constructor: v3d.TransformControls,
+
+  isTransformControls: true
+
+});
+
+
+v3d.TransformControlsGizmo = function() {
+
+    'use strict';
+
+    v3d.Object3D.call(this);
+
+    this.type = 'TransformControlsGizmo';
+
+    // shared materials
+
+    var gizmoMaterial = new v3d.MeshBasicMaterial({
+        depthTest: false,
+        depthWrite: false,
+        transparent: true,
+        side: v3d.DoubleSide,
+        fog: false
+    });
+
+    var gizmoLineMaterial = new v3d.LineBasicMaterial({
+        depthTest: false,
+        depthWrite: false,
+        transparent: true,
+        linewidth: 1,
+        fog: false
+    });
+
+    // Make unique material for each axis/color
+
+    var matInvisible = gizmoMaterial.clone();
+    matInvisible.opacity = 0.15;
+
+    var matHelper = gizmoMaterial.clone();
+    matHelper.opacity = 0.33;
+
+    var matRed = gizmoMaterial.clone();
+    matRed.color.set(0xff0000);
+
+    var matGreen = gizmoMaterial.clone();
+    matGreen.color.set(0x00ff00);
+
+    var matBlue = gizmoMaterial.clone();
+    matBlue.color.set(0x0000ff);
+
+    var matWhiteTransperent = gizmoMaterial.clone();
+    matWhiteTransperent.opacity = 0.25;
+
+    var matYellowTransparent = matWhiteTransperent.clone();
+    matYellowTransparent.color.set(0xffff00);
+
+    var matCyanTransparent = matWhiteTransperent.clone();
+    matCyanTransparent.color.set(0x00ffff);
+
+    var matMagentaTransparent = matWhiteTransperent.clone();
+    matMagentaTransparent.color.set(0xff00ff);
+
+    var matYellow = gizmoMaterial.clone();
+    matYellow.color.set(0xffff00);
+
+    var matLineRed = gizmoLineMaterial.clone();
+    matLineRed.color.set(0xff0000);
+
+    var matLineGreen = gizmoLineMaterial.clone();
+    matLineGreen.color.set(0x00ff00);
+
+    var matLineBlue = gizmoLineMaterial.clone();
+    matLineBlue.color.set(0x0000ff);
+
+    var matLineCyan = gizmoLineMaterial.clone();
+    matLineCyan.color.set(0x00ffff);
+
+    var matLineMagenta = gizmoLineMaterial.clone();
+    matLineMagenta.color.set(0xff00ff);
+
+    var matLineYellow = gizmoLineMaterial.clone();
+    matLineYellow.color.set(0xffff00);
+
+    var matLineGray = gizmoLineMaterial.clone();
+    matLineGray.color.set(0x787878);
+
+    var matLineYellowTransparent = matLineYellow.clone();
+    matLineYellowTransparent.opacity = 0.25;
+
+    // reusable geometry
+
+    var arrowGeometry = new v3d.CylinderBufferGeometry(0, 0.05, 0.2, 12, 1, false);
+
+    var scaleHandleGeometry = new v3d.BoxBufferGeometry(0.125, 0.125, 0.125);
+
+    var lineGeometry = new v3d.BufferGeometry();
+    lineGeometry.addAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0,    1, 0, 0], 3));
+
+    var CircleGeometry = function(radius, arc) {
+
+        var geometry = new v3d.BufferGeometry();
+        var vertices = [];
+
+        for (var i = 0; i <= 64 * arc; ++i) {
+
+            vertices.push(0, Math.cos(i / 32 * Math.PI) * radius, Math.sin(i / 32 * Math.PI) * radius);
+
+        }
+
+        geometry.addAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
+
+        return geometry;
+
+    };
+
+    // Special geometry for transform helper. If scaled with position vector it spans from [0,0,0] to position
+
+    var TranslateHelperGeometry = function(radius, arc) {
+
+        var geometry = new v3d.BufferGeometry()
+
+        geometry.addAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0, 1, 1, 1], 3));
+
+        return geometry;
+
+    };
+
+    // Gizmo definitions - custom hierarchy definitions for setupGizmo() function
+
+    var gizmoTranslate = {
+        X: [
+            [new v3d.Mesh(arrowGeometry, matRed), [1, 0, 0], [0, 0, -Math.PI / 2], null, 'fwd'],
+            [new v3d.Mesh(arrowGeometry, matRed), [1, 0, 0], [0, 0, Math.PI / 2], null, 'bwd'],
+            [new v3d.Line(lineGeometry, matLineRed)]
+        ],
+        Y: [
+            [new v3d.Mesh(arrowGeometry, matGreen), [0, 1, 0], null, null, 'fwd'],
+            [new v3d.Mesh(arrowGeometry, matGreen), [0, 1, 0], [Math.PI, 0, 0], null, 'bwd'],
+            [new v3d.Line(lineGeometry, matLineGreen), null, [0, 0, Math.PI / 2]]
+        ],
+        Z: [
+            [new v3d.Mesh(arrowGeometry, matBlue), [0, 0, 1], [Math.PI / 2, 0, 0], null, 'fwd'],
+            [new v3d.Mesh(arrowGeometry, matBlue), [0, 0, 1], [-Math.PI / 2, 0, 0], null, 'bwd'],
+            [new v3d.Line(lineGeometry, matLineBlue), null, [0, -Math.PI / 2, 0]]
+        ],
+        XYZ: [
+            [new v3d.Mesh(new v3d.OctahedronBufferGeometry(0.1, 0), matWhiteTransperent), [0, 0, 0], [0, 0, 0]]
+        ],
+        XY: [
+            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.295, 0.295), matYellowTransparent), [0.15, 0.15, 0]],
+            [new v3d.Line(lineGeometry, matLineYellow), [0.18, 0.3, 0], null, [0.125, 1, 1]],
+            [new v3d.Line(lineGeometry, matLineYellow), [0.3, 0.18, 0], [0, 0, Math.PI / 2], [0.125, 1, 1]]
+        ],
+        YZ: [
+            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.295, 0.295), matCyanTransparent), [0, 0.15, 0.15], [0, Math.PI / 2, 0]],
+            [new v3d.Line(lineGeometry, matLineCyan), [0, 0.18, 0.3], [0, 0, Math.PI / 2], [0.125, 1, 1]],
+            [new v3d.Line(lineGeometry, matLineCyan), [0, 0.3, 0.18], [0, -Math.PI / 2, 0], [0.125, 1, 1]]
+        ],
+        XZ: [
+            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.295, 0.295), matMagentaTransparent), [0.15, 0, 0.15], [-Math.PI / 2, 0, 0]],
+            [new v3d.Line(lineGeometry, matLineMagenta), [0.18, 0, 0.3], null, [0.125, 1, 1]],
+            [new v3d.Line(lineGeometry, matLineMagenta), [0.3, 0, 0.18], [0, -Math.PI / 2, 0], [0.125, 1, 1]]
+        ]
+    };
+
+    var pickerTranslate = {
+        X: [
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 1, 4, 1, false), matInvisible), [0.6, 0, 0], [0, 0, -Math.PI / 2]]
+        ],
+        Y: [
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 1, 4, 1, false), matInvisible), [0, 0.6, 0]]
+        ],
+        Z: [
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 1, 4, 1, false), matInvisible), [0, 0, 0.6], [Math.PI / 2, 0, 0]]
+        ],
+        XYZ: [
+            [new v3d.Mesh(new v3d.OctahedronBufferGeometry(0.2, 0), matInvisible)]
+        ],
+        XY: [
+            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.4, 0.4), matInvisible), [0.2, 0.2, 0]]
+        ],
+        YZ: [
+            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.4, 0.4), matInvisible), [0, 0.2, 0.2], [0, Math.PI / 2, 0]]
+        ],
+        XZ: [
+            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.4, 0.4), matInvisible), [0.2, 0, 0.2], [-Math.PI / 2, 0, 0]]
+        ]
+    };
+
+    var helperTranslate = {
+        START: [
+            [new v3d.Mesh(new v3d.OctahedronBufferGeometry(0.01, 2), matHelper), null, null, null, 'helper']
+        ],
+        END: [
+            [new v3d.Mesh(new v3d.OctahedronBufferGeometry(0.01, 2), matHelper), null, null, null, 'helper']
+        ],
+        DELTA: [
+            [new v3d.Line(TranslateHelperGeometry(), matHelper), null, null, null, 'helper']
+        ],
+        X: [
+            [new v3d.Line(lineGeometry, matHelper.clone()), [-1e3, 0, 0], null, [1e6, 1, 1], 'helper']
+        ],
+        Y: [
+            [new v3d.Line(lineGeometry, matHelper.clone()), [0, -1e3, 0], [0, 0, Math.PI / 2], [1e6, 1, 1], 'helper']
+        ],
+        Z: [
+            [new v3d.Line(lineGeometry, matHelper.clone()), [0, 0, -1e3], [0, -Math.PI / 2, 0], [1e6, 1, 1], 'helper']
+        ]
+    };
+
+    var gizmoRotate = {
+        X: [
+            [new v3d.Line(CircleGeometry(1, 0.5), matLineRed)],
+            [new v3d.Mesh(new v3d.OctahedronBufferGeometry(0.04, 0), matRed), [0, 0, 0.99], null, [1, 3, 1]],
+        ],
+        Y: [
+            [new v3d.Line(CircleGeometry(1, 0.5), matLineGreen), null, [0, 0, -Math.PI / 2]],
+            [new v3d.Mesh(new v3d.OctahedronBufferGeometry(0.04, 0), matGreen), [0, 0, 0.99], null, [3, 1, 1]],
+        ],
+        Z: [
+            [new v3d.Line(CircleGeometry(1, 0.5), matLineBlue), null, [0, Math.PI / 2, 0]],
+            [new v3d.Mesh(new v3d.OctahedronBufferGeometry(0.04, 0), matBlue), [0.99, 0, 0], null, [1, 3, 1]],
+        ],
+        E: [
+            [new v3d.Line(CircleGeometry(1.25, 1), matLineYellowTransparent), null, [0, Math.PI / 2, 0]],
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.03, 0, 0.15, 4, 1, false), matLineYellowTransparent), [1.17, 0, 0], [0, 0, -Math.PI / 2], [1, 1, 0.001]],
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.03, 0, 0.15, 4, 1, false), matLineYellowTransparent), [-1.17, 0, 0], [0, 0, Math.PI / 2], [1, 1, 0.001]],
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.03, 0, 0.15, 4, 1, false), matLineYellowTransparent), [0, -1.17, 0], [Math.PI, 0, 0], [1, 1, 0.001]],
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.03, 0, 0.15, 4, 1, false), matLineYellowTransparent), [0, 1.17, 0], [0, 0, 0], [1, 1, 0.001]],
+        ],
+        XYZE: [
+            [new v3d.Line(CircleGeometry(1, 1), matLineGray), null, [0, Math.PI / 2, 0]]
+        ]
+    };
+
+    var helperRotate = {
+        AXIS: [
+            [new v3d.Line(lineGeometry, matHelper.clone()), [-1e3, 0, 0], null, [1e6, 1, 1], 'helper']
+        ]
+    };
+
+    var pickerRotate = {
+        X: [
+            [new v3d.Mesh(new v3d.TorusBufferGeometry(1, 0.1, 4, 24), matInvisible), [0, 0, 0], [0, -Math.PI / 2, -Math.PI / 2]],
+        ],
+        Y: [
+            [new v3d.Mesh(new v3d.TorusBufferGeometry(1, 0.1, 4, 24), matInvisible), [0, 0, 0], [Math.PI / 2, 0, 0]],
+        ],
+        Z: [
+            [new v3d.Mesh(new v3d.TorusBufferGeometry(1, 0.1, 4, 24), matInvisible), [0, 0, 0], [0, 0, -Math.PI / 2]],
+        ],
+        E: [
+            [new v3d.Mesh(new v3d.TorusBufferGeometry(1.25, 0.1, 2, 24), matInvisible)]
+        ],
+        XYZE: [
+            [new v3d.Mesh(new v3d.SphereBufferGeometry(0.7, 10, 8), matInvisible)]
+        ]
+    };
+
+    var gizmoScale = {
+        X: [
+            [new v3d.Mesh(scaleHandleGeometry, matRed), [0.8, 0, 0], [0, 0, -Math.PI / 2]],
+            [new v3d.Line(lineGeometry, matLineRed), null, null, [0.8, 1, 1]]
+        ],
+        Y: [
+            [new v3d.Mesh(scaleHandleGeometry, matGreen), [0, 0.8, 0]],
+            [new v3d.Line(lineGeometry, matLineGreen), null, [0, 0, Math.PI / 2], [0.8, 1, 1]]
+        ],
+        Z: [
+            [new v3d.Mesh(scaleHandleGeometry, matBlue), [0, 0, 0.8], [Math.PI / 2, 0, 0]],
+            [new v3d.Line(lineGeometry, matLineBlue), null, [0, -Math.PI / 2, 0], [0.8, 1, 1]]
+        ],
+        XY: [
+            [new v3d.Mesh(scaleHandleGeometry, matYellowTransparent), [0.85, 0.85, 0], null, [2, 2, 0.2]],
+            [new v3d.Line(lineGeometry, matLineYellow), [0.855, 0.98, 0], null, [0.125, 1, 1]],
+            [new v3d.Line(lineGeometry, matLineYellow), [0.98, 0.855, 0], [0, 0, Math.PI / 2], [0.125, 1, 1]]
+        ],
+        YZ: [
+            [new v3d.Mesh(scaleHandleGeometry, matCyanTransparent), [0, 0.85, 0.85], null, [0.2, 2, 2]],
+            [new v3d.Line(lineGeometry, matLineCyan), [0, 0.855, 0.98], [0, 0, Math.PI / 2], [0.125, 1, 1]],
+            [new v3d.Line(lineGeometry, matLineCyan), [0, 0.98, 0.855], [0, -Math.PI / 2, 0], [0.125, 1, 1]]
+        ],
+        XZ: [
+            [new v3d.Mesh(scaleHandleGeometry, matMagentaTransparent), [0.85, 0, 0.85], null, [2, 0.2, 2]],
+            [new v3d.Line(lineGeometry, matLineMagenta), [0.855, 0, 0.98], null, [0.125, 1, 1]],
+            [new v3d.Line(lineGeometry, matLineMagenta), [0.98, 0, 0.855], [0, -Math.PI / 2, 0], [0.125, 1, 1]]
+        ],
+        XYZX: [
+            [new v3d.Mesh(new v3d.BoxBufferGeometry(0.125, 0.125, 0.125), matWhiteTransperent), [1.1, 0, 0]],
+        ],
+        XYZY: [
+            [new v3d.Mesh(new v3d.BoxBufferGeometry(0.125, 0.125, 0.125), matWhiteTransperent), [0, 1.1, 0]],
+        ],
+        XYZZ: [
+            [new v3d.Mesh(new v3d.BoxBufferGeometry(0.125, 0.125, 0.125), matWhiteTransperent), [0, 0, 1.1]],
+        ]
+    };
+
+    var pickerScale = {
+        X: [
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 0.8, 4, 1, false), matInvisible), [0.5, 0, 0], [0, 0, -Math.PI / 2]]
+        ],
+        Y: [
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 0.8, 4, 1, false), matInvisible), [0, 0.5, 0]]
+        ],
+        Z: [
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 0.8, 4, 1, false), matInvisible), [0, 0, 0.5], [Math.PI / 2, 0, 0]]
+        ],
+        XY: [
+            [new v3d.Mesh(scaleHandleGeometry, matInvisible), [0.85, 0.85, 0], null, [3, 3, 0.2]],
+        ],
+        YZ: [
+            [new v3d.Mesh(scaleHandleGeometry, matInvisible), [0, 0.85, 0.85], null, [0.2, 3, 3]],
+        ],
+        XZ: [
+            [new v3d.Mesh(scaleHandleGeometry, matInvisible), [0.85, 0, 0.85], null, [3, 0.2, 3]],
+        ],
+        XYZX: [
+            [new v3d.Mesh(new v3d.BoxBufferGeometry(0.2, 0.2, 0.2), matInvisible), [1.1, 0, 0]],
+        ],
+        XYZY: [
+            [new v3d.Mesh(new v3d.BoxBufferGeometry(0.2, 0.2, 0.2), matInvisible), [0, 1.1, 0]],
+        ],
+        XYZZ: [
+            [new v3d.Mesh(new v3d.BoxBufferGeometry(0.2, 0.2, 0.2), matInvisible), [0, 0, 1.1]],
+        ]
+    };
+
+    var helperScale = {
+        X: [
+            [new v3d.Line(lineGeometry, matHelper.clone()), [-1e3, 0, 0], null, [1e6, 1, 1], 'helper']
+        ],
+        Y: [
+            [new v3d.Line(lineGeometry, matHelper.clone()), [0, -1e3, 0], [0, 0, Math.PI / 2], [1e6, 1, 1], 'helper']
+        ],
+        Z: [
+            [new v3d.Line(lineGeometry, matHelper.clone()), [0, 0, -1e3], [0, -Math.PI / 2, 0], [1e6, 1, 1], 'helper']
+        ]
+    };
+
+    // Creates an Object3D with gizmos described in custom hierarchy definition.
+
+    var setupGizmo = function(gizmoMap) {
+
+        var gizmo = new v3d.Object3D();
+
+        for (var name in gizmoMap) {
+
+            for (var i = gizmoMap[name].length; i --;) {
+
+                var object = gizmoMap[name][i][0].clone();
+                var position = gizmoMap[name][i][1];
+                var rotation = gizmoMap[name][i][2];
+                var scale = gizmoMap[name][i][3];
+                var tag = gizmoMap[name][i][4];
+
+                // name and tag properties are essential for picking and updating logic.
+                object.name = name;
+                object.tag = tag;
+
+                if (position) {
+                    object.position.set(position[0], position[1], position[2]);
+                }
+                if (rotation) {
+                    object.rotation.set(rotation[0], rotation[1], rotation[2]);
+                }
+                if (scale) {
+                    object.scale.set(scale[0], scale[1], scale[2]);
+                }
+
+                object.updateMatrix();
+
+                var tempGeometry = object.geometry.clone();
+                tempGeometry.applyMatrix(object.matrix);
+                object.geometry = tempGeometry;
+
+                object.position.set(0, 0, 0);
+                object.rotation.set(0, 0, 0);
+                object.scale.set(1, 1, 1);
+
+                gizmo.add(object);
+
+            }
+
+        }
+
+        return gizmo;
+
+    };
+
+    // Reusable utility variables
+
+    var tempVector = new v3d.Vector3(0, 0, 0);
+    var tempEuler = new v3d.Euler();
+    var alignVector = new v3d.Vector3(0, 1, 0);
+    var zeroVector = new v3d.Vector3(0, 0, 0);
+    var lookAtMatrix = new v3d.Matrix4();
+    var tempQuaternion = new v3d.Quaternion();
+    var tempQuaternion2 = new v3d.Quaternion();
+    var identityQuaternion = new v3d.Quaternion();
+
+    var unitX = new v3d.Vector3(1, 0, 0);
+    var unitY = new v3d.Vector3(0, 1, 0);
+    var unitZ = new v3d.Vector3(0, 0, 1);
+
+    // Gizmo creation
+
+    this.gizmo = {};
+    this.picker = {};
+    this.helper = {};
+
+    this.add(this.gizmo["translate"] = setupGizmo(gizmoTranslate));
+    this.add(this.gizmo["rotate"] = setupGizmo(gizmoRotate));
+    this.add(this.gizmo["scale"] = setupGizmo(gizmoScale));
+    this.add(this.picker["translate"] = setupGizmo(pickerTranslate));
+    this.add(this.picker["rotate"] = setupGizmo(pickerRotate));
+    this.add(this.picker["scale"] = setupGizmo(pickerScale));
+    this.add(this.helper["translate"] = setupGizmo(helperTranslate));
+    this.add(this.helper["rotate"] = setupGizmo(helperRotate));
+    this.add(this.helper["scale"] = setupGizmo(helperScale));
+
+    // Pickers should be hidden always
+
+    this.picker["translate"].visible = false;
+    this.picker["rotate"].visible = false;
+    this.picker["scale"].visible = false;
+
+    // updateMatrixWorld will update transformations and appearance of individual handles
+
+    this.updateMatrixWorld = function() {
+
+        var space = this.space;
+
+        if (this.mode === 'scale') space = 'local'; // scale always oriented to local rotation
+
+        var quaternion = space === "local" ? this.worldQuaternion : identityQuaternion;
+
+        // Show only gizmos for current transform mode
+
+        this.gizmo["translate"].visible = this.mode === "translate";
+        this.gizmo["rotate"].visible = this.mode === "rotate";
+        this.gizmo["scale"].visible = this.mode === "scale";
+
+        this.helper["translate"].visible = this.mode === "translate";
+        this.helper["rotate"].visible = this.mode === "rotate";
+        this.helper["scale"].visible = this.mode === "scale";
+
+
+        var handles = [];
+        handles = handles.concat(this.picker[this.mode].children);
+        handles = handles.concat(this.gizmo[this.mode].children);
+        handles = handles.concat(this.helper[this.mode].children);
+
+        for (var i = 0; i < handles.length; i++) {
+
+            var handle = handles[i];
+
+            // hide aligned to camera
+
+            handle.visible = true;
+            handle.rotation.set(0, 0, 0);
+            handle.position.copy(this.worldPosition);
+
+            var eyeDistance = this.worldPosition.distanceTo(this.cameraPosition);
+            handle.scale.set(1, 1, 1).multiplyScalar(eyeDistance * this.size / 7);
+
+            // TODO: simplify helpers and consider decoupling from gizmo
+
+            if (handle.tag === 'helper') {
+
+                handle.visible = false;
+
+                if (handle.name === 'AXIS') {
+
+                    handle.position.copy(this.worldPositionStart);
+                    handle.visible = !!this.axis;
+
+                    if (this.axis === 'X') {
+
+                        tempQuaternion.setFromEuler(tempEuler.set(0, 0, 0));
+                        handle.quaternion.copy(quaternion).multiply(tempQuaternion);
+
+                        if (Math.abs(alignVector.copy(unitX).applyQuaternion(quaternion).dot(this.eye)) > 0.9) {
+                            handle.visible = false;
+                        }
+
+                    }
+
+                    if (this.axis === 'Y') {
+
+                        tempQuaternion.setFromEuler(tempEuler.set(0, 0, Math.PI / 2));
+                        handle.quaternion.copy(quaternion).multiply(tempQuaternion);
+
+                        if (Math.abs(alignVector.copy(unitY).applyQuaternion(quaternion).dot(this.eye)) > 0.9) {
+                            handle.visible = false;
+                        }
+
+                    }
+
+                    if (this.axis === 'Z') {
+
+                        tempQuaternion.setFromEuler(tempEuler.set(0, Math.PI / 2, 0));
+                        handle.quaternion.copy(quaternion).multiply(tempQuaternion);
+
+                        if (Math.abs(alignVector.copy(unitZ).applyQuaternion(quaternion).dot(this.eye)) > 0.9) {
+                            handle.visible = false;
+                        }
+
+                    }
+
+                    if (this.axis === 'XYZE') {
+
+                        tempQuaternion.setFromEuler(tempEuler.set(0, Math.PI / 2, 0));
+                        alignVector.copy(this.rotationAxis);
+                        handle.quaternion.setFromRotationMatrix(lookAtMatrix.lookAt(zeroVector, alignVector, unitY));
+                        handle.quaternion.multiply(tempQuaternion);
+                        handle.visible = this.dragging;
+
+                    }
+
+                    if (this.axis === 'E') {
+
+                        handle.visible = false;
+
+                    }
+
+
+                } else if (handle.name === 'START') {
+
+                    handle.position.copy(this.worldPositionStart);
+                    handle.visible = this.dragging;
+
+                } else if (handle.name === 'END') {
+
+                    handle.position.copy(this.worldPosition);
+                    handle.visible = this.dragging;
+
+                } else if (handle.name === 'DELTA') {
+
+                    handle.position.copy(this.worldPositionStart);
+                    handle.quaternion.copy(this.worldQuaternionStart);
+                    tempVector.set(1e-10, 1e-10, 1e-10).add(this.worldPositionStart).sub(this.worldPosition).multiplyScalar(-1);
+                    tempVector.applyQuaternion(this.worldQuaternionStart.clone().inverse());
+                    handle.scale.copy(tempVector);
+                    handle.visible = this.dragging;
+
+                } else {
+
+                    handle.quaternion.copy(quaternion);
+
+                    if (this.dragging) {
+
+                        handle.position.copy(this.worldPositionStart);
+
+                    } else {
+
+                        handle.position.copy(this.worldPosition);
+
+                    }
+
+                    if (this.axis) {
+
+                        handle.visible = this.axis.search(handle.name) !== -1;
+
+                    }
+
+                }
+
+                // If updating helper, skip rest of the loop
+                continue;
+
+            }
+
+            // Align handles to current local or world rotation
+
+            handle.quaternion.copy(quaternion);
+
+            if (this.mode === 'translate' || this.mode === 'scale') {
+
+                // Hide translate and scale axis facing the camera
+
+                var AXIS_HIDE_TRESHOLD = 0.99;
+                var PLANE_HIDE_TRESHOLD = 0.2;
+                var AXIS_FLIP_TRESHOLD = -0.4;
+
+
+                if (handle.name === 'X' || handle.name === 'XYZX') {
+                    if (Math.abs(alignVector.copy(unitX).applyQuaternion(quaternion).dot(this.eye)) > AXIS_HIDE_TRESHOLD) {
+                        handle.scale.set(1e-10, 1e-10, 1e-10);
+                        handle.visible = false;
+                    }
+                }
+                if (handle.name === 'Y' || handle.name === 'XYZY') {
+                    if (Math.abs(alignVector.copy(unitY).applyQuaternion(quaternion).dot(this.eye)) > AXIS_HIDE_TRESHOLD) {
+                        handle.scale.set(1e-10, 1e-10, 1e-10);
+                        handle.visible = false;
+                    }
+                }
+                if (handle.name === 'Z' || handle.name === 'XYZZ') {
+                    if (Math.abs(alignVector.copy(unitZ).applyQuaternion(quaternion).dot(this.eye)) > AXIS_HIDE_TRESHOLD) {
+                        handle.scale.set(1e-10, 1e-10, 1e-10);
+                        handle.visible = false;
+                    }
+                }
+                if (handle.name === 'XY') {
+                    if (Math.abs(alignVector.copy(unitZ).applyQuaternion(quaternion).dot(this.eye)) < PLANE_HIDE_TRESHOLD) {
+                        handle.scale.set(1e-10, 1e-10, 1e-10);
+                        handle.visible = false;
+                    }
+                }
+                if (handle.name === 'YZ') {
+                    if (Math.abs(alignVector.copy(unitX).applyQuaternion(quaternion).dot(this.eye)) < PLANE_HIDE_TRESHOLD) {
+                        handle.scale.set(1e-10, 1e-10, 1e-10);
+                        handle.visible = false;
+                    }
+                }
+                if (handle.name === 'XZ') {
+                    if (Math.abs(alignVector.copy(unitY).applyQuaternion(quaternion).dot(this.eye)) < PLANE_HIDE_TRESHOLD) {
+                        handle.scale.set(1e-10, 1e-10, 1e-10);
+                        handle.visible = false;
+                    }
+                }
+
+                // Flip translate and scale axis ocluded behind another axis
+
+                if (handle.name.search('X') !== -1) {
+                    if (alignVector.copy(unitX).applyQuaternion(quaternion).dot(this.eye) < AXIS_FLIP_TRESHOLD) {
+                        if (handle.tag === 'fwd') {
+                            handle.visible = false;
+                        } else {
+                            handle.scale.x *= -1;
+                        }
+                    } else if (handle.tag === 'bwd') {
+                        handle.visible = false;
+                    }
+                }
+
+                if (handle.name.search('Y') !== -1) {
+                    if (alignVector.copy(unitY).applyQuaternion(quaternion).dot(this.eye) < AXIS_FLIP_TRESHOLD) {
+                        if (handle.tag === 'fwd') {
+                            handle.visible = false;
+                        } else {
+                            handle.scale.y *= -1;
+                        }
+                    } else if (handle.tag === 'bwd') {
+                        handle.visible = false;
+                    }
+                }
+
+                if (handle.name.search('Z') !== -1) {
+                    if (alignVector.copy(unitZ).applyQuaternion(quaternion).dot(this.eye) < AXIS_FLIP_TRESHOLD) {
+                        if (handle.tag === 'fwd') {
+                            handle.visible = false;
+                        } else {
+                            handle.scale.z *= -1;
+                        }
+                    } else if (handle.tag === 'bwd') {
+                        handle.visible = false;
+                    }
+                }
+
+            } else if (this.mode === 'rotate') {
+
+                // Align handles to current local or world rotation
+
+                tempQuaternion2.copy(quaternion);
+                alignVector.copy(this.eye).applyQuaternion(tempQuaternion.copy(quaternion).inverse());
+
+                if (handle.name.search("E") !== - 1) {
+
+                    handle.quaternion.setFromRotationMatrix(lookAtMatrix.lookAt(this.eye, zeroVector, unitY));
+
+                }
+
+                if (handle.name === 'X') {
+
+                    tempQuaternion.setFromAxisAngle(unitX, Math.atan2(-alignVector.y, alignVector.z));
+                    tempQuaternion.multiplyQuaternions(tempQuaternion2, tempQuaternion);
+                    handle.quaternion.copy(tempQuaternion);
+
+                }
+
+                if (handle.name === 'Y') {
+
+                    tempQuaternion.setFromAxisAngle(unitY, Math.atan2(alignVector.x, alignVector.z));
+                    tempQuaternion.multiplyQuaternions(tempQuaternion2, tempQuaternion);
+                    handle.quaternion.copy(tempQuaternion);
+
+                }
+
+                if (handle.name === 'Z') {
+
+                    tempQuaternion.setFromAxisAngle(unitZ, Math.atan2(alignVector.y, alignVector.x));
+                    tempQuaternion.multiplyQuaternions(tempQuaternion2, tempQuaternion);
+                    handle.quaternion.copy(tempQuaternion);
+
+                }
+
+            }
+
+            // Hide disabled axes
+            handle.visible = handle.visible && (handle.name.indexOf("X") === -1 || this.showX);
+            handle.visible = handle.visible && (handle.name.indexOf("Y") === -1 || this.showY);
+            handle.visible = handle.visible && (handle.name.indexOf("Z") === -1 || this.showZ);
+            handle.visible = handle.visible && (handle.name.indexOf("E") === -1 || (this.showX && this.showY && this.showZ));
+
+            // highlight selected axis
+
+            handle.material._opacity = handle.material._opacity || handle.material.opacity;
+            handle.material._color = handle.material._color || handle.material.color.clone();
+
+            handle.material.color.copy(handle.material._color);
+            handle.material.opacity = handle.material._opacity;
+
+            if (!this.enabled) {
+
+                handle.material.opacity *= 0.5;
+                handle.material.color.lerp(new v3d.Color(1, 1, 1), 0.5);
+
+            } else if (this.axis) {
+
+                if (handle.name === this.axis) {
+
+                    handle.material.opacity = 1.0;
+                    handle.material.color.lerp(new v3d.Color(1, 1, 1), 0.5);
+
+                } else if (this.axis.split('').some(function(a) { return handle.name === a; })) {
+
+                    handle.material.opacity = 1.0;
+                    handle.material.color.lerp(new v3d.Color(1, 1, 1), 0.5);
+
+                } else {
+
+                    handle.material.opacity *= 0.25;
+                    handle.material.color.lerp(new v3d.Color(1, 1, 1), 0.5);
+
+                }
+
+            }
+
+        }
+
+        v3d.Object3D.prototype.updateMatrixWorld.call(this);
+
+    };
+
+};
+
+v3d.TransformControlsGizmo.prototype = Object.assign(Object.create(v3d.Object3D.prototype), {
+
+    constructor: v3d.TransformControlsGizmo,
+
+    isTransformControlsGizmo: true
+
+});
+
+
+v3d.TransformControlsPlane = function() {
+
+    'use strict';
+
+    v3d.Mesh.call(this,
+        new v3d.PlaneBufferGeometry(100000, 100000, 2, 2),
+        new v3d.MeshBasicMaterial({ visible: false, wireframe: true, side: v3d.DoubleSide, transparent: true, opacity: 0.1 })
+    );
+
+    this.type = 'TransformControlsPlane';
+
+    var unitX = new v3d.Vector3(1, 0, 0);
+    var unitY = new v3d.Vector3(0, 1, 0);
+    var unitZ = new v3d.Vector3(0, 0, 1);
+
+    var tempVector = new v3d.Vector3();
+    var dirVector = new v3d.Vector3();
+    var alignVector = new v3d.Vector3();
+    var tempMatrix = new v3d.Matrix4();
+    var identityQuaternion = new v3d.Quaternion();
+
+    this.updateMatrixWorld = function() {
+
+        var space = this.space;
+
+        this.position.copy(this.worldPosition);
+
+        if (this.mode === 'scale') space = 'local'; // scale always oriented to local rotation
+
+        unitX.set(1, 0, 0).applyQuaternion(space === "local" ? this.worldQuaternion : identityQuaternion);
+        unitY.set(0, 1, 0).applyQuaternion(space === "local" ? this.worldQuaternion : identityQuaternion);
+        unitZ.set(0, 0, 1).applyQuaternion(space === "local" ? this.worldQuaternion : identityQuaternion);
+
+        // Align the plane for current transform mode, axis and space.
+
+        alignVector.copy(unitY);
+
+        switch (this.mode) {
+            case 'translate':
+            case 'scale':
+                switch (this.axis) {
+                    case 'X':
+                        alignVector.copy(this.eye).cross(unitX);
+                        dirVector.copy(unitX).cross(alignVector);
+                        break;
+                    case 'Y':
+                        alignVector.copy(this.eye).cross(unitY);
+                        dirVector.copy(unitY).cross(alignVector);
+                        break;
+                    case 'Z':
+                        alignVector.copy(this.eye).cross(unitZ);
+                        dirVector.copy(unitZ).cross(alignVector);
+                        break;
+                    case 'XY':
+                        dirVector.copy(unitZ);
+                        break;
+                    case 'YZ':
+                        dirVector.copy(unitX);
+                        break;
+                    case 'XZ':
+                        alignVector.copy(unitZ);
+                        dirVector.copy(unitY);
+                        break;
+                    case 'XYZ':
+                    case 'E':
+                        dirVector.set(0, 0, 0);
+                        break;
+                }
+                break;
+            case 'rotate':
+            default:
+                // special case for rotate
+                dirVector.set(0, 0, 0);
+        }
+
+        if (dirVector.length() === 0) {
+
+            // If in rotate mode, make the plane parallel to camera
+            this.quaternion.copy(this.cameraQuaternion);
+
+        } else {
+
+            tempMatrix.lookAt(tempVector.set(0, 0, 0), dirVector, alignVector);
+
+            this.quaternion.setFromRotationMatrix(tempMatrix);
+
+        }
+
+        v3d.Object3D.prototype.updateMatrixWorld.call(this);
+
+    };
+
+};
+
+v3d.TransformControlsPlane.prototype = Object.assign(Object.create(v3d.Mesh.prototype), {
+
+    constructor: v3d.TransformControlsPlane,
+
+    isTransformControlsPlane: true
+
+});

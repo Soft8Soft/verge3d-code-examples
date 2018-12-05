@@ -158,7 +158,7 @@ v3d.GPUParticleSystem = function(options) {
 
     var i;
 
-    for (i = 1e5; i > 0; i--) {
+    for (i = 1e5; i > 0; i --) {
 
         this.rand.push(Math.random() - 0.5);
 
@@ -462,13 +462,13 @@ v3d.GPUParticleContainer = function(maxParticles, particleSystem) {
                 lifeTimeAttribute.updateRange.offset = 0;
 
                 // Use -1 to update the entire buffer, see #11476
-                positionStartAttribute.updateRange.count = -1;
-                startTimeAttribute.updateRange.count = -1;
-                velocityAttribute.updateRange.count = -1;
-                turbulenceAttribute.updateRange.count = -1;
-                colorAttribute.updateRange.count = -1;
-                sizeAttribute.updateRange.count = -1;
-                lifeTimeAttribute.updateRange.count = -1;
+                positionStartAttribute.updateRange.count = - 1;
+                startTimeAttribute.updateRange.count = - 1;
+                velocityAttribute.updateRange.count = - 1;
+                turbulenceAttribute.updateRange.count = - 1;
+                colorAttribute.updateRange.count = - 1;
+                sizeAttribute.updateRange.count = - 1;
+                lifeTimeAttribute.updateRange.count = - 1;
 
             }
 

@@ -1,76 +1,75 @@
 function generateGeometry(objectType, numObjects) {
 
-    var geometry = new v3d.Geometry();
+    function applyVertexColors(geometry, color) {
 
-    function applyVertexColors(g, c) {
+        var position = geometry.attributes.position;
+        var colors = [];
 
-        g.faces.forEach(function(f) {
+        for (var i = 0; i < position.count; i++) {
 
-            var n = (f instanceof v3d.Face3) ? 3 : 4;
+            colors.push(color.r, color.g, color.b);
 
-            for (var j = 0; j < n; j ++) {
+        }
 
-                f.vertexColors[j] = c;
-
-            }
-
-        });
+        geometry.addAttribute('color', new v3d.Float32BufferAttribute(colors, 3));
 
     }
 
-    for (var i = 0; i < numObjects; i++) {
+    var geometries = [];
 
-        var position = new v3d.Vector3();
+    var matrix = new v3d.Matrix4();
+    var position = new v3d.Vector3();
+    var rotation = new v3d.Euler();
+    var quaternion = new v3d.Quaternion();
+    var scale = new v3d.Vector3();
+    var color = new v3d.Color();
+
+    for (var i = 0; i < numObjects; i++) {
 
         position.x = Math.random() * 10000 - 5000;
         position.y = Math.random() * 6000 - 3000;
         position.z = Math.random() * 8000 - 4000;
 
-        var rotation = new v3d.Euler();
-
         rotation.x = Math.random() * 2 * Math.PI;
         rotation.y = Math.random() * 2 * Math.PI;
         rotation.z = Math.random() * 2 * Math.PI;
-
-        var scale = new v3d.Vector3();
-
-        var geom, color = new v3d.Color();
+        quaternion.setFromEuler(rotation, false);
 
         scale.x = Math.random() * 200 + 100;
 
-        if (objectType == "cube") {
+        var geometry;
 
-            geom = new v3d.BoxGeometry(1, 1, 1);
+        if (objectType === 'cube') {
+
+            geometry = new v3d.BoxBufferGeometry(1, 1, 1);
+            geometry = geometry.toNonIndexed(); // merging needs consistent buffer geometries
             scale.y = Math.random() * 200 + 100;
             scale.z = Math.random() * 200 + 100;
-            color.setRGB(0, 0, Math.random() + 0.1);
+            color.setRGB(0, 0, 0.1 + 0.9 * Math.random());
 
-        } else if (objectType == "sphere") {
+        } else if (objectType === 'sphere') {
 
-            geom = new v3d.IcosahedronGeometry(1, 1);
+            geometry = new v3d.IcosahedronBufferGeometry(1, 1);
             scale.y = scale.z = scale.x;
-            color.setRGB(Math.random() + 0.1, 0, 0);
+            color.setRGB(0.1 + 0.9 * Math.random(), 0, 0);
 
         }
 
         // give the geom's vertices a random color, to be displayed
-        applyVertexColors(geom, color);
+        applyVertexColors(geometry, color);
 
-        var mesh = new v3d.Mesh(geom);
-        mesh.position.copy(position);
-        mesh.rotation.copy(rotation);
-        mesh.scale.copy(scale);
-        mesh.updateMatrix();
+        matrix.compose(position, quaternion, scale);
+        geometry.applyMatrix(matrix);
 
-        geometry.merge(mesh.geometry, mesh.matrix);
+        geometries.push(geometry);
 
     }
 
-    return geometry;
+    return v3d.BufferGeometryUtils.mergeBufferGeometries(geometries);
 
 }
 
-function Scene (type, numObjects, cameraZ, fov, rotationSpeed, clearColor) {
+function Scene(type, numObjects, cameraZ, fov, rotationSpeed, clearColor) {
 
     this.clearColor = clearColor;
 

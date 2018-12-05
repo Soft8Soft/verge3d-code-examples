@@ -10,8 +10,6 @@
 
         v3d.Geometry.call(this);
 
-        this.type = 'ConvexGeometry';
-
         this.fromBufferGeometry(new ConvexBufferGeometry(points));
         this.mergeVertices();
 
@@ -24,16 +22,14 @@
 
     function ConvexBufferGeometry(points) {
 
-      v3d.BufferGeometry.call(this);
+        v3d.BufferGeometry.call(this);
 
-        this.type = 'ConvexBufferGeometry';
+        // buffers
 
-      // buffers
+        var vertices = [];
+        var normals = [];
 
-      var vertices = [];
-      var normals = [];
-
-      // execute QuickHull
+        // execute QuickHull
 
         if (v3d.QuickHull === undefined) {
 
@@ -41,36 +37,36 @@
 
         }
 
-      var quickHull = new v3d.QuickHull().setFromPoints(points);
+        var quickHull = new v3d.QuickHull().setFromPoints(points);
 
-      // generate vertices and normals
+        // generate vertices and normals
 
-      var faces = quickHull.faces;
+        var faces = quickHull.faces;
 
-      for (var i = 0; i < faces.length; i++) {
+        for (var i = 0; i < faces.length; i++) {
 
-        var face = faces[i];
-        var edge = face.edge;
+            var face = faces[i];
+            var edge = face.edge;
 
-        // we move along a doubly-connected edge list to access all face points (see HalfEdge docs)
+            // we move along a doubly-connected edge list to access all face points (see HalfEdge docs)
 
-        do {
+            do {
 
-          var point = edge.head().point;
+                var point = edge.head().point;
 
-          vertices.push(point.x, point.y, point.z);
-          normals.push(face.normal.x, face.normal.y, face.normal.z);
+                vertices.push(point.x, point.y, point.z);
+                normals.push(face.normal.x, face.normal.y, face.normal.z);
 
-          edge = edge.next;
+                edge = edge.next;
 
-        } while (edge !== face.edge);
+            } while (edge !== face.edge);
 
-      }
+        }
 
-      // build geometry
+        // build geometry
 
-      this.addAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
-      this.addAttribute('normal', new v3d.Float32BufferAttribute(normals, 3));
+        this.addAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
+        this.addAttribute('normal', new v3d.Float32BufferAttribute(normals, 3));
 
     }
 

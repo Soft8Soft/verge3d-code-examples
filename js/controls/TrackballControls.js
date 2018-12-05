@@ -44,24 +44,24 @@ v3d.TrackballControls = function(object, domElement) {
     var lastPosition = new v3d.Vector3();
 
     var _state = STATE.NONE,
-    _prevState = STATE.NONE,
+        _prevState = STATE.NONE,
 
-    _eye = new v3d.Vector3(),
+        _eye = new v3d.Vector3(),
 
-    _movePrev = new v3d.Vector2(),
-    _moveCurr = new v3d.Vector2(),
+        _movePrev = new v3d.Vector2(),
+        _moveCurr = new v3d.Vector2(),
 
-    _lastAxis = new v3d.Vector3(),
-    _lastAngle = 0,
+        _lastAxis = new v3d.Vector3(),
+        _lastAngle = 0,
 
-    _zoomStart = new v3d.Vector2(),
-    _zoomEnd = new v3d.Vector2(),
+        _zoomStart = new v3d.Vector2(),
+        _zoomEnd = new v3d.Vector2(),
 
-    _touchZoomDistanceStart = 0,
-    _touchZoomDistanceEnd = 0,
+        _touchZoomDistanceStart = 0,
+        _touchZoomDistanceEnd = 0,
 
-    _panStart = new v3d.Vector2(),
-    _panEnd = new v3d.Vector2();
+        _panStart = new v3d.Vector2(),
+        _panEnd = new v3d.Vector2();
 
     // for reset
 
@@ -96,16 +96,6 @@ v3d.TrackballControls = function(object, domElement) {
             this.screen.top = box.top + window.pageYOffset - d.clientTop;
             this.screen.width = box.width;
             this.screen.height = box.height;
-
-        }
-
-    };
-
-    this.handleEvent = function(event) {
-
-        if (typeof this[event.type] == 'function') {
-
-            this[event.type](event);
 
         }
 
@@ -184,7 +174,7 @@ v3d.TrackballControls = function(object, domElement) {
                 _lastAxis.copy(axis);
                 _lastAngle = angle;
 
-            } else if (! _this.staticMoving && _lastAngle) {
+            } else if (!_this.staticMoving && _lastAngle) {
 
                 _lastAngle *= Math.sqrt(1.0 - _this.dynamicDampingFactor);
                 _eye.copy(_this.object.position).sub(_this.target);
@@ -273,7 +263,7 @@ v3d.TrackballControls = function(object, domElement) {
 
     this.checkDistances = function() {
 
-        if (! _this.noZoom || ! _this.noPan) {
+        if (!_this.noZoom || ! _this.noPan) {
 
             if (_eye.lengthSq() > _this.maxDistance * _this.maxDistance) {
 
@@ -297,19 +287,19 @@ v3d.TrackballControls = function(object, domElement) {
 
         _eye.subVectors(_this.object.position, _this.target);
 
-        if (! _this.noRotate) {
+        if (!_this.noRotate) {
 
             _this.rotateCamera();
 
         }
 
-        if (! _this.noZoom) {
+        if (!_this.noZoom) {
 
             _this.zoomCamera();
 
         }
 
-        if (! _this.noPan) {
+        if (!_this.noPan) {
 
             _this.panCamera();
 
@@ -470,6 +460,8 @@ v3d.TrackballControls = function(object, domElement) {
 
         if (_this.enabled === false) return;
 
+        if (_this.noZoom === true) return;
+
         event.preventDefault();
         event.stopPropagation();
 
@@ -500,6 +492,8 @@ v3d.TrackballControls = function(object, domElement) {
     function touchstart(event) {
 
         if (_this.enabled === false) return;
+        
+        event.preventDefault();
 
         switch (event.touches.length) {
 

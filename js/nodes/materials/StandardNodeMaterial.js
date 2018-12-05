@@ -2,16 +2,39 @@
  * @author sunag / http://www.sunag.com.br/
  */
 
-v3d.StandardNodeMaterial = function() {
+import { StandardNode } from './nodes/StandardNode.js';
+import { NodeMaterial } from './NodeMaterial.js';
+import { NodeUtils } from '../core/NodeUtils.js';
 
-    this.node = new v3d.StandardNode();
+function StandardNodeMaterial() {
 
-    v3d.NodeMaterial.call(this, this.node, this.node);
+    var node = new StandardNode();
 
-};
+    NodeMaterial.call(this, node, node);
 
-v3d.StandardNodeMaterial.prototype = Object.create(v3d.NodeMaterial.prototype);
-v3d.StandardNodeMaterial.prototype.constructor = v3d.StandardNodeMaterial;
+    this.type = "StandardNodeMaterial";
 
-v3d.NodeMaterial.addShortcuts(v3d.StandardNodeMaterial.prototype, 'node',
-['color', 'alpha', 'roughness', 'metalness', 'reflectivity', 'clearCoat', 'clearCoatRoughness', 'normal', 'normalScale', 'emissive', 'ambient', 'light', 'shadow', 'ao', 'environment', 'transform']);
+}
+
+StandardNodeMaterial.prototype = Object.create(NodeMaterial.prototype);
+StandardNodeMaterial.prototype.constructor = StandardNodeMaterial;
+
+NodeUtils.addShortcuts(StandardNodeMaterial.prototype, 'fragment', [
+    'color',
+    'alpha',
+    'roughness',
+    'metalness',
+    'reflectivity',
+    'clearCoat',
+    'clearCoatRoughness',
+    'normal',
+    'emissive',
+    'ambient',
+    'light',
+    'shadow',
+    'ao',
+    'environment',
+    'position'
+]);
+
+export { StandardNodeMaterial };

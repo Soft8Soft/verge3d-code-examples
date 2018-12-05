@@ -39,16 +39,20 @@
     <script src="../build/v3d.js"></script>
     <script src="js/utils/GeometryUtils.js"></script>
 
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script>
 
-      if (! Detector.webgl) Detector.addGetWebGLMessage();
+      if (WEBGL.isWebGLAvailable() === false) {
+
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+      }
 
       v3d.Cache.enabled = true;
 
-      var container, stats, permalink, hex, color;
+      var container, stats, permalink, hex;
 
       var camera, cameraTarget, scene, renderer;
 
@@ -66,7 +70,6 @@
 
         bevelThickness = 2,
         bevelSize = 1.5,
-        bevelSegments = 3,
         bevelEnabled = true,
 
         font = undefined,
@@ -106,7 +109,6 @@
       var mouseXOnMouseDown = 0;
 
       var windowHalfX = window.innerWidth / 2;
-      var windowHalfY = window.innerHeight / 2;
 
       var fontIndex = 1;
 
@@ -157,11 +159,11 @@
 
         if (hash.length !== 0) {
 
-          var colorhash  = hash.substring(0, 6);
-          var fonthash   = hash.substring(6, 7);
+          var colorhash = hash.substring(0, 6);
+          var fonthash = hash.substring(6, 7);
           var weighthash = hash.substring(7, 8);
-          var bevelhash  = hash.substring(8, 9);
-          var texthash   = hash.substring(10);
+          var bevelhash = hash.substring(8, 9);
+          var texthash = hash.substring(10);
 
           hex = colorhash;
           pointLight.color.setHex(parseInt(colorhash, 16));
@@ -260,7 +262,7 @@
 
         document.getElementById("bevel").addEventListener('click', function() {
 
-          bevelEnabled = !bevelEnabled;
+          bevelEnabled = ! bevelEnabled;
 
           refreshText();
 
@@ -275,7 +277,6 @@
       function onWindowResize() {
 
         windowHalfX = window.innerWidth / 2;
-        windowHalfY = window.innerHeight / 2;
 
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -373,10 +374,7 @@
 
           bevelThickness: bevelThickness,
           bevelSize: bevelSize,
-          bevelEnabled: bevelEnabled,
-
-          material: 0,
-          extrudeMaterial: 1
+          bevelEnabled: bevelEnabled
 
         });
 
@@ -386,7 +384,7 @@
         // "fix" side normals by removing z-component of normals for side faces
         // (this doesn't work well for beveled geometry as then we lose nice curvature around z-axis)
 
-        if (! bevelEnabled) {
+        if (!bevelEnabled) {
 
           var triangleAreaHeuristics = 0.1 * (height * size);
 
@@ -425,7 +423,9 @@
 
         }
 
-        var centerOffset = -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
+        var centerOffset = - 0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
+
+        textGeo = new v3d.BufferGeometry().fromGeometry(textGeo);
 
         textMesh1 = new v3d.Mesh(textGeo, materials);
 
@@ -443,7 +443,7 @@
           textMesh2 = new v3d.Mesh(textGeo, materials);
 
           textMesh2.position.x = centerOffset;
-          textMesh2.position.y = -hover;
+          textMesh2.position.y = - hover;
           textMesh2.position.z = height;
 
           textMesh2.rotation.x = Math.PI;
@@ -489,7 +489,7 @@
 
       }
 
-      function onDocumentMouseUp(event) {
+      function onDocumentMouseUp() {
 
         document.removeEventListener('mousemove', onDocumentMouseMove, false);
         document.removeEventListener('mouseup', onDocumentMouseUp, false);
@@ -497,7 +497,7 @@
 
       }
 
-      function onDocumentMouseOut(event) {
+      function onDocumentMouseOut() {
 
         document.removeEventListener('mousemove', onDocumentMouseMove, false);
         document.removeEventListener('mouseup', onDocumentMouseUp, false);

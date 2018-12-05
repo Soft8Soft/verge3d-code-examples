@@ -102,7 +102,7 @@ v3d.AdaptiveToneMappingPass = function(adaptive, resolution) {
         uniforms: v3d.UniformsUtils.clone(this.adaptLuminanceShader.uniforms),
         vertexShader: this.adaptLuminanceShader.vertexShader,
         fragmentShader: this.adaptLuminanceShader.fragmentShader,
-        defines: this.adaptLuminanceShader.defines,
+        defines: Object.assign({}, this.adaptLuminanceShader.defines),
         blending: v3d.NoBlending
     });
 

@@ -54,16 +54,15 @@
 
       var container, stats;
       var camera, scene, renderer;
-      var splineHelperObjects = [], splineOutline;
+      var splineHelperObjects = [];
       var splinePointsLength = 4;
       var positions = [];
-      var options;
+      var point = new v3d.Vector3();
 
-      var geometry = new v3d.BoxGeometry(20, 20, 20);
+      var geometry = new v3d.BoxBufferGeometry(20, 20, 20);
       var transformControl;
 
       var ARC_SEGMENTS = 200;
-      var splineMesh;
 
       var splines = {};
 
@@ -96,18 +95,17 @@
         light.position.set(0, 1500, 200);
         light.castShadow = true;
         light.shadow = new v3d.LightShadow(new v3d.PerspectiveCamera(70, 1, 200, 2000));
-        light.shadow.bias = -0.000222;
+        light.shadow.bias = - 0.000222;
         light.shadow.mapSize.width = 1024;
         light.shadow.mapSize.height = 1024;
         scene.add(light);
-        spotlight = light;
 
-        var planeGeometry = new v3d.PlaneGeometry(2000, 2000);
+        var planeGeometry = new v3d.PlaneBufferGeometry(2000, 2000);
         planeGeometry.rotateX(- Math.PI / 2);
         var planeMaterial = new v3d.ShadowMaterial({ opacity: 0.2 });
 
         var plane = new v3d.Mesh(planeGeometry, planeMaterial);
-        plane.position.y = -200;
+        plane.position.y = - 200;
         plane.receiveShadow = true;
         scene.add(plane);
 
@@ -117,9 +115,9 @@
         helper.material.transparent = true;
         scene.add(helper);
 
-        var axis = new v3d.AxisHelper();
-        axis.position.set(-500, -500, -500);
-        scene.add(axis);
+        //var axes = new v3d.AxesHelper(1000);
+        //axes.position.set(- 500, - 500, - 500);
+        //scene.add(axes);
 
         renderer = new v3d.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
@@ -134,9 +132,11 @@
 
         gui.add(params, 'uniform');
         gui.add(params, 'tension', 0, 1).step(0.01).onChange(function(value) {
+
           splines.uniform.tension = value;
           updateSplineOutline();
-        });
+
+  });
         gui.add(params, 'centripetal');
         gui.add(params, 'chordal');
         gui.add(params, 'addPoint');
@@ -163,28 +163,33 @@
 
         transformControl = new v3d.TransformControls(camera, renderer.domElement);
         transformControl.addEventListener('change', render);
+        transformControl.addEventListener('dragging-changed', function(event) {
+
+          controls.enabled = ! event.value;
+
+  });
         scene.add(transformControl);
 
         // Hiding transform situation is a little in a mess :()
-        transformControl.addEventListener('change', function(e) {
+        transformControl.addEventListener('change', function() {
 
           cancelHideTransorm();
 
         });
 
-        transformControl.addEventListener('mouseDown', function(e) {
+        transformControl.addEventListener('mouseDown', function() {
 
           cancelHideTransorm();
 
         });
 
-        transformControl.addEventListener('mouseUp', function(e) {
+        transformControl.addEventListener('mouseUp', function() {
 
           delayHideTransform();
 
         });
 
-        transformControl.addEventListener('objectChange', function(e) {
+        transformControl.addEventListener('objectChange', function() {
 
           updateSplineOutline();
 
@@ -199,7 +204,7 @@
 
         });
 
-        dragcontrols.addEventListener('hoveroff', function(event) {
+        dragcontrols.addEventListener('hoveroff', function() {
 
           delayHideTransform();
 
@@ -220,7 +225,7 @@
 
             transformControl.detach(transformControl.object);
 
-          }, 2500)
+          }, 2500);
 
         }
 
@@ -229,7 +234,6 @@
           if (hiding) clearTimeout(hiding);
 
         }
-
 
         /*******
          * Curves
@@ -249,41 +253,33 @@
 
         }
 
-        var geometry = new v3d.Geometry();
-
-        for (var i = 0; i < ARC_SEGMENTS; i++) {
-
-          geometry.vertices.push(new v3d.Vector3());
-
-        }
+        var geometry = new v3d.BufferGeometry();
+        geometry.addAttribute('position', new v3d.BufferAttribute(new Float32Array(ARC_SEGMENTS * 3), 3));
 
         var curve = new v3d.CatmullRomCurve3(positions);
-        curve.type = 'catmullrom';
+        curve.curveType = 'catmullrom';
         curve.mesh = new v3d.Line(geometry.clone(), new v3d.LineBasicMaterial({
           color: 0xff0000,
-          opacity: 0.35,
-          linewidth: 2
-          }));
+          opacity: 0.35
+        }));
         curve.mesh.castShadow = true;
         splines.uniform = curve;
 
         curve = new v3d.CatmullRomCurve3(positions);
-        curve.type = 'centripetal';
+        curve.curveType = 'centripetal';
         curve.mesh = new v3d.Line(geometry.clone(), new v3d.LineBasicMaterial({
           color: 0x00ff00,
-          opacity: 0.35,
-          linewidth: 2
-          }));
+          opacity: 0.35
+        }));
         curve.mesh.castShadow = true;
         splines.centripetal = curve;
 
         curve = new v3d.CatmullRomCurve3(positions);
-        curve.type = 'chordal';
+        curve.curveType = 'chordal';
         curve.mesh = new v3d.Line(geometry.clone(), new v3d.LineBasicMaterial({
           color: 0x0000ff,
-          opacity: 0.35,
-          linewidth: 2
-          }));
+          opacity: 0.35
+        }));
         curve.mesh.castShadow = true;
         splines.chordal = curve;
 
@@ -295,9 +291,9 @@
         }
 
         load([new v3d.Vector3(289.76843686945404, 452.51481137238443, 56.10018915737797),
-            new v3d.Vector3(-53.56300074753207, 171.49711742836848, -14.495472686253045),
-            new v3d.Vector3(-91.40118730204415, 176.4306956436485, -6.958271935582161),
-            new v3d.Vector3(-383.785318791128, 491.1365363371675, 47.869296953772746)]);
+          new v3d.Vector3(- 53.56300074753207, 171.49711742836848, - 14.495472686253045),
+          new v3d.Vector3(- 91.40118730204415, 176.4306956436485, - 6.958271935582161),
+          new v3d.Vector3(- 383.785318791128, 491.1365363371675, 47.869296953772746)]);
 
       }
 
@@ -357,19 +353,20 @@
 
           var spline = splines[k];
 
-          splineMesh = spline.mesh;
+          var splineMesh = spline.mesh;
+          var position = splineMesh.geometry.attributes.position;
 
           for (var i = 0; i < ARC_SEGMENTS; i++) {
 
-            var p = splineMesh.geometry.vertices[i];
-            p.copy(spline.getPoint(i /  (ARC_SEGMENTS - 1)));
+            var t = i / (ARC_SEGMENTS - 1);
+            spline.getPoint(t, point);
+            position.setXYZ(i, point.x, point.y, point.z);
 
           }
 
-          splineMesh.geometry.verticesNeedUpdate = true;
+          position.needsUpdate = true;
 
         }
-
 
       }
 
@@ -380,7 +377,7 @@
         for (var i = 0; i < splinePointsLength; i++) {
 
           var p = splineHelperObjects[i].position;
-          strplace.push('new v3d.Vector3({0}, {1}, {2})'.format(p.x, p.y, p.z))
+          strplace.push('new v3d.Vector3({0}, {1}, {2})'.format(p.x, p.y, p.z));
 
         }
 
@@ -419,7 +416,6 @@
         requestAnimationFrame(animate);
         render();
         stats.update();
-        transformControl.update();
 
       }
 

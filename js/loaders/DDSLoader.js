@@ -2,7 +2,9 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-v3d.DDSLoader = function() {
+v3d.DDSLoader = function(manager) {
+
+    v3d.CompressedTextureLoader.call(this, manager);
 
     this._parser = v3d.DDSLoader.parse;
 
@@ -141,7 +143,7 @@ v3d.DDSLoader.parse = function(buffer, loadMipmaps) {
 
     }
 
-    if (! header[off_pfFlags] & DDPF_FOURCC) {
+    if (!header[off_pfFlags] & DDPF_FOURCC) {
 
         console.error('v3d.DDSLoader.parse: Unsupported format, must contain a FourCC code.');
         return dds;

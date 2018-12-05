@@ -2,15 +2,55 @@
  * @author sunag / http://www.sunag.com.br/
  */
 
-v3d.ColorNode = function(color) {
+import { InputNode } from '../core/InputNode.js';
+import { NodeUtils } from '../core/NodeUtils.js';
 
-    v3d.InputNode.call(this, 'c');
+function ColorNode(color, g, b) {
 
-    this.value = new v3d.Color(color || 0);
+    InputNode.call(this, 'c');
+
+    this.value = color instanceof v3d.Color ? color : new v3d.Color(color || 0, g, b);
+
+}
+
+ColorNode.prototype = Object.create(InputNode.prototype);
+ColorNode.prototype.constructor = ColorNode;
+ColorNode.prototype.nodeType = "Color";
+
+NodeUtils.addShortcuts(ColorNode.prototype, 'value', ['r', 'g', 'b']);
+
+ColorNode.prototype.generateReadonly = function(builder, output, uuid, type, ns, needsUpdate) {
+
+    return builder.format("vec3(" + this.r + ", " + this.g + ", " + this.b + ")", type, output);
 
 };
 
-v3d.ColorNode.prototype = Object.create(v3d.InputNode.prototype);
-v3d.ColorNode.prototype.constructor = v3d.ColorNode;
+ColorNode.prototype.copy = function(source) {
 
-v3d.NodeMaterial.addShortcuts(v3d.ColorNode.prototype, 'value', ['r', 'g', 'b']);
+    InputNode.prototype.copy.call(this, source);
+
+    this.value.copy(source);
+
+};
+
+ColorNode.prototype.toJSON = function(meta) {
+
+    var data = this.getJSONNode(meta);
+
+    if (!data) {
+
+        data = this.createJSONNode(meta);
+
+        data.r = this.r;
+        data.g = this.g;
+        data.b = this.b;
+
+        if (this.readonly === true) data.readonly = true;
+
+    }
+
+    return data;
+
+};
+
+export { ColorNode };

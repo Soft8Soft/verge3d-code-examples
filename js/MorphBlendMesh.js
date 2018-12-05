@@ -12,9 +12,9 @@ v3d.MorphBlendMesh = function(geometry, material) {
     // prepare default animation
     // (all frames played together in 1 second)
 
-    var numFrames = this.geometry.morphTargets.length;
+    var numFrames = Object.keys(this.morphTargetDictionary).length;
 
-    var name = "__default";
+    var name = '__default';
 
     var startFrame = 0;
     var endFrame = numFrames - 1;
@@ -24,7 +24,7 @@ v3d.MorphBlendMesh = function(geometry, material) {
     this.createAnimation(name, startFrame, endFrame, fps);
     this.setAnimationWeight(name, 1);
 
-}
+};
 
 v3d.MorphBlendMesh.prototype = Object.assign(Object.create(v3d.Mesh.prototype), {
 
@@ -61,33 +61,34 @@ v3d.MorphBlendMesh.prototype = Object.assign(Object.create(v3d.Mesh.prototype), 
 
     },
 
-        autoCreateAnimations: function(fps) {
+    autoCreateAnimations: function(fps) {
 
         var pattern = /([a-z]+)_?(\d+)/i;
 
         var firstAnimation, frameRanges = {};
 
-        var geometry = this.geometry;
+        var i = 0;
 
-        for (var i = 0, il = geometry.morphTargets.length; i < il; i++) {
+        for (var key in this.morphTargetDictionary) {
 
-            var morph = geometry.morphTargets[i];
-            var chunks = morph.name.match(pattern);
+            var chunks = key.match(pattern);
 
             if (chunks && chunks.length > 1) {
 
                 var name = chunks[1];
 
-                if (! frameRanges[name]) frameRanges[name] = { start: Infinity, end: - Infinity };
+                if (!frameRanges[name]) frameRanges[name] = { start: Infinity, end: - Infinity };
 
                 var range = frameRanges[name];
 
                 if (i < range.start) range.start = i;
                 if (i > range.end) range.end = i;
 
-                if (! firstAnimation) firstAnimation = name;
+                if (!firstAnimation) firstAnimation = name;
 
             }
+
+            i++;
 
         }
 
@@ -245,7 +246,7 @@ v3d.MorphBlendMesh.prototype = Object.assign(Object.create(v3d.Mesh.prototype), 
 
             var animation = this.animationsList[i];
 
-            if (! animation.active) continue;
+            if (!animation.active) continue;
 
             var frameTime = animation.duration / animation.length;
 

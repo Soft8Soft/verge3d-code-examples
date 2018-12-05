@@ -19,12 +19,12 @@ v3d.VolumeSlice = function(volume, index, axis) {
      */
     index = index || 0;
     Object.defineProperty(this, 'index', {
-        get : function() {
+        get: function() {
 
             return index;
 
         },
-        set : function(value) {
+        set: function(value) {
 
             index = value;
             slice.geometryNeedsUpdate = true;
@@ -57,7 +57,7 @@ v3d.VolumeSlice = function(volume, index, axis) {
     var canvasMap = new v3d.Texture(this.canvas);
     canvasMap.minFilter = v3d.LinearFilter;
     canvasMap.wrapS = canvasMap.wrapT = v3d.ClampToEdgeWrapping;
-    var material = new v3d.MeshBasicMaterial({ map: canvasMap, side: v3d.DoubleSide, transparent : true });
+    var material = new v3d.MeshBasicMaterial({ map: canvasMap, side: v3d.DoubleSide, transparent: true });
     /**
      * @member {v3d.Mesh} mesh The mesh ready to get used in the scene
      */
@@ -89,13 +89,13 @@ v3d.VolumeSlice = function(volume, index, axis) {
 
 v3d.VolumeSlice.prototype = {
 
-    constructor : v3d.VolumeSlice,
+    constructor: v3d.VolumeSlice,
 
     /**
      * @member {Function} repaint Refresh the texture and the geometry if geometryNeedsUpdate is set to true
      * @memberof v3d.VolumeSlice
      */
-    repaint : function() {
+    repaint: function() {
 
         if (this.geometryNeedsUpdate) {
 
@@ -104,13 +104,11 @@ v3d.VolumeSlice.prototype = {
         }
 
         var iLength = this.iLength,
-        jLength = this.jLength,
-        sliceAccess = this.sliceAccess,
-        volume = this.volume,
-        axis = this.axis,
-        index = this.index,
-        canvas = this.canvasBuffer,
-        ctx = this.ctxBuffer;
+            jLength = this.jLength,
+            sliceAccess = this.sliceAccess,
+            volume = this.volume,
+            canvas = this.canvasBuffer,
+            ctx = this.ctxBuffer;
 
 
         // get the imageData and pixel array from the canvas
@@ -145,8 +143,7 @@ v3d.VolumeSlice.prototype = {
 
             }
 
-        }
-        else {
+        } else {
 
             for (var j = 0; j < jLength; j ++) {
 
@@ -184,7 +181,7 @@ v3d.VolumeSlice.prototype = {
      * @see v3d.Volume.extractPerpendicularPlane
      * @memberof v3d.VolumeSlice
      */
-    updateGeometry : function() {
+    updateGeometry: function() {
 
         var extracted = this.volume.extractPerpendicularPlane(this.axis, this.index);
         this.sliceAccess = extracted.sliceAccess;
@@ -199,7 +196,7 @@ v3d.VolumeSlice.prototype = {
         this.ctx = this.canvas.getContext('2d');
         this.ctxBuffer = this.canvasBuffer.getContext('2d');
 
-        this.geometry = new v3d.PlaneGeometry(extracted.planeWidth, extracted.planeHeight);
+        this.geometry = new v3d.PlaneBufferGeometry(extracted.planeWidth, extracted.planeHeight);
 
         if (this.mesh) {
 

@@ -27,7 +27,7 @@ v3d.CTMLoader.prototype.loadParts = function(url, callback, parameters) {
 
     var xhr = new XMLHttpRequest();
 
-    var basePath = parameters.basePath ? parameters.basePath : this.extractUrlBase(url);
+    var basePath = parameters.basePath ? parameters.basePath : v3d.LoaderUtils.extractUrlBase(url);
 
     xhr.onreadystatechange = function() {
 

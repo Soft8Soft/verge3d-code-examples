@@ -4,8 +4,12 @@
     <title>Verge3D webvr - cubes</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <!-- Origin Trial Token, feature = WebVR (For Chrome M59+), origin = https://www.soft8soft.com/verge3d, expires = 2017-10-09 -->
-    <meta http-equiv="origin-trial" data-feature="WebVR (For Chrome M59+)" data-expires="2017-10-09" content="AjrMPp+ZdEH97MOiKUzcpxLvh+B6I0CL55bPSbvQxL5ggVHl7X2dyEwTfXUgaMV7YLPOev4VZ4Uz+jMTsx3MPQEAAABNeyJvcmlnaW4iOiJodHRwczovL3RocmVlanMub3JnOjQ0MyIsImZlYXR1cmUiOiJXZWJWUjEuMSIsImV4cGlyeSI6MTUwNzU3MTAwOH0=">
+    <!-- Origin Trial Token, feature = WebVR (For Chrome M62+), origin = https://www.soft8soft.com/verge3d, expires = 2018-09-11 -->
+    <meta http-equiv="origin-trial" data-feature="WebVR (For Chrome M62+)" data-expires="2018-09-11" content="AqhFUYKxq/d+E8CDT0fuYRCg8TvlTP52x0Jv7I9t27sLhR30LmcahBRfSwzP89ukjs2+ia99VrrLoRyaFAwJVA0AAABQeyJvcmlnaW4iOiJodHRwczovL3RocmVlanMub3JnOjQ0MyIsImZlYXR1cmUiOiJXZWJWUjEuMU02MiIsImV4cGlyeSI6MTUzNjYyNDAwMH0=">
+    <!-- Origin Trial Token, feature = WebXR Device API (For Chrome M69+), origin = https://www.soft8soft.com/verge3d, expires = 2018-12-02 -->
+    <meta http-equiv="origin-trial" data-feature="WebXR Device API (For Chrome M69+)" data-expires="2018-12-02" content="Ah46myef4Ax/+fcLtkeotXmIqnvun4lg4bYbHVttuJvbsWiE4oacrvroId7hbCEb4/byxFHIO6+uwq4pwr6RfQkAAABTeyJvcmlnaW4iOiJodHRwczovL3RocmVlanMub3JnOjQ0MyIsImZlYXR1cmUiOiJXZWJYUkRldmljZU02OSIsImV4cGlyeSI6MTU0Mzc1ODIyNn0=">
+    <!-- Origin Trial Token, feature = WebXR Gamepad Support, origin = https://www.soft8soft.com/verge3d, expires = 2018-12-02 -->
+    <meta http-equiv="origin-trial" data-feature="WebXR Gamepad Support" data-expires="2018-12-02" content="AqI9LIanbGxr/HoTOsYCUNxG82Vy94NZbjhv83R+bF+5NX2jiZOaf7ny+mFoTUP5wrWpYlPjQ6+HeVas9f1lRwYAAABYeyJvcmlnaW4iOiJodHRwczovL3RocmVlanMub3JnOjQ0MyIsImZlYXR1cmUiOiJXZWJYUkdhbWVwYWRTdXBwb3J0IiwiZXhwaXJ5IjoxNTQzNzU4MjI2fQ==">
     <style>
       body {
         font-family: Monospace;
@@ -22,18 +26,11 @@
   <body>
 
     <script src="../build/v3d.js"></script>
-
     <script src="js/vr/WebVR.js"></script>
 
+    <script src="js/geometries/BoxLineGeometry.js"></script>
+
     <script>
-
-      WEBVR.checkAvailability().catch(function(message) {
-
-        document.body.appendChild(WEBVR.getMessageContainer(message));
-
-      });
-
-      //
 
       var clock = new v3d.Clock();
 
@@ -69,7 +66,7 @@
         scene.add(camera);
 
         crosshair = new v3d.Mesh(
-          new v3d.RingGeometry(0.02, 0.04, 32),
+          new v3d.RingBufferGeometry(0.02, 0.04, 32),
           new v3d.MeshBasicMaterial({
             color: 0xffffff,
             opacity: 0.5,
@@ -79,10 +76,11 @@
         crosshair.position.z = - 2;
         camera.add(crosshair);
 
-        room = new v3d.Mesh(
-          new v3d.BoxGeometry(6, 6, 6, 8, 8, 8),
-          new v3d.MeshBasicMaterial({ color: 0x404040, wireframe: true })
+        room = new v3d.LineSegments(
+          new v3d.BoxLineGeometry(6, 6, 6, 10, 10, 10),
+          new v3d.LineBasicMaterial({ color: 0x808080 })
         );
+        room.position.y = 3;
         scene.add(room);
 
         scene.add(new v3d.HemisphereLight(0x606060, 0x404040));
@@ -91,7 +89,7 @@
         light.position.set(1, 1, 1).normalize();
         scene.add(light);
 
-        var geometry = new v3d.BoxGeometry(0.15, 0.15, 0.15);
+        var geometry = new v3d.BoxBufferGeometry(0.15, 0.15, 0.15);
 
         for (var i = 0; i < 200; i++) {
 
@@ -123,28 +121,22 @@
         renderer = new v3d.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
-        container.appendChild(renderer.domElement);
-
         renderer.vr.enabled = true;
-
-        WEBVR.getVRDisplay(function(display) {
-
-          renderer.vr.setDevice(display);
-
-          document.body.appendChild(WEBVR.getButton(display, renderer.domElement));
-
-        });
+        container.appendChild(renderer.domElement);
 
         renderer.domElement.addEventListener('mousedown', onMouseDown, false);
         renderer.domElement.addEventListener('mouseup', onMouseUp, false);
         renderer.domElement.addEventListener('touchstart', onMouseDown, false);
         renderer.domElement.addEventListener('touchend', onMouseUp, false);
 
+        window.addEventListener('resize', onWindowResize, false);
+
         //
 
         window.addEventListener('vrdisplaypointerrestricted', onPointerRestricted, false);
         window.addEventListener('vrdisplaypointerunrestricted', onPointerUnrestricted, false);
-        window.addEventListener('resize', onWindowResize, false);
+
+        document.body.appendChild(WEBVR.createButton(renderer));
 
       }
 
@@ -161,19 +153,26 @@
       }
 
       function onPointerRestricted() {
+
         var pointerLockElement = renderer.domElement;
-        if (pointerLockElement && typeof(pointerLockElement.requestPointerLock) === 'function') {
+        if (pointerLockElement && typeof (pointerLockElement.requestPointerLock) === 'function') {
+
           pointerLockElement.requestPointerLock();
 
         }
+
       }
 
       function onPointerUnrestricted() {
+
         var currentPointerLockElement = document.pointerLockElement;
         var expectedPointerLockElement = renderer.domElement;
-        if (currentPointerLockElement && currentPointerLockElement === expectedPointerLockElement && typeof(document.exitPointerLock) === 'function') {
+        if (currentPointerLockElement && currentPointerLockElement === expectedPointerLockElement && typeof (document.exitPointerLock) === 'function') {
+
           document.exitPointerLock();
+
         }
+
       }
 
       function onWindowResize() {
@@ -189,7 +188,7 @@
 
       function animate() {
 
-        renderer.animate(render);
+        renderer.setAnimationLoop(render);
 
       }
 

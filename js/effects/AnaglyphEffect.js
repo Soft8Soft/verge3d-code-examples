@@ -114,8 +114,8 @@ v3d.AnaglyphEffect = function(renderer, width, height) {
 
     });
 
-    var mesh = new v3d.Mesh(new v3d.PlaneBufferGeometry(2, 2), _material);
-    _scene.add(mesh);
+    var _mesh = new v3d.Mesh(new v3d.PlaneBufferGeometry(2, 2), _material);
+    _scene.add(_mesh);
 
     this.setSize = function(width, height) {
 
@@ -146,6 +146,8 @@ v3d.AnaglyphEffect = function(renderer, width, height) {
 
         if (_renderTargetL) _renderTargetL.dispose();
         if (_renderTargetR) _renderTargetR.dispose();
+        if (_mesh) _mesh.geometry.dispose();
+        if (_material) _material.dispose();
 
     };
 

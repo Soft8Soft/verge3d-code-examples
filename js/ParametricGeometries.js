@@ -7,9 +7,7 @@
 
 v3d.ParametricGeometries = {
 
-    klein: function(v, u, optionalTarget) {
-
-        var result = optionalTarget || new v3d.Vector3();
+    klein: function(v, u, target) {
 
         u *= Math.PI;
         v *= 2 * Math.PI;
@@ -30,29 +28,25 @@ v3d.ParametricGeometries = {
 
         y = - 2 * (1 - Math.cos(u) / 2) * Math.sin(v);
 
-        return result.set(x, y, z);
+        target.set(x, y, z);
 
     },
 
     plane: function(width, height) {
 
-        return function(u, v, optionalTarget) {
-
-            var result = optionalTarget || new v3d.Vector3();
+        return function(u, v, target) {
 
             var x = u * width;
             var y = 0;
             var z = v * height;
 
-            return result.set(x, y, z);
+            target.set(x, y, z);
 
         };
 
     },
 
-    mobius: function(u, t, optionalTarget) {
-
-        var result = optionalTarget || new v3d.Vector3();
+    mobius: function(u, t, target) {
 
         // flat mobius strip
         // http://www.wolframalpha.com/input/?i=M%C3%B6bius+strip+parametric+equations&lk=1&a=ClashPrefs_*Surface.MoebiusStrip.SurfaceProperty.ParametricEquations-
@@ -67,13 +61,11 @@ v3d.ParametricGeometries = {
         y = Math.sin(v) * (a + u * Math.cos(v / 2));
         z = u * Math.sin(v / 2);
 
-        return result.set(x, y, z);
+        target.set(x, y, z);
 
     },
 
-    mobius3d: function(u, t, optionalTarget) {
-
-        var result = optionalTarget || new v3d.Vector3();
+    mobius3d: function(u, t, target) {
 
         // volumetric mobius strip
 
@@ -91,7 +83,7 @@ v3d.ParametricGeometries = {
         y = (major + x) * Math.sin(u);
         x = (major + x) * Math.cos(u);
 
-        return result.set(x, y, z);
+        target.set(x, y, z);
 
     }
 
@@ -126,9 +118,7 @@ v3d.ParametricGeometries.TubeGeometry = function(path, segments, radius, segment
     this.normals = normals;
     this.binormals = binormals;
 
-    var ParametricTube = function(u, v, optionalTarget) {
-
-        var result = optionalTarget || new v3d.Vector3();
+    var ParametricTube = function(u, v, target) {
 
         v *= 2 * Math.PI;
 
@@ -156,7 +146,7 @@ v3d.ParametricGeometries.TubeGeometry = function(path, segments, radius, segment
         pos.y += cx * normal.y + cy * binormal.y;
         pos.z += cx * normal.z + cy * binormal.z;
 
-        return result.copy(pos);
+        target.copy(pos);
 
     };
 
@@ -191,7 +181,9 @@ v3d.ParametricGeometries.TorusKnotGeometry = function(radius, tube, segmentsT, s
     TorusKnotCurve.prototype = Object.create(v3d.Curve.prototype);
     TorusKnotCurve.prototype.constructor = TorusKnotCurve;
 
-    TorusKnotCurve.prototype.getPoint = function(t) {
+    TorusKnotCurve.prototype.getPoint = function(t, optionalTarget) {
+
+        var point = optionalTarget || new v3d.Vector3();
 
         t *= Math.PI * 2;
 
@@ -201,7 +193,7 @@ v3d.ParametricGeometries.TorusKnotGeometry = function(radius, tube, segmentsT, s
         var y = (1 + r * Math.cos(q * t)) * Math.sin(p * t);
         var z = r * Math.sin(q * t);
 
-        return new v3d.Vector3(x, y, z).multiplyScalar(radius);
+        return point.set(x, y, z).multiplyScalar(radius);
 
     };
 
@@ -224,9 +216,7 @@ v3d.ParametricGeometries.TorusKnotGeometry.prototype.constructor = v3d.Parametri
   *********************************************/
 v3d.ParametricGeometries.SphereGeometry = function(size, u, v) {
 
-    function sphere(u, v, optionalTarget) {
-
-        var result = optionalTarget || new v3d.Vector3();
+    function sphere(u, v, target) {
 
         u *= Math.PI;
         v *= 2 * Math.PI;
@@ -235,11 +225,11 @@ v3d.ParametricGeometries.SphereGeometry = function(size, u, v) {
         var y = size * Math.sin(u) * Math.sin(v);
         var z = size * Math.cos(u);
 
-        return result.set(x, y, z);
+        target.set(x, y, z);
 
     }
 
-    v3d.ParametricGeometry.call(this, sphere, u, v, ! true);
+    v3d.ParametricGeometry.call(this, sphere, u, v);
 
 };
 
@@ -255,15 +245,13 @@ v3d.ParametricGeometries.SphereGeometry.prototype.constructor = v3d.ParametricGe
 
 v3d.ParametricGeometries.PlaneGeometry = function(width, depth, segmentsWidth, segmentsDepth) {
 
-    function plane(u, v, optionalTarget) {
-
-        var result = optionalTarget || new v3d.Vector3();
+    function plane(u, v, target) {
 
         var x = u * width;
         var y = 0;
         var z = v * depth;
 
-        return result.set(x, y, z);
+        target.set(x, y, z);
 
     }
 

@@ -27,39 +27,30 @@
 
     <div id="container"></div>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - webgl ocean demo
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - webgl ocean
     </div>
 
     <script src="../build/v3d.js"></script>
 
     <script src="js/controls/OrbitControls.js"></script>
     <script src="js/objects/Water.js"></script>
+    <script src="js/objects/Sky.js"></script>
 
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
     <script src="js/libs/dat.gui.min.js"></script>
 
     <script>
 
-      if (! Detector.webgl) {
+      if (WEBGL.isWebGLAvailable() === false) {
 
-        Detector.addGetWebGLMessage();
-        document.getElementById('container').innerHTML = "";
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
 
       }
 
       var container, stats;
       var camera, scene, renderer, light;
-      var controls, water, sphere, cubeMap;
-
-      var parameters = {
-        oceanSide: 2000,
-        size: 1.0,
-        distortionScale: 3.7,
-        alpha: 1.0
-      };
-
-      var waterNormals;
+      var controls, water, sphere;
 
       init();
       animate();
@@ -78,7 +69,6 @@
         //
 
         scene = new v3d.Scene();
-        scene.fog = new v3d.FogExp2(0xaabbbb, 0.001);
 
         //
 
@@ -87,157 +77,142 @@
 
         //
 
-        controls = new v3d.OrbitControls(camera, renderer.domElement);
-        controls.maxPolarAngle = Math.PI * 0.495;
-        controls.target.set(0, 10, 0);
-        controls.enablePan = false;
-        controls.minDistance = 40.0;
-        controls.maxDistance = 200.0;
-        camera.lookAt(controls.target);
+        light = new v3d.DirectionalLight(0xffffff, 0.8);
+        scene.add(light);
 
-        setLighting();
+        // Water
 
-        //
+        var waterGeometry = new v3d.PlaneBufferGeometry(10000, 10000);
 
-        setWater();
+        water = new v3d.Water(
+          waterGeometry,
+          {
+            textureWidth: 512,
+            textureHeight: 512,
+            waterNormals: new v3d.TextureLoader().load('textures/waternormals.jpg', function(texture) {
 
-        //
+              texture.wrapS = texture.wrapT = v3d.RepeatWrapping;
 
-        setSkybox();
+            }),
+            alpha: 1.0,
+            sunDirection: light.position.clone().normalize(),
+            sunColor: 0xffffff,
+            waterColor: 0x001e0f,
+            distortionScale: 3.7,
+            fog: scene.fog !== undefined
+          }
+        );
 
-        //
+        water.rotation.x = - Math.PI / 2;
 
-        var geometry = new v3d.IcosahedronGeometry(20, 2);
+        scene.add(water);
 
-        for (var i = 0, j = geometry.faces.length; i < j; i++) {
+        // Skybox
 
-          geometry.faces[i].color.setHex(Math.random() * 0xffffff);
+        var sky = new v3d.Sky();
+        sky.scale.setScalar(10000);
+        scene.add(sky);
+
+        var uniforms = sky.material.uniforms;
+
+        uniforms.turbidity.value = 10;
+        uniforms.rayleigh.value = 2;
+        uniforms.luminance.value = 1;
+        uniforms.mieCoefficient.value = 0.005;
+        uniforms.mieDirectionalG.value = 0.8;
+
+        var parameters = {
+          distance: 400,
+          inclination: 0.49,
+          azimuth: 0.205
+        };
+
+        var cubeCamera = new v3d.CubeCamera(1, 20000, 256);
+        cubeCamera.renderTarget.texture.minFilter = v3d.LinearMipMapLinearFilter;
+
+        function updateSun() {
+
+          var theta = Math.PI * (parameters.inclination - 0.5);
+          var phi = 2 * Math.PI * (parameters.azimuth - 0.5);
+
+          light.position.x = parameters.distance * Math.cos(phi);
+          light.position.y = parameters.distance * Math.sin(phi) * Math.sin(theta);
+          light.position.z = parameters.distance * Math.sin(phi) * Math.cos(theta);
+
+          sky.material.uniforms.sunPosition.value = light.position.copy(light.position);
+          water.material.uniforms.sunDirection.value.copy(light.position).normalize();
+
+          cubeCamera.update(renderer, scene);
 
         }
 
-        var material = new v3d.MeshPhongMaterial({
-          vertexColors: v3d.FaceColors,
-          shininess: 10,
-          envMap: cubeMap,
+        updateSun();
+
+        //
+
+        var geometry = new v3d.IcosahedronBufferGeometry(20, 1);
+        var count = geometry.attributes.position.count;
+
+        var colors = [];
+        var color = new v3d.Color();
+
+        for (var i = 0; i < count; i += 3) {
+
+          color.setHex(Math.random() * 0xffffff);
+
+          colors.push(color.r, color.g, color.b);
+          colors.push(color.r, color.g, color.b);
+          colors.push(color.r, color.g, color.b);
+
+        }
+
+        geometry.addAttribute('color', new v3d.Float32BufferAttribute(colors, 3));
+
+        var material = new v3d.MeshStandardMaterial({
+          vertexColors: v3d.VertexColors,
+          roughness: 0.0,
+          flatShading: true,
+          envMap: cubeCamera.renderTarget.texture,
           side: v3d.DoubleSide
         });
 
         sphere = new v3d.Mesh(geometry, material);
-        sphere.castShadow = true;
         scene.add(sphere);
+
+        //
+
+        controls = new v3d.OrbitControls(camera, renderer.domElement);
+        controls.maxPolarAngle = Math.PI * 0.495;
+        controls.target.set(0, 10, 0);
+        controls.minDistance = 40.0;
+        controls.maxDistance = 200.0;
+        camera.lookAt(controls.target);
 
         //
 
         stats = new Stats();
         container.appendChild(stats.dom);
 
-        //
+        // GUI
 
-        gui = new dat.GUI();
+        var gui = new dat.GUI();
 
-        gui.add(parameters, 'distortionScale', 0, 8, 0.1);
-        gui.add(parameters, 'size', 0.1, 10, 0.1);
-        gui.add(parameters, 'alpha', 0.9, 1, .001);
+        var folder = gui.addFolder('Sky');
+        folder.add(parameters, 'inclination', 0, 0.5, 0.0001).onChange(updateSun);
+        folder.add(parameters, 'azimuth', 0, 1, 0.0001).onChange(updateSun);
+        folder.open();
+
+        var uniforms = water.material.uniforms;
+
+        var folder = gui.addFolder('Water');
+        folder.add(uniforms.distortionScale, 'value', 0, 8, 0.1).name('distortionScale');
+        folder.add(uniforms.size, 'value', 0.1, 10, 0.1).name('size');
+        folder.add(uniforms.alpha, 'value', 0.9, 1, .001).name('alpha');
+        folder.open();
 
         //
 
         window.addEventListener('resize', onWindowResize, false);
-
-      }
-
-      function setWater() {
-
-        water = new v3d.Water(
-          parameters.oceanSide * 5,
-          parameters.oceanSide * 5,
-          {
-            textureWidth: 512,
-            textureHeight: 512,
-            waterNormals: new v3d.TextureLoader().load('textures/waternormals.jpg', function(texture) {
-              texture.wrapS = texture.wrapT = v3d.RepeatWrapping;
-            }),
-            alpha:   parameters.alpha,
-            sunDirection: light.position.clone().normalize(),
-            sunColor: 0xffffff,
-            waterColor: 0x001e0f,
-            distortionScale: parameters.distortionScale,
-            fog: scene.fog != undefined
-          }
-        );
-
-        water.rotation.x = - Math.PI / 2;
-        water.receiveShadow = true;
-
-        scene.add(water);
-
-      }
-
-      function setSkybox() {
-
-        cubeMap = new v3d.CubeTexture([]);
-        cubeMap.format = v3d.RGBFormat;
-
-        var loader = new v3d.ImageLoader();
-        loader.load('textures/skyboxsun25degtest.png', function(image) {
-
-          var getSide = function(x, y) {
-
-            var size = 1024;
-
-            var canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
-
-            var context = canvas.getContext('2d');
-            context.drawImage(image, - x * size, - y * size);
-
-            return canvas;
-
-          };
-
-          cubeMap.images[0] = getSide(2, 1); // px
-          cubeMap.images[1] = getSide(0, 1); // nx
-          cubeMap.images[2] = getSide(1, 0); // py
-          cubeMap.images[3] = getSide(1, 2); // ny
-          cubeMap.images[4] = getSide(1, 1); // pz
-          cubeMap.images[5] = getSide(3, 1); // nz
-          cubeMap.needsUpdate = true;
-
-        });
-
-        var cubeShader = v3d.ShaderLib['cube'];
-        cubeShader.uniforms['tCube'].value = cubeMap;
-
-        var skyBoxMaterial = new v3d.ShaderMaterial({
-          fragmentShader: cubeShader.fragmentShader,
-          vertexShader: cubeShader.vertexShader,
-          uniforms: cubeShader.uniforms,
-          side: v3d.BackSide
-        });
-
-        var skyBox = new v3d.Mesh(
-          new v3d.BoxGeometry(parameters.oceanSide * 5 + 100, parameters.oceanSide * 5 + 100, parameters.oceanSide * 5 + 100),
-          skyBoxMaterial
-        );
-
-        scene.add(skyBox);
-
-      }
-
-      function setLighting() {
-
-        renderer.shadowMap.enabled = true;
-
-        light = new v3d.DirectionalLight(0xffffbb, 1);
-        light.position.set(- 30, 30, - 30);
-        light.castShadow = true;
-        light.shadow.camera.top = 45;
-        light.shadow.camera.right = 40;
-        light.shadow.camera.left = light.shadow.camera.bottom = -40;
-        light.shadow.camera.near = 1;
-        light.shadow.camera.far = 200;
-
-        scene.add(light, new v3d.AmbientLight(0x888888));
 
       }
 
@@ -267,9 +242,6 @@
         sphere.rotation.z = time * 0.51;
 
         water.material.uniforms.time.value += 1.0 / 60.0;
-        water.material.uniforms.size.value = parameters.size;
-        water.material.uniforms.distortionScale.value = parameters.distortionScale;
-        water.material.uniforms.alpha.value = parameters.alpha;
 
         renderer.render(scene, camera);
 

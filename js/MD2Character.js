@@ -82,7 +82,7 @@ v3d.MD2Character = function() {
 
                 checkLoadingComplete();
 
-            }
+            };
 
         };
 
@@ -96,11 +96,14 @@ v3d.MD2Character = function() {
 
     this.setPlaybackRate = function(rate) {
 
-        if(rate !== 0) {
+        if (rate !== 0) {
+
             this.mixer.timeScale = 1 / rate;
-        }
-        else {
+
+        } else {
+
             this.mixer.timeScale = 0;
+
         }
 
     };
@@ -152,13 +155,16 @@ v3d.MD2Character = function() {
 
         if (this.meshBody) {
 
-            if(this.meshBody.activeAction) {
+            if (this.meshBody.activeAction) {
+
                 this.meshBody.activeAction.stop();
                 this.meshBody.activeAction = null;
+
             }
 
             var action = this.mixer.clipAction(clipName, this.meshBody);
-            if(action) {
+
+            if (action) {
 
                 this.meshBody.activeAction = action.play();
 
@@ -178,29 +184,28 @@ v3d.MD2Character = function() {
 
         if (scope.meshWeapon) {
 
-            if(this.meshWeapon.activeAction) {
+            if (this.meshWeapon.activeAction) {
+
                 this.meshWeapon.activeAction.stop();
                 this.meshWeapon.activeAction = null;
+
             }
 
-            var geometry = this.meshWeapon.geometry,
-                animations = geometry.animations;
-
             var action = this.mixer.clipAction(clipName, this.meshWeapon);
-            if(action) {
 
-                this.meshWeapon.activeAction =
-                        action.syncWith(this.meshBody.activeAction).play();
+            if (action) {
+
+                this.meshWeapon.activeAction = action.syncWith(this.meshBody.activeAction).play();
 
             }
 
         }
 
-    }
+    };
 
     this.update = function(delta) {
 
-        if(this.mixer) this.mixer.update(delta);
+        if (this.mixer) this.mixer.update(delta);
 
     };
 

@@ -22,6 +22,7 @@ v3d.TGALoader.prototype = {
 
         var loader = new v3d.FileLoader(this.manager);
         loader.setResponseType('arraybuffer');
+        loader.setPath(this.path);
 
         loader.load(url, function(buffer) {
 
@@ -534,6 +535,13 @@ v3d.TGALoader.prototype = {
         context.putImageData(imageData, 0, 0);
 
         return canvas;
+
+    },
+
+    setPath: function(value) {
+
+        this.path = value;
+        return this;
 
     }
 

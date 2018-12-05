@@ -95,7 +95,7 @@ SEA3D.GeometryGC = function(name, data, sea3d) {
     var numIndexes = ifs.GetNCoordIndex();
     var numVertex = ifs.GetNCoord();
 
-    if (! this.groups.length) this.groups.push({ start: 0, count: numIndexes * 3 });
+    if (!this.groups.length) this.groups.push({ start: 0, count: numIndexes * 3 });
 
     this.indexes = this.isBig ? new Uint32Array(numIndexes * 3) : new Uint16Array(numIndexes * 3);
     this.vertex = new Float32Array(numVertex * 3);

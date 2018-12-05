@@ -2,16 +2,55 @@
  * @author sunag / http://www.sunag.com.br/
  */
 
-v3d.Vector3Node = function(x, y, z) {
+import { InputNode } from '../core/InputNode.js';
+import { NodeUtils } from '../core/NodeUtils.js';
 
-    v3d.InputNode.call(this, 'v3');
+function Vector3Node(x, y, z) {
 
-    this.type = 'v3';
-    this.value = new v3d.Vector3(x, y, z);
+    InputNode.call(this, 'v3');
+
+    this.value = x instanceof v3d.Vector3 ? x : new v3d.Vector3(x, y, z);
+
+}
+
+Vector3Node.prototype = Object.create(InputNode.prototype);
+Vector3Node.prototype.constructor = Vector3Node;
+Vector3Node.prototype.nodeType = "Vector3";
+
+NodeUtils.addShortcuts(Vector3Node.prototype, 'value', ['x', 'y', 'z']);
+
+Vector3Node.prototype.generateReadonly = function(builder, output, uuid, type, ns, needsUpdate) {
+
+    return builder.format("vec3(" + this.x + ", " + this.y + ", " + this.z + ")", type, output);
 
 };
 
-v3d.Vector3Node.prototype = Object.create(v3d.InputNode.prototype);
-v3d.Vector3Node.prototype.constructor = v3d.Vector3Node;
+Vector3Node.prototype.copy = function(source) {
 
-v3d.NodeMaterial.addShortcuts(v3d.Vector3Node.prototype, 'value', ['x', 'y', 'z']);
+    InputNode.prototype.copy.call(this, source);
+
+    this.value.copy(source);
+
+};
+
+Vector3Node.prototype.toJSON = function(meta) {
+
+    var data = this.getJSONNode(meta);
+
+    if (!data) {
+
+        data = this.createJSONNode(meta);
+
+        data.x = this.x;
+        data.y = this.y;
+        data.z = this.z;
+
+        if (this.readonly === true) data.readonly = true;
+
+    }
+
+    return data;
+
+};
+
+export { Vector3Node };

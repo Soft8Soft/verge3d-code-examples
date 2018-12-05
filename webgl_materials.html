@@ -17,12 +17,16 @@
 
     <script src="../build/v3d.js"></script>
 
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script>
 
-      if (! Detector.webgl) Detector.addGetWebGLMessage();
+      if (WEBGL.isWebGLAvailable() === false) {
+
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+      }
 
       var container, stats;
 
@@ -113,7 +117,7 @@
         pointLight = new v3d.PointLight(0xffffff, 1);
         scene.add(pointLight);
 
-        pointLight.add(new v3d.Mesh(new v3d.SphereGeometry(4, 8, 8), new v3d.MeshBasicMaterial({ color: 0xffffff })));
+        pointLight.add(new v3d.Mesh(new v3d.SphereBufferGeometry(4, 8, 8), new v3d.MeshBasicMaterial({ color: 0xffffff })));
 
         //
 

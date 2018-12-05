@@ -49,18 +49,22 @@
     <script src="js/loaders/sea3d/SEA3DLZMA.js"></script>
     <script src="js/loaders/sea3d/SEA3DLoader.js"></script>
 
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script>
 
-      if (! Detector.webgl) Detector.addGetWebGLMessage();
+      if (WEBGL.isWebGLAvailable() === false) {
+
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+      }
 
       console.log("Visit https://github.com/sunag/sea3d to all codes and builds under development.");
 
       var container, stats;
 
-      var camera, scene, renderer, composer, controls, demoAt = -1;
+      var camera, scene, renderer, composer, demoAt = - 1;
 
       var loader;
 
@@ -74,12 +78,12 @@
 
       loader = new v3d.SEA3D({
 
-        autoPlay : false, // Manual play animations
-        container : scene // Container to add models
+        autoPlay: false, // Manual play animations
+        container: scene // Container to add models
 
       });
 
-      loader.onComplete = function(e) {
+      loader.onComplete = function() {
 
         // Get the first camera from 3ds Max
         // use loader.get... to get others objects
@@ -88,7 +92,7 @@
         camera.position.copy(cam.position);
         camera.rotation.copy(cam.rotation);
 
-        controls = new v3d.OrbitControls(camera);
+        new v3d.OrbitControls(camera);
 
         // events
 
@@ -108,7 +112,7 @@
 
         // play all animations
 
-        for(var i = 0; i < loader.meshes.length; i++) {
+        for (var i = 0; i < loader.meshes.length; i++) {
 
           if (loader.meshes[i].animator)
             loader.meshes[i].animator.play(id, crossfade, offset);
@@ -119,7 +123,7 @@
 
       function setTimeScale(timeScale) {
 
-        for(var i = 0; i < loader.meshes.length; i++) {
+        for (var i = 0; i < loader.meshes.length; i++) {
 
           if (loader.meshes[i].animator)
             loader.meshes[i].animator.setTimeScale(timeScale);
@@ -130,7 +134,7 @@
 
       function stopAll() {
 
-        for(var i = 0; i < loader.meshes.length; i++) {
+        for (var i = 0; i < loader.meshes.length; i++) {
 
           if (loader.meshes[i].animator)
             loader.meshes[i].animator.stop();
@@ -207,11 +211,11 @@
 
       }
 
-      function onMouseClick(e) {
+      function onMouseClick() {
 
         // 0 at 3 demos
 
-        switch(demoAt = ++demoAt % 4) {
+        switch (demoAt = ++ demoAt % 4) {
 
           // play all animation to sequence "crash#1"
 
@@ -224,7 +228,7 @@
 
             break;
 
-          // play all animation to sequence "crash#2"
+            // play all animation to sequence "crash#2"
 
           case 1:
 
@@ -234,7 +238,7 @@
 
             break;
 
-          // play animation in single object
+            // play animation in single object
 
           case 2:
 
@@ -256,7 +260,7 @@
 
             break;
 
-          // set time scale
+            // set time scale
 
           case 3:
 
@@ -266,7 +270,9 @@
             description("time scale / 10 - crossfade 0.5 seconds");
 
             break;
+
         }
+
       }
 
       //

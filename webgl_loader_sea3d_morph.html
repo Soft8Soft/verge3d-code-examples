@@ -49,18 +49,22 @@
     <script src="js/loaders/sea3d/SEA3DLZMA.js"></script>
     <script src="js/loaders/sea3d/SEA3DLoader.js"></script>
 
-    <script src="js/Detector.js"></script>
+    <script src="js/WebGL.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
     <script>
 
-      if (! Detector.webgl) Detector.addGetWebGLMessage();
+      if (WEBGL.isWebGLAvailable() === false) {
+
+        document.body.appendChild(WEBGL.getWebGLErrorMessage());
+
+      }
 
       console.log("Visit https://github.com/sunag/sea3d to all codes and builds under development.");
 
       var container, stats;
 
-      var camera, scene, renderer, composer, controls, teapot;
+      var camera, scene, renderer, composer, teapot;
 
       var loader;
 
@@ -74,12 +78,13 @@
 
       loader = new v3d.SEA3D({
 
-        autoPlay : true, // Auto play animations
-        container : scene // Container to add models
+        autoPlay: true, // Auto play animations
+        scripts: false, // Disable embed scripts
+        container: scene // Container to add models
 
       });
 
-      loader.onComplete = function(e) {
+      loader.onComplete = function() {
 
         // Get the first camera from SEA3D Studio
         // use loader.get... to get others objects
@@ -88,7 +93,7 @@
         camera.position.copy(cam.position);
         camera.rotation.copy(cam.rotation);
 
-        controls = new v3d.OrbitControls(camera);
+        new v3d.OrbitControls(camera);
 
         // get mesh
 

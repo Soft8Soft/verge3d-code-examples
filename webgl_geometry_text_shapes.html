@@ -51,8 +51,6 @@
 
           var xMid, text;
 
-          var textShape = new v3d.BufferGeometry();
-
           var color = 0x006699;
 
           var matDark = new v3d.LineBasicMaterial({
@@ -69,9 +67,9 @@
 
           var message = "   Verge3D\nSimple text.";
 
-          var shapes = font.generateShapes(message, 100, 2);
+          var shapes = font.generateShapes(message, 100);
 
-          var geometry = new v3d.ShapeGeometry(shapes);
+          var geometry = new v3d.ShapeBufferGeometry(shapes);
 
           geometry.computeBoundingBox();
 
@@ -81,9 +79,7 @@
 
           // make shape (N.B. edge view not visible)
 
-          textShape.fromGeometry(geometry);
-
-          text = new v3d.Mesh(textShape, matLite);
+          text = new v3d.Mesh(geometry, matLite);
           text.position.z = - 150;
           scene.add(text);
 
@@ -116,11 +112,12 @@
 
             var shape = shapes[i];
 
-            var lineGeometry = shape.createPointsGeometry();
+            var points = shape.getPoints();
+            var geometry = new v3d.BufferGeometry().setFromPoints(points);
 
-            lineGeometry.translate(xMid, 0, 0);
+            geometry.translate(xMid, 0, 0);
 
-            var lineMesh = new v3d.Line(lineGeometry, matDark);
+            var lineMesh = new v3d.Line(geometry, matDark);
             lineText.add(lineMesh);
 
           }

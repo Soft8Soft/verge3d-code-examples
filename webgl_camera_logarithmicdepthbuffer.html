@@ -40,10 +40,6 @@
         display: block;
         text-align: center;
       }
-      .renderer_label.renderer_label_normal {
-      }
-      .renderer_label.renderer_label_logzbuf {
-      }
       #container {
         white-space: nowrap;
       }
@@ -75,7 +71,7 @@
   <body>
 
     <div id="container">
-      <div id="container_normal"><h2 class="renderer_label renderer_label_normal">normal z-buffer</h2></div><div id="container_logzbuf"><h2 class="renderer_label renderer_label_logzbuf">logarithmic z-buffer</h2></div>
+      <div id="container_normal"><h2 class="renderer_label">normal z-buffer</h2></div><div id="container_logzbuf"><h2 class="renderer_label">logarithmic z-buffer</h2></div>
       <div id="renderer_border"></div>
     </div>
 
@@ -97,7 +93,7 @@
       var SCREEN_HEIGHT = window.innerHeight;
       var screensplit = .25, screensplit_right = 0;
       var mouse = [.5, .5];
-      var zoompos = -100, minzoomspeed = .015;
+      var zoompos = - 100, minzoomspeed = .015;
       var zoomspeed = minzoomspeed;
 
       var container, border, stats;
@@ -107,23 +103,23 @@
       // Try to use some descriptive real-world examples of objects at each scale
 
       var labeldata = [
-        { size: .01,           scale: 0.0001, label: "microscopic (1µm)" }, // FIXME - triangulating text fails at this size, so we scale instead
-        { size: .01,           scale: 0.1,  label: "minuscule (1mm)" },
-        { size: .01,           scale: 1.0,  label: "tiny (1cm)" },
-        { size: 1,             scale: 1.0,  label: "child-sized (1m)" },
-        { size: 10,            scale: 1.0,  label: "tree-sized (10m)" },
-        { size: 100,           scale: 1.0,  label: "building-sized (100m)" },
-        { size: 1000,          scale: 1.0,  label: "medium (1km)" },
-        { size: 10000,         scale: 1.0,  label: "city-sized (10km)" },
-        { size: 3400000,       scale: 1.0,  label: "moon-sized (3,400 Km)" },
-        { size: 12000000,      scale: 1.0,  label: "planet-sized (12,000 km)" },
-        { size: 1400000000,    scale: 1.0,  label: "sun-sized (1,400,000 km)" },
-        { size: 7.47e12,       scale: 1.0,  label: "solar system-sized (50Au)" },
-        { size: 9.4605284e15,  scale: 1.0,  label: "gargantuan (1 light year)" },
-        { size: 3.08567758e16, scale: 1.0,  label: "ludicrous (1 parsec)" },
-        { size: 1e19,          scale: 1.0,  label: "mind boggling (1000 light years)" },
-        { size: 1.135e21,      scale: 1.0,  label: "galaxy-sized (120,000 light years)" },
-        { size: 9.46e23,       scale: 1.0,  label: "... (100,000,000 light years)" }
+        { size: .01, scale: 0.0001, label: "microscopic (1µm)" }, // FIXME - triangulating text fails at this size, so we scale instead
+        { size: .01, scale: 0.1, label: "minuscule (1mm)" },
+        { size: .01, scale: 1.0, label: "tiny (1cm)" },
+        { size: 1, scale: 1.0, label: "child-sized (1m)" },
+        { size: 10, scale: 1.0, label: "tree-sized (10m)" },
+        { size: 100, scale: 1.0, label: "building-sized (100m)" },
+        { size: 1000, scale: 1.0, label: "medium (1km)" },
+        { size: 10000, scale: 1.0, label: "city-sized (10km)" },
+        { size: 3400000, scale: 1.0, label: "moon-sized (3,400 Km)" },
+        { size: 12000000, scale: 1.0, label: "planet-sized (12,000 km)" },
+        { size: 1400000000, scale: 1.0, label: "sun-sized (1,400,000 km)" },
+        { size: 7.47e12, scale: 1.0, label: "solar system-sized (50Au)" },
+        { size: 9.4605284e15, scale: 1.0, label: "gargantuan (1 light year)" },
+        { size: 3.08567758e16, scale: 1.0, label: "ludicrous (1 parsec)" },
+        { size: 1e19, scale: 1.0, label: "mind boggling (1000 light years)" },
+        { size: 1.135e21, scale: 1.0, label: "galaxy-sized (120,000 light years)" },
+        { size: 9.46e23, scale: 1.0, label: "... (100,000,000 light years)" }
       ];
 
       init();
@@ -167,12 +163,12 @@
 
         var renderer = new v3d.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: logDepthBuf });
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(SCREEN_WIDTH/2, SCREEN_HEIGHT);
+        renderer.setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT);
         renderer.domElement.style.position = "relative";
         renderer.domElement.id = 'renderer_' + name;
         framecontainer.appendChild(renderer.domElement);
 
-        return { container: framecontainer, renderer: renderer, scene: scene, camera: camera }
+        return { container: framecontainer, renderer: renderer, scene: scene, camera: camera };
 
       }
 
@@ -183,7 +179,7 @@
         scene.add(new v3d.AmbientLight(0x222222));
 
         var light = new v3d.DirectionalLight(0xffffff, 1);
-        light.position.set(100,100,100);
+        light.position.set(100, 100, 100);
         scene.add(light);
 
         var materialargs = {
@@ -192,8 +188,6 @@
           shininess: 50,
           emissive: 0x000000
         };
-
-        var meshes = [];
 
         var geometry = new v3d.SphereBufferGeometry(0.5, 24, 12);
 
@@ -217,17 +211,17 @@
           var material = new v3d.MeshPhongMaterial(materialargs);
 
           var group = new v3d.Group();
-          group.position.z = -labeldata[i].size * scale;
+          group.position.z = - labeldata[i].size * scale;
           scene.add(group);
 
           var textmesh = new v3d.Mesh(labelgeo, material);
           textmesh.scale.set(scale, scale, scale);
-          textmesh.position.z = -labeldata[i].size * scale;
+          textmesh.position.z = - labeldata[i].size * scale;
           textmesh.position.y = labeldata[i].size / 4 * scale;
           group.add(textmesh);
 
           var dotmesh = new v3d.Mesh(geometry, material);
-          dotmesh.position.y = -labeldata[i].size / 4 * scale;
+          dotmesh.position.y = - labeldata[i].size / 4 * scale;
           dotmesh.scale.multiplyScalar(labeldata[i].size * scale);
           group.add(dotmesh);
 
@@ -272,8 +266,8 @@
       function render() {
 
         // Put some limits on zooming
-        var minzoom = labeldata[0].size * labeldata[0].scale*1;
-        var maxzoom = labeldata[labeldata.length-1].size * labeldata[labeldata.length-1].scale * 100;
+        var minzoom = labeldata[0].size * labeldata[0].scale * 1;
+        var maxzoom = labeldata[labeldata.length - 1].size * labeldata[labeldata.length - 1].scale * 100;
         var damping = (Math.abs(zoomspeed) > minzoomspeed ? .95 : 1.0);
 
         // Zoom out faster the further out you go
@@ -282,7 +276,9 @@
 
         // Slow down quickly at the zoom limits
         if ((zoom == minzoom && zoomspeed < 0) || (zoom == maxzoom && zoomspeed > 0)) {
+
           damping = .85;
+
         }
 
         zoompos += zoomspeed;
@@ -299,7 +295,9 @@
 
         // Update renderer sizes if the split has changed
         if (screensplit_right != 1 - screensplit) {
+
           updateRendererSizes();
+
         }
 
         objects.normal.renderer.render(objects.normal.scene, objects.normal.camera);
@@ -309,37 +307,53 @@
 
       }
 
-      function onWindowResize(event) {
+      function onWindowResize() {
+
         updateRendererSizes();
+
       }
 
       function onBorderMouseDown(ev) {
+
         // activate draggable window resizing bar
         window.addEventListener("mousemove", onBorderMouseMove);
         window.addEventListener("mouseup", onBorderMouseUp);
         ev.stopPropagation();
         ev.preventDefault();
+
       }
+
       function onBorderMouseMove(ev) {
+
         screensplit = Math.max(0, Math.min(1, ev.clientX / window.innerWidth));
         ev.stopPropagation();
+
       }
-      function onBorderMouseUp(ev) {
+
+      function onBorderMouseUp() {
+
         window.removeEventListener("mousemove", onBorderMouseMove);
         window.removeEventListener("mouseup", onBorderMouseUp);
+
       }
+
       function onMouseMove(ev) {
+
         mouse[0] = ev.clientX / window.innerWidth;
         mouse[1] = ev.clientY / window.innerHeight;
+
       }
+
       function onMouseWheel(ev) {
+
         var amount = ev.deltaY;
         if (amount === 0) return;
         var dir = amount / Math.abs(amount);
-        zoomspeed = dir/10;
+        zoomspeed = dir / 10;
 
         // Slow down default zoom speed after user starts zooming, to give them more control
         minzoomspeed = 0.001;
+
       }
     </script>
   </body>

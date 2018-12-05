@@ -7,9 +7,9 @@
  * @author Jonas Wagner / http://29a.ch/ && http://29a.ch/slides/2012/webglwater/ : Water shader explanations in WebGL
  */
 
-v3d.Water = function(width, height, options) {
+v3d.Water = function(geometry, options) {
 
-    v3d.Mesh.call(this, new v3d.PlaneBufferGeometry(width, height));
+    v3d.Mesh.call(this, geometry);
 
     var scope = this;
 
@@ -57,7 +57,7 @@ v3d.Water = function(width, height, options) {
 
     var renderTarget = new v3d.WebGLRenderTarget(textureWidth, textureHeight, parameters);
 
-    if (! v3d.Math.isPowerOfTwo(textureWidth) || ! v3d.Math.isPowerOfTwo(textureHeight)) {
+    if (!v3d.Math.isPowerOfTwo(textureWidth) || ! v3d.Math.isPowerOfTwo(textureHeight)) {
 
         renderTarget.texture.generateMipmaps = false;
 
@@ -75,7 +75,6 @@ v3d.Water = function(width, height, options) {
                 time: { value: 0.0 },
                 size: { value: 1.0 },
                 distortionScale: { value: 20.0 },
-                noiseScale: { value: 1.0 },
                 textureMatrix: { value: new v3d.Matrix4() },
                 sunColor: { value: new v3d.Color(0x7F7F7F) },
                 sunDirection: { value: new v3d.Vector3(0.70707, 0.70707, 0) },
@@ -145,7 +144,7 @@ v3d.Water = function(width, height, options) {
             v3d.ShaderChunk['packing'],
             v3d.ShaderChunk['bsdfs'],
             v3d.ShaderChunk['fog_pars_fragment'],
-            v3d.ShaderChunk['lights_pars'],
+            v3d.ShaderChunk['lights_pars_begin'],
             v3d.ShaderChunk['shadowmap_pars_fragment'],
             v3d.ShaderChunk['shadowmask_pars_fragment'],
 
@@ -163,7 +162,7 @@ v3d.Water = function(width, height, options) {
             '    float distance = length(worldToEye);',
 
             '    vec2 distortion = surfaceNormal.xz * (0.001 + 1.0 / distance) * distortionScale;',
-            '    vec3 reflectionSample = vec3(texture2D(mirrorSampler, mirrorCoord.xy / mirrorCoord.z + distortion));',
+            '    vec3 reflectionSample = vec3(texture2D(mirrorSampler, mirrorCoord.xy / mirrorCoord.w + distortion));',
 
             '    float theta = max(dot(eyeDirection, surfaceNormal), 0.0);',
             '    float rf0 = 0.3;',

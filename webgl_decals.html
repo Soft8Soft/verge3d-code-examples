@@ -37,6 +37,7 @@
     <script src="../build/v3d.js"></script>
     <script src="js/geometries/DecalGeometry.js"></script>
     <script src="js/controls/OrbitControls.js"></script>
+    <script src="js/loaders/GLTFLoader.js"></script>
     <script src="js/libs/stats.min.js"></script>
     <script src="js/libs/dat.gui.min.js"></script>
 
@@ -45,7 +46,7 @@
     var container = document.getElementById('container');
 
     var renderer, scene, camera, stats;
-    var mesh, decal;
+    var mesh;
     var raycaster;
     var line;
 
@@ -79,7 +80,6 @@
     var position = new v3d.Vector3();
     var orientation = new v3d.Euler();
     var size = new v3d.Vector3(10, 10, 10);
-    var up = new v3d.Vector3(0, 1, 0);
 
     var params = {
       minScale: 10,
@@ -121,20 +121,20 @@
       scene.add(light);
 
       var light = new v3d.DirectionalLight(0xccccff, 1);
-      light.position.set(-1, 0.75, -0.5);
+      light.position.set(- 1, 0.75, - 0.5);
       scene.add(light);
 
-      var geometry = new v3d.Geometry();
-      geometry.vertices.push(new v3d.Vector3(), new v3d.Vector3());
+      var geometry = new v3d.BufferGeometry();
+      geometry.setFromPoints([new v3d.Vector3(), new v3d.Vector3()]);
 
-      line = new v3d.Line(geometry, new v3d.LineBasicMaterial({ linewidth: 4 }));
+      line = new v3d.Line(geometry, new v3d.LineBasicMaterial());
       scene.add(line);
 
       loadLeePerrySmith();
 
       raycaster = new v3d.Raycaster();
 
-      mouseHelper = new v3d.Mesh(new v3d.BoxGeometry(1, 1, 10), new v3d.MeshNormalMaterial());
+      mouseHelper = new v3d.Mesh(new v3d.BoxBufferGeometry(1, 1, 10), new v3d.MeshNormalMaterial());
       mouseHelper.visible = false;
       scene.add(mouseHelper);
 
@@ -157,7 +157,7 @@
       window.addEventListener('mouseup', function() {
 
         checkIntersection();
-        if (! moved && intersection.intersects) shoot();
+        if (!moved && intersection.intersects) shoot();
 
       });
 
@@ -189,7 +189,7 @@
 
       function checkIntersection() {
 
-        if (! mesh) return;
+        if (!mesh) return;
 
         raycaster.setFromCamera(mouse, camera);
 
@@ -209,9 +209,10 @@
           intersection.normal.copy(intersects[0].face.normal);
           mouseHelper.lookAt(n);
 
-          line.geometry.vertices[0].copy(intersection.point);
-          line.geometry.vertices[1].copy(n);
-          line.geometry.verticesNeedUpdate = true;
+          var positions = line.geometry.attributes.position;
+          positions.setXYZ(0, p.x, p.y, p.z);
+          positions.setXYZ(1, n.x, n.y, n.z);
+          positions.needsUpdate = true;
 
           intersection.intersects = true;
 
@@ -236,21 +237,21 @@
 
     }
 
-    function loadLeePerrySmith(callback) {
+    function loadLeePerrySmith() {
 
-      var loader = new v3d.JSONLoader();
+      var loader = new v3d.GLTFLoader();
 
-      loader.load('obj/leeperrysmith/LeePerrySmith.js', function(geometry) {
+      loader.load('models/gltf/LeePerrySmith/LeePerrySmith.glb', function(gltf) {
 
-        var material = new v3d.MeshPhongMaterial({
+        mesh = gltf.scene.children[0];
+        mesh.material = new v3d.MeshPhongMaterial({
           specular: 0x111111,
-          map: textureLoader.load('obj/leeperrysmith/Map-COL.jpg'),
-          specularMap: textureLoader.load('obj/leeperrysmith/Map-SPEC.jpg'),
-          normalMap: textureLoader.load('obj/leeperrysmith/Infinite-Level_02_Tangent_SmoothUV.jpg'),
+          map: textureLoader.load('models/gltf/LeePerrySmith/Map-COL.jpg'),
+          specularMap: textureLoader.load('models/gltf/LeePerrySmith/Map-SPEC.jpg'),
+          normalMap: textureLoader.load('models/gltf/LeePerrySmith/Infinite-Level_02_Tangent_SmoothUV.jpg'),
           shininess: 25
         });
 
-        mesh = new v3d.Mesh(geometry, material);
         scene.add(mesh);
         mesh.scale.set(10, 10, 10);
 

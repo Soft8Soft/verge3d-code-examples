@@ -44,6 +44,7 @@
       var windowHalfX = window.innerWidth / 2;
       var windowHalfY = window.innerHeight / 2;
 
+      var object;
 
       init();
       animate();
@@ -61,60 +62,62 @@
 
         scene = new v3d.Scene();
 
-        var ambient = new v3d.AmbientLight(0x101030);
-        scene.add(ambient);
+        var ambientLight = new v3d.AmbientLight(0xcccccc, 0.4);
+        scene.add(ambientLight);
 
-        var directionalLight = new v3d.DirectionalLight(0xffeedd);
-        directionalLight.position.set(0, 0, 1);
-        scene.add(directionalLight);
+        var pointLight = new v3d.PointLight(0xffffff, 0.8);
+        camera.add(pointLight);
+        scene.add(camera);
 
-        // texture
+        // manager
 
-        var manager = new v3d.LoadingManager();
+        function loadModel() {
+
+          object.traverse(function(child) {
+
+            if (child.isMesh) child.material.map = texture;
+
+          });
+
+          object.position.y = - 95;
+          scene.add(object);
+
+        }
+
+        var manager = new v3d.LoadingManager(loadModel);
+
         manager.onProgress = function(item, loaded, total) {
 
           console.log(item, loaded, total);
 
         };
 
-        var texture = new v3d.Texture();
+        // texture
 
-        var onProgress = function(xhr) {
-          if (xhr.lengthComputable) {
-            var percentComplete = xhr.loaded / xhr.total * 100;
-            console.log(Math.round(percentComplete, 2) + '% downloaded');
-          }
-        };
+        var textureLoader = new v3d.TextureLoader(manager);
 
-        var onError = function(xhr) {
-        };
-
-
-        var loader = new v3d.ImageLoader(manager);
-        loader.load('textures/UV_Grid_Sm.jpg', function(image) {
-
-          texture.image = image;
-          texture.needsUpdate = true;
-
-        });
+        var texture = textureLoader.load('textures/UV_Grid_Sm.jpg');
 
         // model
 
+        function onProgress(xhr) {
+
+          if (xhr.lengthComputable) {
+
+            var percentComplete = xhr.loaded / xhr.total * 100;
+            console.log('model ' + Math.round(percentComplete, 2) + '% downloaded');
+
+          }
+
+        }
+
+        function onError() {}
+
         var loader = new v3d.OBJLoader(manager);
-        loader.load('obj/male02/male02.obj', function(object) {
 
-          object.traverse(function(child) {
+        loader.load('models/obj/male02/male02.obj', function(obj) {
 
-            if (child instanceof v3d.Mesh) {
-
-              child.material.map = texture;
-
-            }
-
-          });
-
-          object.position.y = - 95;
-          scene.add(object);
+          object = obj;
 
         }, onProgress, onError);
 

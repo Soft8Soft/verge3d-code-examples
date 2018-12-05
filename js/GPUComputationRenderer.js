@@ -148,7 +148,7 @@ function GPUComputationRenderer(sizeX, sizeY, renderer) {
 
     this.init = function() {
 
-        if (! renderer.extensions.get("OES_texture_float")) {
+        if (!renderer.extensions.get("OES_texture_float")) {
 
             return "No OES_texture_float support for float textures.";
 
@@ -191,7 +191,7 @@ function GPUComputationRenderer(sizeX, sizeY, renderer) {
                             }
 
                         }
-                        if (! found) {
+                        if (!found) {
                             return "Variable dependency not found. Variable=" + variable.name + ", dependency=" + depVar.name;
                         }
 
@@ -298,19 +298,17 @@ function GPUComputationRenderer(sizeX, sizeY, renderer) {
             magFilter: magFilter,
             format: v3d.RGBAFormat,
             type: (/(iPad|iPhone|iPod)/g.test(navigator.userAgent)) ? v3d.HalfFloatType : v3d.FloatType,
-            stencilBuffer: false
+            stencilBuffer: false,
+            depthBuffer: false
         });
 
         return renderTarget;
 
     };
 
-    this.createTexture = function(sizeXTexture, sizeYTexture) {
+    this.createTexture = function() {
 
-        sizeXTexture = sizeXTexture || sizeX;
-        sizeYTexture = sizeYTexture || sizeY;
-
-        var a = new Float32Array(sizeXTexture * sizeYTexture * 4);
+        var a = new Float32Array(sizeX * sizeY * 4);
         var texture = new v3d.DataTexture(a, sizeX, sizeY, v3d.RGBAFormat, v3d.FloatType);
         texture.needsUpdate = true;
 

@@ -108,7 +108,8 @@ v3d.HDRCubeTextureLoader.prototype.load = function(type, urls, onLoad, onProgres
 
     function loadHDRData(i, onLoad, onProgress, onError) {
 
-        var loader = new v3d.FileLoader(this.manager);
+        var loader = new v3d.FileLoader(scope.manager);
+        loader.setPath(scope.path);
         loader.setResponseType('arraybuffer');
         loader.load(urls[i], function(buffer) {
 
@@ -116,7 +117,7 @@ v3d.HDRCubeTextureLoader.prototype.load = function(type, urls, onLoad, onProgres
 
             var texData = scope._parser(buffer);
 
-            if (! texData) return;
+            if (!texData) return;
 
             if (type === v3d.FloatType) {
 
@@ -146,11 +147,11 @@ v3d.HDRCubeTextureLoader.prototype.load = function(type, urls, onLoad, onProgres
 
             }
 
-            if (undefined !== texData.image) {
+            if (texData.image !== undefined) {
 
                 texture[i].images = texData.image;
 
-            } else if (undefined !== texData.data) {
+            } else if (texData.data !== undefined) {
 
                 var dataTexture = new v3d.DataTexture(texData.data, texData.width, texData.height);
                 dataTexture.format = texture.format;
@@ -182,5 +183,12 @@ v3d.HDRCubeTextureLoader.prototype.load = function(type, urls, onLoad, onProgres
     }
 
     return texture;
+
+};
+
+v3d.HDRCubeTextureLoader.prototype.setPath = function(value) {
+
+    this.path = value;
+    return this;
 
 };

@@ -137,17 +137,17 @@ v3d.Volume = function(xLength, yLength, zLength, type, arrayBuffer) {
      */
     var lowerThreshold = - Infinity;
     Object.defineProperty(this, 'lowerThreshold', {
-        get : function() {
+        get: function() {
 
             return lowerThreshold;
 
         },
-        set : function(value) {
+        set: function(value) {
 
             lowerThreshold = value;
             this.sliceList.forEach(function(slice) {
 
-                slice.geometryNeedsUpdate = true
+                slice.geometryNeedsUpdate = true;
 
             });
 
@@ -159,12 +159,12 @@ v3d.Volume = function(xLength, yLength, zLength, type, arrayBuffer) {
      */
     var upperThreshold = Infinity;
     Object.defineProperty(this, 'upperThreshold', {
-        get : function() {
+        get: function() {
 
             return upperThreshold;
 
         },
-        set : function(value) {
+        set: function(value) {
 
             upperThreshold = value;
             this.sliceList.forEach(function(slice) {
@@ -191,7 +191,7 @@ v3d.Volume = function(xLength, yLength, zLength, type, arrayBuffer) {
 
 v3d.Volume.prototype = {
 
-    constructor : v3d.Volume,
+    constructor: v3d.Volume,
 
     /**
      * @member {Function} getData Shortcut for data[access(i,j,k)]
@@ -201,7 +201,7 @@ v3d.Volume.prototype = {
      * @param {number} k    Third coordinate
      * @returns {number}  value in the data array
      */
-    getData : function(i, j, k) {
+    getData: function(i, j, k) {
 
         return this.data[k * this.xLength * this.yLength + j * this.xLength + i];
 
@@ -215,7 +215,7 @@ v3d.Volume.prototype = {
      * @param {number} k    Third coordinate
      * @returns {number}  index
      */
-    access : function(i, j, k) {
+    access: function(i, j, k) {
 
         return k * this.xLength * this.yLength + j * this.xLength + i;
 
@@ -227,7 +227,7 @@ v3d.Volume.prototype = {
      * @param {number} index index of the voxel
      * @returns {Array}  [x,y,z]
      */
-    reverseAccess : function(index) {
+    reverseAccess: function(index) {
 
         var z = Math.floor(index / (this.yLength * this.xLength));
         var y = Math.floor((index - z * this.yLength * this.xLength) / this.xLength);
@@ -246,7 +246,7 @@ v3d.Volume.prototype = {
      * @param {Object}   context    You can specify a context in which call the function, default if this Volume
      * @returns {v3d.Volume}   this
      */
-    map : function(functionToMap, context) {
+    map: function(functionToMap, context) {
 
         var length = this.data.length;
         context = context || this;
@@ -268,23 +268,23 @@ v3d.Volume.prototype = {
      * @param {number}            index the index of the slice
      * @returns {Object} an object containing all the usefull information on the geometry of the slice
      */
-    extractPerpendicularPlane : function(axis, RASIndex) {
+    extractPerpendicularPlane: function(axis, RASIndex) {
 
         var iLength,
-        jLength,
-        sliceAccess,
-        planeMatrix = (new v3d.Matrix4()).identity(),
-        volume = this,
-        planeWidth,
-        planeHeight,
-        firstSpacing,
-        secondSpacing,
-        positionOffset,
-        IJKIndex;
+            jLength,
+            sliceAccess,
+            planeMatrix = (new v3d.Matrix4()).identity(),
+            volume = this,
+            planeWidth,
+            planeHeight,
+            firstSpacing,
+            secondSpacing,
+            positionOffset,
+            IJKIndex;
 
         var axisInIJK = new v3d.Vector3(),
-        firstDirection = new v3d.Vector3(),
-        secondDirection = new v3d.Vector3();
+            firstDirection = new v3d.Vector3(),
+            secondDirection = new v3d.Vector3();
 
         var dimensions = new v3d.Vector3(this.xLength, this.yLength, this.zLength);
 
@@ -327,6 +327,7 @@ v3d.Volume.prototype = {
                 positionOffset = (volume.RASDimensions[2] - 1) / 2;
                 planeMatrix.setPosition(new v3d.Vector3(0, 0, RASIndex - positionOffset));
                 break;
+
         }
 
         firstDirection.applyMatrix4(volume.inverseMatrix).normalize();
@@ -357,10 +358,9 @@ v3d.Volume.prototype = {
 
         });
         var argumentsWithInversion = ['volume.xLength-1-', 'volume.yLength-1-', 'volume.zLength-1-'];
-        var arguments = ['i', 'j', 'k'];
         var argArray = [iDirection, jDirection, kDirection].map(function(direction, n) {
 
-            return (direction.dot(base[n]) > 0 ? '' : argumentsWithInversion[n]) + (direction === axisInIJK ? 'IJKIndex' : direction.argVar)
+            return (direction.dot(base[n]) > 0 ? '' : argumentsWithInversion[n]) + (direction === axisInIJK ? 'IJKIndex' : direction.argVar);
 
         });
         var argString = argArray.join(',');
@@ -368,13 +368,13 @@ v3d.Volume.prototype = {
 
 
         return {
-            iLength : iLength,
-            jLength : jLength,
-            sliceAccess : sliceAccess,
-            matrix : planeMatrix,
-            planeWidth : planeWidth,
-            planeHeight : planeHeight
-        }
+            iLength: iLength,
+            jLength: jLength,
+            sliceAccess: sliceAccess,
+            matrix: planeMatrix,
+            planeWidth: planeWidth,
+            planeHeight: planeHeight
+        };
 
     },
 
@@ -386,7 +386,7 @@ v3d.Volume.prototype = {
      * @param {number}            index the index of the slice
      * @returns {v3d.VolumeSlice} the extracted slice
      */
-    extractSlice : function(axis, index) {
+    extractSlice: function(axis, index) {
 
         var slice = new v3d.VolumeSlice(this, index, axis);
         this.sliceList.push(slice);
@@ -400,7 +400,7 @@ v3d.Volume.prototype = {
      * @memberof v3d.Volume
      * @returns {v3d.Volume} this
      */
-    repaintAllSlices : function() {
+    repaintAllSlices: function() {
 
         this.sliceList.forEach(function(slice) {
 
@@ -417,7 +417,7 @@ v3d.Volume.prototype = {
      * @memberof v3d.Volume
      * @returns {Array} [min,max]
      */
-    computeMinMax : function() {
+    computeMinMax: function() {
 
         var min = Infinity;
         var max = - Infinity;
@@ -428,7 +428,7 @@ v3d.Volume.prototype = {
         var i = 0;
         for (i = 0; i < datasize; i++) {
 
-            if (! isNaN(this.data[i])) {
+            if (!isNaN(this.data[i])) {
 
                 var value = this.data[i];
                 min = Math.min(min, value);

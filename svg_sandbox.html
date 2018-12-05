@@ -20,16 +20,9 @@
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/libs/stats.min.js"></script>
 
-    <script src="obj/Qrcode.js"></script>
-
     <script>
 
-      var AMOUNT = 100;
-
-      var stats;
-
-      var camera, scene;
-      var renderer;
+      var camera, scene, renderer, stats;
 
       var mesh, group;
 
@@ -46,13 +39,18 @@
 
         // QRCODE
 
-        mesh = new v3d.Mesh(new Qrcode(), new v3d.MeshLambertMaterial({ /*emissive: 0xff0000,*/ vertexColors: v3d.FaceColors }));
-        mesh.scale.x = mesh.scale.y = mesh.scale.z = 2;
-        scene.add(mesh);
+        var loader = new v3d.BufferGeometryLoader();
+        loader.load('models/json/QRCode_buffergeometry.json', function(geometry) {
+
+          mesh = new v3d.Mesh(geometry, new v3d.MeshLambertMaterial({ vertexColors: v3d.VertexColors }));
+          mesh.scale.x = mesh.scale.y = mesh.scale.z = 2;
+          scene.add(mesh);
+
+        });
 
         // CUBES
 
-        var cube = new v3d.BoxGeometry(100, 100, 100);
+        var cube = new v3d.BoxBufferGeometry(100, 100, 100);
 
         mesh = new v3d.Mesh(cube, new v3d.MeshBasicMaterial({ color: 0x0000ff, opacity: 0.5, transparent: true }));
         mesh.position.x = 500;
@@ -72,14 +70,14 @@
         // PLANE
 
         mesh = new v3d.Mesh(new v3d.PlaneBufferGeometry(100, 100), new v3d.MeshBasicMaterial({ color: Math.random() * 0xffffff, side: v3d.DoubleSide }));
-        mesh.position.y = -500;
+        mesh.position.y = - 500;
         mesh.scale.x = mesh.scale.y = mesh.scale.z = 2;
         scene.add(mesh);
 
         // CYLINDER
 
-        mesh = new v3d.Mesh(new v3d.CylinderGeometry(20, 100, 200, 10), new v3d.MeshBasicMaterial({ color: Math.random() * 0xffffff }));
-        mesh.position.x = -500;
+        mesh = new v3d.Mesh(new v3d.CylinderBufferGeometry(20, 100, 200, 10), new v3d.MeshBasicMaterial({ color: Math.random() * 0xffffff }));
+        mesh.position.x = - 500;
         mesh.rotation.x = - Math.PI / 2;
         mesh.scale.x = mesh.scale.y = mesh.scale.z = 2;
         scene.add(mesh);

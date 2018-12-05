@@ -2,31 +2,90 @@
  * @author sunag / http://www.sunag.com.br/
  */
 
-v3d.NodePass = function() {
+import { NodeMaterial } from '../materials/NodeMaterial.js';
+import { ScreenNode } from '../inputs/ScreenNode.js';
+
+function NodePass() {
 
     v3d.ShaderPass.call(this);
 
+    this.name = "";
+    this.uuid = v3d.Math.generateUUID();
+
+    this.userData = {};
+
     this.textureID = 'renderTexture';
 
-    this.fragment = new v3d.RawNode(new v3d.ScreenNode());
+    this.input = new ScreenNode();
 
-    this.node = new v3d.NodeMaterial();
-    this.node.fragment = this.fragment;
+    this.material = new NodeMaterial();
 
-    this.build();
+    this.needsUpdate = true;
+
+}
+
+NodePass.prototype = Object.create(v3d.ShaderPass.prototype);
+NodePass.prototype.constructor = NodePass;
+
+NodePass.prototype.render = function() {
+
+    if (this.needsUpdate) {
+
+        this.material.dispose();
+
+        this.material.fragment.value = this.input;
+
+        this.needsUpdate = false;
+
+    }
+
+    this.uniforms = this.material.uniforms;
+
+    v3d.ShaderPass.prototype.render.apply(this, arguments);
 
 };
 
-v3d.NodePass.prototype = Object.create(v3d.ShaderPass.prototype);
-v3d.NodePass.prototype.constructor = v3d.NodePass;
+NodePass.prototype.copy = function(source) {
 
-v3d.NodeMaterial.addShortcuts(v3d.NodePass.prototype, 'fragment', ['value']);
-
-v3d.NodePass.prototype.build = function() {
-
-    this.node.build();
-
-    this.uniforms = this.node.uniforms;
-    this.material = this.node;
+    this.input = source.input;
 
 };
+
+NodePass.prototype.toJSON = function(meta) {
+
+    var isRootObject = (meta === undefined || typeof meta === 'string');
+
+    if (isRootObject) {
+
+        meta = {
+            nodes: {}
+        };
+
+    }
+
+    if (meta && ! meta.passes) meta.passes = {};
+
+    if (!meta.passes[this.uuid]) {
+
+        var data = {};
+
+        data.uuid = this.uuid;
+        data.type = "NodePass";
+
+        meta.passes[this.uuid] = data;
+
+        if (this.name !== "") data.name = this.name;
+
+        if (JSON.stringify(this.userData) !== '{}') data.userData = this.userData;
+
+        data.input = this.input.toJSON(meta).uuid;
+
+    }
+
+    meta.pass = this.uuid;
+
+    return meta;
+
+};
+
+export { NodePass };

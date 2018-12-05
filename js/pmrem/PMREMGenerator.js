@@ -38,7 +38,7 @@ v3d.PMREMGenerator = function(sourceTexture, samplesPerLevel, resolution) {
      };
 
     // how many LODs fit in the given CubeUV Texture.
-    this.numLods = Math.log(size) / Math.log(2) - 2;  // IE11 doesn't support Math.log2
+    this.numLods = Math.log(size) / Math.log(2) - 2; // IE11 doesn't support Math.log2
 
     for (var i = 0; i < this.numLods; i++) {
 
@@ -53,7 +53,7 @@ v3d.PMREMGenerator = function(sourceTexture, samplesPerLevel, resolution) {
 
     this.shader = this.getShader();
     this.shader.defines['SAMPLES_PER_LEVEL'] = this.samplesPerLevel;
-    this.planeMesh = new v3d.Mesh(new v3d.PlaneGeometry(2, 2, 0), this.shader);
+    this.planeMesh = new v3d.Mesh(new v3d.PlaneBufferGeometry(2, 2, 0), this.shader);
     this.planeMesh.material.side = v3d.DoubleSide;
     this.scene = new v3d.Scene();
     this.scene.add(this.planeMesh);
@@ -66,7 +66,7 @@ v3d.PMREMGenerator = function(sourceTexture, samplesPerLevel, resolution) {
 
 v3d.PMREMGenerator.prototype = {
 
-    constructor : v3d.PMREMGenerator,
+    constructor: v3d.PMREMGenerator,
 
     /*
      * Prashant Sharma / spidersharma03: More thought and work is needed here.
@@ -90,6 +90,7 @@ v3d.PMREMGenerator.prototype = {
         var gammaOutput = renderer.gammaOutput;
         var toneMapping = renderer.toneMapping;
         var toneMappingExposure = renderer.toneMappingExposure;
+        var currentRenderTarget = renderer.getRenderTarget();
 
         renderer.toneMapping = v3d.LinearToneMapping;
         renderer.toneMappingExposure = 1.0;
@@ -100,7 +101,7 @@ v3d.PMREMGenerator.prototype = {
 
             var r = i / (this.numLods - 1);
             this.shader.uniforms['roughness'].value = r * 0.9; // see comment above, pragmatic choice
-            this.shader.uniforms['queryScale'].value.x = (i == 0) ? -1 : 1;
+            this.shader.uniforms['queryScale'].value.x = (i == 0) ? - 1 : 1;
             var size = this.cubeLods[i].width;
             this.shader.uniforms['mapSize'].value = size;
             this.renderToCubeMapTarget(renderer, this.cubeLods[i]);
@@ -109,6 +110,7 @@ v3d.PMREMGenerator.prototype = {
 
         }
 
+        renderer.setRenderTarget(currentRenderTarget);
         renderer.toneMapping = toneMapping;
         renderer.toneMappingExposure = toneMappingExposure;
         renderer.gammaInput = gammaInput;
@@ -120,7 +122,7 @@ v3d.PMREMGenerator.prototype = {
 
         for (var i = 0; i < 6; i++) {
 
-            this.renderToCubeMapTargetFace(renderer, renderTarget, i)
+            this.renderToCubeMapTargetFace(renderer, renderTarget, i);
 
         }
 
@@ -136,7 +138,7 @@ v3d.PMREMGenerator.prototype = {
 
     getShader: function() {
 
-        return new v3d.ShaderMaterial({
+        var shaderMaterial = new v3d.ShaderMaterial({
 
             defines: {
                 "SAMPLES_PER_LEVEL": 20,
@@ -256,13 +258,27 @@ v3d.PMREMGenerator.prototype = {
                     //rgbColor = testColorMap(roughness).rgb;\n\
                     gl_FragColor = linearToOutputTexel(vec4(rgbColor, 1.0));\n\
                 }",
-            blending: v3d.CustomBlending,
-            blendSrc: v3d.OneFactor,
-            blendDst: v3d.ZeroFactor,
-            blendSrcAlpha: v3d.OneFactor,
-            blendDstAlpha: v3d.ZeroFactor,
-            blendEquation: v3d.AddEquation
+
+            blending: v3d.NoBlending
+
         });
+
+        shaderMaterial.type = 'PMREMGenerator';
+
+        return shaderMaterial;
+
+    },
+
+    dispose: function() {
+
+        for (var i = 0, l = this.cubeLods.length; i < l; i++) {
+
+            this.cubeLods[i].dispose();
+
+        }
+
+        this.planeMesh.geometry.dispose();
+        this.planeMesh.material.dispose();
 
     }
 

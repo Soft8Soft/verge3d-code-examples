@@ -2,28 +2,50 @@
  * @author sunag / http://www.sunag.com.br/
  */
 
-v3d.IntNode = function(value) {
+import { InputNode } from '../core/InputNode.js';
 
-    v3d.InputNode.call(this, 'iv1');
+function IntNode(value) {
 
-    this.value = [Math.floor(value || 0)];
+    InputNode.call(this, 'i');
+
+    this.value = Math.floor(value || 0);
+
+}
+
+IntNode.prototype = Object.create(InputNode.prototype);
+IntNode.prototype.constructor = IntNode;
+IntNode.prototype.nodeType = "Int";
+
+IntNode.prototype.generateReadonly = function(builder, output, uuid, type, ns, needsUpdate) {
+
+    return builder.format(this.value, type, output);
 
 };
 
-v3d.IntNode.prototype = Object.create(v3d.InputNode.prototype);
-v3d.IntNode.prototype.constructor = v3d.IntNode;
+IntNode.prototype.copy = function(source) {
 
-Object.defineProperties(v3d.IntNode.prototype, {
-    number: {
-        get: function() {
+    InputNode.prototype.copy.call(this, source);
 
-            return this.value[0];
+    this.value = source.value;
 
-        },
-        set: function(val) {
+};
 
-            this.value[0] = Math.floor(val);
+IntNode.prototype.toJSON = function(meta) {
 
-        }
+    var data = this.getJSONNode(meta);
+
+    if (!data) {
+
+        data = this.createJSONNode(meta);
+
+        data.value = this.value;
+
+        if (this.readonly === true) data.readonly = true;
+
     }
-});
+
+    return data;
+
+};
+
+export { IntNode };

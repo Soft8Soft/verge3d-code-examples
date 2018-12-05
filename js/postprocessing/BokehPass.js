@@ -57,7 +57,7 @@ v3d.BokehPass = function(scene, camera, params) {
     bokehUniforms["farClip"].value = camera.far;
 
     this.materialBokeh = new v3d.ShaderMaterial({
-        defines: bokehShader.defines,
+        defines: Object.assign({}, bokehShader.defines),
         uniforms: bokehUniforms,
         vertexShader: bokehShader.vertexShader,
         fragmentShader: bokehShader.fragmentShader

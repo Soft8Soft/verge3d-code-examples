@@ -45,7 +45,6 @@
       var mouseXOnMouseDown = 0;
 
       var windowHalfX = window.innerWidth / 2;
-      var windowHalfY = window.innerHeight / 2;
 
       init();
       animate();
@@ -68,7 +67,7 @@
 
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0xf0f0f0);
-        
+
         scene.add(new v3d.AmbientLight(0x808080));
 
         var light = new v3d.DirectionalLight(0xffffff, 1);
@@ -109,17 +108,20 @@
 
         var nurbsCurve = new v3d.NURBSCurve(nurbsDegree, nurbsKnots, nurbsControlPoints);
 
-        var nurbsGeometry = new v3d.Geometry();
-        nurbsGeometry.vertices = nurbsCurve.getPoints(200);
-        var nurbsMaterial = new v3d.LineBasicMaterial({ linewidth: 10, color: 0x333333, transparent: true });
+        var nurbsGeometry = new v3d.BufferGeometry();
+        nurbsGeometry.setFromPoints(nurbsCurve.getPoints(200));
+
+        var nurbsMaterial = new v3d.LineBasicMaterial({ color: 0x333333 });
 
         var nurbsLine = new v3d.Line(nurbsGeometry, nurbsMaterial);
-        nurbsLine.position.set(200, -100, 0);
+        nurbsLine.position.set(200, - 100, 0);
         group.add(nurbsLine);
 
-        var nurbsControlPointsGeometry = new v3d.Geometry();
-        nurbsControlPointsGeometry.vertices = nurbsCurve.controlPoints;
-        var nurbsControlPointsMaterial = new v3d.LineBasicMaterial({ linewidth: 2, color: 0x333333, opacity: 0.25, transparent: true });
+        var nurbsControlPointsGeometry = new v3d.BufferGeometry();
+        nurbsControlPointsGeometry.setFromPoints(nurbsCurve.controlPoints);
+
+        var nurbsControlPointsMaterial = new v3d.LineBasicMaterial({ color: 0x333333, opacity: 0.25, transparent: true });
+
         var nurbsControlPointsLine = new v3d.Line(nurbsControlPointsGeometry, nurbsControlPointsMaterial);
         nurbsControlPointsLine.position.copy(nurbsLine.position);
         group.add(nurbsControlPointsLine);
@@ -128,22 +130,22 @@
 
         var nsControlPoints = [
           [
-            new v3d.Vector4 (-200, -200, 100, 1),
-            new v3d.Vector4 (-200, -100, -200, 1),
-            new v3d.Vector4 (-200, 100, 250, 1),
-            new v3d.Vector4 (-200, 200, -100, 1)
+            new v3d.Vector4(- 200, - 200, 100, 1),
+            new v3d.Vector4(- 200, - 100, - 200, 1),
+            new v3d.Vector4(- 200, 100, 250, 1),
+            new v3d.Vector4(- 200, 200, - 100, 1)
           ],
           [
-            new v3d.Vector4 (0, -200, 0, 1),
-            new v3d.Vector4 (0, -100, -100, 5),
-            new v3d.Vector4 (0, 100, 150, 5),
-            new v3d.Vector4 (0, 200, 0, 1)
+            new v3d.Vector4(0, - 200, 0, 1),
+            new v3d.Vector4(0, - 100, - 100, 5),
+            new v3d.Vector4(0, 100, 150, 5),
+            new v3d.Vector4(0, 200, 0, 1)
           ],
           [
-            new v3d.Vector4 (200, -200, -100, 1),
-            new v3d.Vector4 (200, -100, 200, 1),
-            new v3d.Vector4 (200, 100, -250, 1),
-            new v3d.Vector4 (200, 200, 100, 1)
+            new v3d.Vector4(200, - 200, - 100, 1),
+            new v3d.Vector4(200, - 100, 200, 1),
+            new v3d.Vector4(200, 100, - 250, 1),
+            new v3d.Vector4(200, 200, 100, 1)
           ]
         ];
         var degree1 = 2;
@@ -156,9 +158,9 @@
         map.wrapS = map.wrapT = v3d.RepeatWrapping;
         map.anisotropy = 16;
 
-        function getSurfacePoint(u, v) {
+        function getSurfacePoint(u, v, target) {
 
-          return nurbsSurface.getPoint(u, v);
+          return nurbsSurface.getPoint(u, v, target);
 
         }
 
@@ -192,7 +194,6 @@
       function onWindowResize() {
 
         windowHalfX = window.innerWidth / 2;
-        windowHalfY = window.innerHeight / 2;
 
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -224,7 +225,7 @@
 
       }
 
-      function onDocumentMouseUp(event) {
+      function onDocumentMouseUp() {
 
         document.removeEventListener('mousemove', onDocumentMouseMove, false);
         document.removeEventListener('mouseup', onDocumentMouseUp, false);
@@ -232,7 +233,7 @@
 
       }
 
-      function onDocumentMouseOut(event) {
+      function onDocumentMouseOut() {
 
         document.removeEventListener('mousemove', onDocumentMouseMove, false);
         document.removeEventListener('mouseup', onDocumentMouseUp, false);

@@ -9,15 +9,24 @@ v3d.CinematicCamera = function(fov, aspect, near, far) {
 
     v3d.PerspectiveCamera.call(this, fov, aspect, near, far);
 
-    this.type = "CinematicCamera";
+    this.type = 'CinematicCamera';
 
-    this.postprocessing = { enabled    : true };
+    this.postprocessing = { enabled: true };
     this.shaderSettings = {
         rings: 3,
         samples: 4
     };
 
-    this.material_depth = new v3d.MeshDepthMaterial();
+    var depthShader = v3d.BokehDepthShader;
+
+    this.materialDepth = new v3d.ShaderMaterial({
+        uniforms: depthShader.uniforms,
+        vertexShader: depthShader.vertexShader,
+        fragmentShader: depthShader.fragmentShader
+    });
+
+    this.materialDepth.uniforms['mNear'].value = near;
+    this.materialDepth.uniforms['mFar'].value = far;
 
     // In case of cinematicCamera, having a default lens set is important
     this.setLens();
@@ -151,7 +160,8 @@ v3d.CinematicCamera.prototype.initPostProcessing = function() {
             fragmentShader: bokeh_shader.fragmentShader,
             defines: {
                 RINGS: this.shaderSettings.rings,
-                SAMPLES: this.shaderSettings.samples
+                SAMPLES: this.shaderSettings.samples,
+                DEPTH_PACKING: 1
             }
         });
 
@@ -176,7 +186,7 @@ v3d.CinematicCamera.prototype.renderCinematic = function(scene, renderer) {
 
         // Render depth into texture
 
-        scene.overrideMaterial = this.material_depth;
+        scene.overrideMaterial = this.materialDepth;
         renderer.render(scene, camera, this.postprocessing.rtTextureDepth, true);
 
         // Render bokeh composite

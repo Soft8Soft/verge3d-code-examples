@@ -74,26 +74,7 @@
 
       var camera, scene, renderer, controls;
 
-      var group, text;
-
-      var t = false;
-
-      function toggle() {
-
-        if (t) {
-
-          text2.visible = 0;
-          text1.visible = 1;
-
-        } else {
-
-          text2.visible = 1;
-          text1.visible = 0;
-
-        }
-
-        t = !t;
-      }
+      var group;
 
       var loader = new v3d.FontLoader();
       loader.load('fonts/helvetiker_regular.typeface.json', function(font) {
@@ -106,20 +87,19 @@
       function init(font) {
 
         camera = new v3d.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.set(0, 100, 500);
+        camera.position.set(50, 100, 500);
 
         controls = new v3d.OrbitControls(camera);
-        controls.target.set(0, 100, 0);
+        controls.target.set(50, 100, 0);
         controls.update();
 
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0xf0f0f0);
 
-        var theText = "&"; // i % & j b 8
+        var theText = '&'; // i % & j b 8
 
         group = new v3d.Group();
         scene.add(group);
-
 
         var textMaterial = new v3d.MeshBasicMaterial({
           color: new v3d.Color(0, 0, 1),
@@ -127,24 +107,20 @@
           wireframe: true
         });
 
-        var textShapes = font.generateShapes(theText, 180, 2);
+        var textShapes = font.generateShapes(theText, 180);
 
-        var text3d = new v3d.ShapeGeometry(textShapes);
+        var geometry = new v3d.ShapeBufferGeometry(textShapes);
 
-        text3d.computeBoundingBox();
-        var centerOffset = -0.5 * (text3d.boundingBox.max.x - text3d.boundingBox.min.x);
-        text = new v3d.Mesh(text3d, textMaterial);
-
-        text.position.x = centerOffset - 150;
+        var text = new v3d.Mesh(geometry, textMaterial);
+        text.position.x = - 200;
         group.add(text);
 
         //
 
         var vA = new v3d.Vector2();
         var vB = new v3d.Vector2();
-        var vDot = new v3d.Vector2();
 
-        function processShape(path, reverse) {
+        function processShape(path) {
 
           var pts = []; // bigger area (convex hull)
           var pts2 = []; // smaller area (full solid shapes)
@@ -157,37 +133,43 @@
           pts.push(path[0].getPoint(0));
           pts2.push(path[0].getPoint(0));
 
-          for (var i=0; i < path.length; i++) {
+          for (var i = 0; i < path.length; i++) {
+
             var curve = path[i];
             if (curve instanceof v3d.LineCurve) {
+
               pts.push(curve.v2);
               pts2.push(curve.v2);
+
             } else if (curve instanceof v3d.QuadraticBezierCurve) {
-              vA = vA.subVectors(curve.v1, curve.v0); // .normalize()
+
+              vA = vA.subVectors(curve.v1, curve.v0);
               vB = vB.subVectors(curve.v2, curve.v1);
               z = vA.x * vB.y - vA.y * vB.x; // z component of cross Production
               wind = z < 0; // clockwise/anticlock wind
-              // if (reverse) wind = !wind;
-
-              // console.log(z, wind , wind ? 'clockwise' : 'anti');
 
               if (wind) {
+
                 pts.push(curve.v1);
                 pts.push(curve.v2);
                 pts2.push(curve.v2);
+
               } else {
+
                 pts.push(curve.v2);
                 pts2.push(curve.v1);
                 pts2.push(curve.v2);
+
               }
 
-              var flip = wind ? 1 : -1;
+              var flip = wind ? 1 : - 1;
               // if (reverse) flip *= -1;
 
               invert.push(flip, flip, flip);
               beziers.push(curve.v0, curve.v1, curve.v2);
 
             }
+
           }
 
           return {
@@ -196,6 +178,7 @@
             beziers: beziers,
             invert: invert
           };
+
         }
 
         var pts, pts2;
@@ -209,7 +192,7 @@
         var process;
         var hole;
 
-        for (var s=0;s<textShapes.length;s++) {
+        for (var s = 0; s < textShapes.length; s ++) {
 
           subshape = textShapes[s];
           process = processShape(subshape.curves);
@@ -225,9 +208,9 @@
           convexhullShapeGroup.push(convexhullShape);
           solidShapeGroup.push(solidShape);
 
-          for (var i=0; i<subshape.holes.length;i++) {
+          for (var i = 0; i < subshape.holes.length; i++) {
+
             hole = subshape.holes[i];
-            // console.log('hole', hole);
 
             process = processShape(hole.curves, true);
 
@@ -243,47 +226,38 @@
 
         } // end of subshape
 
-        var bezierGeometry = new v3d.Geometry();
+        var bezierGeometry = new v3d.BufferGeometry();
+        var vertices = [];
+        var uvs = [];
 
-        for (var i=0;i<beziers.length;i++) {
+        for (var i = 0; i < beziers.length; i++) {
+
           var p = beziers[i];
-          bezierGeometry.vertices.push(new v3d.Vector3(p.x, p.y, 0));
+          vertices.push(p.x, p.y, 0);
+
         }
 
-        for (i=0;i<beziers.length;i+=3) {
-          bezierGeometry.faces.push(new v3d.Face3(i, i+1, i+2));
-          bezierGeometry.faceVertexUvs[0].push([
-            new v3d.Vector2(0, 0),
-            new v3d.Vector2(0.5, 0),
-            new v3d.Vector2(1, 1)
-          ]);
+        for (var i = 0; i < beziers.length; i += 3) {
+
+          uvs.push(0, 0, 0.5, 0, 1, 1);
+
         }
 
-        text3d = new v3d.ShapeGeometry(convexhullShapeGroup);
-        text3d.computeBoundingBox();
-        var centerOffset = -0.5 * (text3d.boundingBox.max.x - text3d.boundingBox.min.x);
-
-        var text1 = new v3d.Mesh(text3d, textMaterial);
-
-        text1.position.x = centerOffset + 150;
-
-        group.add(text1);
-
-        text3d = new v3d.ShapeGeometry(solidShapeGroup);
-        text3d.computeBoundingBox();
-        var centerOffset = -0.5 * (text3d.boundingBox.max.x - text3d.boundingBox.min.x);
-
-        var text2 = new v3d.Mesh(text3d, new v3d.MeshBasicMaterial({ color: new v3d.Color(1, 0, 0), side: v3d.DoubleSide, wireframe: true }));
-        text2.position.x = centerOffset + 150;
-        group.add(text2);
-
-        //
-        bezierGeometry.computeBoundingBox();
-        bezierGeometry.computeFaceNormals();
-        bezierGeometry.computeVertexNormals();
-
-        bezierGeometry = new v3d.BufferGeometry().fromGeometry(bezierGeometry);
+        bezierGeometry.addAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
+        bezierGeometry.addAttribute('uv', new v3d.Float32BufferAttribute(uvs, 2));
         bezierGeometry.addAttribute('invert', new v3d.Float32BufferAttribute(invert, 1));
+
+        geometry = new v3d.ShapeBufferGeometry(convexhullShapeGroup);
+
+        text = new v3d.Mesh(geometry, textMaterial);
+        text.position.x = 200;
+        group.add(text);
+
+        geometry = new v3d.ShapeBufferGeometry(solidShapeGroup);
+
+        text = new v3d.Mesh(geometry, new v3d.MeshBasicMaterial({ color: new v3d.Color(1, 0, 0), side: v3d.DoubleSide, wireframe: true }));
+        text.position.x = 200;
+        group.add(text);
 
         //
 
@@ -296,13 +270,7 @@
           side: v3d.DoubleSide
         });
 
-
         text = new v3d.Mesh(bezierGeometry, newMaterial);
-        text.position.x = centerOffset;
-        text.position.y = 0;
-        text.position.z = 0;
-
-        text.rotation.x = 0;
         text.rotation.y = Math.PI * 2;
 
         group.add(text);
@@ -310,15 +278,9 @@
         //
 
 
-        text3d = new v3d.ShapeGeometry(solidShapeGroup);
-        text3d.computeBoundingBox();
+        geometry = new v3d.ShapeBufferGeometry(solidShapeGroup);
 
-        text = new v3d.Mesh(text3d, new v3d.MeshBasicMaterial({ color: 0.45 * 0xffffff, side: v3d.DoubleSide }));
-        text.position.x = centerOffset;
-        text.position.y = 0;
-        text.position.z = 0;
-
-        text.rotation.x = 0;
+        text = new v3d.Mesh(geometry, new v3d.MeshBasicMaterial({ color: 0.45 * 0xffffff, side: v3d.DoubleSide }));
         text.rotation.y = Math.PI * 2;
 
         group.add(text);
@@ -333,8 +295,6 @@
         stats = new Stats();
         document.body.appendChild(stats.dom);
 
-        document.addEventListener('mousedown', toggle, false);
-
         window.addEventListener('resize', onWindowResize, false);
 
       }
@@ -347,7 +307,6 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
 
       }
-
 
       //
 
