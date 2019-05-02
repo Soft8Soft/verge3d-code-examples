@@ -369,7 +369,7 @@
 
             // POST
 
-            var size = renderer.getDrawingBufferSize();
+            var size = renderer.getDrawingBufferSize(new v3d.Vector2());
 
             var screen = new v3d.ScreenNode();
 
@@ -451,7 +451,7 @@
 
             // POST
 
-            var size = renderer.getDrawingBufferSize();
+            var size = renderer.getDrawingBufferSize(new v3d.Vector2());
 
             var blurScreen = new v3d.BlurNode(new v3d.ScreenNode());
             blurScreen.size = new v3d.Vector2(size.width, size.height);

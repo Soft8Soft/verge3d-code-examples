@@ -688,14 +688,18 @@ v3d.OBJLoader = (function() {
                         if (isLine && material && ! (material instanceof v3d.LineBasicMaterial)) {
 
                             var materialLine = new v3d.LineBasicMaterial();
-                            materialLine.copy(material);
-                            materialLine.lights = false; // TOFIX
+                            v3d.Material.prototype.copy.call(materialLine, material);
+                            materialLine.color.copy(material.color);
+                            materialLine.lights = false;
                             material = materialLine;
 
                         } else if (isPoints && material && ! (material instanceof v3d.PointsMaterial)) {
 
                             var materialPoints = new v3d.PointsMaterial({ size: 10, sizeAttenuation: false });
-                            materialLine.copy(material);
+                            v3d.Material.prototype.copy.call(materialPoints, material);
+                            materialPoints.color.copy(material.color);
+                            materialPoints.map = material.map;
+                            materialPoints.lights = false;
                             material = materialPoints;
 
                         }

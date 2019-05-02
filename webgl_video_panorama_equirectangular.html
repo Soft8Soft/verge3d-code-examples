@@ -73,9 +73,6 @@
         video.play();
 
         var texture = new v3d.VideoTexture(video);
-        texture.minFilter = v3d.LinearFilter;
-        texture.format = v3d.RGBFormat;
-
         var material = new v3d.MeshBasicMaterial({ map: texture });
 
         mesh = new v3d.Mesh(geometry, material);

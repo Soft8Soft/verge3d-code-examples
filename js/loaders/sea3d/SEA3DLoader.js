@@ -1296,9 +1296,11 @@ v3d.SEA3D.Mesh.prototype = Object.assign(Object.create(v3d.Mesh.prototype), v3d.
 //    Skinning
 //
 
-v3d.SEA3D.SkinnedMesh = function(geometry, material, useVertexTexture) {
+v3d.SEA3D.SkinnedMesh = function(geometry, material) {
 
-    v3d.SkinnedMesh.call(this, geometry, material, useVertexTexture);
+    v3d.SkinnedMesh.call(this, geometry, material);
+
+    this.bind(new v3d.Skeleton(this.initBones()), this.matrixWorld);
 
     this.updateAnimations(geometry.animations, new v3d.AnimationMixer(this));
 
@@ -1307,6 +1309,66 @@ v3d.SEA3D.SkinnedMesh = function(geometry, material, useVertexTexture) {
 v3d.SEA3D.SkinnedMesh.prototype = Object.assign(Object.create(v3d.SkinnedMesh.prototype), v3d.SEA3D.Mesh.prototype, v3d.SEA3D.Animator.prototype, {
 
     constructor: v3d.SEA3D.SkinnedMesh,
+
+    initBones: function() {
+
+        var bones = [], bone, gbone;
+        var i, il;
+
+        if (this.geometry && this.geometry.bones !== undefined) {
+
+            // first, create array of 'Bone' objects from geometry data
+
+            for (i = 0, il = this.geometry.bones.length; i < il; i++) {
+
+                gbone = this.geometry.bones[i];
+
+                // create new 'Bone' object
+
+                bone = new v3d.Bone();
+                bones.push(bone);
+
+                // apply values
+
+                bone.name = gbone.name;
+                bone.position.fromArray(gbone.pos);
+                bone.quaternion.fromArray(gbone.rotq);
+                if (gbone.scl !== undefined) bone.scale.fromArray(gbone.scl);
+
+            }
+
+            // second, create bone hierarchy
+
+            for (i = 0, il = this.geometry.bones.length; i < il; i++) {
+
+                gbone = this.geometry.bones[i];
+
+                if ((gbone.parent !== - 1) && (gbone.parent !== null) && (bones[gbone.parent] !== undefined)) {
+
+                    // subsequent bones in the hierarchy
+
+                    bones[gbone.parent].add(bones[i]);
+
+                } else {
+
+                    // topmost bone, immediate child of the skinned mesh
+
+                    this.add(bones[i]);
+
+                }
+
+            }
+
+        }
+
+        // now the bones are part of the scene graph and children of the skinned mesh.
+        // let's update the corresponding matrices
+
+        this.updateMatrixWorld(true);
+
+        return bones;
+
+    },
 
     boneByName: function(name) {
 

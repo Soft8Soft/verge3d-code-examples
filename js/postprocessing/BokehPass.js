@@ -66,12 +66,7 @@ v3d.BokehPass = function(scene, camera, params) {
     this.uniforms = bokehUniforms;
     this.needsSwap = false;
 
-    this.camera2 = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
-    this.scene2  = new v3d.Scene();
-
-    this.quad2 = new v3d.Mesh(new v3d.PlaneBufferGeometry(2, 2), null);
-    this.quad2.frustumCulled = false; // Avoid getting clipped
-    this.scene2.add(this.quad2);
+    this.fsQuad = new v3d.Pass.FullScreenQuad(this.materialBokeh);
 
     this.oldClearColor = new v3d.Color();
     this.oldClearAlpha = 1;
@@ -82,9 +77,7 @@ v3d.BokehPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     constructor: v3d.BokehPass,
 
-    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
-
-        this.quad2.material = this.materialBokeh;
+    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
 
         // Render depth into texture
 
@@ -97,7 +90,9 @@ v3d.BokehPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         renderer.setClearColor(0xffffff);
         renderer.setClearAlpha(1.0);
-        renderer.render(this.scene, this.camera, this.renderTargetDepth, true);
+        renderer.setRenderTarget(this.renderTargetDepth);
+        renderer.clear();
+        renderer.render(this.scene, this.camera);
 
         // Render bokeh composite
 
@@ -107,11 +102,14 @@ v3d.BokehPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         if (this.renderToScreen) {
 
-            renderer.render(this.scene2, this.camera2);
+            renderer.setRenderTarget(null);
+            this.fsQuad.render(renderer);
 
         } else {
 
-            renderer.render(this.scene2, this.camera2, writeBuffer, this.clear);
+            renderer.setRenderTarget(writeBuffer);
+            renderer.clear();
+            this.fsQuad.render(renderer);
 
         }
 
@@ -119,7 +117,7 @@ v3d.BokehPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
         renderer.setClearColor(this.oldClearColor);
         renderer.setClearAlpha(this.oldClearAlpha);
         renderer.autoClear = this.oldAutoClear;
-    
+
     }
 
 });

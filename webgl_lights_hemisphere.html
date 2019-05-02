@@ -152,32 +152,36 @@
         // GROUND
 
         var groundGeo = new v3d.PlaneBufferGeometry(10000, 10000);
-        var groundMat = new v3d.MeshPhongMaterial({ color: 0xffffff, specular: 0x050505 });
+        var groundMat = new v3d.MeshLambertMaterial({ color: 0xffffff });
         groundMat.color.setHSL(0.095, 1, 0.75);
 
         var ground = new v3d.Mesh(groundGeo, groundMat);
-        ground.rotation.x = - Math.PI / 2;
         ground.position.y = - 33;
-        scene.add(ground);
-
+        ground.rotation.x = - Math.PI / 2;
         ground.receiveShadow = true;
+        scene.add(ground);
 
         // SKYDOME
 
         var vertexShader = document.getElementById('vertexShader').textContent;
         var fragmentShader = document.getElementById('fragmentShader').textContent;
         var uniforms = {
-          topColor: { value: new v3d.Color(0x0077ff) },
-          bottomColor: { value: new v3d.Color(0xffffff) },
-          offset: { value: 33 },
-          exponent: { value: 0.6 }
+          "topColor": { value: new v3d.Color(0x0077ff) },
+          "bottomColor": { value: new v3d.Color(0xffffff) },
+          "offset": { value: 33 },
+          "exponent": { value: 0.6 }
         };
-        uniforms.topColor.value.copy(hemiLight.color);
+        uniforms["topColor"].value.copy(hemiLight.color);
 
-        scene.fog.color.copy(uniforms.bottomColor.value);
+        scene.fog.color.copy(uniforms["bottomColor"].value);
 
         var skyGeo = new v3d.SphereBufferGeometry(4000, 32, 15);
-        var skyMat = new v3d.ShaderMaterial({ vertexShader: vertexShader, fragmentShader: fragmentShader, uniforms: uniforms, side: v3d.BackSide });
+        var skyMat = new v3d.ShaderMaterial({
+          uniforms: uniforms,
+          vertexShader: vertexShader,
+          fragmentShader: fragmentShader,
+          side: v3d.BackSide
+        });
 
         var sky = new v3d.Mesh(skyGeo, skyMat);
         scene.add(sky);

@@ -32,6 +32,7 @@
     <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D webgl</a> - materials - dynamic cube reflection<br/>Photo by <a href="http://www.flickr.com/photos/jonragnarsson/2294472375/" target="_blank" rel="noopener">J&oacute;n Ragnarsson</a>.</div>
 
     <script src="../build/v3d.js"></script>
+    <script src="js/loaders/EquirectangularToCubeGenerator.js"></script>
 
     <script>
 
@@ -58,23 +59,35 @@
 
       function init(texture) {
 
-        camera = new v3d.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-
-        scene = new v3d.Scene();
-
-        backgroundMesh = new v3d.Mesh(new v3d.SphereBufferGeometry(500, 32, 16), new v3d.MeshBasicMaterial({ map: texture }));
-        backgroundMesh.geometry.scale(- 1, 1, 1);
-        scene.add(backgroundMesh);
-
         renderer = new v3d.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
 
+        scene = new v3d.Scene();
+
+        camera = new v3d.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+
+        // background
+
+        var options = {
+          resolution: 1024,
+
+          generateMipmaps: true,
+          minFilter: v3d.LinearMipMapLinearFilter,
+          magFilter: v3d.LinearFilter
+        };
+
+        scene.background = new v3d.CubemapGenerator(renderer).fromEquirectangular(texture, options);
+
+        //
+
         cubeCamera1 = new v3d.CubeCamera(1, 1000, 256);
+        cubeCamera1.renderTarget.texture.generateMipmaps = true;
         cubeCamera1.renderTarget.texture.minFilter = v3d.LinearMipMapLinearFilter;
         scene.add(cubeCamera1);
 
         cubeCamera2 = new v3d.CubeCamera(1, 1000, 256);
+        cubeCamera2.renderTarget.texture.generateMipmaps = true;
         cubeCamera2.renderTarget.texture.minFilter = v3d.LinearMipMapLinearFilter;
         scene.add(cubeCamera2);
 
@@ -196,13 +209,11 @@
         if (count % 2 === 0) {
 
           material.envMap = cubeCamera1.renderTarget.texture;
-          backgroundMesh.position.copy(cubeCamera2.position);
           cubeCamera2.update(renderer, scene);
 
         } else {
 
           material.envMap = cubeCamera2.renderTarget.texture;
-          backgroundMesh.position.copy(cubeCamera1.position);
           cubeCamera1.update(renderer, scene);
 
         }
@@ -211,7 +222,6 @@
 
         sphere.visible = true;
 
-        backgroundMesh.position.copy(camera.position);
         renderer.render(scene, camera);
 
       }

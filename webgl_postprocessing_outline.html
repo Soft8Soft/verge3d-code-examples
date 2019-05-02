@@ -298,7 +298,6 @@
 
         effectFXAA = new v3d.ShaderPass(v3d.FXAAShader);
         effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
-        effectFXAA.renderToScreen = true;
         composer.addPass(effectFXAA);
 
         window.addEventListener('resize', onWindowResize, false);

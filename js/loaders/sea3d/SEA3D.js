@@ -3242,7 +3242,6 @@ SEA3D.File.prototype.load = function(url) {
 
     if (!this.config.path) {
 
-//        this.config.path = v3d.Loader.prototype.extractUrlBase(url);
         this.config.path = v3d.LoaderUtils.extractUrlBase(url);
 
     }

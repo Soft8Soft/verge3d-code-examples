@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Verge3D webgl - draggable cubes</title>
+    <title>Verge3D webgl - box selection</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <style>
@@ -11,7 +11,7 @@
         margin: 0px;
         overflow: hidden;
       }
-      
+
       .selectBox {
         border: 1px solid #55aaff;
         background-color: rgba(75, 160, 255, 0.3);
@@ -23,15 +23,14 @@
 
     <script src="../build/v3d.js"></script>
     <script src="js/libs/stats.min.js"></script>
-    
+
     <script src="js/interactive/SelectionBox.js"></script>
     <script src="js/interactive/SelectionHelper.js"></script>
 
     <script>
 
       var container, stats;
-      var camera, controls, scene, renderer;
-      var objects = [];
+      var camera, scene, renderer;
 
       init();
       animate();
@@ -84,8 +83,6 @@
 
           scene.add(object);
 
-          objects.push(object);
-
         }
 
         renderer = new v3d.WebGLRenderer({ antialias: true });
@@ -137,25 +134,26 @@
         renderer.render(scene, camera);
 
       }
-      
-      var selectionBox = new SelectionBox(camera, scene);
-        var helper = new SelectionHelper(selectionBox, renderer, "selectBox");
 
-      document.addEventListener("mousedown", function(e) {
+      var selectionBox = new v3d.SelectionBox(camera, scene);
+      var helper = new v3d.SelectionHelper(selectionBox, renderer, 'selectBox');
+
+      document.addEventListener('mousedown', function(event) {
 
         for (var item of selectionBox.collection) {
 
           item.material.emissive = new v3d.Color(0x000000);
 
         }
-      
+
         selectionBox.startPoint.set(
           (event.clientX / window.innerWidth) * 2 - 1,
-          -(event.clientY / window.innerHeight) * 2 + 1,
-           0.5);
-        });
+          - (event.clientY / window.innerHeight) * 2 + 1,
+          0.5);
 
-        document.addEventListener("mousemove", function(e) {
+      });
+
+      document.addEventListener('mousemove', function(event) {
 
         if (helper.isDown) {
 
@@ -167,7 +165,7 @@
 
           selectionBox.endPoint.set(
             (event.clientX / window.innerWidth) * 2 - 1,
-            -(event.clientY / window.innerHeight) * 2 + 1,
+            - (event.clientY / window.innerHeight) * 2 + 1,
             0.5);
 
           var allSelected = selectionBox.select();
@@ -177,15 +175,16 @@
             allSelected[i].material.emissive = new v3d.Color(0x0000ff);
 
           }
+
         }
 
       });
 
-      document.addEventListener("mouseup", function(e) {
-        
+      document.addEventListener('mouseup', function(event) {
+
         selectionBox.endPoint.set(
           (event.clientX / window.innerWidth) * 2 - 1,
-          -(event.clientY / window.innerHeight) * 2 + 1,
+          - (event.clientY / window.innerHeight) * 2 + 1,
           0.5);
 
         var allSelected = selectionBox.select();

@@ -77,19 +77,17 @@
         renderer.gammaOutput = true;
         document.body.appendChild(renderer.domElement);
 
-        var gl = renderer.context;
-
         // Check for float-RT support
         // TODO (abelnation): figure out fall-back for float textures
 
-        if (!gl.getExtension('OES_texture_float')) {
+        if (!renderer.extensions.get('OES_texture_float')) {
 
           alert('OES_texture_float not supported');
           throw 'missing webgl extension';
 
         }
 
-        if (!gl.getExtension('OES_texture_float_linear')) {
+        if (!renderer.extensions.get('OES_texture_float_linear')) {
 
           alert('OES_texture_float_linear not supported');
           throw 'missing webgl extension';
@@ -108,13 +106,12 @@
         rectLight.position.set(5, 5, 0);
         scene.add(rectLight);
 
-        var rectLightMesh = new v3d.Mesh(new v3d.PlaneBufferGeometry(), new v3d.MeshBasicMaterial());
+        var rectLightMesh = new v3d.Mesh(new v3d.PlaneBufferGeometry(), new v3d.MeshBasicMaterial({ side: v3d.BackSide }));
         rectLightMesh.scale.x = rectLight.width;
         rectLightMesh.scale.y = rectLight.height;
         rectLight.add(rectLightMesh);
 
         var rectLightMeshBack = new v3d.Mesh(new v3d.PlaneBufferGeometry(), new v3d.MeshBasicMaterial({ color: 0x080808 }));
-        rectLightMeshBack.rotation.y = Math.PI;
         rectLightMesh.add(rectLightMeshBack);
 
         var geoFloor = new v3d.BoxBufferGeometry(2000, 0.1, 2000);

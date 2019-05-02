@@ -56,7 +56,7 @@ v3d.BloomPass = function(strength, kernelSize, sigma, resolution) {
     this.materialConvolution = new v3d.ShaderMaterial({
 
         uniforms: this.convolutionUniforms,
-        vertexShader:  convolutionShader.vertexShader,
+        vertexShader: convolutionShader.vertexShader,
         fragmentShader: convolutionShader.fragmentShader,
         defines: {
             "KERNEL_SIZE_FLOAT": kernelSize.toFixed(1),
@@ -67,12 +67,7 @@ v3d.BloomPass = function(strength, kernelSize, sigma, resolution) {
 
     this.needsSwap = false;
 
-    this.camera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
-    this.scene  = new v3d.Scene();
-
-    this.quad = new v3d.Mesh(new v3d.PlaneBufferGeometry(2, 2), null);
-    this.quad.frustumCulled = false; // Avoid getting clipped
-    this.scene.add(this.quad);
+    this.fsQuad = new v3d.Pass.FullScreenQuad(null);
 
 };
 
@@ -80,18 +75,20 @@ v3d.BloomPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     constructor: v3d.BloomPass,
 
-    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
 
         if (maskActive) renderer.context.disable(renderer.context.STENCIL_TEST);
 
         // Render quad with blured scene into texture (convolution pass 1)
 
-        this.quad.material = this.materialConvolution;
+        this.fsQuad.material = this.materialConvolution;
 
         this.convolutionUniforms["tDiffuse"].value = readBuffer.texture;
         this.convolutionUniforms["uImageIncrement"].value = v3d.BloomPass.blurX;
 
-        renderer.render(this.scene, this.camera, this.renderTargetX, true);
+        renderer.setRenderTarget(this.renderTargetX);
+        renderer.clear();
+        this.fsQuad.render(renderer);
 
 
         // Render quad with blured scene into texture (convolution pass 2)
@@ -99,17 +96,21 @@ v3d.BloomPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
         this.convolutionUniforms["tDiffuse"].value = this.renderTargetX.texture;
         this.convolutionUniforms["uImageIncrement"].value = v3d.BloomPass.blurY;
 
-        renderer.render(this.scene, this.camera, this.renderTargetY, true);
+        renderer.setRenderTarget(this.renderTargetY);
+        renderer.clear();
+        this.fsQuad.render(renderer);
 
         // Render original scene with superimposed blur to texture
 
-        this.quad.material = this.materialCopy;
+        this.fsQuad.material = this.materialCopy;
 
         this.copyUniforms["tDiffuse"].value = this.renderTargetY.texture;
 
         if (maskActive) renderer.context.enable(renderer.context.STENCIL_TEST);
 
-        renderer.render(this.scene, this.camera, readBuffer, this.clear);
+        renderer.setRenderTarget(readBuffer);
+        if (this.clear) renderer.clear();
+        this.fsQuad.render(renderer);
 
     }
 

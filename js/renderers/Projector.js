@@ -322,7 +322,7 @@ v3d.Projector = function() {
 
                 _face.material = material;
 
-                if (material.vertexColors === v3d.FaceColors ||  material.vertexColors === v3d.VertexColors) {
+                if (material.vertexColors === v3d.FaceColors || material.vertexColors === v3d.VertexColors) {
 
                     _face.color.fromArray(colors, a * 3);
 
@@ -1038,8 +1038,8 @@ v3d.Projector = function() {
 
         var alpha1 = 0, alpha2 = 1,
 
-        // Calculate the boundary coordinate of each vertex for the near and far clip planes,
-        // Z = -1 and Z = +1, respectively.
+            // Calculate the boundary coordinate of each vertex for the near and far clip planes,
+            // Z = -1 and Z = +1, respectively.
 
             bc1near = s1.z + s1.w,
             bc2near = s2.z + s2.w,

@@ -10,11 +10,8 @@
 
 v3d.CTMLoader = function() {
 
-    v3d.Loader.call(this);
-
 };
 
-v3d.CTMLoader.prototype = Object.create(v3d.Loader.prototype);
 v3d.CTMLoader.prototype.constructor = v3d.CTMLoader;
 
 // Load multiple CTM parts defined in JSON
@@ -58,7 +55,7 @@ v3d.CTMLoader.prototype.loadParts = function(url, callback, parameters) {
 
                 for (var i = 0; i < jsonObject.materials.length; i++) {
 
-                    materials[i] = scope.createMaterial(jsonObject.materials[i], basePath);
+                    materials[i] = v3d.Loader.prototype.createMaterial(jsonObject.materials[i], basePath);
 
                 }
 

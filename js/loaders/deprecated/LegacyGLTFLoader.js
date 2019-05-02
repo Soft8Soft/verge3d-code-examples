@@ -491,8 +491,8 @@ v3d.LegacyGLTFLoader = (function() {
     };
 
     var WEBGL_SIDES = {
-        1028: v3d.BackSide,  // Culling front
-        1029: v3d.FrontSide  // Culling back
+        1028: v3d.BackSide, // Culling front
+        1029: v3d.FrontSide // Culling back
         //1032: v3d.NoSide   // Culling front and back, what to do?
     };
 
@@ -567,7 +567,9 @@ v3d.LegacyGLTFLoader = (function() {
     function _each(object, callback, thisObj) {
 
         if (!object) {
+
             return Promise.resolve();
+
         }
 
         var results;
@@ -1515,7 +1517,7 @@ v3d.LegacyGLTFLoader = (function() {
 
                     materialParams.color = new v3d.Color().fromArray(materialValues.diffuse);
 
-                } else if (typeof(materialValues.diffuse) === 'string') {
+                } else if (typeof (materialValues.diffuse) === 'string') {
 
                     materialParams.map = dependencies.textures[materialValues.diffuse];
 
@@ -1523,13 +1525,13 @@ v3d.LegacyGLTFLoader = (function() {
 
                 delete materialParams.diffuse;
 
-                if (typeof(materialValues.reflective) === 'string') {
+                if (typeof (materialValues.reflective) === 'string') {
 
                     materialParams.envMap = dependencies.textures[materialValues.reflective];
 
                 }
 
-                if (typeof(materialValues.bump) === 'string') {
+                if (typeof (materialValues.bump) === 'string') {
 
                     materialParams.bumpMap = dependencies.textures[materialValues.bump];
 
@@ -1547,7 +1549,7 @@ v3d.LegacyGLTFLoader = (function() {
 
                     }
 
-                } else if (typeof(materialValues.emission) === 'string') {
+                } else if (typeof (materialValues.emission) === 'string') {
 
                     if (materialType === v3d.MeshBasicMaterial) {
 
@@ -1565,7 +1567,7 @@ v3d.LegacyGLTFLoader = (function() {
 
                     materialParams.specular = new v3d.Color().fromArray(materialValues.specular);
 
-                } else if (typeof(materialValues.specular) === 'string') {
+                } else if (typeof (materialValues.specular) === 'string') {
 
                     materialParams.specularMap = dependencies.textures[materialValues.specular];
 
@@ -1670,9 +1672,9 @@ v3d.LegacyGLTFLoader = (function() {
 
                                     var parameters = json.techniques[material.technique].parameters || {};
 
-                                    for(var attributeName in parameters) {
+                                    for (var attributeName in parameters) {
 
-                                        if (parameters [attributeName]['semantic'] === attributeId) {
+                                        if (parameters[attributeName]['semantic'] === attributeId) {
 
                                             geometry.addAttribute(attributeName, bufferAttribute);
 
@@ -2217,8 +2219,10 @@ v3d.LegacyGLTFLoader = (function() {
                     if (child.material && child.material.isRawShaderMaterial) {
 
                         child.gltfShader = new GLTFShader(child, dependencies.nodes);
-                        child.onBeforeRender = function(renderer, scene, camera){
+                        child.onBeforeRender = function(renderer, scene, camera) {
+
                             this.gltfShader.update(scene, camera);
+
                         };
 
                     }

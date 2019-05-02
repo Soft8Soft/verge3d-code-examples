@@ -39,23 +39,10 @@ v3d.AfterimagePass = function(damp) {
 
     });
 
-    this.sceneComp = new v3d.Scene();
-    this.scene = new v3d.Scene();
+    this.compFsQuad = new v3d.Pass.FullScreenQuad(this.shaderMaterial);
 
-    this.camera = new v3d.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    this.camera.position.z = 1;
-
-    var geometry = new v3d.PlaneBufferGeometry(2, 2);
-
-    this.quadComp = new v3d.Mesh(geometry, this.shaderMaterial);
-    this.sceneComp.add(this.quadComp);
-
-    var material = new v3d.MeshBasicMaterial({ 
-        map: this.textureComp.texture
-    });
-
-    var quadScreen = new v3d.Mesh(geometry, material);
-    this.scene.add(quadScreen);
+    var material = new v3d.MeshBasicMaterial();
+    this.copyFsQuad = new v3d.Pass.FullScreenQuad(material);
 
 };
 
@@ -68,20 +55,38 @@ v3d.AfterimagePass.prototype = Object.assign(Object.create(v3d.Pass.prototype), 
         this.uniforms["tOld"].value = this.textureOld.texture;
         this.uniforms["tNew"].value = readBuffer.texture;
 
-        this.quadComp.material = this.shaderMaterial;
+        renderer.setRenderTarget(this.textureComp);
+        this.compFsQuad.render(renderer);
 
-        renderer.render(this.sceneComp, this.camera, this.textureComp);
-        renderer.render(this.scene, this.camera, this.textureOld);
-        
+        this.copyFsQuad.material.map = this.textureComp.texture;
+
         if (this.renderToScreen) {
-            
-            renderer.render(this.scene, this.camera);
-            
+
+            renderer.setRenderTarget(null);
+            this.copyFsQuad.render(renderer);
+
         } else {
-            
-            renderer.render(this.scene, this.camera, writeBuffer, this.clear);
-            
+
+            renderer.setRenderTarget(writeBuffer);
+
+            if (this.clear) renderer.clear();
+
+            this.copyFsQuad.render(renderer);
+
         }
+
+        // Swap buffers.
+        var temp = this.textureOld;
+        this.textureOld = this.textureComp;
+        this.textureComp = temp;
+        // Now textureOld contains the latest image, ready for the next frame.
+
+    },
+
+    setSize: function(width, height) {
+
+        this.textureComp.setSize(width, height);
+        this.textureOld.setSize(width, height);
 
     }
 

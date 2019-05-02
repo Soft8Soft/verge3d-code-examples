@@ -30,19 +30,19 @@ v3d.UnrealBloomPass = function(resolution, strength, radius, threshold) {
 
     for (var i = 0; i < this.nMips; i++) {
 
-        var renderTarget = new v3d.WebGLRenderTarget(resx, resy, pars);
+        var renderTargetHorizonal = new v3d.WebGLRenderTarget(resx, resy, pars);
 
-        renderTarget.texture.name = "UnrealBloomPass.h" + i;
-        renderTarget.texture.generateMipmaps = false;
+        renderTargetHorizonal.texture.name = "UnrealBloomPass.h" + i;
+        renderTargetHorizonal.texture.generateMipmaps = false;
 
-        this.renderTargetsHorizontal.push(renderTarget);
+        this.renderTargetsHorizontal.push(renderTargetHorizonal);
 
-        var renderTarget = new v3d.WebGLRenderTarget(resx, resy, pars);
+        var renderTargetVertical = new v3d.WebGLRenderTarget(resx, resy, pars);
 
-        renderTarget.texture.name = "UnrealBloomPass.v" + i;
-        renderTarget.texture.generateMipmaps = false;
+        renderTargetVertical.texture.name = "UnrealBloomPass.v" + i;
+        renderTargetVertical.texture.generateMipmaps = false;
 
-        this.renderTargetsVertical.push(renderTarget);
+        this.renderTargetsVertical.push(renderTargetVertical);
 
         resx = Math.round(resx / 2);
 
@@ -131,14 +131,9 @@ v3d.UnrealBloomPass = function(resolution, strength, radius, threshold) {
     this.oldClearColor = new v3d.Color();
     this.oldClearAlpha = 1;
 
-    this.camera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
-    this.scene = new v3d.Scene();
-
     this.basic = new v3d.MeshBasicMaterial();
 
-    this.quad = new v3d.Mesh(new v3d.PlaneBufferGeometry(2, 2), null);
-    this.quad.frustumCulled = false; // Avoid getting clipped
-    this.scene.add(this.quad);
+    this.fsQuad = new v3d.Pass.FullScreenQuad(null);
 
 };
 
@@ -185,7 +180,7 @@ v3d.UnrealBloomPass.prototype = Object.assign(Object.create(v3d.Pass.prototype),
 
     },
 
-    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
 
         this.oldClearColor.copy(renderer.getClearColor());
         this.oldClearAlpha = renderer.getClearAlpha();
@@ -200,10 +195,12 @@ v3d.UnrealBloomPass.prototype = Object.assign(Object.create(v3d.Pass.prototype),
 
         if (this.renderToScreen) {
 
-            this.quad.material = this.basic;
+            this.fsQuad.material = this.basic;
             this.basic.map = readBuffer.texture;
 
-            renderer.render(this.scene, this.camera, undefined, true);
+            renderer.setRenderTarget(null);
+            renderer.clear();
+            this.fsQuad.render(renderer);
 
         }
 
@@ -211,9 +208,11 @@ v3d.UnrealBloomPass.prototype = Object.assign(Object.create(v3d.Pass.prototype),
 
         this.highPassUniforms["tDiffuse"].value = readBuffer.texture;
         this.highPassUniforms["luminosityThreshold"].value = this.threshold;
-        this.quad.material = this.materialHighPassFilter;
+        this.fsQuad.material = this.materialHighPassFilter;
 
-        renderer.render(this.scene, this.camera, this.renderTargetBright, true);
+        renderer.setRenderTarget(this.renderTargetBright);
+        renderer.clear();
+        this.fsQuad.render(renderer);
 
         // 2. Blur All the mips progressively
 
@@ -221,15 +220,19 @@ v3d.UnrealBloomPass.prototype = Object.assign(Object.create(v3d.Pass.prototype),
 
         for (var i = 0; i < this.nMips; i++) {
 
-            this.quad.material = this.separableBlurMaterials[i];
+            this.fsQuad.material = this.separableBlurMaterials[i];
 
             this.separableBlurMaterials[i].uniforms["colorTexture"].value = inputRenderTarget.texture;
             this.separableBlurMaterials[i].uniforms["direction"].value = v3d.UnrealBloomPass.BlurDirectionX;
-            renderer.render(this.scene, this.camera, this.renderTargetsHorizontal[i], true);
+            renderer.setRenderTarget(this.renderTargetsHorizontal[i]);
+            renderer.clear();
+            this.fsQuad.render(renderer);
 
             this.separableBlurMaterials[i].uniforms["colorTexture"].value = this.renderTargetsHorizontal[i].texture;
             this.separableBlurMaterials[i].uniforms["direction"].value = v3d.UnrealBloomPass.BlurDirectionY;
-            renderer.render(this.scene, this.camera, this.renderTargetsVertical[i], true);
+            renderer.setRenderTarget(this.renderTargetsVertical[i]);
+            renderer.clear();
+            this.fsQuad.render(renderer);
 
             inputRenderTarget = this.renderTargetsVertical[i];
 
@@ -237,16 +240,18 @@ v3d.UnrealBloomPass.prototype = Object.assign(Object.create(v3d.Pass.prototype),
 
         // Composite All the mips
 
-        this.quad.material = this.compositeMaterial;
+        this.fsQuad.material = this.compositeMaterial;
         this.compositeMaterial.uniforms["bloomStrength"].value = this.strength;
         this.compositeMaterial.uniforms["bloomRadius"].value = this.radius;
         this.compositeMaterial.uniforms["bloomTintColors"].value = this.bloomTintColors;
 
-        renderer.render(this.scene, this.camera, this.renderTargetsHorizontal[0], true);
+        renderer.setRenderTarget(this.renderTargetsHorizontal[0]);
+        renderer.clear();
+        this.fsQuad.render(renderer);
 
         // Blend it additively over the input texture
 
-        this.quad.material = this.materialCopy;
+        this.fsQuad.material = this.materialCopy;
         this.copyUniforms["tDiffuse"].value = this.renderTargetsHorizontal[0].texture;
 
         if (maskActive) renderer.context.enable(renderer.context.STENCIL_TEST);
@@ -254,11 +259,13 @@ v3d.UnrealBloomPass.prototype = Object.assign(Object.create(v3d.Pass.prototype),
 
         if (this.renderToScreen) {
 
-            renderer.render(this.scene, this.camera, undefined, false);
+            renderer.setRenderTarget(null);
+            this.fsQuad.render(renderer);
 
         } else {
 
-            renderer.render(this.scene, this.camera, readBuffer, false);
+            renderer.setRenderTarget(readBuffer);
+            this.fsQuad.render(renderer);
 
         }
 

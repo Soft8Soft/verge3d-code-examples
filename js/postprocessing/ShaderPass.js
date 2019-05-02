@@ -29,20 +29,14 @@ v3d.ShaderPass = function(shader, textureID) {
 
     }
 
-    this.camera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
-    this.scene = new v3d.Scene();
-
-    this.quad = new v3d.Mesh(new v3d.PlaneBufferGeometry(2, 2), null);
-    this.quad.frustumCulled = false; // Avoid getting clipped
-    this.scene.add(this.quad);
-
+    this.fsQuad = new v3d.Pass.FullScreenQuad(this.material);
 };
 
 v3d.ShaderPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     constructor: v3d.ShaderPass,
 
-    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
 
         if (this.uniforms[this.textureID]) {
 
@@ -50,15 +44,19 @@ v3d.ShaderPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         }
 
-        this.quad.material = this.material;
+        this.fsQuad.material = this.material;
 
         if (this.renderToScreen) {
 
-            renderer.render(this.scene, this.camera);
+            renderer.setRenderTarget(null);
+            this.fsQuad.render(renderer);
 
         } else {
 
-            renderer.render(this.scene, this.camera, writeBuffer, this.clear);
+            renderer.setRenderTarget(writeBuffer);
+            // TODO: Avoid using autoClear properties, see https://github.com/mrdoob/three.js/pull/15571#issuecomment-465669600
+            if (this.clear) renderer.clear(renderer.autoClearColor, renderer.autoClearDepth, renderer.autoClearStencil);
+            this.fsQuad.render(renderer);
 
         }
 

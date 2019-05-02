@@ -73,7 +73,8 @@
         Linear: v3d.LinearToneMapping,
         Reinhard: v3d.ReinhardToneMapping,
         Uncharted2: v3d.Uncharted2ToneMapping,
-        Cineon: v3d.CineonToneMapping
+        Cineon: v3d.CineonToneMapping,
+        ACESFilmic: v3d.ACESFilmicToneMapping
       };
 
       var camera, scene, renderer, group;
@@ -214,7 +215,6 @@
         composer.addPass(renderScene);
 
         var copyPass = new v3d.ShaderPass(v3d.CopyShader);
-        copyPass.renderToScreen = true;
         composer.addPass(copyPass);
 
         stats = new Stats();

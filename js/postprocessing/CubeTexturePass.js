@@ -36,7 +36,7 @@ v3d.CubeTexturePass.prototype = Object.assign(Object.create(v3d.Pass.prototype),
 
     constructor: v3d.CubeTexturePass,
 
-    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
 
         var oldAutoClear = renderer.autoClear;
         renderer.autoClear = false;
@@ -48,7 +48,9 @@ v3d.CubeTexturePass.prototype = Object.assign(Object.create(v3d.Pass.prototype),
         this.cubeMesh.material.uniforms["opacity"].value = this.opacity;
         this.cubeMesh.material.transparent = (this.opacity < 1.0);
 
-        renderer.render(this.cubeScene, this.cubeCamera, this.renderToScreen ? null : readBuffer, this.clear);
+        renderer.setRenderTarget(this.renderToScreen ? null : readBuffer);
+        if (this.clear) renderer.clear();
+        renderer.render(this.cubeScene, this.cubeCamera);
 
         renderer.autoClear = oldAutoClear;
 

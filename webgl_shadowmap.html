@@ -85,10 +85,16 @@
         container = document.createElement('div');
         document.body.appendChild(container);
 
-        // SCENE CAMERA
+        // CAMERA
 
         camera = new v3d.PerspectiveCamera(23, SCREEN_WIDTH / SCREEN_HEIGHT, NEAR, FAR);
         camera.position.set(700, 50, 1900);
+
+        // SCENE
+
+        scene = new v3d.Scene();
+        scene.background = new v3d.Color(0x59472b);
+        scene.fog = new v3d.Fog(0x59472b, 1000, FAR);
 
         controls = new v3d.FirstPersonControls(camera);
 
@@ -96,18 +102,8 @@
         controls.movementSpeed = 500;
         controls.noFly = false;
         controls.lookVertical = true;
-        controls.constrainVertical = true;
-        controls.verticalMin = 1.5;
-        controls.verticalMax = 2.0;
 
-        controls.lon = 250;
-        controls.lat = 30;
-
-        // SCENE
-
-        scene = new v3d.Scene();
-        scene.background = new v3d.Color(0x59472b);
-        scene.fog = new v3d.Fog(0x59472b, 1000, FAR);
+        controls.lookAt(scene.position);
 
         // LIGHTS
 
@@ -138,6 +134,8 @@
         renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
         container.appendChild(renderer.domElement);
 
+        renderer.gammaOutput = true;
+        renderer.gammaFactor = 2.2;
         renderer.autoClear = false;
 
         //
@@ -199,7 +197,7 @@
         // GROUND
 
         var geometry = new v3d.PlaneBufferGeometry(100, 100);
-        var planeMaterial = new v3d.MeshPhongMaterial({ color: 0xffdd99 });
+        var planeMaterial = new v3d.MeshPhongMaterial({ color: 0xffb851 });
 
         var ground = new v3d.Mesh(geometry, planeMaterial);
 

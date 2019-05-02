@@ -16,6 +16,7 @@ v3d.SAOPass = function(scene, camera, depthTexture, useNormals, resolution) {
     this.supportsDepthTextureExtension = (depthTexture !== undefined) ? depthTexture : false;
     this.supportsNormalTexture = (useNormals !== undefined) ? useNormals : false;
 
+    this.originalClearColor = new v3d.Color();
     this.oldClearColor = new v3d.Color();
     this.oldClearAlpha = 1;
 
@@ -159,10 +160,7 @@ v3d.SAOPass = function(scene, camera, depthTexture, useNormals, resolution) {
         blending: v3d.NoBlending
     });
 
-    this.quadCamera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
-    this.quadScene = new v3d.Scene();
-    this.quad = new v3d.Mesh(new v3d.PlaneBufferGeometry(2, 2), null);
-    this.quadScene.add(this.quad);
+    this.fsQuad = new v3d.Pass.FullScreenQuad(null);
 
 };
 
@@ -177,7 +175,7 @@ v3d.SAOPass.OUTPUT = {
 v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
     constructor: v3d.SAOPass,
 
-    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
 
         // Rendering readBuffer first when rendering to screen
         if (this.renderToScreen) {
@@ -233,7 +231,9 @@ v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         // Rendering scene to depth texture
         renderer.setClearColor(0x000000);
-        renderer.render(this.scene, this.camera, this.beautyRenderTarget, true);
+        renderer.setRenderTarget(this.beautyRenderTarget);
+        renderer.clear();
+        renderer.render(this.scene, this.camera);
 
         // Re-render scene if depth texture extension is not supported
         if (!this.supportsDepthTextureExtension) {
@@ -312,55 +312,58 @@ v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
     renderPass: function(renderer, passMaterial, renderTarget, clearColor, clearAlpha) {
 
         // save original state
-        var originalClearColor = renderer.getClearColor();
+        this.originalClearColor.copy(renderer.getClearColor());
         var originalClearAlpha = renderer.getClearAlpha();
         var originalAutoClear = renderer.autoClear;
 
+        renderer.setRenderTarget(renderTarget);
+
         // setup pass state
         renderer.autoClear = false;
-        var clearNeeded = (clearColor !== undefined) && (clearColor !== null);
-        if (clearNeeded) {
+        if ((clearColor !== undefined) && (clearColor !== null)) {
 
             renderer.setClearColor(clearColor);
             renderer.setClearAlpha(clearAlpha || 0.0);
+            renderer.clear();
 
         }
 
-        this.quad.material = passMaterial;
-        renderer.render(this.quadScene, this.quadCamera, renderTarget, clearNeeded);
+        this.fsQuad.material = passMaterial;
+        this.fsQuad.render(renderer);
 
         // restore original state
         renderer.autoClear = originalAutoClear;
-        renderer.setClearColor(originalClearColor);
+        renderer.setClearColor(this.originalClearColor);
         renderer.setClearAlpha(originalClearAlpha);
 
     },
 
     renderOverride: function(renderer, overrideMaterial, renderTarget, clearColor, clearAlpha) {
 
-        var originalClearColor = renderer.getClearColor();
+        this.originalClearColor.copy(renderer.getClearColor());
         var originalClearAlpha = renderer.getClearAlpha();
         var originalAutoClear = renderer.autoClear;
 
+        renderer.setRenderTarget(renderTarget);
         renderer.autoClear = false;
 
         clearColor = overrideMaterial.clearColor || clearColor;
         clearAlpha = overrideMaterial.clearAlpha || clearAlpha;
-        var clearNeeded = (clearColor !== undefined) && (clearColor !== null);
-        if (clearNeeded) {
+        if ((clearColor !== undefined) && (clearColor !== null)) {
 
             renderer.setClearColor(clearColor);
             renderer.setClearAlpha(clearAlpha || 0.0);
+            renderer.clear();
 
         }
 
         this.scene.overrideMaterial = overrideMaterial;
-        renderer.render(this.scene, this.camera, renderTarget, clearNeeded);
+        renderer.render(this.scene, this.camera);
         this.scene.overrideMaterial = null;
 
         // restore original state
         renderer.autoClear = originalAutoClear;
-        renderer.setClearColor(originalClearColor);
+        renderer.setClearColor(this.originalClearColor);
         renderer.setClearAlpha(originalClearAlpha);
 
     },

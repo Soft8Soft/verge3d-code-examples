@@ -63,10 +63,8 @@
         scene = new v3d.Scene();
 
         video = document.getElementById('video');
+
         var texture = new v3d.VideoTexture(video);
-        texture.minFilter = v3d.LinearFilter;
-        texture.magFilter = v3d.LinearFilter;
-        texture.format = v3d.RGBFormat;
 
         var geometry = new v3d.PlaneBufferGeometry(16, 9);
         geometry.scale(0.5, 0.5, 0.5);

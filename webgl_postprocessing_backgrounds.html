@@ -215,7 +215,6 @@
         composer.addPass(renderPass);
 
         var copyPass = new v3d.ShaderPass(v3d.CopyShader);
-        copyPass.renderToScreen = true;
         composer.addPass(copyPass);
 
         var controls = new v3d.OrbitControls(cameraP, renderer.domElement);

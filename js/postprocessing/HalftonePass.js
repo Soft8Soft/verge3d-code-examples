@@ -36,30 +36,28 @@ v3d.HalftonePass = function(width, height, params) {
 
     }
 
-     this.camera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
-     this.scene = new v3d.Scene();
-     this.quad = new v3d.Mesh(new v3d.PlaneBufferGeometry(2, 2), null);
-     this.quad.frustumCulled = false;
-     this.scene.add(this.quad);
+    this.fsQuad = new v3d.Pass.FullScreenQuad(this.material);
 
- };
+};
 
- v3d.HalftonePass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
+v3d.HalftonePass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     constructor: v3d.HalftonePass,
 
-    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
 
          this.material.uniforms["tDiffuse"].value = readBuffer.texture;
-         this.quad.material = this.material;
 
          if (this.renderToScreen) {
 
-             renderer.render(this.scene, this.camera);
+             renderer.setRenderTarget(null);
+             this.fsQuad.render(renderer);
 
         } else {
 
-            renderer.render(this.scene, this.camera, writeBuffer, this.clear);
+             renderer.setRenderTarget(writeBuffer);
+             if (this.clear) renderer.clear();
+            this.fsQuad.render(renderer);
 
         }
 

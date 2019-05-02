@@ -146,7 +146,7 @@ v3d.GCodeLoader.prototype.parse = function(data) {
         } else if (cmd === 'G2' || cmd === 'G3') {
 
             //G2/G3 - Arc Movement (G2 clock wise and G3 counter clock wise)
-            console.warn('v3d.GCodeLoader: Arc command not supported');
+            //console.warn('v3d.GCodeLoader: Arc command not supported');
 
         } else if (cmd === 'G90') {
 
@@ -170,7 +170,7 @@ v3d.GCodeLoader.prototype.parse = function(data) {
 
         } else {
 
-            console.warn('v3d.GCodeLoader: Command not supported:' + cmd);
+            //console.warn('v3d.GCodeLoader: Command not supported:' + cmd);
 
         }
 

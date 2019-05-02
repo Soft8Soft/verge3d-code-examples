@@ -540,7 +540,7 @@ v3d.SoftwareRenderer = function(parameters) {
 
                 } else {
 
-                    if (material.vertexColors === v3d.FaceColors) {
+                    if (material.vertexColors === v3d.FaceColors || material.vertexColors === v3d.VertexColors) {
 
                         string = [
                             'var colorOffset = offset * 4;',

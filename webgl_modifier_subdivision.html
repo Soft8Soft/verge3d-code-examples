@@ -31,7 +31,7 @@
 
       var container, stats;
 
-      var camera, controls, scene, renderer;
+      var camera, scene, renderer;
 
       var cube, mesh, material, geometry, smooth, group;
 
@@ -109,7 +109,7 @@
 
           return geometry.clone();
 
-  };
+        };
 
         updateInfo();
 
@@ -126,7 +126,7 @@
 
           return geometry.clone();
 
-  };
+        };
 
         updateInfo();
 
@@ -252,11 +252,13 @@
         group = new v3d.Group();
         scene.add(group);
 
-        mesh = new v3d.Mesh(geometry, material);
+        mesh = new v3d.Mesh(new v3d.BufferGeometry().fromGeometry(geometry), material);
         group.add(mesh);
 
-        cube = new v3d.Mesh(smooth, smoothMaterial);
-        var wireframe = new v3d.Mesh(smooth, wireframeMaterial);
+        var smoothBufferGeometry = new v3d.BufferGeometry().fromGeometry(smooth);
+
+        cube = new v3d.Mesh(smoothBufferGeometry, smoothMaterial);
+        var wireframe = new v3d.Mesh(smoothBufferGeometry, wireframeMaterial);
         cube.add(wireframe);
 
         cube.scale.setScalar(params.meshScale ? params.meshScale : 1);
@@ -301,7 +303,7 @@
 
         //
 
-        controls = new v3d.OrbitControls(camera, renderer.domElement);
+        var controls = new v3d.OrbitControls(camera, renderer.domElement);
 
         window.addEventListener('resize', onWindowResize, false);
 

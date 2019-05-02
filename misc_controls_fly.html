@@ -240,8 +240,6 @@
         var renderModel = new v3d.RenderPass(scene, camera);
         var effectFilm = new v3d.FilmPass(0.35, 0.75, 2048, false);
 
-        effectFilm.renderToScreen = true;
-
         composer = new v3d.EffectComposer(renderer);
 
         composer.addPass(renderModel);

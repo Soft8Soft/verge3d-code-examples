@@ -79,6 +79,7 @@
         textureCube = new v3d.CubeTextureLoader().load(urls);
         textureCube.format = v3d.RGBFormat;
         textureCube.mapping = v3d.CubeReflectionMapping;
+        textureCube.encoding = v3d.sRGBEncoding;
 
         var textureLoader = new v3d.TextureLoader();
 
@@ -86,9 +87,11 @@
         textureEquirec.mapping = v3d.EquirectangularReflectionMapping;
         textureEquirec.magFilter = v3d.LinearFilter;
         textureEquirec.minFilter = v3d.LinearMipMapLinearFilter;
+        textureEquirec.encoding = v3d.sRGBEncoding;
 
         textureSphere = textureLoader.load("textures/metal.jpg");
         textureSphere.mapping = v3d.SphericalReflectionMapping;
+        textureSphere.encoding = v3d.sRGBEncoding;
 
         // Materials
 
@@ -103,6 +106,16 @@
         });
 
         equirectMaterial.uniforms["tEquirect"].value = textureEquirec;
+        // enable code injection for non-built-in material
+        Object.defineProperty(equirectMaterial, 'map', {
+
+          get: function() {
+
+            return this.uniforms.tEquirect.value;
+
+          }
+
+        });
 
         var cubeShader = v3d.ShaderLib["cube"];
         var cubeMaterial = new v3d.ShaderMaterial({
@@ -114,6 +127,15 @@
         });
 
         cubeMaterial.uniforms["tCube"].value = textureCube;
+        Object.defineProperty(cubeMaterial, 'map', {
+
+          get: function() {
+
+            return this.uniforms.tCube.value;
+
+          }
+
+        });
 
         // Skybox
 
@@ -135,6 +157,8 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
+
+        renderer.gammaOutput = true;
 
         //
 

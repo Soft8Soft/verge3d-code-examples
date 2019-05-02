@@ -30,7 +30,7 @@
 
     <div id="container"></div>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - Node-Based Material</br>
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - Node-Based Material<br />
       <a id="serialize" href="javascript:void(0);">Serialize and apply</a>
     </div>
 
@@ -180,6 +180,8 @@
           'adv / skin-phong': 'skin-phong',
           'adv / caustic': 'caustic',
           'adv / displace': 'displace',
+          'adv / dissolve': 'dissolve',
+          'adv / dissolve-fire': 'dissolve-fire',
           'adv / plush': 'plush',
           'adv / toon': 'toon',
           'adv / camera-depth': 'camera-depth',
@@ -201,6 +203,7 @@
           'misc / varying': 'varying',
           'misc / void-function': 'void-function',
           'misc / readonly': 'readonly',
+          'misc / label': 'label',
           'misc / custom-attribute': 'custom-attribute'
         }).onFinishChange(function() {
 
@@ -272,8 +275,9 @@
 
         }
 
-        var name = param.example;
-        var mtl;
+        var name = param.example,
+          defaultSide = v3d.DoubleSide,
+          mtl;
 
         clearGui();
 
@@ -1073,7 +1077,7 @@
 
             mtl.color = new v3d.ColorNode(0x3399FF);
             mtl.environment = color;
-            mtl.environmentAlpha = new v3d.Math1Node(fresnel, v3d.Math1Node.SAT);
+            mtl.environmentAlpha = new v3d.Math1Node(fresnel, v3d.Math1Node.SATURATE);
 
             // GUI
 
@@ -1209,7 +1213,7 @@
               v3d.OperatorNode.ADD
             );
 
-            var clamp0at1 = new v3d.Math1Node(offsetClamp, v3d.Math1Node.SAT);
+            var clamp0at1 = new v3d.Math1Node(offsetClamp, v3d.Math1Node.SATURATE);
 
             var blend = new v3d.Math3Node(top, bottom, clamp0at1, v3d.Math3Node.MIX);
 
@@ -1321,6 +1325,213 @@
 
             break;
 
+
+          case 'dissolve':
+
+            // MATERIAL
+
+            mtl = new v3d.StandardNodeMaterial();
+
+            var color = new v3d.ColorNode(0xEEEEEE);
+            var borderColor = new v3d.ColorNode(0x0054df);
+            var threshold = new v3d.FloatNode(.1);
+            var borderSize = new v3d.FloatNode(.2);
+
+            var tex = new v3d.TextureNode(getTexture("cloud"));
+            var texArea = new v3d.SwitchNode(tex, 'w');
+
+            var thresholdBorder = new v3d.Math3Node(
+              new v3d.OperatorNode(threshold, borderSize, v3d.OperatorNode.ADD),
+              threshold,
+              texArea,
+              v3d.Math3Node.SMOOTHSTEP
+            );
+
+            var thresholdEmissive = new v3d.OperatorNode(
+              borderColor,
+              thresholdBorder,
+              v3d.OperatorNode.MUL
+            );
+
+            // APPLY
+
+            mtl.color = color;
+            mtl.emissive = thresholdEmissive;
+            mtl.mask = new v3d.CondNode(
+              texArea, // a: value
+              threshold, // b: value
+              v3d.CondNode.GREATER // condition
+            );
+
+            // GUI
+
+            addGui('threshold', threshold.value, function(val) {
+
+              threshold.value = val;
+
+            }, false, - .3, 1.3);
+
+            addGui('borderSize', borderSize.value, function(val) {
+
+              borderSize.value = val;
+
+            }, false, 0, .5);
+
+            addGui('color', color.value.getHex(), function(val) {
+
+              color.value.setHex(val);
+
+            }, true);
+
+            addGui('borderColor', borderColor.value.getHex(), function(val) {
+
+              borderColor.value.setHex(val);
+
+            }, true);
+
+            break;
+
+          case 'dissolve-fire':
+
+            // MATERIAL
+
+            mtl = new v3d.StandardNodeMaterial();
+
+            var color = new v3d.ColorNode(0xEEEEEE);
+            var fireStartColor = new v3d.ColorNode(0xF7CA78);
+            var fireEndColor = new v3d.ColorNode(0xFF0000);
+            var burnedColor = new v3d.ColorNode(0x000000);
+            var threshold = new v3d.FloatNode(.1);
+            var fireSize = new v3d.FloatNode(.16);
+            var burnedSize = new v3d.FloatNode(.5);
+            var timer = new v3d.TimerNode(0.8);
+
+            var sinCycleInSecs = new v3d.OperatorNode(
+              timer,
+              new v3d.ConstNode(v3d.ConstNode.PI2),
+              v3d.OperatorNode.MUL
+            );
+
+            var cycle = new v3d.Math1Node(sinCycleInSecs, v3d.Math1Node.SIN);
+
+            // round sin to 0 at 1
+            cycle = new v3d.OperatorNode(cycle, new v3d.FloatNode(1), v3d.OperatorNode.ADD);
+            cycle = new v3d.OperatorNode(cycle, new v3d.FloatNode(2), v3d.OperatorNode.DIV);
+
+            // offset to +.9
+            cycle = new v3d.OperatorNode(cycle, new v3d.FloatNode(.9), v3d.OperatorNode.ADD);
+
+            var tex = new v3d.TextureNode(getTexture("cloud"));
+            var texArea = new v3d.SwitchNode(tex, 'w');
+
+            var thresholdBorder = new v3d.Math3Node(
+              new v3d.OperatorNode(threshold, fireSize, v3d.OperatorNode.ADD),
+              threshold,
+              texArea,
+              v3d.Math3Node.SMOOTHSTEP
+            );
+
+            var fireStartAnimatedColor = new v3d.ColorAdjustmentNode(
+              fireStartColor,
+              cycle,
+              v3d.ColorAdjustmentNode.SATURATION
+            );
+
+            var fireEndAnimatedColor = new v3d.ColorAdjustmentNode(
+              fireEndColor,
+              cycle,
+              v3d.ColorAdjustmentNode.SATURATION
+            );
+
+            var fireColor = new v3d.Math3Node(
+              fireEndAnimatedColor,
+              fireStartAnimatedColor,
+              thresholdBorder,
+              v3d.Math3Node.MIX
+            );
+
+            var thresholdBurnedBorder = new v3d.Math3Node(
+              new v3d.OperatorNode(threshold, burnedSize, v3d.OperatorNode.ADD),
+              threshold,
+              texArea,
+              v3d.Math3Node.SMOOTHSTEP
+            );
+
+            var fireEmissive = new v3d.OperatorNode(
+              fireColor,
+              thresholdBorder,
+              v3d.OperatorNode.MUL
+            );
+
+            var burnedResultColor = new v3d.Math3Node(
+              color,
+              burnedColor,
+              thresholdBurnedBorder,
+              v3d.Math3Node.MIX
+            );
+
+            // APPLY
+
+            mtl.color = burnedResultColor;
+            mtl.emissive = fireEmissive;
+            mtl.mask = new v3d.CondNode(
+              texArea, // a: value
+              threshold, // b: value
+              v3d.CondNode.GREATER // condition
+            );
+
+            // GUI
+
+            addGui('threshold', threshold.value, function(val) {
+
+              threshold.value = val;
+
+            }, false, - .5, 1.5);
+
+            addGui('fireSize', fireSize.value, function(val) {
+
+              fireSize.value = val;
+
+            }, false, 0, .5);
+
+            addGui('burnedSize', burnedSize.value, function(val) {
+
+              burnedSize.value = val;
+
+            }, false, 0, 1);
+
+            addGui('color', color.value.getHex(), function(val) {
+
+              color.value.setHex(val);
+
+            }, true);
+
+            addGui('fireStartColor', fireStartColor.value.getHex(), function(val) {
+
+              fireStartColor.value.setHex(val);
+
+            }, true);
+
+            addGui('fireEndColor', fireEndColor.value.getHex(), function(val) {
+
+              fireEndColor.value.setHex(val);
+
+            }, true);
+
+            addGui('burnedColor', burnedColor.value.getHex(), function(val) {
+
+              burnedColor.value.setHex(val);
+
+            }, true);
+
+            addGui('timeScale', timer.scale, function(val) {
+
+              timer.scale = val;
+
+            }, false, 0, 2);
+
+            break;
+
           case 'smoke':
 
             // MATERIAL
@@ -1365,6 +1576,8 @@
 
             mtl.environment = new v3d.ColorNode(0xFFFFFF);
             mtl.alpha = clouds;
+
+            defaultSide = v3d.FrontSide;
 
             // GUI
 
@@ -1498,7 +1711,7 @@
             var mask = new v3d.SwitchNode(worldNormal, 'y');
 
             // clamp0at1
-            mask = new v3d.Math1Node(mask, v3d.Math1Node.SAT);
+            mask = new v3d.Math1Node(mask, v3d.Math1Node.SATURATE);
 
             var timeOffset = new v3d.OperatorNode(
               time,
@@ -1531,7 +1744,7 @@
             var voronoiColors = new v3d.Math3Node(
               colorB,
               colorA,
-              new v3d.Math1Node(voronoiIntensity, v3d.Math1Node.SAT), // mix needs clamp
+              new v3d.Math1Node(voronoiIntensity, v3d.Math1Node.SATURATE), // mix needs clamp
               v3d.Math3Node.MIX
             );
 
@@ -1780,7 +1993,7 @@
               v3d.OperatorNode.MUL
             );
 
-            var bloodArea = new v3d.Math1Node(wrappedLightColor, v3d.Math1Node.SAT);
+            var bloodArea = new v3d.Math1Node(wrappedLightColor, v3d.Math1Node.SATURATE);
 
             var totalLight = new v3d.OperatorNode(
               directLight,
@@ -1903,7 +2116,7 @@
               v3d.Math3Node.SMOOTHSTEP
             );
 
-            var innerContour = new v3d.Math1Node(new v3d.Math1Node(lineScaled, v3d.Math1Node.SAT), v3d.Math1Node.INVERT);
+            var innerContour = new v3d.Math1Node(new v3d.Math1Node(lineScaled, v3d.Math1Node.SATURATE), v3d.Math1Node.INVERT);
 
             // APPLY
 
@@ -2033,6 +2246,7 @@
             //v3d.NodeLib.add(new v3d.ConstNode("float MY_CONST .05"))
 
             // reserved keywords
+
             console.log(v3d.NodeLib.keywords);
 
             // keywords conflit? use this to disable:
@@ -2172,7 +2386,7 @@
               ifNode = new v3d.ColorNode(0x0000FF),
               elseNode = new v3d.ColorNode(0xFF0000);
 
-            var cond = new v3d.CondNode(a, b, ifNode, elseNode, v3d.CondNode.EQUAL);
+            var cond = new v3d.CondNode(a, b, v3d.CondNode.EQUAL, ifNode, elseNode);
 
             mtl.color = cond;
 
@@ -2311,15 +2525,55 @@
 
             mtl = new v3d.PhongNodeMaterial();
 
-            mtl.color = new v3d.ColorNode(0xFFFFFF);
-            mtl.specular = new v3d.FloatNode(.5);
-            mtl.shininess = new v3d.FloatNode(15);
-
             // not use "uniform" input (for optimization)
             // instead use explicit declaration, for example:
             // vec3(1.0, 1.0, 1.0) instead "uniform vec3"
             // if readonly is true not allow change the value after build the shader material
-            mtl.color.readonly = mtl.specular.readonly = mtl.shininess.readonly = true;
+
+            mtl.color = new v3d.ColorNode(0xFFFFFF).setReadonly(true);
+            mtl.specular = new v3d.FloatNode(.5).setReadonly(true);
+            mtl.shininess = new v3d.FloatNode(15).setReadonly(true);
+
+            break;
+
+          case 'label':
+
+            // MATERIAL
+
+            mtl = new v3d.PhongNodeMaterial();
+
+            // label can be useful for finding the nodes as variables in debug level
+            // but this always force the creation of a variable
+            // same as the code can be writed in the same line (inline)
+            // for optimization this is not recommended
+
+            var colorInput = new v3d.ColorNode(0xFFFFFF).setLabel("colorInput");
+            var specularInput = new v3d.FloatNode(.5).setLabel("specularInput");
+
+            var colorMix = new v3d.OperatorNode(
+              colorInput,
+              new v3d.ColorNode(0x6495ED).setReadonly(true),
+              v3d.OperatorNode.MUL
+            ).setLabel("colorMix");
+
+            mtl.color = colorMix;
+            mtl.specular = specularInput;
+
+            // default: without use label
+            // this is optimized writed the code in a single line (inline)
+            // for the reason that this node is used only once in this shader program
+            mtl.shininess = new v3d.OperatorNode(
+              new v3d.FloatNode(10).setReadonly(true),
+              new v3d.FloatNode(5).setReadonly(true),
+              v3d.OperatorNode.ADD
+            );
+
+            mtl.build();
+
+            // show names glsl fragment shader
+            // open console e find using CTRL+F "colorMix" for example
+
+            console.log(mtl.fragmentShader);
 
             break;
 
@@ -2399,7 +2653,7 @@
               "vec4 triplanar_mapping(sampler2D texture, vec3 normal, vec3 position, float scale) {",
 
               // Blending factor of triplanar mapping
-              "  vec3 bf = normalize(abs(normal));", 
+              "  vec3 bf = normalize(abs(normal));",
               "  bf /= dot(bf, vec3(1.0));",
 
               // Triplanar mapping
@@ -2550,7 +2804,7 @@
               v3d.Math3Node.SMOOTHSTEP
             );
 
-            var sssAlpha = new v3d.Math1Node(sss, v3d.Math1Node.SAT);
+            var sssAlpha = new v3d.Math1Node(sss, v3d.Math1Node.SATURATE);
 
             var frontColor, backColor;
 
@@ -2638,7 +2892,7 @@
 
         // set material
 
-        mtl.side = v3d.DoubleSide;
+        mtl.side = defaultSide;
 
         mesh.material = mtl;
 
@@ -2748,12 +3002,15 @@
 
           scene.overrideMaterial = rtMaterial;
 
-          renderer.render(scene, camera, rtTexture, true);
+          renderer.setRenderTarget(rtTexture);
+          renderer.clear();
+          renderer.render(scene, camera);
 
           scene.overrideMaterial = null;
 
         }
 
+        renderer.setRenderTarget(null);
         renderer.render(scene, camera);
 
         requestAnimationFrame(animate);

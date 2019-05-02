@@ -7,13 +7,30 @@
     <style>
       body {
         font-family: Monospace;
-        background-color: #f0f0f0;
         margin: 0px;
         overflow: hidden;
+      }
+      a {
+        color:#0078ff;
+      }
+      #info {
+        position: absolute;
+        top: 10px; width: 100%;
+        color: #ffffff;
+        padding: 5px;
+        font-family: Monospace;
+        font-size: 13px;
+        text-align: center;
+        z-index:100;
       }
     </style>
   </head>
   <body>
+
+    <div id="info">
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - software renderer<br />
+      drag to change the point of view
+    </div>
 
     <script src="../build/v3d.js"></script>
     <script src="js/geometries/hilbert3D.js"></script>
@@ -23,9 +40,7 @@
     <script src="js/libs/stats.min.js"></script>
     <script>
 
-      var container, stats;
-
-      var camera, controls, scene, renderer;
+      var camera, controls, scene, renderer, stats;
 
       var torus, cube, texCube;
 
@@ -36,16 +51,8 @@
 
       function init() {
 
-        container = document.createElement('div');
+        var container = document.createElement('div');
         document.body.appendChild(container);
-
-        var info = document.createElement('div');
-        info.style.position = 'absolute';
-        info.style.top = '10px';
-        info.style.width = '100%';
-        info.style.textAlign = 'center';
-        info.innerHTML = '<a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D<a/> - software renderer<br/>drag to change the point of view';
-        container.appendChild(info);
 
         camera = new v3d.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 2000);
         camera.position.z = 600;
@@ -55,34 +62,47 @@
         scene = new v3d.Scene();
 
         // Torus
-        var geometry = new v3d.TorusKnotGeometry(150);
+        var torusGeometry = new v3d.TorusKnotBufferGeometry(150, 10);
+        torusGeometry = torusGeometry.toNonIndexed();
 
-        for (var i = 0, j = geometry.faces.length; i < j; i++) {
+        var colors = [];
+        var color = new v3d.Color();
 
-          geometry.faces[i].color.setHex(Math.random() * 0xffffff);
+        for (var i = 0; i < torusGeometry.attributes.position.count; i++) {
+
+          color.setHex(Math.random() * 0xffffff);
+          colors.push(color.r, color.g, color.b);
 
         }
 
-        torus = new v3d.Mesh(geometry, new v3d.MeshBasicMaterial({ color: 0x0000ff, vertexColors: v3d.FaceColors }));
+        torusGeometry.addAttribute('color', new v3d.Float32BufferAttribute(colors, 3));
+
+        torus = new v3d.Mesh(torusGeometry, new v3d.MeshBasicMaterial({ color: 0x0000ff, vertexColors: v3d.VertexColors }));
         scene.add(torus);
 
         // Cube
-        var geometry = new v3d.BoxGeometry(200, 200, 200);
+        var boxGeometry = new v3d.BoxBufferGeometry(200, 200, 200);
+        boxGeometry = boxGeometry.toNonIndexed();
 
-        for (var i = 0, j = geometry.faces.length; i < j; i++) {
+        colors = [];
 
-          geometry.faces[i].color.setHex(Math.random() * 0xffffff);
+        for (var i = 0; i < boxGeometry.attributes.position.count; i++) {
+
+          color.setHex(Math.random() * 0xffffff);
+          colors.push(color.r, color.g, color.b);
 
         }
 
-        cube = new v3d.Mesh(geometry, new v3d.MeshBasicMaterial({ color: 0x00ff00, vertexColors: v3d.FaceColors }));
+        boxGeometry.addAttribute('color', new v3d.Float32BufferAttribute(colors, 3));
+
+        cube = new v3d.Mesh(boxGeometry, new v3d.MeshBasicMaterial({ color: 0x00ff00, vertexColors: v3d.VertexColors }));
         scene.position.set(100, 0, 0);
         scene.add(cube);
 
         // Cube with texture
         var loader = new v3d.TextureLoader();
         var map = loader.load('textures/brick_diffuse.jpg');
-        texCube = new v3d.Mesh(geometry, new v3d.MeshLambertMaterial({ map: map }));
+        texCube = new v3d.Mesh(boxGeometry, new v3d.MeshLambertMaterial({ map: map }));
         texCube.position.set(- 300, 0, 0);
         scene.add(texCube);
 
@@ -101,28 +121,39 @@
         scene.add(texSprite);
 
         // Line
-        var points = hilbert3D(new v3d.Vector3(0, 0, 0), 200.0, 1, 0, 1, 2, 3, 4, 5, 6, 7);
-        var spline = new v3d.CatmullRomCurve3(points);
-        var n_sub = 6, colors = [];
+        var hilbertPoints = hilbert3D(new v3d.Vector3(0, 0, 0), 200.0, 1, 0, 1, 2, 3, 4, 5, 6, 7);
 
-        var lineGeometry = new v3d.Geometry();
-        var vertices = lineGeometry.vertices;
+        var lineGeometry = new v3d.BufferGeometry();
+        var subdivisions = 6;
 
-        for (var i = 0; i < points.length * n_sub; i++) {
+        var vertices = [];
+        colors = [];
 
-          var t = i / (points.length * n_sub);
-          vertices[i] = spline.getPoint(t);
-          colors[i] = new v3d.Color(0x88aaff);
+        var point = new v3d.Vector3();
+        color.setHex(0x88aaff);
+
+        var spline = new v3d.CatmullRomCurve3(hilbertPoints);
+
+        for (var i = 0; i < hilbertPoints.length * subdivisions; i++) {
+
+          var t = i / (hilbertPoints.length * subdivisions);
+          spline.getPoint(t, point);
+
+          vertices.push(point.x, point.y, point.z);
+          colors.push(color.r, color.g, color.b);
 
         }
 
-        lineGeometry.colors = colors;
+        lineGeometry.addAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
+        lineGeometry.addAttribute('color', new v3d.Float32BufferAttribute(colors, 3));
 
         var material = new v3d.LineBasicMaterial({ opacity: 1, linewidth: 3, vertexColors: v3d.VertexColors });
         var line = new v3d.Line(lineGeometry, material);
         line.scale.set(0.5, 0.5, 0.5);
         line.position.set(0, - 200, 0);
         scene.add(line);
+
+        //
 
         renderer = new v3d.SoftwareRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);

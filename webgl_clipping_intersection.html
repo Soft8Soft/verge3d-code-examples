@@ -49,30 +49,32 @@
 
         camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 200);
 
-        camera.position.set(- 20, 30, 40);
+        camera.position.set(- 1.5, 2.5, 3.0);
 
         var controls = new v3d.OrbitControls(camera, renderer.domElement);
         controls.addEventListener('change', render); // use only if there is no animation loop
-        controls.minDistance = 10;
-        controls.maxDistance = 100;
+        controls.minDistance = 1;
+        controls.maxDistance = 10;
         controls.enablePan = false;
 
-        var light = new v3d.HemisphereLight(0xffffff, 0x080808, 1);
+        var light = new v3d.HemisphereLight(0xffffff, 0x080808, 1.5);
+        light.position.set(- 1.25, 1, 1.25);
         scene.add(light);
 
-        scene.add(new v3d.AmbientLight(0x505050));
+        // var helper = new v3d.CameraHelper(light.shadow.camera);
+        // scene.add(helper);
 
         //
 
         var group = new v3d.Group();
 
-        for (var i = 1; i < 25; i++) {
+        for (var i = 1; i <= 30; i += 2) {
 
-          var geometry = new v3d.SphereBufferGeometry(i / 2, 48, 24);
+          var geometry = new v3d.SphereBufferGeometry(i / 30, 48, 24);
 
           var material = new v3d.MeshLambertMaterial({
 
-            color: new v3d.Color(Math.sin(i * 0.5) * 0.5 + 0.5, Math.cos(i * 1.5) * 0.5 + 0.5, Math.sin(i * 4.5 + 0) * 0.5 + 0.5),
+            color: new v3d.Color().setHSL(Math.random(), 0.5, 0.5),
             side: v3d.DoubleSide,
             clippingPlanes: clipPlanes,
             clipIntersection: params.clipIntersection
@@ -88,10 +90,9 @@
         // helpers
 
         var helpers = new v3d.Group();
-        helpers.add(new v3d.AxesHelper(20));
-        helpers.add(new v3d.PlaneHelper(clipPlanes[0], 30, 0xff0000));
-        helpers.add(new v3d.PlaneHelper(clipPlanes[1], 30, 0x00ff00));
-        helpers.add(new v3d.PlaneHelper(clipPlanes[2], 30, 0x0000ff));
+        helpers.add(new v3d.PlaneHelper(clipPlanes[0], 2, 0xff0000));
+        helpers.add(new v3d.PlaneHelper(clipPlanes[1], 2, 0x00ff00));
+        helpers.add(new v3d.PlaneHelper(clipPlanes[2], 2, 0x0000ff));
         helpers.visible = false;
         scene.add(helpers);
 
@@ -113,7 +114,7 @@
 
         });
 
-        gui.add(params, 'planeConstant', - 16, 16).step(1).name('plane constant').onChange(function(value) {
+        gui.add(params, 'planeConstant', - 1, 1).step(0.01).name('plane constant').onChange(function(value) {
 
           for (var j = 0; j < clipPlanes.length; j ++) {
 

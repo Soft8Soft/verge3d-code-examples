@@ -68,7 +68,6 @@
         composer.addPass(new v3d.RenderPass(scene, camera));
 
         afterimagePass = new v3d.AfterimagePass();
-        afterimagePass.renderToScreen = true;
         composer.addPass(afterimagePass);
 
         window.addEventListener('resize', onWindowResize, false);

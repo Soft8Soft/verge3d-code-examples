@@ -20,7 +20,7 @@ v3d.MaskPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     constructor: v3d.MaskPass,
 
-    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
 
         var context = renderer.context;
         var state = renderer.state;
@@ -58,8 +58,13 @@ v3d.MaskPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         // draw into the stencil buffer
 
-        renderer.render(this.scene, this.camera, readBuffer, this.clear);
-        renderer.render(this.scene, this.camera, writeBuffer, this.clear);
+        renderer.setRenderTarget(readBuffer);
+        if (this.clear) renderer.clear();
+        renderer.render(this.scene, this.camera);
+
+        renderer.setRenderTarget(writeBuffer);
+        if (this.clear) renderer.clear();
+        renderer.render(this.scene, this.camera);
 
         // unlock color and depth buffer for subsequent rendering
 
@@ -68,7 +73,7 @@ v3d.MaskPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         // only render where stencil is set to 1
 
-        state.buffers.stencil.setFunc(context.EQUAL, 1, 0xffffffff);  // draw if == 1
+        state.buffers.stencil.setFunc(context.EQUAL, 1, 0xffffffff); // draw if == 1
         state.buffers.stencil.setOp(context.KEEP, context.KEEP, context.KEEP);
 
     }
@@ -88,7 +93,7 @@ v3d.ClearMaskPass.prototype = Object.create(v3d.Pass.prototype);
 
 Object.assign(v3d.ClearMaskPass.prototype, {
 
-    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
 
         renderer.state.buffers.stencil.setTest(false);
 

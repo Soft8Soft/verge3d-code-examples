@@ -772,8 +772,10 @@ v3d.AssimpLoader.prototype = {
                 if (this.mBones.length == 0)
                     mesh = new v3d.Mesh(geometry, mat);
 
-                if (this.mBones.length > 0)
+                if (this.mBones.length > 0) {
                     mesh = new v3d.SkinnedMesh(geometry, mat);
+                    mesh.normalizeSkinWeights();
+                }
 
                 this.threeNode = mesh;
                 //mesh.matrixAutoUpdate = false;

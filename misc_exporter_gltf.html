@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Verge3D webgl - gltf exporter</title>
+    <title>Verge3D webgl - exporter - gltf</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <style>
@@ -22,14 +22,14 @@
   </head>
   <body>
     <div id="info">
-      GLTF Exporter<br/>
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - exporter - gltf<br/><br/>
       <button id="export_scene">Export Scene1</button>
       <button id="export_scenes">Export Scene1 and Scene 2</button>
       <button id="export_object">Export Sphere</button>
       <button id="export_obj">Export WaltHead</button>
       <button id="export_objects">Export Sphere and Grid</button>
       <button id="export_scene_object">Export Scene1 and Sphere</button>
-      <br/>
+      <br/><br/>
       <label><input id="option_trs" name="trs" type="checkbox"/>TRS</label>
       <label><input id="option_visible" name="visible" type="checkbox" checked="checked"/>Only Visible</label>
       <label><input id="option_drawrange" name="visible" type="checkbox" checked="checked"/>Truncate drawRange</label>
@@ -182,7 +182,9 @@
         // DirectLight
         // ---------------------------------------------------------------------
         light = new v3d.DirectionalLight(0xffffff, 1);
-        light.position.set(1, 1, 0);
+        light.target.position.set(0, 0, -1);
+        light.add(light.target);
+        light.lookAt(-1, -1, 0);
         light.name = 'DirectionalLight';
         scene1.add(light);
 
@@ -212,7 +214,7 @@
           map: mapGrid
         });
 
-        object = new v3d.Mesh(new v3d.IcosahedronGeometry(75, 0), material);
+        object = new v3d.Mesh(new v3d.IcosahedronBufferGeometry(75, 0), material);
         object.position.set(- 200, 0, 200);
         object.name = 'Icosahedron';
         scene1.add(object);
@@ -222,7 +224,7 @@
           color: 0x0000ff,
           wireframe: true
         });
-        object = new v3d.Mesh(new v3d.OctahedronGeometry(75, 1), material);
+        object = new v3d.Mesh(new v3d.OctahedronBufferGeometry(75, 1), material);
         object.position.set(0, 0, 200);
         object.name = 'Octahedron';
         scene1.add(object);
@@ -234,7 +236,7 @@
           opacity: 0.5
         });
 
-        object = new v3d.Mesh(new v3d.TetrahedronGeometry(75, 0), material);
+        object = new v3d.Mesh(new v3d.TetrahedronBufferGeometry(75, 0), material);
         object.position.set(200, 0, 200);
         object.name = 'Tetrahedron';
         scene1.add(object);
@@ -269,7 +271,7 @@
           color: 0xff0000,
           roughness: 1
         });
-        object = new v3d.Mesh(new v3d.TorusKnotGeometry(50, 15, 40, 10), material);
+        object = new v3d.Mesh(new v3d.TorusKnotBufferGeometry(50, 15, 40, 10), material);
         object.position.set(- 200, 0, 0);
         object.name = "Cylinder";
         scene1.add(object);
@@ -459,15 +461,15 @@
           side: v3d.DoubleSide
         });
 
-        object = new v3d.Mesh(new v3d.CircleGeometry(50, 20, 0, Math.PI * 2), material);
+        object = new v3d.Mesh(new v3d.CircleBufferGeometry(50, 20, 0, Math.PI * 2), material);
         object.position.set(200, 0, - 400);
         scene1.add(object);
 
-        object = new v3d.Mesh(new v3d.RingGeometry(10, 50, 20, 5, 0, Math.PI * 2), material);
+        object = new v3d.Mesh(new v3d.RingBufferGeometry(10, 50, 20, 5, 0, Math.PI * 2), material);
         object.position.set(0, 0, - 400);
         scene1.add(object);
 
-        object = new v3d.Mesh(new v3d.CylinderGeometry(25, 75, 100, 40, 5), material);
+        object = new v3d.Mesh(new v3d.CylinderBufferGeometry(25, 75, 100, 40, 5), material);
         object.position.set(- 200, 0, - 400);
         scene1.add(object);
 
@@ -480,7 +482,7 @@
 
         }
 
-        object = new v3d.Mesh(new v3d.LatheGeometry(points, 20), material);
+        object = new v3d.Mesh(new v3d.LatheBufferGeometry(points, 20), material);
         object.position.set(200, 0, 400);
         scene1.add(object);
 

@@ -99,6 +99,7 @@
         //
 
         var texture = new v3d.TextureLoader().load('textures/ricoh_theta_s.jpg');
+        texture.minFilter = v3d.LinearFilter;
         texture.format = v3d.RGBFormat;
 
         var material = new v3d.MeshBasicMaterial({ map: texture });

@@ -88,6 +88,11 @@ v3d.ShaderLib['ocean_initial_spectrum'] = {
         "u_resolution": { value: 512.0 },
         "u_size": { value: 250.0 }
     },
+    vertexShader: [
+        'void main (void) {',
+            'gl_Position = vec4(position, 1.0);',
+        '}'
+    ].join('\n'),
     fragmentShader: [
         'precision highp float;',
         '#include <common>',

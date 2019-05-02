@@ -16,7 +16,6 @@ v3d.ShaderSkin = {
     //        - specular map
     //        - point, directional and hemisphere lights (use with "lights: true" material option)
     //        - fog (use with "fog: true" material option)
-    //        - shadow maps
     //
     // ------------------------------------------------------------------------------------------ */
 
@@ -85,7 +84,6 @@ v3d.ShaderSkin = {
             v3d.ShaderChunk["bsdfs"],
             v3d.ShaderChunk["packing"],
             v3d.ShaderChunk["lights_pars_begin"],
-            v3d.ShaderChunk["shadowmap_pars_fragment"],
             v3d.ShaderChunk["fog_pars_fragment"],
             v3d.ShaderChunk["bumpmap_pars_fragment"],
 
@@ -265,7 +263,6 @@ v3d.ShaderSkin = {
 
             v3d.ShaderChunk["common"],
             v3d.ShaderChunk["lights_pars_begin"],
-            v3d.ShaderChunk["shadowmap_pars_vertex"],
             v3d.ShaderChunk["fog_pars_vertex"],
 
             "void main() {",
@@ -281,7 +278,6 @@ v3d.ShaderSkin = {
 
                 "gl_Position = projectionMatrix * mvPosition;",
 
-                v3d.ShaderChunk["shadowmap_vertex"],
                 v3d.ShaderChunk["fog_vertex"],
 
             "}"

@@ -33,11 +33,11 @@ v3d.TAARenderPass.prototype = Object.assign(Object.create(v3d.SSAARenderPass.pro
 
     constructor: v3d.TAARenderPass,
 
-    render: function(renderer, writeBuffer, readBuffer, delta) {
+    render: function(renderer, writeBuffer, readBuffer, deltaTime) {
 
         if (!this.accumulate) {
 
-            v3d.SSAARenderPass.prototype.render.call(this, renderer, writeBuffer, readBuffer, delta);
+            v3d.SSAARenderPass.prototype.render.call(this, renderer, writeBuffer, readBuffer, deltaTime);
 
             this.accumulateIndex = - 1;
             return;
@@ -62,7 +62,7 @@ v3d.TAARenderPass.prototype = Object.assign(Object.create(v3d.SSAARenderPass.pro
 
         if (this.accumulate && this.accumulateIndex === - 1) {
 
-            v3d.SSAARenderPass.prototype.render.call(this, renderer, this.holdRenderTarget, readBuffer, delta);
+            v3d.SSAARenderPass.prototype.render.call(this, renderer, this.holdRenderTarget, readBuffer, deltaTime);
 
             this.accumulateIndex = 0;
 
@@ -88,13 +88,18 @@ v3d.TAARenderPass.prototype = Object.assign(Object.create(v3d.SSAARenderPass.pro
                 if (this.camera.setViewOffset) {
 
                     this.camera.setViewOffset(readBuffer.width, readBuffer.height,
-                        jitterOffset[0] * 0.0625, jitterOffset[1] * 0.0625,   // 0.0625 = 1 / 16
+                        jitterOffset[0] * 0.0625, jitterOffset[1] * 0.0625, // 0.0625 = 1 / 16
                         readBuffer.width, readBuffer.height);
 
                 }
 
-                renderer.render(this.scene, this.camera, writeBuffer, true);
-                renderer.render(this.scene2, this.camera2, this.sampleRenderTarget, (this.accumulateIndex === 0));
+                renderer.setRenderTarget(writeBuffer);
+                renderer.clear();
+                renderer.render(this.scene, this.camera);
+
+                renderer.setRenderTarget(this.sampleRenderTarget);
+                if (this.accumulateIndex === 0) renderer.clear();
+                this.fsQuad.render(renderer);
 
                 this.accumulateIndex ++;
 
@@ -112,7 +117,9 @@ v3d.TAARenderPass.prototype = Object.assign(Object.create(v3d.SSAARenderPass.pro
 
             this.copyUniforms["opacity"].value = 1.0;
             this.copyUniforms["tDiffuse"].value = this.sampleRenderTarget.texture;
-            renderer.render(this.scene2, this.camera2, writeBuffer, true);
+            renderer.setRenderTarget(writeBuffer);
+            renderer.clear();
+            this.fsQuad.render(renderer);
 
         }
 
@@ -120,7 +127,9 @@ v3d.TAARenderPass.prototype = Object.assign(Object.create(v3d.SSAARenderPass.pro
 
             this.copyUniforms["opacity"].value = 1.0 - accumulationWeight;
             this.copyUniforms["tDiffuse"].value = this.holdRenderTarget.texture;
-            renderer.render(this.scene2, this.camera2, writeBuffer, (accumulationWeight === 0));
+            renderer.setRenderTarget(writeBuffer);
+            if (accumulationWeight === 0) renderer.clear();
+            this.fsQuad.render(renderer);
 
         }
 
