@@ -6,11 +6,11 @@
 
 v3d.MTLLoader = function(manager) {
 
-    this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+    v3d.Loader.call(this, manager);
 
 };
 
-v3d.MTLLoader.prototype = {
+v3d.MTLLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
     constructor: v3d.MTLLoader,
 
@@ -31,7 +31,7 @@ v3d.MTLLoader.prototype = {
 
         var scope = this;
 
-        var path = (this.path === undefined) ? v3d.LoaderUtils.extractUrlBase(url) : this.path;
+        var path = (this.path === '') ? v3d.LoaderUtils.extractUrlBase(url) : this.path;
 
         var loader = new v3d.FileLoader(this.manager);
         loader.setPath(this.path);
@@ -40,58 +40,6 @@ v3d.MTLLoader.prototype = {
             onLoad(scope.parse(text, path));
 
         }, onProgress, onError);
-
-    },
-
-    /**
-     * Set base path for resolving references.
-     * If set this path will be prepended to each loaded and found reference.
-     *
-     * @see setResourcePath
-     * @param {String} path
-     * @return {v3d.MTLLoader}
-     *
-     * @example
-     *     mtlLoader.setPath('assets/obj/');
-     *     mtlLoader.load('my.mtl', ...);
-     */
-    setPath: function(path) {
-
-        this.path = path;
-        return this;
-
-    },
-
-    /**
-     * Set base path for additional resources like textures.
-     *
-     * @see setPath
-     * @param {String} path
-     * @return {v3d.MTLLoader}
-     *
-     * @example
-     *     mtlLoader.setPath('assets/obj/');
-     *     mtlLoader.setResourcePath('assets/textures/');
-     *     mtlLoader.load('my.mtl', ...);
-     */
-    setResourcePath: function(path) {
-
-        this.resourcePath = path;
-        return this;
-
-    },
-
-    setTexturePath: function(path) {
-
-        console.warn('v3d.MTLLoader: .setTexturePath() has been renamed to .setResourcePath().');
-        return this.setResourcePath(path);
-
-    },
-
-    setCrossOrigin: function(value) {
-
-        this.crossOrigin = value;
-        return this;
 
     },
 
@@ -149,7 +97,7 @@ v3d.MTLLoader.prototype = {
 
             } else {
 
-                if (key === 'ka' || key === 'kd' || key === 'ks' || key ==='ke') {
+                if (key === 'ka' || key === 'kd' || key === 'ks' || key === 'ke') {
 
                     var ss = value.split(delimiter_pattern, 3);
                     info[key] = [parseFloat(ss[0]), parseFloat(ss[1]), parseFloat(ss[2])];
@@ -172,10 +120,10 @@ v3d.MTLLoader.prototype = {
 
     }
 
-};
+});
 
 /**
- * Create a new v3d-MTLLoader.MaterialCreator
+ * Create a new v3d.MTLLoader.MaterialCreator
  * @param baseUrl - Url relative to which textures are loaded
  * @param options - Set of options on how to construct the materials
  *                  side: Which side to apply the material
@@ -562,8 +510,8 @@ v3d.MTLLoader.MaterialCreator.prototype = {
     loadTexture: function(url, mapping, onLoad, onProgress, onError) {
 
         var texture;
-        var loader = v3d.Loader.Handlers.get(url);
         var manager = (this.manager !== undefined) ? this.manager : v3d.DefaultLoadingManager;
+        var loader = manager.getHandler(url);
 
         if (loader === null) {
 

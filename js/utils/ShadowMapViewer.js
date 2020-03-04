@@ -49,7 +49,7 @@ v3d.ShadowMapViewer = function(light) {
     //HUD for shadow map
     var shader = v3d.UnpackDepthRGBAShader;
 
-    var uniforms = new v3d.UniformsUtils.clone(shader.uniforms);
+    var uniforms = v3d.UniformsUtils.clone(shader.uniforms);
     var material = new v3d.ShaderMaterial({
         uniforms: uniforms,
         vertexShader: shader.vertexShader,
@@ -95,7 +95,7 @@ v3d.ShadowMapViewer = function(light) {
     }
 
 
-    function resetPosition () {
+    function resetPosition() {
 
         scope.position.set(scope.position.x, scope.position.y);
 
@@ -173,6 +173,7 @@ v3d.ShadowMapViewer = function(light) {
              camera.updateProjectionMatrix();
 
              this.update();
+
         }
 
     };

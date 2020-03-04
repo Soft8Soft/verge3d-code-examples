@@ -5,11 +5,11 @@
 
 v3d.PDBLoader = function(manager) {
 
-    this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+    v3d.Loader.call(this, manager);
 
 };
 
-v3d.PDBLoader.prototype = {
+v3d.PDBLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
     constructor: v3d.PDBLoader,
 
@@ -24,13 +24,6 @@ v3d.PDBLoader.prototype = {
             onLoad(scope.parse(text));
 
         }, onProgress, onError);
-
-    },
-
-    setPath: function(value) {
-
-        this.path = value;
-        return this;
 
     },
 
@@ -143,10 +136,10 @@ v3d.PDBLoader.prototype = {
 
             // build geometry
 
-            geometryAtoms.addAttribute('position', new v3d.Float32BufferAttribute(verticesAtoms, 3));
-            geometryAtoms.addAttribute('color', new v3d.Float32BufferAttribute(colorsAtoms, 3));
+            geometryAtoms.setAttribute('position', new v3d.Float32BufferAttribute(verticesAtoms, 3));
+            geometryAtoms.setAttribute('color', new v3d.Float32BufferAttribute(colorsAtoms, 3));
 
-            geometryBonds.addAttribute('position', new v3d.Float32BufferAttribute(verticesBonds, 3));
+            geometryBonds.setAttribute('position', new v3d.Float32BufferAttribute(verticesBonds, 3));
 
             return build;
 
@@ -214,4 +207,4 @@ v3d.PDBLoader.prototype = {
 
     }
 
-};
+});

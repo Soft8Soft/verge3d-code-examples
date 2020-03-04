@@ -4,57 +4,22 @@
     <title>Verge3D webgl - KMZ</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        font-family: Monospace;
-        background-color: #000000;
-        margin: 0px;
-        overflow: hidden;
-      }
-
-      #info {
-        color: #fff;
-        position: absolute;
-        top: 10px;
-        width: 100%;
-        text-align: center;
-        z-index: 100;
-        display:block;
-
-      }
-
-      a { color: red }
-
-      span {
-        display: inline-block;
-        width: 60px;
-        text-align: center;
-      }
-
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
   <body>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a>
-      <a href="https://developers.google.com/kml/documentation/kmzarchives" target="_blank" rel="noopener">KMZ File format</a>
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> -
+      <a href="https://developers.google.com/kml/documentation/kmzarchives" target="_blank" rel="noopener">KMZ</a> loader
     </div>
-
-    <script src="../build/v3d.js"></script>
-    <script src="js/loaders/KMZLoader.js"></script>
-    <script src="js/loaders/ColladaLoader.js"></script>
-
-    <script src="js/WebGL.js"></script>
-    <script src="js/controls/OrbitControls.js"></script>
 
     <script src="js/libs/jszip.min.js"></script>
 
-    <script>
+    <script type="module">
 
-      if (WEBGL.isWebGLAvailable() === false) {
+      import * as v3d from '../build/v3d.module.js';
 
-        document.body.appendChild(WEBGL.getWebGLErrorMessage());
-
-      }
+      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { KMZLoader } from './jsm/loaders/KMZLoader.js';
 
       var camera, scene, renderer;
 
@@ -85,7 +50,7 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        var loader = new v3d.KMZLoader();
+        var loader = new KMZLoader();
         loader.load('./models/kmz/Box.kmz', function(kmz) {
 
           kmz.scene.position.y = 0.5;
@@ -94,7 +59,7 @@
 
         });
 
-        var controls = new v3d.OrbitControls(camera, renderer.domElement);
+        var controls = new OrbitControls(camera, renderer.domElement);
         controls.addEventListener('change', render);
         controls.update();
 

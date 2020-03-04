@@ -4,50 +4,22 @@
     <title>Verge3D webgl - postprocessing - godrays</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        background-color: #000000;
-        margin: 0px;
-        overflow: hidden;
-        font-family:Monospace;
-        font-size:13px;
-        text-align:center;
-        font-weight: bold;
-        text-align:center;
-      }
-
-      a { color:#0078ff; }
-
-      #info {
-        color:#fff;
-        position: absolute;
-        top: 0px; width: 100%;
-        padding: 5px;
-        z-index:100;
-      }
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
 
   <body>
-    <script src="../build/v3d.js"></script>
-    <script src="js/loaders/OBJLoader.js"></script>
-    <script src="js/ShaderGodRays.js"></script>
-
-    <script src="js/WebGL.js"></script>
-    <script src="js/libs/stats.min.js"></script>
-
     <div id="info">
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - webgl god-rays example - tree by <a href="http://www.turbosquid.com/3d-models/free-tree-3d-model/592617" target="_blank" rel="noopener">stanloshka</a>
     </div>
 
+    <script type="module">
 
-    <script>
+      import * as v3d from '../build/v3d.module.js';
 
-      if (WEBGL.isWebGLAvailable() === false) {
+      import Stats from './jsm/libs/stats.module.js';
 
-        document.body.appendChild(WEBGL.getWebGLErrorMessage());
-
-      }
+      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
+      import { GodRaysFakeSunShader, GodRaysDepthMaskShader, GodRaysCombineShader, GodRaysGenerateShader } from './jsm/shaders/GodRaysShader.js';
 
       var container, stats;
       var camera, scene, renderer, materialDepth;
@@ -92,7 +64,7 @@
 
         // tree
 
-        var loader = new v3d.OBJLoader();
+        var loader = new OBJLoader();
         loader.load('models/obj/tree.obj', function(object) {
 
           object.material = materialScene;
@@ -208,7 +180,7 @@
 
         // Switching the depth formats to luminance from rgb doesn't seem to work. I didn't
         // investigate further for now.
-        // pars.format = v3d.LuminanceFormat;
+        // pars.format = LuminanceFormat;
 
         // I would have this quarter size and use it as one of the ping-pong render
         // targets but the aliasing causes some temporal flickering
@@ -225,7 +197,7 @@
 
         // god-ray shaders
 
-        var godraysMaskShader = v3d.ShaderGodRays["godrays_depthMask"];
+        var godraysMaskShader = GodRaysDepthMaskShader;
         postprocessing.godrayMaskUniforms = v3d.UniformsUtils.clone(godraysMaskShader.uniforms);
         postprocessing.materialGodraysDepthMask = new v3d.ShaderMaterial({
 
@@ -235,7 +207,7 @@
 
         });
 
-        var godraysGenShader = v3d.ShaderGodRays["godrays_generate"];
+        var godraysGenShader = GodRaysGenerateShader;
         postprocessing.godrayGenUniforms = v3d.UniformsUtils.clone(godraysGenShader.uniforms);
         postprocessing.materialGodraysGenerate = new v3d.ShaderMaterial({
 
@@ -245,7 +217,7 @@
 
         });
 
-        var godraysCombineShader = v3d.ShaderGodRays["godrays_combine"];
+        var godraysCombineShader = GodRaysCombineShader;
         postprocessing.godrayCombineUniforms = v3d.UniformsUtils.clone(godraysCombineShader.uniforms);
         postprocessing.materialGodraysCombine = new v3d.ShaderMaterial({
 
@@ -255,7 +227,7 @@
 
         });
 
-        var godraysFakeSunShader = v3d.ShaderGodRays["godrays_fake_sun"];
+        var godraysFakeSunShader = GodRaysFakeSunShader;
         postprocessing.godraysFakeSunUniforms = v3d.UniformsUtils.clone(godraysFakeSunShader.uniforms);
         postprocessing.materialGodraysFakeSun = new v3d.ShaderMaterial({
 

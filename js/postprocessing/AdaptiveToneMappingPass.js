@@ -125,7 +125,7 @@ v3d.AdaptiveToneMappingPass.prototype = Object.assign(Object.create(v3d.Pass.pro
 
     constructor: v3d.AdaptiveToneMappingPass,
 
-    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer, deltaTime/*, maskActive*/) {
 
         if (this.needsInit) {
 
@@ -183,7 +183,7 @@ v3d.AdaptiveToneMappingPass.prototype = Object.assign(Object.create(v3d.Pass.pro
 
     },
 
-    reset: function(renderer) {
+    reset: function() {
 
         // render targets
         if (this.luminanceRT) {
@@ -213,7 +213,7 @@ v3d.AdaptiveToneMappingPass.prototype = Object.assign(Object.create(v3d.Pass.pro
         this.previousLuminanceRT.texture.generateMipmaps = false;
 
         // We only need mipmapping for the current luminosity because we want a down-sampled version to sample in our adaptive shader
-        pars.minFilter = v3d.LinearMipMapLinearFilter;
+        pars.minFilter = v3d.LinearMipmapLinearFilter;
         pars.generateMipmaps = true;
         this.currentLuminanceRT = new v3d.WebGLRenderTarget(this.resolution, this.resolution, pars);
         this.currentLuminanceRT.texture.name = "AdaptiveToneMappingPass.cl";

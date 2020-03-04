@@ -24,7 +24,7 @@ v3d.RenderPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     constructor: v3d.RenderPass,
 
-    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer /*, deltaTime, maskActive */) {
 
         var oldAutoClear = renderer.autoClear;
         renderer.autoClear = false;

@@ -84,7 +84,7 @@ v3d.LightningStorm = function(stormParams) {
 
             dest.set((Math.random() - 0.5) * stormParams.size, 0, (Math.random() - 0.5) * stormParams.size);
 
-            var height = v3d.Math.lerp(stormParams.minHeight, stormParams.maxHeight, Math.random());
+            var height = v3d.MathUtils.lerp(stormParams.minHeight, stormParams.maxHeight, Math.random());
 
             source.set(stormParams.maxSlope * (2 * Math.random() - 1), 1, stormParams.maxSlope * (2 * Math.random() - 1)).multiplyScalar(height).add(dest);
 
@@ -137,7 +137,7 @@ v3d.LightningStorm.prototype.update = function(time) {
             var lightningParams1 = v3d.LightningStrike.copyParameters(lightningMesh.geometry.rayParameters, this.lightningParameters);
 
             lightningParams1.birthTime = time;
-            lightningParams1.deathTime = time + v3d.Math.lerp(this.stormParams.lightningMinDuration, this.stormParams.lightningMaxDuration, Math.random());
+            lightningParams1.deathTime = time + v3d.MathUtils.lerp(this.stormParams.lightningMinDuration, this.stormParams.lightningMaxDuration, Math.random());
 
             this.onRayPosition(lightningParams1.sourceOffset, lightningParams1.destOffset);
 
@@ -200,7 +200,7 @@ v3d.LightningStorm.prototype.update = function(time) {
 
 v3d.LightningStorm.prototype.getNextLightningTime = function(currentTime) {
 
-    return currentTime + v3d.Math.lerp(this.stormParams.lightningMinPeriod, this.stormParams.lightningMaxPeriod, Math.random()) / (this.stormParams.maxLightnings + 1);
+    return currentTime + v3d.MathUtils.lerp(this.stormParams.lightningMinPeriod, this.stormParams.lightningMaxPeriod, Math.random()) / (this.stormParams.maxLightnings + 1);
 
 };
 

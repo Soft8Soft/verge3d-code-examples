@@ -12,7 +12,7 @@ v3d.FXAAShader = {
 
     uniforms: {
 
-        "tDiffuse":   { value: null },
+        "tDiffuse": { value: null },
         "resolution": { value: new v3d.Vector2(1 / 1024, 1 / 512) }
 
     },
@@ -23,8 +23,8 @@ v3d.FXAAShader = {
 
         "void main() {",
 
-            "vUv = uv;",
-            "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+        "    vUv = uv;",
+        "    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
 
         "}"
 

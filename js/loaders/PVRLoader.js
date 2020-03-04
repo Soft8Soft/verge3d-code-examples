@@ -12,44 +12,44 @@ v3d.PVRLoader = function(manager) {
 
     v3d.CompressedTextureLoader.call(this, manager);
 
-    this._parser = v3d.PVRLoader.parse;
-
 };
 
-v3d.PVRLoader.prototype = Object.create(v3d.CompressedTextureLoader.prototype);
-v3d.PVRLoader.prototype.constructor = v3d.PVRLoader;
+v3d.PVRLoader.prototype = Object.assign(Object.create(v3d.CompressedTextureLoader.prototype), {
 
+    constructor: v3d.PVRLoader,
 
-v3d.PVRLoader.parse = function(buffer, loadMipmaps) {
+    parse: function(buffer, loadMipmaps) {
 
-    var headerLengthInt = 13;
-    var header = new Uint32Array(buffer, 0, headerLengthInt);
+        var headerLengthInt = 13;
+        var header = new Uint32Array(buffer, 0, headerLengthInt);
 
-    var pvrDatas = {
-        buffer: buffer,
-        header: header,
-        loadMipmaps: loadMipmaps
-    };
+        var pvrDatas = {
+            buffer: buffer,
+            header: header,
+            loadMipmaps: loadMipmaps
+        };
 
-    if (header[0] === 0x03525650) {
+        if (header[0] === 0x03525650) {
 
-        // PVR v3
+            // PVR v3
 
-        return v3d.PVRLoader._parseV3(pvrDatas);
+            return v3d.PVRLoader._parseV3(pvrDatas);
 
-    } else if (header[11] === 0x21525650) {
+        } else if (header[11] === 0x21525650) {
 
-        // PVR v2
+            // PVR v2
 
-        return v3d.PVRLoader._parseV2(pvrDatas);
+            return v3d.PVRLoader._parseV2(pvrDatas);
 
-    } else {
+        } else {
 
-        console.error('v3d.PVRLoader: Unknown PVR format.');
+            console.error('v3d.PVRLoader: Unknown PVR format.');
+
+        }
 
     }
 
-};
+});
 
 v3d.PVRLoader._parseV3 = function(pvrDatas) {
 

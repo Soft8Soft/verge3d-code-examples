@@ -23,14 +23,12 @@ v3d.Lensflare = function() {
     tempMap.magFilter = v3d.NearestFilter;
     tempMap.wrapS = v3d.ClampToEdgeWrapping;
     tempMap.wrapT = v3d.ClampToEdgeWrapping;
-    tempMap.needsUpdate = true;
 
     var occlusionMap = new v3d.DataTexture(new Uint8Array(16 * 16 * 3), 16, 16, v3d.RGBFormat);
     occlusionMap.minFilter = v3d.NearestFilter;
     occlusionMap.magFilter = v3d.NearestFilter;
     occlusionMap.wrapS = v3d.ClampToEdgeWrapping;
     occlusionMap.wrapT = v3d.ClampToEdgeWrapping;
-    occlusionMap.needsUpdate = true;
 
     // material
 
@@ -371,8 +369,8 @@ v3d.Lensflare.Geometry = (function() {
     var interleavedBuffer = new v3d.InterleavedBuffer(float32Array, 5);
 
     geometry.setIndex([0, 1, 2,    0, 2, 3]);
-    geometry.addAttribute('position', new v3d.InterleavedBufferAttribute(interleavedBuffer, 3, 0, false));
-    geometry.addAttribute('uv', new v3d.InterleavedBufferAttribute(interleavedBuffer, 2, 3, false));
+    geometry.setAttribute('position', new v3d.InterleavedBufferAttribute(interleavedBuffer, 3, 0, false));
+    geometry.setAttribute('uv', new v3d.InterleavedBufferAttribute(interleavedBuffer, 2, 3, false));
 
     return geometry;
 

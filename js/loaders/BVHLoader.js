@@ -10,14 +10,14 @@
 
 v3d.BVHLoader = function(manager) {
 
-    this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+    v3d.Loader.call(this, manager);
 
     this.animateBonePositions = true;
     this.animateBoneRotations = true;
 
 };
 
-v3d.BVHLoader.prototype = {
+v3d.BVHLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
     constructor: v3d.BVHLoader,
 
@@ -32,13 +32,6 @@ v3d.BVHLoader.prototype = {
             onLoad(scope.parse(text));
 
         }, onProgress, onError);
-
-    },
-
-    setPath: function(value) {
-
-        this.path = value;
-        return this;
 
     },
 
@@ -411,4 +404,4 @@ v3d.BVHLoader.prototype = {
 
     }
 
-};
+});

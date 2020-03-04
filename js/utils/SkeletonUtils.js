@@ -2,8 +2,6 @@
  * @author sunag / http://www.sunag.com.br
  */
 
-'use strict';
-
 v3d.SkeletonUtils = {
 
     retarget: function() {
@@ -572,7 +570,7 @@ v3d.SkeletonUtils = {
 };
 
 
-function parallelTraverse (a, b, callback) {
+function parallelTraverse(a, b, callback) {
 
     callback(a, b);
 

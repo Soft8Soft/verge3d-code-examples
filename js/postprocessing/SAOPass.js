@@ -147,7 +147,7 @@ v3d.SAOPass = function(scene, camera, depthTexture, useNormals, resolution) {
     this.materialCopy.blendDstAlpha = v3d.ZeroFactor;
     this.materialCopy.blendEquationAlpha = v3d.AddEquation;
 
-    if (v3d.CopyShader === undefined) {
+    if (v3d.UnpackDepthRGBAShader === undefined) {
 
         console.error('v3d.SAOPass relies on v3d.UnpackDepthRGBAShader');
 
@@ -175,7 +175,7 @@ v3d.SAOPass.OUTPUT = {
 v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
     constructor: v3d.SAOPass,
 
-    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer/*, deltaTime, maskActive*/) {
 
         // Rendering readBuffer first when rendering to screen
         if (this.renderToScreen) {

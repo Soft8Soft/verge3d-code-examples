@@ -4,40 +4,7 @@
     <title>Verge3D webgl - glTF 2.0 - extensions</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        font-family: Monospace;
-        background-color: #222222;
-        margin: 0px;
-        overflow: hidden;
-      }
-
-      #info {
-        color: #808080;
-        position: absolute;
-        top: 10px;
-        width: 100%;
-        text-align: center;
-        z-index: 100;
-        display:block;
-      }
-
-      #container {
-        position: absolute;
-        top: 0px;
-        width:100%;
-        height:100%;
-        z-index: -1;
-      }
-
-      #info a, .button {
-        color: #f00;
-        font-weight: bold;
-        text-decoration: underline;
-        cursor: pointer
-      }
-
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
 
   <body>
@@ -49,17 +16,17 @@
 
     <div id="container"></div>
 
-    <script src="../build/v3d.js"></script>
-    <script src="js/libs/dat.gui.min.js"></script>
-    <script src="js/controls/OrbitControls.js"></script>
-    <script src="js/loaders/DRACOLoader.js"></script>
-    <script src="js/loaders/DDSLoader.js"></script>
-    <script src="js/loaders/GLTFLoader.js"></script>
+    <script type="module">
 
-    <script src="js/pmrem/PMREMGenerator.js"></script>
-    <script src="js/pmrem/PMREMCubeUVPacker.js"></script>
+      import * as v3d from '../build/v3d.module.js';
 
-    <script>
+      import { GUI } from './jsm/libs/dat.gui.module.js';
+      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+      import { DDSLoader } from './jsm/loaders/DDSLoader.js';
+      import { DRACOLoader } from './jsm/loaders/DRACOLoader.js';
+      import { RGBELoader } from './jsm/loaders/RGBELoader.js';
+
       var orbitControls;
       var container, camera, scene, renderer, loader;
       var gltf, background, envMap, mixer, gui, extensionControls;
@@ -176,7 +143,7 @@
         renderer = new v3d.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.gammaOutput = true;
+        renderer.outputEncoding = v3d.sRGBEncoding;
         renderer.physicallyCorrectLights = true;
         container.appendChild(renderer.domElement);
 
@@ -184,28 +151,26 @@
 
         // Load background and generate envMap
 
-        var urls = ['posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg'];
-        var loader = new v3d.CubeTextureLoader().setPath('textures/cube/Park2/');
-        background = loader.load(urls, function(texture) {
+        new RGBELoader()
+          .setDataType(v3d.UnsignedByteType)
+          .setPath('textures/equirectangular/')
+          .load('venice_sunset_1k.hdr', function(texture) {
 
-          var pmremGenerator = new v3d.PMREMGenerator(texture);
-          pmremGenerator.update(renderer);
+            envMap = pmremGenerator.fromEquirectangular(texture).texture;
+            pmremGenerator.dispose();
 
-          var pmremCubeUVPacker = new v3d.PMREMCubeUVPacker(pmremGenerator.cubeLods);
-          pmremCubeUVPacker.update(renderer);
+            background = envMap;
 
-          envMap = pmremCubeUVPacker.CubeUVRenderTarget.texture;
+            //
 
-          pmremGenerator.dispose();
-          pmremCubeUVPacker.dispose();
+            buildGUI();
+            initScene(scenes[state.scene]);
+            animate();
 
-          //
+          });
 
-          buildGUI();
-          initScene(scenes[state.scene]);
-          animate();
-
-        });
+        var pmremGenerator = new v3d.PMREMGenerator(renderer);
+        pmremGenerator.compileEquirectangularShader();
 
       }
 
@@ -265,7 +230,7 @@
 
         // TODO: Reuse existing OrbitControls, GLTFLoaders, and so on
 
-        orbitControls = new v3d.OrbitControls(camera, renderer.domElement);
+        orbitControls = new OrbitControls(camera, renderer.domElement);
 
         if (sceneInfo.addGround) {
 
@@ -289,10 +254,13 @@
 
         }
 
-        loader = new v3d.GLTFLoader();
+        loader = new GLTFLoader();
 
-        v3d.DRACOLoader.setDecoderPath('js/libs/draco/gltf/');
-        loader.setDRACOLoader(new v3d.DRACOLoader());
+        var dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('js/libs/draco/gltf/');
+        loader.setDRACOLoader(dracoLoader);
+
+        loader.setDDSLoader(new DDSLoader());
 
         var url = sceneInfo.url.replace(/%s/g, state.extension);
 
@@ -438,7 +406,7 @@
 
       function buildGUI() {
 
-        gui = new dat.GUI({ width: 330 });
+        gui = new GUI({ width: 330 });
         gui.domElement.parentElement.style.zIndex = 101;
 
         var sceneCtrl = gui.add(state, 'scene', Object.keys(scenes));

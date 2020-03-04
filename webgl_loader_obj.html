@@ -4,25 +4,7 @@
     <title>Verge3D webgl - loaders - OBJ loader</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        font-family: Monospace;
-        background-color: #000;
-        color: #fff;
-        margin: 0px;
-        overflow: hidden;
-      }
-      #info {
-        color: #fff;
-        position: absolute;
-        top: 10px;
-        width: 100%;
-        text-align: center;
-        z-index: 100;
-        display:block;
-      }
-      #info a, .button { color: #f00; font-weight: bold; text-decoration: underline; cursor: pointer }
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
 
   <body>
@@ -30,10 +12,11 @@
     <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - OBJLoader test
     </div>
 
-    <script src="../build/v3d.js"></script>
-    <script src="js/loaders/OBJLoader.js"></script>
+    <script type="module">
 
-    <script>
+      import * as v3d from '../build/v3d.module.js';
+
+      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
 
       var container;
 
@@ -96,7 +79,7 @@
 
         var textureLoader = new v3d.TextureLoader(manager);
 
-        var texture = textureLoader.load('textures/UV_Grid_Sm.jpg');
+        var texture = textureLoader.load('textures/uv_grid_opengl.jpg');
 
         // model
 
@@ -113,7 +96,7 @@
 
         function onError() {}
 
-        var loader = new v3d.OBJLoader(manager);
+        var loader = new OBJLoader(manager);
 
         loader.load('models/obj/male02/male02.obj', function(obj) {
 

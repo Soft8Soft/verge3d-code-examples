@@ -153,16 +153,16 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
         this.ssaoRenderTarget.dispose();
         this.blurRenderTarget.dispose();
 
-        // dispose geometry
-
-        this.quad.geometry.dispose();
-
         // dispose materials
 
         this.normalMaterial.dispose();
         this.blurMaterial.dispose();
         this.copyMaterial.dispose();
         this.depthRenderMaterial.dispose();
+
+        // dipsose full screen quad
+
+        this.fsQuad.dispose();
 
     },
 
@@ -197,7 +197,7 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
                 this.copyMaterial.uniforms['tDiffuse'].value = this.ssaoRenderTarget.texture;
                 this.copyMaterial.blending = v3d.NoBlending;
-                this.renderPass(renderer, this.copyMaterial, null);
+                this.renderPass(renderer, this.copyMaterial, this.renderToScreen ? null : writeBuffer);
 
                 break;
 
@@ -205,7 +205,7 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
                 this.copyMaterial.uniforms['tDiffuse'].value = this.blurRenderTarget.texture;
                 this.copyMaterial.blending = v3d.NoBlending;
-                this.renderPass(renderer, this.copyMaterial, null);
+                this.renderPass(renderer, this.copyMaterial, this.renderToScreen ? null : writeBuffer);
 
                 break;
 
@@ -213,13 +213,13 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
                 this.copyMaterial.uniforms['tDiffuse'].value = this.beautyRenderTarget.texture;
                 this.copyMaterial.blending = v3d.NoBlending;
-                this.renderPass(renderer, this.copyMaterial, null);
+                this.renderPass(renderer, this.copyMaterial, this.renderToScreen ? null : writeBuffer);
 
                 break;
 
             case v3d.SSAOPass.OUTPUT.Depth:
 
-                this.renderPass(renderer, this.depthRenderMaterial, null);
+                this.renderPass(renderer, this.depthRenderMaterial, this.renderToScreen ? null : writeBuffer);
 
                 break;
 
@@ -227,7 +227,7 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
                 this.copyMaterial.uniforms['tDiffuse'].value = this.normalRenderTarget.texture;
                 this.copyMaterial.blending = v3d.NoBlending;
-                this.renderPass(renderer, this.copyMaterial, null);
+                this.renderPass(renderer, this.copyMaterial, this.renderToScreen ? null : writeBuffer);
 
                 break;
 
@@ -235,7 +235,7 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
                 this.copyMaterial.uniforms['tDiffuse'].value = this.beautyRenderTarget.texture;
                 this.copyMaterial.blending = v3d.NoBlending;
-                this.renderPass(renderer, this.copyMaterial, null);
+                this.renderPass(renderer, this.copyMaterial, this.renderToScreen ? null : writeBuffer);
 
                 this.copyMaterial.uniforms['tDiffuse'].value = this.blurRenderTarget.texture;
                 this.copyMaterial.blending = v3d.CustomBlending;
@@ -344,7 +344,7 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
             sample.normalize();
 
             var scale = i / kernelSize;
-            scale = v3d.Math.lerp(0.1, 1, scale * scale);
+            scale = v3d.MathUtils.lerp(0.1, 1, scale * scale);
             sample.multiplyScalar(scale);
 
             kernel.push(sample);
@@ -357,13 +357,13 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         var width = 4, height = 4;
 
-        if (SimplexNoise === undefined) {
+        if (v3d.SimplexNoise === undefined) {
 
             console.error('v3d.SSAOPass: The pass relies on v3d.SimplexNoise.');
 
         }
 
-        var simplex = new SimplexNoise();
+        var simplex = new v3d.SimplexNoise();
 
         var size = width * height;
         var data = new Float32Array(size * 4);
@@ -388,7 +388,6 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
         this.noiseTexture = new v3d.DataTexture(data, width, height, v3d.RGBAFormat, v3d.FloatType);
         this.noiseTexture.wrapS = v3d.RepeatWrapping;
         this.noiseTexture.wrapT = v3d.RepeatWrapping;
-        this.noiseTexture.needsUpdate = true;
 
     }
 

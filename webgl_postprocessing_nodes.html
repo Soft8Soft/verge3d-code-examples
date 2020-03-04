@@ -4,47 +4,26 @@
     <title>Verge3D webgl - postprocessing with nodes</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        margin: 0px;
-        background-color: #000;
-        overflow: hidden;
-        font-family:Monospace;
-        font-size:13px;
-        margin: 0px;
-        text-align:center;
-        overflow: hidden;
-      }
-
-      #info {
-        color: #fff;
-        position: absolute;
-        top: 10px;
-        width: 100%;
-        text-align: center;
-        display:block;
-      }
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
   <body>
     <div id="info">
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - Node-Based Post-Processing
     </div>
 
-    <script src="../build/v3d.js"></script>
-    <script src="js/libs/dat.gui.min.js"></script>
-
     <script type="module">
 
-      import './js/nodes/v3d.Nodes.js';
-      import './js/loaders/NodeMaterialLoader.js';
+      import * as v3d from '../build/v3d.module.js';
+
+      import { GUI } from './jsm/libs/dat.gui.module.js';
+      import * as Nodes from './jsm/nodes/Nodes.js';
 
       var camera, scene, renderer;
       var object, light, nodepost;
       var gui;
 
       var clock = new v3d.Clock();
-      var frame = new v3d.NodeFrame();
+      var frame = new Nodes.NodeFrame();
 
       var param = { example: new URL(window.location.href).searchParams.get('e') || 'color-adjustment' };
 
@@ -63,7 +42,7 @@
 
         if (gui) gui.destroy();
 
-        gui = new dat.GUI();
+        gui = new GUI();
 
         gui.add(param, 'example', {
           'basic / color-adjustment': 'color-adjustment',
@@ -135,19 +114,19 @@
 
             // POST
 
-            var screen = new v3d.ScreenNode();
+            var screen = new Nodes.ScreenNode();
 
-            var hue = new v3d.FloatNode();
-            var sataturation = new v3d.FloatNode(1);
-            var vibrance = new v3d.FloatNode();
-            var brightness = new v3d.FloatNode(0);
-            var contrast = new v3d.FloatNode(1);
+            var hue = new Nodes.FloatNode();
+            var sataturation = new Nodes.FloatNode(1);
+            var vibrance = new Nodes.FloatNode();
+            var brightness = new Nodes.FloatNode(0);
+            var contrast = new Nodes.FloatNode(1);
 
-            var hueNode = new v3d.ColorAdjustmentNode(screen, hue, v3d.ColorAdjustmentNode.HUE);
-            var satNode = new v3d.ColorAdjustmentNode(hueNode, sataturation, v3d.ColorAdjustmentNode.SATURATION);
-            var vibranceNode = new v3d.ColorAdjustmentNode(satNode, vibrance, v3d.ColorAdjustmentNode.VIBRANCE);
-            var brightnessNode = new v3d.ColorAdjustmentNode(vibranceNode, brightness, v3d.ColorAdjustmentNode.BRIGHTNESS);
-            var contrastNode = new v3d.ColorAdjustmentNode(brightnessNode, contrast, v3d.ColorAdjustmentNode.CONTRAST);
+            var hueNode = new Nodes.ColorAdjustmentNode(screen, hue, Nodes.ColorAdjustmentNode.HUE);
+            var satNode = new Nodes.ColorAdjustmentNode(hueNode, sataturation, Nodes.ColorAdjustmentNode.SATURATION);
+            var vibranceNode = new Nodes.ColorAdjustmentNode(satNode, vibrance, Nodes.ColorAdjustmentNode.VIBRANCE);
+            var brightnessNode = new Nodes.ColorAdjustmentNode(vibranceNode, brightness, Nodes.ColorAdjustmentNode.BRIGHTNESS);
+            var contrastNode = new Nodes.ColorAdjustmentNode(brightnessNode, contrast, Nodes.ColorAdjustmentNode.CONTRAST);
 
             nodepost.output = contrastNode;
 
@@ -189,14 +168,14 @@
 
             // POST
 
-            var color = new v3d.ColorNode(0xFFFFFF);
-            var percent = new v3d.FloatNode(.5);
+            var color = new Nodes.ColorNode(0xFFFFFF);
+            var percent = new Nodes.FloatNode(.5);
 
-            var fade = new v3d.Math3Node(
-              new v3d.ScreenNode(),
+            var fade = new Nodes.MathNode(
+              new Nodes.ScreenNode(),
               color,
               percent,
-              v3d.Math3Node.MIX
+              Nodes.MathNode.MIX
             );
 
             nodepost.output = fade;
@@ -221,16 +200,16 @@
 
             // POST
 
-            var alpha = new v3d.FloatNode(1);
+            var alpha = new Nodes.FloatNode(1);
 
-            var screen = new v3d.ScreenNode();
-            var inverted = new v3d.Math1Node(screen, v3d.Math1Node.INVERT);
+            var screen = new Nodes.ScreenNode();
+            var inverted = new Nodes.MathNode(screen, Nodes.MathNode.INVERT);
 
-            var fade = new v3d.Math3Node(
+            var fade = new Nodes.MathNode(
               screen,
               inverted,
               alpha,
-              v3d.Math3Node.MIX
+              Nodes.MathNode.MIX
             );
 
             nodepost.output = fade;
@@ -249,10 +228,10 @@
 
             // POST
 
-            var multiply = new v3d.OperatorNode(
-              new v3d.ScreenNode(),
-              new v3d.TextureNode(lensflare2),
-              v3d.OperatorNode.ADD
+            var multiply = new Nodes.OperatorNode(
+              new Nodes.ScreenNode(),
+              new Nodes.TextureNode(lensflare2),
+              Nodes.OperatorNode.ADD
             );
 
             nodepost.output = multiply;
@@ -260,10 +239,10 @@
             // GUI
 
             addGui('blend', {
-              'addition': v3d.OperatorNode.ADD,
-              'subtract': v3d.OperatorNode.SUB,
-              'multiply': v3d.OperatorNode.MUL,
-              'division': v3d.OperatorNode.DIV
+              'addition': Nodes.OperatorNode.ADD,
+              'subtract': Nodes.OperatorNode.SUB,
+              'multiply': Nodes.OperatorNode.MUL,
+              'division': Nodes.OperatorNode.DIV
             }, function(val) {
 
               multiply.op = val;
@@ -278,18 +257,18 @@
 
             // PASS
 
-            var screen = new v3d.ScreenNode();
-            var sat = new v3d.FloatNode(0);
+            var screen = new Nodes.ScreenNode();
+            var sat = new Nodes.FloatNode(0);
 
-            var satrgb = new v3d.FunctionNode([
+            var satrgb = new Nodes.FunctionNode([
               "vec3 satrgb(vec3 rgb, float adjustment) {",
               // include luminance function from LuminanceNode
               "  vec3 intensity = vec3(luminance(rgb));",
               "  return mix(intensity, rgb, adjustment);",
               "}"
-            ].join("\n"), [v3d.LuminanceNode.Nodes.luminance]);
+            ].join("\n"), [Nodes.LuminanceNode.Nodes.luminance]);
 
-            var saturation = new v3d.FunctionCallNode(satrgb);
+            var saturation = new Nodes.FunctionCallNode(satrgb);
             saturation.inputs.rgb = screen;
             saturation.inputs.adjustment = sat;
 
@@ -309,41 +288,41 @@
 
             // POST
 
-            var normal = new v3d.TextureNode(decalNormal);
-            var normalXY = new v3d.SwitchNode(normal, 'xy');
-            var scale = new v3d.FloatNode(.5);
+            var normal = new Nodes.TextureNode(decalNormal);
+            var normalXY = new Nodes.SwitchNode(normal, 'xy');
+            var scale = new Nodes.FloatNode(.5);
 
-            var normalXYFlip = new v3d.Math1Node(
+            var normalXYFlip = new Nodes.MathNode(
               normalXY,
-              v3d.Math1Node.INVERT
+              Nodes.MathNode.INVERT
             );
 
-            var offsetNormal = new v3d.OperatorNode(
+            var offsetNormal = new Nodes.OperatorNode(
               normalXYFlip,
-              new v3d.FloatNode(.5),
-              v3d.OperatorNode.ADD
+              new Nodes.FloatNode(.5),
+              Nodes.OperatorNode.ADD
             );
 
-            var scaleTexture = new v3d.OperatorNode(
-              new v3d.SwitchNode(normal, 'z'),
+            var scaleTexture = new Nodes.OperatorNode(
+              new Nodes.SwitchNode(normal, 'z'),
               offsetNormal,
-              v3d.OperatorNode.MUL
+              Nodes.OperatorNode.MUL
             );
 
-            var scaleNormal = new v3d.Math3Node(
-              new v3d.FloatNode(1),
+            var scaleNormal = new Nodes.MathNode(
+              new Nodes.FloatNode(1),
               scaleTexture,
               scale,
-              v3d.Math3Node.MIX
+              Nodes.MathNode.MIX
             );
 
-            var offsetCoord = new v3d.OperatorNode(
-              new v3d.UVNode(),
+            var offsetCoord = new Nodes.OperatorNode(
+              new Nodes.UVNode(),
               scaleNormal,
-              v3d.OperatorNode.MUL
+              Nodes.OperatorNode.MUL
             );
 
-            var screen = new v3d.ScreenNode(offsetCoord);
+            var screen = new Nodes.ScreenNode(offsetCoord);
 
             nodepost.output = screen;
 
@@ -371,18 +350,18 @@
 
             var size = renderer.getDrawingBufferSize(new v3d.Vector2());
 
-            var screen = new v3d.ScreenNode();
+            var screen = new Nodes.ScreenNode();
 
-            var previousFrame = new v3d.RTTNode(size.width, size.height, screen);
+            var previousFrame = new Nodes.RTTNode(size.width, size.height, screen);
 
-            var motionBlur = new v3d.Math3Node(
+            var motionBlur = new Nodes.MathNode(
               previousFrame,
               screen,
-              new v3d.FloatNode(.5),
-              v3d.Math3Node.MIX
+              new Nodes.FloatNode(.5),
+              Nodes.MathNode.MIX
             );
 
-            var currentFrame = new v3d.RTTNode(size.width, size.height, motionBlur);
+            var currentFrame = new Nodes.RTTNode(size.width, size.height, motionBlur);
             currentFrame.saveTo = previousFrame;
 
             nodepost.output = currentFrame;
@@ -393,35 +372,35 @@
 
             // POST
 
-            var scale = new v3d.FloatNode(128);
-            var fade = new v3d.FloatNode(1);
-            var uv = new v3d.UVNode();
+            var scale = new Nodes.FloatNode(128);
+            var fade = new Nodes.FloatNode(1);
+            var uv = new Nodes.UVNode();
 
-            var blocks = new v3d.OperatorNode(
+            var blocks = new Nodes.OperatorNode(
               uv,
               scale,
-              v3d.OperatorNode.MUL
+              Nodes.OperatorNode.MUL
             );
 
-            var blocksSize = new v3d.Math1Node(
+            var blocksSize = new Nodes.MathNode(
               blocks,
-              v3d.Math1Node.FLOOR
+              Nodes.MathNode.FLOOR
             );
 
-            var mosaicUV = new v3d.OperatorNode(
+            var mosaicUV = new Nodes.OperatorNode(
               blocksSize,
               scale,
-              v3d.OperatorNode.DIV
+              Nodes.OperatorNode.DIV
             );
 
-            var fadeScreen = new v3d.Math3Node(
+            var fadeScreen = new Nodes.MathNode(
               uv,
               mosaicUV,
               fade,
-              v3d.Math3Node.MIX
+              Nodes.MathNode.MIX
             );
 
-            nodepost.output = new v3d.ScreenNode(fadeScreen);
+            nodepost.output = new Nodes.ScreenNode(fadeScreen);
 
             // GUI
 
@@ -439,7 +418,7 @@
 
             addGui('mask', false, function(val) {
 
-              fadeScreen.c = val ? new v3d.TextureNode(lensflare2) : fade;
+              fadeScreen.c = val ? new Nodes.TextureNode(lensflare2) : fade;
 
               nodepost.needsUpdate = true;
 
@@ -453,7 +432,7 @@
 
             var size = renderer.getDrawingBufferSize(new v3d.Vector2());
 
-            var blurScreen = new v3d.BlurNode(new v3d.ScreenNode());
+            var blurScreen = new Nodes.BlurNode(new Nodes.ScreenNode());
             blurScreen.size = new v3d.Vector2(size.width, size.height);
 
             nodepost.output = blurScreen;
@@ -486,7 +465,7 @@
 
               var json = nodepost.toJSON();
 
-              nodepost.output = new v3d.NodeMaterialLoader(null, library).parse(json).value;
+              nodepost.output = new NodeMaterialLoader(null, library).parse(json).value;
             */
 
       }
@@ -498,7 +477,7 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        nodepost = new v3d.NodePostProcessing(renderer);
+        nodepost = new Nodes.NodePostProcessing(renderer);
 
         //
 

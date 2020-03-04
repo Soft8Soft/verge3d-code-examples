@@ -10,6 +10,8 @@ v3d.OBJLoader = (function() {
     var material_library_pattern = /^mtllib /;
     // usemtl material_name
     var material_use_pattern = /^usemtl /;
+    // usemap map_name
+    var map_use_pattern = /^usemap /;
 
     function ParserState() {
 
@@ -22,6 +24,7 @@ v3d.OBJLoader = (function() {
             colors: [],
             uvs: [],
 
+            materials: {},
             materialLibraries: [],
 
             startObject: function(name, fromDeclaration) {
@@ -286,6 +289,12 @@ v3d.OBJLoader = (function() {
 
                 this.addVertex(ia, ib, ic);
 
+                if (this.colors.length > 0) {
+
+                    this.addColor(ia, ib, ic);
+
+                }
+
                 if (ua !== undefined && ua !== '') {
 
                     var uvLen = this.uvs.length;
@@ -306,12 +315,6 @@ v3d.OBJLoader = (function() {
                     ic = na === nc ? ia : this.parseNormalIndex(nc, nLen);
 
                     this.addNormal(ia, ib, ic);
-
-                }
-
-                if (this.colors.length > 0) {
-
-                    this.addColor(ia, ib, ic);
 
                 }
 
@@ -364,13 +367,13 @@ v3d.OBJLoader = (function() {
 
     function OBJLoader(manager) {
 
-        this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+        v3d.Loader.call(this, manager);
 
         this.materials = null;
 
     }
 
-    OBJLoader.prototype = {
+    OBJLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
         constructor: OBJLoader,
 
@@ -388,14 +391,6 @@ v3d.OBJLoader = (function() {
 
         },
 
-        setPath: function(value) {
-
-            this.path = value;
-
-            return this;
-
-        },
-
         setMaterials: function(materials) {
 
             this.materials = materials;
@@ -405,8 +400,6 @@ v3d.OBJLoader = (function() {
         },
 
         parse: function(text) {
-
-            console.time('OBJLoader');
 
             var state = new ParserState();
 
@@ -459,7 +452,7 @@ v3d.OBJLoader = (function() {
                                 parseFloat(data[2]),
                                 parseFloat(data[3])
                             );
-                            if (data.length === 8) {
+                            if (data.length >= 7) {
 
                                 state.colors.push(
                                     parseFloat(data[4]),
@@ -578,6 +571,13 @@ v3d.OBJLoader = (function() {
 
                     state.materialLibraries.push(line.substring(7).trim());
 
+                } else if (map_use_pattern.test(line)) {
+
+                    // the line is parsed but ignored since the loader assumes textures are defined MTL files
+                    // (according to https://www.okino.com/conv/imp_wave.htm, 'usemap' is the old-style Wavefront texture reference method)
+
+                    console.warn('v3d.OBJLoader: Rendering identifier "usemap" not supported. Textures must be defined in MTL files.');
+
                 } else if (lineFirstChar === 's') {
 
                     result = line.split(' ');
@@ -621,7 +621,7 @@ v3d.OBJLoader = (function() {
                     // Handle null terminated files without exception
                     if (line === '\0') continue;
 
-                    throw new Error('v3d.OBJLoader: Unexpected line: "' + line + '"');
+                    console.warn('v3d.OBJLoader: Unexpected line: "' + line + '"');
 
                 }
 
@@ -646,11 +646,11 @@ v3d.OBJLoader = (function() {
 
                 var buffergeometry = new v3d.BufferGeometry();
 
-                buffergeometry.addAttribute('position', new v3d.Float32BufferAttribute(geometry.vertices, 3));
+                buffergeometry.setAttribute('position', new v3d.Float32BufferAttribute(geometry.vertices, 3));
 
                 if (geometry.normals.length > 0) {
 
-                    buffergeometry.addAttribute('normal', new v3d.Float32BufferAttribute(geometry.normals, 3));
+                    buffergeometry.setAttribute('normal', new v3d.Float32BufferAttribute(geometry.normals, 3));
 
                 } else {
 
@@ -661,13 +661,13 @@ v3d.OBJLoader = (function() {
                 if (geometry.colors.length > 0) {
 
                     hasVertexColors = true;
-                    buffergeometry.addAttribute('color', new v3d.Float32BufferAttribute(geometry.colors, 3));
+                    buffergeometry.setAttribute('color', new v3d.Float32BufferAttribute(geometry.colors, 3));
 
                 }
 
                 if (geometry.uvs.length > 0) {
 
-                    buffergeometry.addAttribute('uv', new v3d.Float32BufferAttribute(geometry.uvs, 2));
+                    buffergeometry.setAttribute('uv', new v3d.Float32BufferAttribute(geometry.uvs, 2));
 
                 }
 
@@ -678,7 +678,8 @@ v3d.OBJLoader = (function() {
                 for (var mi = 0, miLen = materials.length; mi < miLen; mi++) {
 
                     var sourceMaterial = materials[mi];
-                    var material = undefined;
+                    var materialHash = sourceMaterial.name + '_' + sourceMaterial.smooth + '_' + hasVertexColors;
+                    var material = state.materials[materialHash];
 
                     if (this.materials !== null) {
 
@@ -690,7 +691,6 @@ v3d.OBJLoader = (function() {
                             var materialLine = new v3d.LineBasicMaterial();
                             v3d.Material.prototype.copy.call(materialLine, material);
                             materialLine.color.copy(material.color);
-                            materialLine.lights = false;
                             material = materialLine;
 
                         } else if (isPoints && material && ! (material instanceof v3d.PointsMaterial)) {
@@ -699,14 +699,13 @@ v3d.OBJLoader = (function() {
                             v3d.Material.prototype.copy.call(materialPoints, material);
                             materialPoints.color.copy(material.color);
                             materialPoints.map = material.map;
-                            materialPoints.lights = false;
                             material = materialPoints;
 
                         }
 
                     }
 
-                    if (!material) {
+                    if (material === undefined) {
 
                         if (isLine) {
 
@@ -723,11 +722,12 @@ v3d.OBJLoader = (function() {
                         }
 
                         material.name = sourceMaterial.name;
+                        material.flatShading = sourceMaterial.smooth ? false : true;
+                        material.vertexColors = hasVertexColors ? v3d.VertexColors : v3d.NoColors;
+
+                        state.materials[materialHash] = material;
 
                     }
-
-                    material.flatShading = sourceMaterial.smooth ? false : true;
-                    material.vertexColors = hasVertexColors ? v3d.VertexColors : v3d.NoColors;
 
                     createdMaterials.push(material);
 
@@ -784,13 +784,11 @@ v3d.OBJLoader = (function() {
 
             }
 
-            console.timeEnd('OBJLoader');
-
             return container;
 
         }
 
-    };
+    });
 
     return OBJLoader;
 

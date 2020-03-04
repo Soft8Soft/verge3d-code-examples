@@ -4,49 +4,25 @@
     <title>Verge3D webgl - materials</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        color: #fff;
-        font-family: Monospace;
-        font-size: 13px;
-        text-align: center;
-
-        background-color: #000;
-        margin: 0px;
-        overflow: hidden;
-      }
-
-      #info {
-        position: absolute;
-        top: 0px; width: 100%;
-        padding: 5px;
-      }
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
   <body>
 
     <div id="container"></div>
-    <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - Toon Material Variantions w/ OutlineEffect by <a href="http://clara.io/" target="_blank" rel="noopener">Ben Houston</a>.</div>
+    <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - Toon Material Variantions with OutlineEffect</div>
 
-    <script src="../build/v3d.js"></script>
-    <script src="js/controls/OrbitControls.js"></script>
+    <script type="module">
 
-    <script src="js/effects/OutlineEffect.js"></script>
+      import * as v3d from '../build/v3d.module.js';
 
-    <script src="js/WebGL.js"></script>
-    <script src="js/libs/stats.min.js"></script>
+      import Stats from './jsm/libs/stats.module.js';
 
-    <script>
-
-      if (WEBGL.isWebGLAvailable() === false) {
-
-        document.body.appendChild(WEBGL.getWebGLErrorMessage());
-
-      }
+      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OutlineEffect } from './jsm/effects/OutlineEffect.js';
 
       var container, stats;
 
-      var camera, scene, renderer, controls, effect;
+      var camera, scene, renderer, effect;
       var particleLight;
 
       var loader = new v3d.FontLoader();
@@ -67,18 +43,14 @@
 
         //
 
-        var reflectionCube = new v3d.CubeTextureLoader()
-          .setPath('textures/cube/SwedishRoyalCastle/')
-          .load(['px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg']);
-        reflectionCube.format = v3d.RGBFormat;
-
         scene = new v3d.Scene();
-        scene.background = reflectionCube;
+        scene.background = new v3d.Color(0x444488);
 
         // Materials
 
         var imgTexture = new v3d.TextureLoader().load("textures/planets/moon_1024.jpg");
         imgTexture.wrapS = imgTexture.wrapT = v3d.RepeatWrapping;
+        imgTexture.encoding = v3d.sRGBEncoding;
         imgTexture.anisotropy = 16;
         imgTexture = null;
 
@@ -109,9 +81,7 @@
                 bumpScale: bumpScale,
                 color: diffuseColor,
                 specular: specularColor,
-                reflectivity: beta,
                 shininess: specularShininess,
-                envMap: alphaIndex % 2 === 0 ? null : reflectionCube
               });
 
               var mesh = new v3d.Mesh(geometry, material);
@@ -150,24 +120,27 @@
         addLabel("-shininess", new v3d.Vector3(- 350, 0, 0));
         addLabel("+shininess", new v3d.Vector3(350, 0, 0));
 
-        addLabel("-specular, -reflectivity", new v3d.Vector3(0, - 300, 0));
-        addLabel("+specular, +reflectivity", new v3d.Vector3(0, 300, 0));
+        addLabel("-specular", new v3d.Vector3(0, - 300, 0));
+        addLabel("+specular", new v3d.Vector3(0, 300, 0));
 
         addLabel("-diffuse", new v3d.Vector3(0, 0, - 300));
         addLabel("+diffuse", new v3d.Vector3(0, 0, 300));
 
-        particleLight = new v3d.Mesh(new v3d.SphereBufferGeometry(4, 8, 8), new v3d.MeshBasicMaterial({ color: 0xffffff }));
+        particleLight = new v3d.Mesh(
+          new v3d.SphereBufferGeometry(4, 8, 8),
+          new v3d.MeshBasicMaterial({ color: 0xffffff })
+        );
         scene.add(particleLight);
 
         // Lights
 
-        scene.add(new v3d.AmbientLight(0x222222));
+        scene.add(new v3d.AmbientLight(0x111111));
 
         var directionalLight = new v3d.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(directionalLight);
 
-        var pointLight = new v3d.PointLight(0xffffff, 2, 800);
+        var pointLight = new v3d.PointLight(0xffffff, 1, 800);
         particleLight.add(pointLight);
 
         //
@@ -176,18 +149,16 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
+        renderer.outputEncoding = v3d.sRGBEncoding;
 
-        renderer.gammaInput = true;
-        renderer.gammaOutput = true;
-
-        effect = new v3d.OutlineEffect(renderer);
+        effect = new OutlineEffect(renderer);
 
         //
 
         stats = new Stats();
         container.appendChild(stats.dom);
 
-        controls = new v3d.OrbitControls(camera);
+        var controls = new OrbitControls(camera, renderer.domElement);
 
         window.addEventListener('resize', onWindowResize, false);
 
@@ -217,11 +188,6 @@
       function render() {
 
         var timer = Date.now() * 0.00025;
-
-        //camera.position.x = Math.cos(timer) * 800;
-        //camera.position.z = Math.sin(timer) * 800;
-
-        camera.lookAt(scene.position);
 
         particleLight.position.x = Math.sin(timer * 7) * 300;
         particleLight.position.y = Math.cos(timer * 5) * 400;

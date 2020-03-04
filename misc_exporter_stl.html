@@ -4,47 +4,20 @@
     <title>Verge3D webgl - exporter - stl</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        font-family: Monospace;
-        background-color: #000;
-        color: #fff;
-        margin: 0px;
-        overflow: hidden;
-      }
-      #info {
-        color: #fff;
-        position: absolute;
-        top: 10px;
-        width: 100%;
-        text-align: center;
-        display:block;
-      }
-      #info a {
-        color: #046;
-        font-weight: bold;
-      }
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
   <body>
     <div id="info">
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - exporter - stl<br/><br/>
-      <button onclick="exportASCII()">export ASCII</button> <button onclick="exportBinary()">export binary</button>
+      <button id="exportASCII">export ASCII</button> <button id="exportBinary">export binary</button>
     </div>
 
-    <script src="../build/v3d.js"></script>
-    <script src="js/controls/OrbitControls.js"></script>
-    <script src="js/exporters/STLExporter.js"></script>
+    <script type="module">
 
-    <script src="js/WebGL.js"></script>
+      import * as v3d from '../build/v3d.module.js';
 
-    <script>
-
-      if (WEBGL.isWebGLAvailable() === false) {
-
-        document.body.appendChild(WEBGL.getWebGLErrorMessage());
-
-      }
+      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { STLExporter } from './jsm/exporters/STLExporter.js';
 
       var scene, camera, renderer, exporter, mesh;
 
@@ -60,7 +33,7 @@
         scene.background = new v3d.Color(0xa0a0a0);
         scene.fog = new v3d.Fog(0xa0a0a0, 200, 1000);
 
-        exporter = new v3d.STLExporter();
+        exporter = new STLExporter();
 
         //
 
@@ -109,13 +82,19 @@
 
         //
 
-        var controls = new v3d.OrbitControls(camera, renderer.domElement);
+        var controls = new OrbitControls(camera, renderer.domElement);
         controls.target.set(0, 25, 0);
         controls.update();
 
         //
 
         window.addEventListener('resize', onWindowResize, false);
+
+        var buttonExportASCII = document.getElementById('exportASCII');
+        buttonExportASCII.addEventListener('click', exportASCII);
+
+        var buttonExportBinary = document.getElementById('exportBinary');
+        buttonExportBinary.addEventListener('click', exportBinary);
 
       }
 

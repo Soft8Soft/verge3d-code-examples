@@ -4,28 +4,7 @@
     <title>Verge3D webgl - glTF loader</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        font-family: Monospace;
-        background-color: #000;
-        color: #fff;
-        margin: 0px;
-        overflow: hidden;
-      }
-      #info {
-        color: #fff;
-        position: absolute;
-        top: 10px;
-        width: 100%;
-        text-align: center;
-        z-index: 100;
-        display:block;
-      }
-      #info a {
-        color: #75ddc1;
-        font-weight: bold;
-      }
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
 
   <body>
@@ -33,32 +12,23 @@
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - GLTFLoader<br />
       Battle Damaged Sci-fi Helmet by
       <a href="https://sketchfab.com/theblueturtle_" target="_blank" rel="noopener">theblueturtle_</a><br />
+      <a href="https://hdrihaven.com/hdri/?h=royal_esplanade" target="_blank" rel="noopener">Royal Esplanade</a> by <a href="https://hdrihaven.com/" target="_blank" rel="noopener">HDRI Haven</a>
     </div>
 
-    <script src="../build/v3d.js"></script>
+    <script type="module">
 
-    <script src="js/controls/OrbitControls.js"></script>
-    <script src="js/loaders/GLTFLoader.js"></script>
+      import * as v3d from '../build/v3d.module.js';
 
-    <script src="js/pmrem/PMREMGenerator.js"></script>
-    <script src="js/pmrem/PMREMCubeUVPacker.js"></script>
+      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+      import { RGBELoader } from './jsm/loaders/RGBELoader.js';
+      import { RoughnessMipmapper } from './jsm/utils/RoughnessMipmapper.js';
 
-    <script src="js/WebGL.js"></script>
-    <script src="js/libs/stats.min.js"></script>
-
-    <script>
-
-      if (WEBGL.isWebGLAvailable() === false) {
-
-        document.body.appendChild(WEBGL.getWebGLErrorMessage());
-
-      }
-
-      var container, stats, controls;
+      var container, controls;
       var camera, scene, renderer;
 
       init();
-      animate();
+      render();
 
       function init() {
 
@@ -66,63 +36,72 @@
         document.body.appendChild(container);
 
         camera = new v3d.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 20);
-        camera.position.set(- 1.8, 0.9, 2.7);
-
-        controls = new v3d.OrbitControls(camera);
-        controls.target.set(0, - 0.2, - 0.2);
-        controls.update();
+        camera.position.set(- 1.8, 0.6, 2.7);
 
         scene = new v3d.Scene();
 
-        var urls = ['posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg'];
-        var loader = new v3d.CubeTextureLoader().setPath('textures/cube/Bridge2/');
-        loader.load(urls, function(texture) {
+        new RGBELoader()
+          .setDataType(v3d.UnsignedByteType)
+          .setPath('textures/equirectangular/')
+          .load('royal_esplanade_1k.hdr', function(texture) {
 
-          var pmremGenerator = new v3d.PMREMGenerator(texture);
-          pmremGenerator.update(renderer);
+            var envMap = pmremGenerator.fromEquirectangular(texture).texture;
 
-          var pmremCubeUVPacker = new v3d.PMREMCubeUVPacker(pmremGenerator.cubeLods);
-          pmremCubeUVPacker.update(renderer);
+            scene.background = envMap;
+            scene.environment = envMap;
 
-          var envMap = pmremCubeUVPacker.CubeUVRenderTarget.texture;
+            texture.dispose();
+            pmremGenerator.dispose();
 
-          // model
+            render();
 
-          var loader = new v3d.GLTFLoader().setPath('models/gltf/DamagedHelmet/glTF/');
-          loader.load('DamagedHelmet.gltf', function(gltf) {
+            // model
 
-            gltf.scene.traverse(function(child) {
+            // use of RoughnessMipmapper is optional
+            var roughnessMipmapper = new RoughnessMipmapper(renderer);
 
-              if (child.isMesh) {
+            var loader = new GLTFLoader().setPath('models/gltf/DamagedHelmet/glTF/');
+            loader.load('DamagedHelmet.gltf', function(gltf) {
 
-                child.material.envMap = envMap;
+              gltf.scene.traverse(function(child) {
 
-              }
+                if (child.isMesh) {
+
+                  roughnessMipmapper.generateMipmaps(child.material);
+
+                }
+
+              });
+
+              scene.add(gltf.scene);
+
+              roughnessMipmapper.dispose();
+
+              render();
 
             });
 
-            scene.add(gltf.scene);
-
           });
-
-          pmremGenerator.dispose();
-          pmremCubeUVPacker.dispose();
-
-          scene.background = texture;
-
-        });
 
         renderer = new v3d.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.gammaOutput = true;
+        renderer.toneMapping = v3d.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 0.8;
+        renderer.outputEncoding = v3d.sRGBEncoding;
         container.appendChild(renderer.domElement);
 
-        window.addEventListener('resize', onWindowResize, false);
+        var pmremGenerator = new v3d.PMREMGenerator(renderer);
+        pmremGenerator.compileEquirectangularShader();
 
-        // stats
-        stats = new Stats();
-        container.appendChild(stats.dom);
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.addEventListener('change', render); // use if there is no animation loop
+        controls.minDistance = 2;
+        controls.maxDistance = 10
+        controls.target.set(0, 0, - 0.2);
+        controls.update();
+
+        window.addEventListener('resize', onWindowResize, false);
 
       }
 
@@ -133,17 +112,15 @@
 
         renderer.setSize(window.innerWidth, window.innerHeight);
 
+        render();
+
       }
 
       //
 
-      function animate() {
-
-        requestAnimationFrame(animate);
+      function render() {
 
         renderer.render(scene, camera);
-
-        stats.update();
 
       }
 

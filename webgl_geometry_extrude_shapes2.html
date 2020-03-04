@@ -1,46 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Verge3D webgl - geometry - extrude shapes from geodata</title>
+    <title>Verge3D webgl - geometry - shapes extrusion via geodata</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
     <style>
-    body {
-      color: #ffffff;
-      font-family: Monospace;
-      font-size: 13px;
-      text-align: center;
-      font-weight: bold;
-      background-color: #000000;
-      margin: 0px;
-      overflow: hidden;
-    }
-
-    #info {
-      position: absolute;
-      top: 0px;
-      width: 100%;
-      padding: 5px;
-    }
-
-    a {
-      color: #ffffff;
-    }
+      body {
+        color: #fff;
+      }
     </style>
   </head>
-
   <body>
-
     <div id="container"></div>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - Shapes Extrusion via Geo Data
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - shapes extrusion via geodata
     </div>
 
-    <script type="text/javascript" src="../build/v3d.js"></script>
-    <script src="js/controls/OrbitControls.js"></script>
-    <script src="js/libs/stats.min.js"></script>
+    <script type="module">
 
-    <script>
+      import * as v3d from '../build/v3d.module.js';
+
+      import Stats from './jsm/libs/stats.module.js';
+
+      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+
       // From d3-threeD.js
       /* This Source Code Form is subject to the terms of the Mozilla Public
        * License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -445,7 +429,7 @@
 
         //
 
-        var controls = new v3d.OrbitControls(camera, renderer.domElement);
+        var controls = new OrbitControls(camera, renderer.domElement);
 
         //
 

@@ -29,13 +29,13 @@
 
 v3d.PLYLoader = function(manager) {
 
-    this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+    v3d.Loader.call(this, manager);
 
     this.propertyNameMapping = {};
 
 };
 
-v3d.PLYLoader.prototype = {
+v3d.PLYLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
     constructor: v3d.PLYLoader,
 
@@ -51,13 +51,6 @@ v3d.PLYLoader.prototype = {
             onLoad(scope.parse(text));
 
         }, onProgress, onError);
-
-    },
-
-    setPath: function(value) {
-
-        this.path = value;
-        return this;
 
     },
 
@@ -303,32 +296,32 @@ v3d.PLYLoader.prototype = {
 
             }
 
-            geometry.addAttribute('position', new v3d.Float32BufferAttribute(buffer.vertices, 3));
+            geometry.setAttribute('position', new v3d.Float32BufferAttribute(buffer.vertices, 3));
 
             // optional buffer data
 
             if (buffer.normals.length > 0) {
 
-                geometry.addAttribute('normal', new v3d.Float32BufferAttribute(buffer.normals, 3));
+                geometry.setAttribute('normal', new v3d.Float32BufferAttribute(buffer.normals, 3));
 
             }
 
             if (buffer.uvs.length > 0) {
 
-                geometry.addAttribute('uv', new v3d.Float32BufferAttribute(buffer.uvs, 2));
+                geometry.setAttribute('uv', new v3d.Float32BufferAttribute(buffer.uvs, 2));
 
             }
 
             if (buffer.colors.length > 0) {
 
-                geometry.addAttribute('color', new v3d.Float32BufferAttribute(buffer.colors, 3));
+                geometry.setAttribute('color', new v3d.Float32BufferAttribute(buffer.colors, 3));
 
             }
 
             if (buffer.faceVertexUvs.length > 0) {
 
                 geometry = geometry.toNonIndexed();
-                geometry.addAttribute('uv', new v3d.Float32BufferAttribute(buffer.faceVertexUvs, 2));
+                geometry.setAttribute('uv', new v3d.Float32BufferAttribute(buffer.faceVertexUvs, 2));
 
             }
 
@@ -502,4 +495,4 @@ v3d.PLYLoader.prototype = {
 
     }
 
-};
+});

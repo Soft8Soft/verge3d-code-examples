@@ -228,10 +228,10 @@ v3d.ShaderLib['line'] = {
 
             gl_FragColor = vec4(diffuseColor.rgb, diffuseColor.a);
 
-            #include <premultiplied_alpha_fragment>
             #include <tonemapping_fragment>
             #include <encodings_fragment>
             #include <fog_fragment>
+            #include <premultiplied_alpha_fragment>
 
         }
         `
@@ -246,7 +246,9 @@ v3d.LineMaterial = function(parameters) {
         uniforms: v3d.UniformsUtils.clone(v3d.ShaderLib['line'].uniforms),
 
         vertexShader: v3d.ShaderLib['line'].vertexShader,
-        fragmentShader: v3d.ShaderLib['line'].fragmentShader
+        fragmentShader: v3d.ShaderLib['line'].fragmentShader,
+
+        clipping: true // required for clipping support
 
     });
 
@@ -372,20 +374,4 @@ v3d.LineMaterial.prototype = Object.create(v3d.ShaderMaterial.prototype);
 v3d.LineMaterial.prototype.constructor = v3d.LineMaterial;
 
 v3d.LineMaterial.prototype.isLineMaterial = true;
-
-v3d.LineMaterial.prototype.copy = function(source) {
-
-    v3d.ShaderMaterial.prototype.copy.call(this, source);
-
-    this.color.copy(source.color);
-
-    this.linewidth = source.linewidth;
-
-    this.resolution = source.resolution;
-
-    // todo
-
-    return this;
-
-};
 

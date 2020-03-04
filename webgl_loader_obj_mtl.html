@@ -4,25 +4,7 @@
     <title>Verge3D webgl - OBJLoader + MTLLoader</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        font-family: Monospace;
-        background-color: #000;
-        color: #fff;
-        margin: 0px;
-        overflow: hidden;
-      }
-      #info {
-        color: #fff;
-        position: absolute;
-        top: 10px;
-        width: 100%;
-        text-align: center;
-        z-index: 100;
-        display:block;
-      }
-      #info a, .button { color: #f00; font-weight: bold; text-decoration: underline; cursor: pointer }
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
 
   <body>
@@ -30,17 +12,15 @@
     <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - OBJLoader + MTLLoader
     </div>
 
-    <script src="../build/v3d.js"></script>
+    <script type="module">
 
-    <script src="js/loaders/DDSLoader.js"></script>
-    <script src="js/loaders/MTLLoader.js"></script>
-    <script src="js/loaders/OBJLoader.js"></script>
+      import * as v3d from '../build/v3d.module.js';
 
-    <script src="js/libs/stats.min.js"></script>
+      import { DDSLoader } from './jsm/loaders/DDSLoader.js';
+      import { MTLLoader } from './jsm/loaders/MTLLoader.js';
+      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
 
-    <script>
-
-      var container, stats;
+      var container;
 
       var camera, scene, renderer;
 
@@ -88,15 +68,19 @@
 
         var onError = function() { };
 
-        v3d.Loader.Handlers.add(/\.dds$/i, new v3d.DDSLoader());
+        var manager = new v3d.LoadingManager();
+        manager.addHandler(/\.dds$/i, new DDSLoader());
 
-        new v3d.MTLLoader()
+        // comment in the following line and import TGALoader if your asset uses TGA textures
+        // manager.addHandler(/\.tga$/i, new TGALoader());
+
+        new MTLLoader(manager)
           .setPath('models/obj/male02/')
           .load('male02_dds.mtl', function(materials) {
 
             materials.preload();
 
-            new v3d.OBJLoader()
+            new OBJLoader(manager)
               .setMaterials(materials)
               .setPath('models/obj/male02/')
               .load('male02.obj', function(object) {

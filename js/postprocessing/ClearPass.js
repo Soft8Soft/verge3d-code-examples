@@ -17,7 +17,7 @@ v3d.ClearPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     constructor: v3d.ClearPass,
 
-    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer /*, deltaTime, maskActive */) {
 
         var oldClearColor, oldClearAlpha;
 

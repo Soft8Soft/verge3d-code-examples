@@ -4,34 +4,30 @@
     <title>Verge3D webgl - geometry - NURBS</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
     <style>
       body {
-        font-family: Monospace;
         background-color: #f0f0f0;
-        margin: 0px;
-        overflow: hidden;
+        color: #444;
       }
-      #info {
-        position: absolute;
-        top: 0px;
-        width: 100%;
-        padding: 5px;
-        text-align:center;
+      a {
+        color: #08f;
       }
     </style>
   </head>
   <body>
-    <canvas id="debug" style="position:absolute; left:100px"></canvas>
+    <div id="info">
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - NURBS curve and surface example
+    </div>
 
-    <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - NURBS curve and surface example</div>
+    <script type="module">
 
-    <script src="../build/v3d.js"></script>
-    <script src="js/curves/NURBSCurve.js"></script>
-    <script src="js/curves/NURBSSurface.js"></script>
-    <script src="js/curves/NURBSUtils.js"></script>
-    <script src="js/libs/stats.min.js"></script>
+      import * as v3d from '../build/v3d.module.js';
 
-    <script>
+      import Stats from './jsm/libs/stats.module.js';
+
+      import { NURBSCurve } from './jsm/curves/NURBSCurve.js';
+      import { NURBSSurface } from './jsm/curves/NURBSSurface.js';
 
       var container, stats;
 
@@ -53,14 +49,6 @@
 
         container = document.createElement('div');
         document.body.appendChild(container);
-
-        var info = document.createElement('div');
-        info.style.position = 'absolute';
-        info.style.top = '30px';
-        info.style.width = '100%';
-        info.style.textAlign = 'center';
-        info.innerHTML = 'Drag to spin';
-        container.appendChild(info);
 
         camera = new v3d.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 2000);
         camera.position.set(0, 150, 750);
@@ -102,11 +90,11 @@
           );
 
           var knot = (i + 1) / (j - nurbsDegree);
-          nurbsKnots.push(v3d.Math.clamp(knot, 0, 1));
+          nurbsKnots.push(v3d.MathUtils.clamp(knot, 0, 1));
 
         }
 
-        var nurbsCurve = new v3d.NURBSCurve(nurbsDegree, nurbsKnots, nurbsControlPoints);
+        var nurbsCurve = new NURBSCurve(nurbsDegree, nurbsKnots, nurbsControlPoints);
 
         var nurbsGeometry = new v3d.BufferGeometry();
         nurbsGeometry.setFromPoints(nurbsCurve.getPoints(200));
@@ -152,9 +140,9 @@
         var degree2 = 3;
         var knots1 = [0, 0, 0, 1, 1, 1];
         var knots2 = [0, 0, 0, 0, 1, 1, 1, 1];
-        var nurbsSurface = new v3d.NURBSSurface(degree1, degree2, knots1, knots2, nsControlPoints);
+        var nurbsSurface = new NURBSSurface(degree1, degree2, knots1, knots2, nsControlPoints);
 
-        var map = new v3d.TextureLoader().load('textures/UV_Grid_Sm.jpg');
+        var map = new v3d.TextureLoader().load('textures/uv_grid_opengl.jpg');
         map.wrapS = map.wrapT = v3d.RepeatWrapping;
         map.anisotropy = 16;
 

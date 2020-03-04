@@ -19,14 +19,6 @@ v3d.WireframeGeometry2.prototype = Object.assign(Object.create(v3d.LineSegmentsG
 
     constructor: v3d.WireframeGeometry2,
 
-    isWireframeGeometry2: true,
-
-    copy: function(source) {
-
-        // todo
-
-        return this;
-
-    }
+    isWireframeGeometry2: true
 
 });

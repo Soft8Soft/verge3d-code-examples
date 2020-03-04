@@ -4,31 +4,7 @@
   <title>Verge3D webgl - loaders - Draco loader</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <style>
-    body {
-      font-family: Monospace;
-      background-color: #000;
-      color: #fff;
-      margin: 0px;
-      overflow: hidden;
-    }
-    #info {
-      color: #fff;
-      position: absolute;
-      top: 10px;
-      width: 100%;
-      text-align: center;
-      z-index: 100;
-      display: block;
-    }
-    #info a,
-    .button {
-      color: #f00;
-      font-weight: bold;
-      text-decoration: underline;
-      cursor: pointer
-    }
-  </style>
+  <link type="text/css" rel="stylesheet" href="main.css">
 </head>
 
 <body>
@@ -37,18 +13,21 @@
     <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> -
     <a href="https://github.com/google/draco" target="_blank" rel="noopener">DRACO</a> loader
   </div>
-  <script src="../build/v3d.js"></script>
-  <script src="js/loaders/DRACOLoader.js"></script>
-  <script>
+
+  <script type="module">
+    import * as v3d from '../build/v3d.module.js';
+
+    import { DRACOLoader } from './jsm/loaders/DRACOLoader.js';
 
     var camera, scene, renderer;
 
     var container = document.querySelector('#container');
 
     // Configure and create Draco decoder.
-    v3d.DRACOLoader.setDecoderPath('js/libs/draco/');
-    v3d.DRACOLoader.setDecoderConfig({ type: 'js' });
-    var dracoLoader = new v3d.DRACOLoader();
+    var dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('js/libs/draco/');
+    dracoLoader.setDecoderConfig({ type: 'js' });
+
     init();
     animate();
 
@@ -93,7 +72,7 @@
         scene.add(mesh);
 
         // Release decoder resources.
-        v3d.DRACOLoader.releaseDecoderModule();
+        dracoLoader.dispose();
 
       });
 
@@ -101,8 +80,7 @@
       renderer = new v3d.WebGLRenderer({ antialias: true });
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.gammaInput = true;
-      renderer.gammaOutput = true;
+      renderer.outputEncoding = v3d.sRGBEncoding;
       renderer.shadowMap.enabled = true;
       container.appendChild(renderer.domElement);
 

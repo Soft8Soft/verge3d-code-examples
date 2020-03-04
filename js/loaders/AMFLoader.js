@@ -1,4 +1,4 @@
-/*
+/**
  * @author tamarintech / https://tamarintech.com
  *
  * Description: Early release of an AMF Loader following the pattern of the
@@ -20,11 +20,11 @@
 
 v3d.AMFLoader = function(manager) {
 
-    this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+    v3d.Loader.call(this, manager);
 
 };
 
-v3d.AMFLoader.prototype = {
+v3d.AMFLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
     constructor: v3d.AMFLoader,
 
@@ -40,13 +40,6 @@ v3d.AMFLoader.prototype = {
             onLoad(scope.parse(text));
 
         }, onProgress, onError);
-
-    },
-
-    setPath: function(value) {
-
-        this.path = value;
-        return this;
 
     },
 
@@ -463,11 +456,11 @@ v3d.AMFLoader.prototype = {
                     var material = objDefaultMaterial;
 
                     newGeometry.setIndex(volume.triangles);
-                    newGeometry.addAttribute('position', vertices.clone());
+                    newGeometry.setAttribute('position', vertices.clone());
 
                     if (normals) {
 
-                        newGeometry.addAttribute('normal', normals.clone());
+                        newGeometry.setAttribute('normal', normals.clone());
 
                     }
 
@@ -492,4 +485,4 @@ v3d.AMFLoader.prototype = {
 
     }
 
-};
+});

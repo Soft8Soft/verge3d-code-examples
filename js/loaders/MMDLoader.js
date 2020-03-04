@@ -36,7 +36,7 @@ v3d.MMDLoader = (function() {
      */
     function MMDLoader(manager) {
 
-        this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+        v3d.Loader.call(this, manager);
 
         this.loader = new v3d.FileLoader(this.manager);
 
@@ -46,22 +46,9 @@ v3d.MMDLoader = (function() {
 
     }
 
-    MMDLoader.prototype = {
+    MMDLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
         constructor: MMDLoader,
-
-        crossOrigin: 'anonymous',
-
-        /**
-         * @param {string} crossOrigin
-         * @return {v3d.MMDLoader}
-         */
-        setCrossOrigin: function(crossOrigin) {
-
-            this.crossOrigin = crossOrigin;
-            return this;
-
-        },
 
         /**
          * @param {string} animationPath
@@ -70,28 +57,6 @@ v3d.MMDLoader = (function() {
         setAnimationPath: function(animationPath) {
 
             this.animationPath = animationPath;
-            return this;
-
-        },
-
-        /**
-         * @param {string} path
-         * @return {v3d.MMDLoader}
-         */
-        setPath: function(path) {
-
-            this.path = path;
-            return this;
-
-        },
-
-        /**
-         * @param {string} resourcePath
-         * @return {v3d.MMDLoader}
-         */
-        setResoucePath: function(resourcePath) {
-
-            this.resourcePath = resourcePath;
             return this;
 
         },
@@ -114,11 +79,11 @@ v3d.MMDLoader = (function() {
 
             var resourcePath;
 
-            if (this.resourcePath !== undefined) {
+            if (this.resourcePath !== '') {
 
                 resourcePath = this.resourcePath;
 
-            } else if (this.path !== undefined) {
+            } else if (this.path !== '') {
 
                 resourcePath = this.path;
 
@@ -340,7 +305,7 @@ v3d.MMDLoader = (function() {
 
         }
 
-    };
+    });
 
     // Utilities
 
@@ -940,11 +905,11 @@ v3d.MMDLoader = (function() {
 
             var geometry = new v3d.BufferGeometry();
 
-            geometry.addAttribute('position', new v3d.Float32BufferAttribute(positions, 3));
-            geometry.addAttribute('normal', new v3d.Float32BufferAttribute(normals, 3));
-            geometry.addAttribute('uv', new v3d.Float32BufferAttribute(uvs, 2));
-            geometry.addAttribute('skinIndex', new v3d.Uint16BufferAttribute(skinIndices, 4));
-            geometry.addAttribute('skinWeight', new v3d.Float32BufferAttribute(skinWeights, 4));
+            geometry.setAttribute('position', new v3d.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('normal', new v3d.Float32BufferAttribute(normals, 3));
+            geometry.setAttribute('uv', new v3d.Float32BufferAttribute(uvs, 2));
+            geometry.setAttribute('skinIndex', new v3d.Uint16BufferAttribute(skinIndices, 4));
+            geometry.setAttribute('skinWeight', new v3d.Float32BufferAttribute(skinWeights, 4));
             geometry.setIndex(indices);
 
             for (var i = 0, il = groups.length; i < il; i++) {
@@ -957,6 +922,7 @@ v3d.MMDLoader = (function() {
 
             geometry.morphTargets = morphTargets;
             geometry.morphAttributes.position = morphPositions;
+            geometry.morphTargetsRelative = false;
 
             geometry.userData.MMD = {
                 bones: bones,
@@ -1026,7 +992,7 @@ v3d.MMDLoader = (function() {
          * @param {function} onError
          * @return {Array<v3d.MeshToonMaterial>}
          */
-        build: function(data, geometry, onProgress, onError) {
+        build: function(data, geometry /*, onProgress, onError */) {
 
             var materials = [];
 
@@ -1067,7 +1033,6 @@ v3d.MMDLoader = (function() {
 
                 params.skinning = geometry.bones.length > 0 ? true : false;
                 params.morphTargets = geometry.morphTargets.length > 0 ? true : false;
-                params.lights = true;
                 params.fog = true;
 
                 // blend
@@ -1340,7 +1305,7 @@ v3d.MMDLoader = (function() {
 
             if (textures[fullPath] !== undefined) return textures[fullPath];
 
-            var loader = v3d.Loader.Handlers.get(fullPath);
+            var loader = this.manager.getHandler(fullPath);
 
             if (loader === null) {
 
@@ -1358,6 +1323,9 @@ v3d.MMDLoader = (function() {
                 if (params.isToonTexture === true) {
 
                     t.image = scope._getRotatedImage(t.image);
+
+                    t.magFilter = v3d.NearestFilter;
+                    t.minFilter = v3d.NearestFilter;
 
                 }
 

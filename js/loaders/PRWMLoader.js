@@ -3,9 +3,7 @@
  * See https://github.com/kchapelier/PRWM for more informations about this file format
  */
 
-(function(v3d) {
-
-    'use strict';
+v3d.PRWMLoader = (function() {
 
     var bigEndianPlatform = null;
 
@@ -224,15 +222,15 @@
 
     // Define the public interface
 
-    v3d.PRWMLoader = function PRWMLoader(manager) {
+    function PRWMLoader(manager) {
 
-        this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+        v3d.Loader.call(this, manager);
 
-    };
+    }
 
-    v3d.PRWMLoader.prototype = {
+    PRWMLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
-        constructor: v3d.PRWMLoader,
+        constructor: PRWMLoader,
 
         load: function(url, onLoad, onProgress, onError) {
 
@@ -252,16 +250,7 @@
 
         },
 
-        setPath: function(value) {
-
-            this.path = value;
-            return this;
-
-        },
-
         parse: function(arrayBuffer) {
-
-            console.time('PRWMLoader');
 
             var data = decodePrwm(arrayBuffer),
                 attributesKey = Object.keys(data.attributes),
@@ -272,7 +261,7 @@
             for (i = 0; i < attributesKey.length; i++) {
 
                 attribute = data.attributes[attributesKey[i]];
-                bufferGeometry.addAttribute(attributesKey[i], new v3d.BufferAttribute(attribute.values, attribute.cardinality, attribute.normalized));
+                bufferGeometry.setAttribute(attributesKey[i], new v3d.BufferAttribute(attribute.values, attribute.cardinality, attribute.normalized));
 
             }
 
@@ -282,18 +271,18 @@
 
             }
 
-            console.timeEnd('PRWMLoader');
-
             return bufferGeometry;
 
         }
 
-    };
+    });
 
-    v3d.PRWMLoader.isBigEndianPlatform = function() {
+    PRWMLoader.isBigEndianPlatform = function() {
 
         return isBigEndianPlatform();
 
     };
 
-})(v3d);
+    return PRWMLoader;
+
+})();

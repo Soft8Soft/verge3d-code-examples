@@ -1,3 +1,7 @@
+/**
+ * RTT version
+ */
+
 v3d.ReflectorRTT = function(geometry, options) {
 
     v3d.Reflector.call(this, geometry, options);

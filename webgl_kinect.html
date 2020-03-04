@@ -4,38 +4,14 @@
     <title>Verge3D - kinect</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        font-family: Monospace;
-        background-color: #000000;
-        margin: 0px;
-        overflow: hidden;
-      }
-
-      #info {
-        color: #ffffff;
-
-        font-family: Monospace;
-        font-size: 13px;
-        text-align: center;
-        font-weight: bold;
-
-        position: absolute;
-        top: 5px; width: 100%;
-      }
-
-      a {
-        color: #0040ff;
-      }
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
   <body>
 
-    <script src="../build/v3d.js"></script>
-
-    <script src='js/libs/dat.gui.min.js'></script>
-    <script src="js/libs/stats.min.js"></script>
-    <script src="js/WebGL.js"></script>
+    <video id="video" loop muted crossOrigin="anonymous" playsinline style="display:none">
+      <source src="textures/kinect.webm">
+      <source src="textures/kinect.mp4">
+    </video>
 
     <script id="vs" type="x-shader/x-vertex">
 
@@ -92,27 +68,20 @@
 
     </script>
 
-    <script>
+    <script type="module">
+
+      import * as v3d from '../build/v3d.module.js';
+
+      import { GUI } from './jsm/libs/dat.gui.module.js';
 
       var container;
 
       var scene, camera, renderer;
       var geometry, mesh, material;
       var mouse, center;
-      var stats;
 
-      var video, texture;
-
-      if (WEBGL.isWebGLAvailable()) {
-
-        init();
-        animate();
-
-      } else {
-
-        document.body.appendChild(WEBGL.getWebGLErrorMessage());
-
-      }
+      init();
+      animate();
 
       function init() {
 
@@ -124,9 +93,6 @@
         info.innerHTML = '<a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - kinect';
         document.body.appendChild(info);
 
-        stats = new Stats();
-        // container.appendChild(stats.dom);
-
         camera = new v3d.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.set(0, 0, 500);
 
@@ -134,10 +100,10 @@
         center = new v3d.Vector3();
         center.z = - 1000;
 
-        video = document.createElement('video');
+        var video = document.getElementById('video');
         video.addEventListener('loadedmetadata', function() {
 
-          texture = new v3d.VideoTexture(video);
+          var texture = new v3d.VideoTexture(video);
           texture.minFilter = v3d.NearestFilter;
 
           var width = 640, height = 480;
@@ -154,7 +120,7 @@
 
           }
 
-          geometry.addAttribute('position', new v3d.BufferAttribute(vertices, 3));
+          geometry.setAttribute('position', new v3d.BufferAttribute(vertices, 3));
 
           material = new v3d.ShaderMaterial({
 
@@ -181,7 +147,7 @@
           mesh = new v3d.Points(geometry, material);
           scene.add(mesh);
 
-          var gui = new dat.GUI();
+          var gui = new GUI();
           gui.add(material.uniforms.nearClipping, 'value', 1, 10000, 1.0).name('nearClipping');
           gui.add(material.uniforms.farClipping, 'value', 1, 10000, 1.0).name('farClipping');
           gui.add(material.uniforms.pointSize, 'value', 1, 10, 1.0).name('pointSize');
@@ -190,11 +156,7 @@
 
 
         }, false);
-        video.crossOrigin = 'anonymous';
-        video.loop = true;
-        video.muted = true;
-        video.src = 'textures/kinect.webm';
-        video.setAttribute('webkit-playsinline', 'webkit-playsinline');
+
         video.play();
 
         renderer = new v3d.WebGLRenderer();
@@ -233,7 +195,6 @@
         requestAnimationFrame(animate);
 
         render();
-        stats.update();
 
       }
 

@@ -4,11 +4,11 @@
 
 v3d.MD2Loader = function(manager) {
 
-    this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+    v3d.Loader.call(this, manager);
 
 };
 
-v3d.MD2Loader.prototype = {
+v3d.MD2Loader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
     constructor: v3d.MD2Loader,
 
@@ -24,13 +24,6 @@ v3d.MD2Loader.prototype = {
             onLoad(scope.parse(buffer));
 
         }, onProgress, onError);
-
-    },
-
-    setPath: function(value) {
-
-        this.path = value;
-        return this;
 
     },
 
@@ -121,8 +114,6 @@ v3d.MD2Loader.prototype = {
         ];
 
         return function(buffer) {
-
-            console.time('MD2Loader');
 
             var data = new DataView(buffer);
 
@@ -307,9 +298,9 @@ v3d.MD2Loader.prototype = {
 
             }
 
-            geometry.addAttribute('position', new v3d.Float32BufferAttribute(positions, 3));
-            geometry.addAttribute('normal', new v3d.Float32BufferAttribute(normals, 3));
-            geometry.addAttribute('uv', new v3d.Float32BufferAttribute(uvs, 2));
+            geometry.setAttribute('position', new v3d.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('normal', new v3d.Float32BufferAttribute(normals, 3));
+            geometry.setAttribute('uv', new v3d.Float32BufferAttribute(uvs, 2));
 
             // animation
 
@@ -373,10 +364,9 @@ v3d.MD2Loader.prototype = {
 
             geometry.morphAttributes.position = morphPositions;
             geometry.morphAttributes.normal = morphNormals;
+            geometry.morphTargetsRelative = false;
 
             geometry.animations = v3d.AnimationClip.CreateClipsFromMorphTargetSequences(frames, 10);
-
-            console.timeEnd('MD2Loader');
 
             return geometry;
 
@@ -384,4 +374,4 @@ v3d.MD2Loader.prototype = {
 
     })()
 
-};
+});

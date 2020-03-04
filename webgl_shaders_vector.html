@@ -4,19 +4,14 @@
     <title>Verge3D webgl - vector - text</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
     <style>
       body {
-        font-family: Monospace;
         background-color: #f0f0f0;
-        margin: 0px;
-        overflow: hidden;
+        color: #444;
       }
-
-      #info {
-        position: absolute;
-        top: 10px;
-        width: 100%;
-        text-align: center;
+      a {
+        color: #08f;
       }
     </style>
   </head>
@@ -24,10 +19,6 @@
     <div id="info">
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - Resolution-Independent Vector Fonts. <a href="https://github.com/mrdoob/three.js/issues/4746">info</a>.
     </div>
-    <script src="../build/v3d.js"></script>
-    <script src="./js/controls/OrbitControls.js"></script>
-
-    <script src="js/libs/stats.min.js"></script>
 
     <script type="x-shader/x-fragment" id="fs">
 
@@ -67,8 +58,13 @@
 
     </script>
 
+    <script type="module">
 
-    <script>
+      import * as v3d from '../build/v3d.module.js';
+
+      import Stats from './jsm/libs/stats.module.js';
+
+      import { OrbitControls } from './jsm/controls/OrbitControls.js';
 
       var stats;
 
@@ -88,10 +84,6 @@
 
         camera = new v3d.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.set(50, 100, 500);
-
-        controls = new v3d.OrbitControls(camera);
-        controls.target.set(50, 100, 0);
-        controls.update();
 
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0xf0f0f0);
@@ -212,7 +204,7 @@
 
             hole = subshape.holes[i];
 
-            process = processShape(hole.curves, true);
+            process = processShape(hole.curves);
 
             pts = process.pts;
             pts2 = process.pts2;
@@ -243,9 +235,9 @@
 
         }
 
-        bezierGeometry.addAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
-        bezierGeometry.addAttribute('uv', new v3d.Float32BufferAttribute(uvs, 2));
-        bezierGeometry.addAttribute('invert', new v3d.Float32BufferAttribute(invert, 1));
+        bezierGeometry.setAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
+        bezierGeometry.setAttribute('uv', new v3d.Float32BufferAttribute(uvs, 2));
+        bezierGeometry.setAttribute('invert', new v3d.Float32BufferAttribute(invert, 1));
 
         geometry = new v3d.ShapeBufferGeometry(convexhullShapeGroup);
 
@@ -291,6 +283,10 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.target.set(50, 100, 0);
+        controls.update();
 
         stats = new Stats();
         document.body.appendChild(stats.dom);

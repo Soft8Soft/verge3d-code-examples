@@ -1,17 +1,10 @@
-/*
+/**
  * @author zz85 / https://github.com/zz85
  * @author mrdoob / http://mrdoob.com
  * Running this will allow you to drag three.js objects around the screen.
  */
 
 v3d.DragControls = function(_objects, _camera, _domElement) {
-
-    if (_objects instanceof v3d.Camera) {
-
-        console.warn('v3d.DragControls: Constructor now expects (objects, camera, domElement)');
-        var temp = _objects; _objects = _camera; _camera = temp;
-
-    }
 
     var _plane = new v3d.Plane();
     var _raycaster = new v3d.Raycaster();
@@ -21,7 +14,7 @@ v3d.DragControls = function(_objects, _camera, _domElement) {
     var _intersection = new v3d.Vector3();
     var _worldPosition = new v3d.Vector3();
     var _inverseMatrix = new v3d.Matrix4();
-    
+
     var _selected = null, _hovered = null;
 
     //
@@ -85,7 +78,7 @@ v3d.DragControls = function(_objects, _camera, _domElement) {
 
         _raycaster.setFromCamera(_mouse, _camera);
 
-        var intersects = _raycaster.intersectObjects(_objects);
+        var intersects = _raycaster.intersectObjects(_objects, true);
 
         if (intersects.length > 0) {
 
@@ -123,7 +116,7 @@ v3d.DragControls = function(_objects, _camera, _domElement) {
 
         _raycaster.setFromCamera(_mouse, _camera);
 
-        var intersects = _raycaster.intersectObjects(_objects);
+        var intersects = _raycaster.intersectObjects(_objects, true);
 
         if (intersects.length > 0) {
 
@@ -201,7 +194,7 @@ v3d.DragControls = function(_objects, _camera, _domElement) {
 
         _raycaster.setFromCamera(_mouse, _camera);
 
-        var intersects = _raycaster.intersectObjects(_objects);
+        var intersects = _raycaster.intersectObjects(_objects, true);
 
         if (intersects.length > 0) {
 
@@ -250,35 +243,6 @@ v3d.DragControls = function(_objects, _camera, _domElement) {
     this.activate = activate;
     this.deactivate = deactivate;
     this.dispose = dispose;
-
-    // Backward compatibility
-
-    this.setObjects = function() {
-
-        console.error('v3d.DragControls: setObjects() has been removed.');
-
-    };
-
-    this.on = function(type, listener) {
-
-        console.warn('v3d.DragControls: on() has been deprecated. Use addEventListener() instead.');
-        scope.addEventListener(type, listener);
-
-    };
-
-    this.off = function(type, listener) {
-
-        console.warn('v3d.DragControls: off() has been deprecated. Use removeEventListener() instead.');
-        scope.removeEventListener(type, listener);
-
-    };
-
-    this.notify = function(type) {
-
-        console.error('v3d.DragControls: notify() has been deprecated. Use dispatchEvent() instead.');
-        scope.dispatchEvent({ type: type });
-
-    };
 
 };
 

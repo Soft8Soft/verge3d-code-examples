@@ -4,47 +4,24 @@
     <title>Verge3D webgl - materials</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        color: #fff;
-        font-family: Monospace;
-        font-size: 13px;
-        text-align: center;
-
-        background-color: #000;
-        margin: 0px;
-        overflow: hidden;
-      }
-
-      #info {
-        position: absolute;
-        top: 0px; width: 100%;
-        padding: 5px;
-      }
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
   <body>
 
     <div id="container"></div>
     <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - Phong Material Variantions by <a href="http://clara.io/" target="_blank" rel="noopener">Ben Houston</a>.</div>
 
-    <script src="../build/v3d.js"></script>
-    <script src="js/controls/OrbitControls.js"></script>
+    <script type="module">
 
-    <script src="js/WebGL.js"></script>
-    <script src="js/libs/stats.min.js"></script>
+      import * as v3d from '../build/v3d.module.js';
 
-    <script>
+      import Stats from './jsm/libs/stats.module.js';
 
-      if (WEBGL.isWebGLAvailable() === false) {
-
-        document.body.appendChild(WEBGL.getWebGLErrorMessage());
-
-      }
+      import { OrbitControls } from './jsm/controls/OrbitControls.js';
 
       var container, stats;
 
-      var camera, scene, renderer, controls;
+      var camera, scene, renderer;
       var particleLight;
 
       var loader = new v3d.FontLoader();
@@ -69,6 +46,7 @@
           .setPath('textures/cube/SwedishRoyalCastle/')
           .load(['px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg']);
         reflectionCube.format = v3d.RGBFormat;
+        reflectionCube.encoding = v3d.sRGBEncoding;
 
         scene = new v3d.Scene();
         scene.background = reflectionCube;
@@ -77,6 +55,7 @@
 
         var imgTexture = new v3d.TextureLoader().load("textures/planets/moon_1024.jpg");
         imgTexture.wrapS = imgTexture.wrapT = v3d.RepeatWrapping;
+        imgTexture.encoding = v3d.sRGBEncoding;
         imgTexture.anisotropy = 16;
         imgTexture = null;
 
@@ -174,16 +153,14 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
-
-        renderer.gammaInput = true;
-        renderer.gammaOutput = true;
+        renderer.outputEncoding = v3d.sRGBEncoding;
 
         //
 
         stats = new Stats();
         container.appendChild(stats.dom);
 
-        controls = new v3d.OrbitControls(camera);
+        var controls = new OrbitControls(camera, renderer.domElement);
 
         window.addEventListener('resize', onWindowResize, false);
 

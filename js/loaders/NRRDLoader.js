@@ -1,11 +1,14 @@
+/*
+ *  three.js NRRD file loader
+ */
+
 v3d.NRRDLoader = function(manager) {
 
-    this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
-
+    v3d.Loader.call(this, manager);
 
 };
 
-v3d.NRRDLoader.prototype = {
+v3d.NRRDLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
     constructor: v3d.NRRDLoader,
 
@@ -21,13 +24,6 @@ v3d.NRRDLoader.prototype = {
             onLoad(scope.parse(data));
 
         }, onProgress, onError);
-
-    },
-
-    setPath: function(value) {
-
-        this.path = value;
-        return this;
 
     },
 
@@ -58,7 +54,7 @@ v3d.NRRDLoader.prototype = {
 
             switch (type) {
 
-            // 1 byte data types
+                // 1 byte data types
                 case 'uchar':
                     break;
                 case 'schar':
@@ -596,4 +592,4 @@ v3d.NRRDLoader.prototype = {
         }
     }
 
-};
+});

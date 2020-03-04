@@ -9,9 +9,9 @@ v3d.ColorConverter = {
 
         // https://gist.github.com/xpansive/1337890#file-index-js
 
-        h = v3d.Math.euclideanModulo(h, 1);
-        s = v3d.Math.clamp(s, 0, 1);
-        v = v3d.Math.clamp(v, 0, 1);
+        h = v3d.MathUtils.euclideanModulo(h, 1);
+        s = v3d.MathUtils.clamp(s, 0, 1);
+        v = v3d.MathUtils.clamp(v, 0, 1);
 
         return color.setHSL(h, (s * v) / ((h = (2 - s) * v) < 1 ? h : (2 - h)), h * 0.5);
 
@@ -46,7 +46,7 @@ v3d.ColorConverter = {
     }(),
 
     // where c, m, y, k is between 0 and 1
-    
+
     setCMYK: function(color, c, m, y, k) {
 
         var r = (1 - c) * (1 - k);
@@ -62,7 +62,7 @@ v3d.ColorConverter = {
         if (target === undefined) {
 
             console.warn('v3d.ColorConverter: .getCMYK() target is now required');
-            target = { c: 0, m: 0, y: 0, k:0 };
+            target = { c: 0, m: 0, y: 0, k: 0 };
 
         }
 

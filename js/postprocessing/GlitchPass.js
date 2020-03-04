@@ -35,7 +35,7 @@ v3d.GlitchPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     constructor: v3d.GlitchPass,
 
-    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer /*, deltaTime, maskActive */) {
 
         this.uniforms["tDiffuse"].value = readBuffer.texture;
         this.uniforms['seed'].value = Math.random();//default seeding
@@ -44,22 +44,22 @@ v3d.GlitchPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
         if (this.curF % this.randX == 0 || this.goWild == true) {
 
             this.uniforms['amount'].value = Math.random() / 30;
-            this.uniforms['angle'].value = v3d.Math.randFloat(- Math.PI, Math.PI);
-            this.uniforms['seed_x'].value = v3d.Math.randFloat(- 1, 1);
-            this.uniforms['seed_y'].value = v3d.Math.randFloat(- 1, 1);
-            this.uniforms['distortion_x'].value = v3d.Math.randFloat(0, 1);
-            this.uniforms['distortion_y'].value = v3d.Math.randFloat(0, 1);
+            this.uniforms['angle'].value = v3d.MathUtils.randFloat(- Math.PI, Math.PI);
+            this.uniforms['seed_x'].value = v3d.MathUtils.randFloat(- 1, 1);
+            this.uniforms['seed_y'].value = v3d.MathUtils.randFloat(- 1, 1);
+            this.uniforms['distortion_x'].value = v3d.MathUtils.randFloat(0, 1);
+            this.uniforms['distortion_y'].value = v3d.MathUtils.randFloat(0, 1);
             this.curF = 0;
             this.generateTrigger();
 
         } else if (this.curF % this.randX < this.randX / 5) {
 
             this.uniforms['amount'].value = Math.random() / 90;
-            this.uniforms['angle'].value = v3d.Math.randFloat(- Math.PI, Math.PI);
-            this.uniforms['distortion_x'].value = v3d.Math.randFloat(0, 1);
-            this.uniforms['distortion_y'].value = v3d.Math.randFloat(0, 1);
-            this.uniforms['seed_x'].value = v3d.Math.randFloat(- 0.3, 0.3);
-            this.uniforms['seed_y'].value = v3d.Math.randFloat(- 0.3, 0.3);
+            this.uniforms['angle'].value = v3d.MathUtils.randFloat(- Math.PI, Math.PI);
+            this.uniforms['distortion_x'].value = v3d.MathUtils.randFloat(0, 1);
+            this.uniforms['distortion_y'].value = v3d.MathUtils.randFloat(0, 1);
+            this.uniforms['seed_x'].value = v3d.MathUtils.randFloat(- 0.3, 0.3);
+            this.uniforms['seed_y'].value = v3d.MathUtils.randFloat(- 0.3, 0.3);
 
         } else if (this.goWild == false) {
 
@@ -86,7 +86,7 @@ v3d.GlitchPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     generateTrigger: function() {
 
-        this.randX = v3d.Math.randInt(120, 240);
+        this.randX = v3d.MathUtils.randInt(120, 240);
 
     },
 
@@ -97,16 +97,14 @@ v3d.GlitchPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         for (var i = 0; i < length; i++) {
 
-            var val = v3d.Math.randFloat(0, 1);
+            var val = v3d.MathUtils.randFloat(0, 1);
             data_arr[i * 3 + 0] = val;
             data_arr[i * 3 + 1] = val;
             data_arr[i * 3 + 2] = val;
 
         }
 
-        var texture = new v3d.DataTexture(data_arr, dt_size, dt_size, v3d.RGBFormat, v3d.FloatType);
-        texture.needsUpdate = true;
-        return texture;
+        return new v3d.DataTexture(data_arr, dt_size, dt_size, v3d.RGBFormat, v3d.FloatType);
 
     }
 

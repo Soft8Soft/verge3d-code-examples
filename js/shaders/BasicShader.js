@@ -12,7 +12,7 @@ v3d.BasicShader = {
 
         "void main() {",
 
-            "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+        "    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
 
         "}"
 
@@ -22,7 +22,7 @@ v3d.BasicShader = {
 
         "void main() {",
 
-            "gl_FragColor = vec4(1.0, 0.0, 0.0, 0.5);",
+        "    gl_FragColor = vec4(1.0, 0.0, 0.0, 0.5);",
 
         "}"
 

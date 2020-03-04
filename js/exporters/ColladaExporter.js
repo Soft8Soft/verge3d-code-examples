@@ -17,7 +17,9 @@ v3d.ColladaExporter.prototype = {
 
     constructor: v3d.ColladaExporter,
 
-    parse: function(object, onDone, options = {}) {
+    parse: function(object, onDone, options) {
+
+        options = options || {};
 
         options = Object.assign({
             version: '1.4.1',
@@ -218,7 +220,9 @@ v3d.ColladaExporter.prototype = {
                         bufferGeometry.groups :
                         [{ start: 0, count: indexCount, materialIndex: 0 }];
 
-                var gnode = `<geometry id="${ meshid }" name="${ g.name }"><mesh>`;
+
+                var gname = g.name ? ` name="${ g.name }"` : '';
+                var gnode = `<geometry id="${ meshid }"${ gname }><mesh>`;
 
                 // define the geometry node and the vertices for the geometry
                 var posName = `${ meshid }-position`;
@@ -377,7 +381,7 @@ v3d.ColladaExporter.prototype = {
                 var reflectivity = m.reflectivity || 0;
 
                 // Do not export and alpha map for the reasons mentioned in issue (#13792)
-                // in v3d.js alpha maps are black and white, but collada expects the alpha
+                // in three.js alpha maps are black and white, but collada expects the alpha
                 // channel to specify the transparency
                 var transparencyNode = '';
                 if (m.transparent === true) {
@@ -483,7 +487,7 @@ v3d.ColladaExporter.prototype = {
 
                     (
                         m.side === v3d.DoubleSide ?
-                            `<extra><technique><double_sided sid="double_sided" type="int">1</double_sided></technique></extra>` :
+                            `<extra><technique profile="v3dJS"><double_sided sid="double_sided" type="int">1</double_sided></technique></extra>` :
                             ''
                     ) +
 
@@ -491,7 +495,10 @@ v3d.ColladaExporter.prototype = {
 
                     '</effect>';
 
-                libraryMaterials.push(`<material id="${ matid }" name="${ m.name }"><instance_effect url="#${ matid }-effect" /></material>`);
+                var materialName = m.name ? ` name="${ m.name }"` : '';
+                var materialNode = `<material id="${ matid }"${ materialName }><instance_effect url="#${ matid }-effect" /></material>`;
+
+                libraryMaterials.push(materialNode);
                 libraryEffects.push(effectnode);
                 materialMap.set(m, matid);
 
@@ -586,7 +593,7 @@ v3d.ColladaExporter.prototype = {
             '<asset>' +
             (
                 '<contributor>' +
-                '<authoring_tool>v3d.js Collada Exporter</authoring_tool>' +
+                '<authoring_tool>three.js Collada Exporter</authoring_tool>' +
                 (options.author !== null ? `<author>${ options.author }</author>` : '') +
                 '</contributor>' +
                 `<created>${ (new Date()).toISOString() }</created>` +

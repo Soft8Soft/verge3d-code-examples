@@ -4,29 +4,7 @@
     <title>Verge3D webgl - equirectangular panorama</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        background-color: #000000;
-        margin: 0px;
-        overflow: hidden;
-        touch-action: none;
-      }
-
-      #info {
-        position: absolute;
-        top: 0px; width: 100%;
-        color: #ffffff;
-        padding: 5px;
-        font-family:Monospace;
-        font-size:13px;
-        font-weight: bold;
-        text-align:center;
-      }
-
-      a {
-        color: #ffffff;
-      }
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
   <body>
 
@@ -36,9 +14,9 @@
       drag equirectangular texture into the page.
     </div>
 
-    <script src="../build/v3d.js"></script>
+    <script type="module">
 
-    <script>
+      import * as v3d from '../build/v3d.module.js';
 
       var camera, scene, renderer;
 
@@ -180,7 +158,7 @@
 
         var fov = camera.fov + event.deltaY * 0.05;
 
-        camera.fov = v3d.Math.clamp(fov, 10, 75);
+        camera.fov = v3d.MathUtils.clamp(fov, 10, 75);
 
         camera.updateProjectionMatrix();
 
@@ -202,8 +180,8 @@
         }
 
         lat = Math.max(- 85, Math.min(85, lat));
-        phi = v3d.Math.degToRad(90 - lat);
-        theta = v3d.Math.degToRad(lon);
+        phi = v3d.MathUtils.degToRad(90 - lat);
+        theta = v3d.MathUtils.degToRad(lon);
 
         camera.target.x = 500 * Math.sin(phi) * Math.cos(theta);
         camera.target.y = 500 * Math.cos(phi);

@@ -2,7 +2,6 @@
  * Depth-of-field post-process with bokeh shader
  */
 
-
 v3d.BokehPass = function(scene, camera, params) {
 
     v3d.Pass.call(this);
@@ -69,7 +68,6 @@ v3d.BokehPass = function(scene, camera, params) {
     this.fsQuad = new v3d.Pass.FullScreenQuad(this.materialBokeh);
 
     this.oldClearColor = new v3d.Color();
-    this.oldClearAlpha = 1;
 
 };
 
@@ -77,14 +75,14 @@ v3d.BokehPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     constructor: v3d.BokehPass,
 
-    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer/*, deltaTime, maskActive*/) {
 
         // Render depth into texture
 
         this.scene.overrideMaterial = this.materialDepth;
 
         this.oldClearColor.copy(renderer.getClearColor());
-        this.oldClearAlpha = renderer.getClearAlpha();
+        var oldClearAlpha = renderer.getClearAlpha();
         var oldAutoClear = renderer.autoClear;
         renderer.autoClear = false;
 
@@ -115,8 +113,8 @@ v3d.BokehPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         this.scene.overrideMaterial = null;
         renderer.setClearColor(this.oldClearColor);
-        renderer.setClearAlpha(this.oldClearAlpha);
-        renderer.autoClear = this.oldAutoClear;
+        renderer.setClearAlpha(oldClearAlpha);
+        renderer.autoClear = oldAutoClear;
 
     }
 

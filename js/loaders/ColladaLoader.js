@@ -5,21 +5,19 @@
 
 v3d.ColladaLoader = function(manager) {
 
-    this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+    v3d.Loader.call(this, manager);
 
 };
 
-v3d.ColladaLoader.prototype = {
+v3d.ColladaLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
     constructor: v3d.ColladaLoader,
-
-    crossOrigin: 'anonymous',
 
     load: function(url, onLoad, onProgress, onError) {
 
         var scope = this;
 
-        var path = (scope.path === undefined) ? v3d.LoaderUtils.extractUrlBase(url) : scope.path;
+        var path = (scope.path === '') ? v3d.LoaderUtils.extractUrlBase(url) : scope.path;
 
         var loader = new v3d.FileLoader(scope.manager);
         loader.setPath(scope.path);
@@ -31,20 +29,6 @@ v3d.ColladaLoader.prototype = {
 
     },
 
-    setPath: function(value) {
-
-        this.path = value;
-        return this;
-
-    },
-
-    setResourcePath: function(value) {
-
-        this.resourcePath = value;
-        return this;
-
-    },
-
     options: {
 
         set convertUpAxis(value) {
@@ -52,13 +36,6 @@ v3d.ColladaLoader.prototype = {
             console.warn('v3d.ColladaLoader: options.convertUpAxis() has been removed. Up axis is converted automatically.');
 
         }
-
-    },
-
-    setCrossOrigin: function(value) {
-
-        this.crossOrigin = value;
-        return this;
 
     },
 
@@ -2409,14 +2386,14 @@ v3d.ColladaLoader.prototype = {
 
             // build geometry
 
-            if (position.array.length > 0) geometry.addAttribute('position', new v3d.Float32BufferAttribute(position.array, position.stride));
-            if (normal.array.length > 0) geometry.addAttribute('normal', new v3d.Float32BufferAttribute(normal.array, normal.stride));
-            if (color.array.length > 0) geometry.addAttribute('color', new v3d.Float32BufferAttribute(color.array, color.stride));
-            if (uv.array.length > 0) geometry.addAttribute('uv', new v3d.Float32BufferAttribute(uv.array, uv.stride));
-            if (uv2.array.length > 0) geometry.addAttribute('uv2', new v3d.Float32BufferAttribute(uv2.array, uv2.stride));
+            if (position.array.length > 0) geometry.setAttribute('position', new v3d.Float32BufferAttribute(position.array, position.stride));
+            if (normal.array.length > 0) geometry.setAttribute('normal', new v3d.Float32BufferAttribute(normal.array, normal.stride));
+            if (color.array.length > 0) geometry.setAttribute('color', new v3d.Float32BufferAttribute(color.array, color.stride));
+            if (uv.array.length > 0) geometry.setAttribute('uv', new v3d.Float32BufferAttribute(uv.array, uv.stride));
+            if (uv2.array.length > 0) geometry.setAttribute('uv2', new v3d.Float32BufferAttribute(uv2.array, uv2.stride));
 
-            if (skinIndex.array.length > 0) geometry.addAttribute('skinIndex', new v3d.Float32BufferAttribute(skinIndex.array, skinIndex.stride));
-            if (skinWeight.array.length > 0) geometry.addAttribute('skinWeight', new v3d.Float32BufferAttribute(skinWeight.array, skinWeight.stride));
+            if (skinIndex.array.length > 0) geometry.setAttribute('skinIndex', new v3d.Float32BufferAttribute(skinIndex.array, skinIndex.stride));
+            if (skinWeight.array.length > 0) geometry.setAttribute('skinWeight', new v3d.Float32BufferAttribute(skinWeight.array, skinWeight.stride));
 
             build.data = geometry;
             build.type = primitives[0].type;
@@ -2751,7 +2728,7 @@ v3d.ColladaLoader.prototype = {
                 case 'rotate':
                     data.obj = new v3d.Vector3();
                     data.obj.fromArray(array);
-                    data.angle = v3d.Math.degToRad(array[3]);
+                    data.angle = v3d.MathUtils.degToRad(array[3]);
                     break;
 
             }
@@ -3023,7 +3000,7 @@ v3d.ColladaLoader.prototype = {
                                     switch (joint.type) {
 
                                         case 'revolute':
-                                            matrix.multiply(m0.makeRotationAxis(axis, v3d.Math.degToRad(value)));
+                                            matrix.multiply(m0.makeRotationAxis(axis, v3d.MathUtils.degToRad(value)));
                                             break;
 
                                         case 'prismatic':
@@ -3119,7 +3096,7 @@ v3d.ColladaLoader.prototype = {
                     case 'rotate':
                         var array = parseFloats(child.textContent);
                         var vector = new v3d.Vector3().fromArray(array);
-                        var angle = v3d.Math.degToRad(array[3]);
+                        var angle = v3d.MathUtils.degToRad(array[3]);
                         transforms.push({
                             sid: child.getAttribute('sid'),
                             type: child.nodeName,
@@ -3226,7 +3203,7 @@ v3d.ColladaLoader.prototype = {
 
                     case 'rotate':
                         var array = parseFloats(child.textContent);
-                        var angle = v3d.Math.degToRad(array[3]);
+                        var angle = v3d.MathUtils.degToRad(array[3]);
                         data.matrix.multiply(matrix.makeRotationAxis(vector.fromArray(array), angle));
                         data.transforms[child.getAttribute('sid')] = child.nodeName;
                         break;
@@ -3814,6 +3791,35 @@ v3d.ColladaLoader.prototype = {
 
         }
 
+        // convert the parser error element into text with each child elements text
+        // separated by new lines.
+
+        function parserErrorToText(parserError) {
+
+            var result = '';
+            var stack = [parserError];
+
+            while (stack.length) {
+
+                var node = stack.shift();
+
+                if (node.nodeType === Node.TEXT_NODE) {
+
+                    result += node.textContent;
+
+                } else {
+
+                    result += '\n';
+                    stack.push.apply(stack, node.childNodes);
+
+                }
+
+            }
+
+            return result.trim();
+
+        }
+
         if (text.length === 0) {
 
             return { scene: new v3d.Scene() };
@@ -3823,6 +3829,30 @@ v3d.ColladaLoader.prototype = {
         var xml = new DOMParser().parseFromString(text, 'application/xml');
 
         var collada = getElementsByTagName(xml, 'COLLADA')[0];
+
+        var parserError = xml.getElementsByTagName('parsererror')[0];
+        if (parserError !== undefined) {
+
+            // Chrome will return parser error with a div in it
+
+            var errorElement = getElementsByTagName(parserError, 'div')[0];
+            var errorText;
+
+            if (errorElement) {
+
+                errorText = errorElement.textContent;
+
+            } else {
+
+                errorText = parserErrorToText(parserError);
+
+            }
+
+            console.error('v3d.ColladaLoader: Failed to parse collada file.\n', errorText);
+
+            return null;
+
+        }
 
         // metadata
 
@@ -3915,4 +3945,4 @@ v3d.ColladaLoader.prototype = {
 
     }
 
-};
+});

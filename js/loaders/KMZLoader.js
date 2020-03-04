@@ -4,11 +4,11 @@
 
 v3d.KMZLoader = function(manager) {
 
-    this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+    v3d.Loader.call(this, manager);
 
 };
 
-v3d.KMZLoader.prototype = {
+v3d.KMZLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
     constructor: v3d.KMZLoader,
 
@@ -24,13 +24,6 @@ v3d.KMZLoader.prototype = {
             onLoad(scope.parse(text));
 
         }, onProgress, onError);
-
-    },
-
-    setPath: function(value) {
-
-        this.path = value;
-        return this;
 
     },
 
@@ -109,4 +102,4 @@ v3d.KMZLoader.prototype = {
 
     }
 
-};
+});

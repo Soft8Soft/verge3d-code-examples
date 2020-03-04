@@ -57,7 +57,7 @@ v3d.Water = function(geometry, options) {
 
     var renderTarget = new v3d.WebGLRenderTarget(textureWidth, textureHeight, parameters);
 
-    if (!v3d.Math.isPowerOfTwo(textureWidth) || ! v3d.Math.isPowerOfTwo(textureHeight)) {
+    if (!v3d.MathUtils.isPowerOfTwo(textureWidth) || ! v3d.MathUtils.isPowerOfTwo(textureHeight)) {
 
         renderTarget.texture.generateMipmaps = false;
 
@@ -184,7 +184,6 @@ v3d.Water = function(geometry, options) {
         fragmentShader: mirrorShader.fragmentShader,
         vertexShader: mirrorShader.vertexShader,
         uniforms: v3d.UniformsUtils.clone(mirrorShader.uniforms),
-        transparent: true,
         lights: true,
         side: side,
         fog: fog
@@ -283,12 +282,12 @@ v3d.Water = function(geometry, options) {
 
         var currentRenderTarget = renderer.getRenderTarget();
 
-        var currentVrEnabled = renderer.vr.enabled;
+        var currentXrEnabled = renderer.xr.enabled;
         var currentShadowAutoUpdate = renderer.shadowMap.autoUpdate;
 
         scope.visible = false;
 
-        renderer.vr.enabled = false; // Avoid camera modification and recursion
+        renderer.xr.enabled = false; // Avoid camera modification and recursion
         renderer.shadowMap.autoUpdate = false; // Avoid re-computing shadows
 
         renderer.setRenderTarget(renderTarget);
@@ -297,10 +296,20 @@ v3d.Water = function(geometry, options) {
 
         scope.visible = true;
 
-        renderer.vr.enabled = currentVrEnabled;
+        renderer.xr.enabled = currentXrEnabled;
         renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
 
         renderer.setRenderTarget(currentRenderTarget);
+
+        // Restore viewport
+
+        var viewport = camera.viewport;
+
+        if (viewport !== undefined) {
+
+            renderer.state.viewport(viewport);
+
+        }
 
     };
 

@@ -4,38 +4,26 @@
     <title>Verge3D misc - lookAt</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
     <style>
       body {
-        color: #404040;
-        font-family:Monospace;
-        font-size:13px;
-        text-align:center;
-
-        background-color: #ffffff;
-        margin: 0px;
-        overflow: hidden;
-      }
-
-      #info {
-        position: absolute;
-        top: 0px; width: 100%;
-        padding: 5px;
+        background-color: #fff;
+        color: #444;
       }
 
       a {
-
-        color: #0080bb;
+        color: #08b;
       }
     </style>
   </head>
   <body>
-    <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - Object3D::lookAt() demo</div>
+    <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - Object3D.lookAt() example</div>
 
-    <script src="../build/v3d.js"></script>
+    <script type="module">
 
-    <script src="js/libs/stats.min.js"></script>
+      import * as v3d from '../build/v3d.module.js';
 
-    <script>
+      import Stats from './jsm/libs/stats.module.js';
 
       var camera, scene, renderer, stats;
 

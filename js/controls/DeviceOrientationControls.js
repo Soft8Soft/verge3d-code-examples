@@ -61,8 +61,31 @@ v3d.DeviceOrientationControls = function(object) {
 
         onScreenOrientationChangeEvent(); // run once on load
 
-        window.addEventListener('orientationchange', onScreenOrientationChangeEvent, false);
-        window.addEventListener('deviceorientation', onDeviceOrientationChangeEvent, false);
+        // iOS 13+
+
+        if (window.DeviceOrientationEvent !== undefined && typeof window.DeviceOrientationEvent.requestPermission === 'function') {
+
+            window.DeviceOrientationEvent.requestPermission().then(function(response) {
+
+                if (response == 'granted') {
+
+                    window.addEventListener('orientationchange', onScreenOrientationChangeEvent, false);
+                    window.addEventListener('deviceorientation', onDeviceOrientationChangeEvent, false);
+
+                }
+
+            }).catch(function(error) {
+
+                console.error('v3d.DeviceOrientationControls: Unable to use DeviceOrientation API:', error);
+
+            });
+
+        } else {
+
+            window.addEventListener('orientationchange', onScreenOrientationChangeEvent, false);
+            window.addEventListener('deviceorientation', onDeviceOrientationChangeEvent, false);
+
+        }
 
         scope.enabled = true;
 
@@ -85,13 +108,13 @@ v3d.DeviceOrientationControls = function(object) {
 
         if (device) {
 
-            var alpha = device.alpha ? v3d.Math.degToRad(device.alpha) + scope.alphaOffset : 0; // Z
+            var alpha = device.alpha ? v3d.MathUtils.degToRad(device.alpha) + scope.alphaOffset : 0; // Z
 
-            var beta = device.beta ? v3d.Math.degToRad(device.beta) : 0; // X'
+            var beta = device.beta ? v3d.MathUtils.degToRad(device.beta) : 0; // X'
 
-            var gamma = device.gamma ? v3d.Math.degToRad(device.gamma) : 0; // Y''
+            var gamma = device.gamma ? v3d.MathUtils.degToRad(device.gamma) : 0; // Y''
 
-            var orient = scope.screenOrientation ? v3d.Math.degToRad(scope.screenOrientation) : 0; // O
+            var orient = scope.screenOrientation ? v3d.MathUtils.degToRad(scope.screenOrientation) : 0; // O
 
             setObjectQuaternion(scope.object.quaternion, alpha, beta, gamma, orient);
 

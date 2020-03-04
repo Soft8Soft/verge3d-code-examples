@@ -4,27 +4,13 @@
     <title>Verge3D webgl - mirror</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
     <style>
       body {
-        color: #888888;
-        font-family:Monospace;
-        font-size:13px;
-
-        background-color: #000;
-        margin: 0px;
-        overflow: hidden;
+        color: #444;
       }
-
-      #info {
-        position: absolute;
-        top: 0px;
-        width: 200px;
-        left: calc(50% - 100px);
-        text-align: center;
-      }
-
       a {
-        color: #00f;
+        color: #08f;
       }
     </style>
   </head>
@@ -34,11 +20,12 @@
     <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - mirror
     </div>
 
-    <script src="../build/v3d.js"></script>
-    <script src="js/objects/Reflector.js"></script>
-    <script src="js/controls/OrbitControls.js"></script>
+    <script type="module">
 
-    <script>
+      import * as v3d from '../build/v3d.module.js';
+
+      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { Reflector } from './jsm/objects/Reflector.js';
 
       // scene size
       var WIDTH = window.innerWidth;
@@ -76,7 +63,7 @@
         camera = new v3d.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
         camera.position.set(0, 75, 160);
 
-        cameraControls = new v3d.OrbitControls(camera, renderer.domElement);
+        cameraControls = new OrbitControls(camera, renderer.domElement);
         cameraControls.target.set(0, 40, 0);
         cameraControls.maxDistance = 400;
         cameraControls.minDistance = 10;
@@ -89,7 +76,7 @@
         // reflectors/mirrors
 
         var geometry = new v3d.CircleBufferGeometry(40, 64);
-        var groundMirror = new v3d.Reflector(geometry, {
+        var groundMirror = new Reflector(geometry, {
           clipBias: 0.003,
           textureWidth: WIDTH * window.devicePixelRatio,
           textureHeight: HEIGHT * window.devicePixelRatio,
@@ -101,7 +88,7 @@
         scene.add(groundMirror);
 
         var geometry = new v3d.PlaneBufferGeometry(100, 100);
-        var verticalMirror = new v3d.Reflector(geometry, {
+        var verticalMirror = new Reflector(geometry, {
           clipBias: 0.003,
           textureWidth: WIDTH * window.devicePixelRatio,
           textureHeight: HEIGHT * window.devicePixelRatio,

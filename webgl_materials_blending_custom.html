@@ -76,16 +76,9 @@
       <div class="lbl" id="lbl_dst">Destination</div>
     </div>
 
-    <script src="../build/v3d.js"></script>
-    <script src="js/WebGL.js"></script>
+    <script type="module">
 
-    <script>
-
-      if (WEBGL.isWebGLAvailable() === false) {
-
-        document.body.appendChild(WEBGL.getWebGLErrorMessage());
-
-      }
+      import * as v3d from '../build/v3d.module.js';
 
       var camera, scene, renderer;
 
@@ -209,13 +202,35 @@
         }
 
         // FOREGROUND OBJECTS
-        var src = ['ZeroFactor', 'OneFactor', 'SrcColorFactor', 'OneMinusSrcColorFactor', 'SrcAlphaFactor', 'OneMinusSrcAlphaFactor', 'DstAlphaFactor', 'OneMinusDstAlphaFactor', 'DstColorFactor', 'OneMinusDstColorFactor', 'SrcAlphaSaturateFactor'];
-        var dst = ['ZeroFactor', 'OneFactor', 'SrcColorFactor', 'OneMinusSrcColorFactor', 'SrcAlphaFactor', 'OneMinusSrcAlphaFactor', 'DstAlphaFactor', 'OneMinusDstAlphaFactor', 'DstColorFactor', 'OneMinusDstColorFactor'];
+        var src = [
+          { name: 'Zero', constant: v3d.ZeroFactor },
+          { name: 'One', constant: v3d.OneFactor },
+          { name: 'SrcColor', constant: v3d.SrcColorFactor },
+          { name: 'OneMinusSrcColor', constant: v3d.OneMinusSrcColorFactor },
+          { name: 'SrcAlpha', constant: v3d.SrcAlphaFactor },
+          { name: 'OneMinusSrcAlpha', constant: v3d.OneMinusSrcAlphaFactor },
+          { name: 'DstAlpha', constant: v3d.DstAlphaFactor },
+          { name: 'OneMinusDstAlpha', constant: v3d.OneMinusDstAlphaFactor },
+          { name: 'DstColor', constant: v3d.DstColorFactor },
+          { name: 'OneMinusDstColor', constant: v3d.OneMinusDstColorFactor },
+          { name: 'SrcAlphaSaturate', constant: v3d.SrcAlphaSaturateFactor }
+        ];
+
+        var dst = [
+          { name: 'Zero', constant: v3d.ZeroFactor },
+          { name: 'One', constant: v3d.OneFactor },
+          { name: 'SrcColor', constant: v3d.SrcColorFactor },
+          { name: 'OneMinusSrcColor', constant: v3d.OneMinusSrcColorFactor },
+          { name: 'SrcAlpha', constant: v3d.SrcAlphaFactor },
+          { name: 'OneMinusSrcAlpha', constant: v3d.OneMinusSrcAlphaFactor },
+          { name: 'DstAlpha', constant: v3d.DstAlphaFactor },
+          { name: 'OneMinusDstAlpha', constant: v3d.OneMinusDstAlphaFactor },
+          { name: 'DstColor', constant: v3d.DstColorFactor },
+          { name: 'OneMinusDstColor', constant: v3d.OneMinusDstColorFactor }
+        ];
 
         var geo1 = new v3d.PlaneBufferGeometry(100, 100);
         var geo2 = new v3d.PlaneBufferGeometry(100, 25);
-
-        var blending = 'CustomBlending';
 
         for (var i = 0; i < dst.length; i++) {
 
@@ -228,9 +243,9 @@
             var material = new v3d.MeshBasicMaterial({ map: currentMaps[currentIndex] });
             material.transparent = true;
 
-            material.blending = v3d[blending];
-            material.blendSrc = v3d[blendSrc];
-            material.blendDst = v3d[blendDst];
+            material.blending = v3d.CustomBlending;
+            material.blendSrc = blendSrc.constant;
+            material.blendDst = blendDst.constant;
             material.blendEquation = v3d.AddEquation;
 
             var x = (j - src.length / 2) * 110;
@@ -257,7 +272,7 @@
           var z = 0;
           var y = (0 - dst.length / 2) * 110 + 50;
 
-          var mesh = new v3d.Mesh(geo2, generateLabelMaterial(blendSrc.replace('Factor', ''), 'rgba(0, 150, 0, 1)'));
+          var mesh = new v3d.Mesh(geo2, generateLabelMaterial(blendSrc.name, 'rgba(0, 150, 0, 1)'));
           mesh.position.set(x, - (y - 70), z);
           mesh.matrixAutoUpdate = false;
           mesh.updateMatrix();
@@ -273,7 +288,7 @@
           var z = 0;
           var y = (i - dst.length / 2) * 110 + 165;
 
-          var mesh = new v3d.Mesh(geo2, generateLabelMaterial(blendDst.replace('Factor', ''), 'rgba(150, 0, 0, 1)'));
+          var mesh = new v3d.Mesh(geo2, generateLabelMaterial(blendDst.name, 'rgba(150, 0, 0, 1)'));
           mesh.position.set(x, - (y - 120), z);
           mesh.matrixAutoUpdate = false;
           mesh.updateMatrix();

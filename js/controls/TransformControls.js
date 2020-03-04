@@ -4,11 +4,17 @@
 
 v3d.TransformControls = function(camera, domElement) {
 
+    if (domElement === undefined) {
+
+        console.warn('v3d.TransformControls: The second parameter "domElement" is now mandatory.');
+        domElement = document;
+
+    }
+
     v3d.Object3D.call(this);
 
-    domElement = (domElement !== undefined) ? domElement : document;
-
     this.visible = false;
+    this.domElement = domElement;
 
     var _gizmo = new v3d.TransformControlsGizmo();
     this.add(_gizmo);
@@ -29,6 +35,7 @@ v3d.TransformControls = function(camera, domElement) {
     defineProperty("mode", "translate");
     defineProperty("translationSnap", null);
     defineProperty("rotationSnap", null);
+    defineProperty("scaleSnap", null);
     defineProperty("space", "world");
     defineProperty("size", 1);
     defineProperty("dragging", false);
@@ -53,8 +60,6 @@ v3d.TransformControls = function(camera, domElement) {
         Y: new v3d.Vector3(0, 1, 0),
         Z: new v3d.Vector3(0, 0, 1)
     };
-    var _identityQuaternion = new v3d.Quaternion();
-    var _alignVector = new v3d.Vector3();
 
     var pointStart = new v3d.Vector3();
     var pointEnd = new v3d.Vector3();
@@ -121,12 +126,20 @@ v3d.TransformControls = function(camera, domElement) {
         domElement.removeEventListener("mousedown", onPointerDown);
         domElement.removeEventListener("touchstart", onPointerDown);
         domElement.removeEventListener("mousemove", onPointerHover);
+        document.removeEventListener("mousemove", onPointerMove);
         domElement.removeEventListener("touchmove", onPointerHover);
         domElement.removeEventListener("touchmove", onPointerMove);
         document.removeEventListener("mouseup", onPointerUp);
         domElement.removeEventListener("touchend", onPointerUp);
         domElement.removeEventListener("touchcancel", onPointerUp);
         domElement.removeEventListener("touchleave", onPointerUp);
+
+        this.traverse(function(child) {
+
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) child.material.dispose();
+
+        });
 
     };
 
@@ -136,6 +149,8 @@ v3d.TransformControls = function(camera, domElement) {
         this.object = object;
         this.visible = true;
 
+        return this;
+
     };
 
     // Detatch from object
@@ -144,6 +159,8 @@ v3d.TransformControls = function(camera, domElement) {
         this.object = undefined;
         this.visible = false;
         this.axis = null;
+
+        return this;
 
     };
 
@@ -200,15 +217,7 @@ v3d.TransformControls = function(camera, domElement) {
         this.camera.updateMatrixWorld();
         this.camera.matrixWorld.decompose(cameraPosition, cameraQuaternion, cameraScale);
 
-        if (this.camera instanceof v3d.PerspectiveCamera) {
-
-            eye.copy(cameraPosition).sub(worldPosition).normalize();
-
-        } else if (this.camera instanceof v3d.OrthographicCamera) {
-
-            eye.copy(cameraPosition).normalize();
-
-        }
+        eye.copy(cameraPosition).sub(worldPosition).normalize();
 
         v3d.Object3D.prototype.updateMatrixWorld.call(this);
 
@@ -252,7 +261,7 @@ v3d.TransformControls = function(camera, domElement) {
 
                     space = 'local';
 
-                } else if (this.axis === 'E' ||  this.axis === 'XYZE' ||  this.axis === 'XYZ') {
+                } else if (this.axis === 'E' || this.axis === 'XYZE' || this.axis === 'XYZ') {
 
                     space = 'world';
 
@@ -300,7 +309,7 @@ v3d.TransformControls = function(camera, domElement) {
 
             space = 'local';
 
-        } else if (axis === 'E' ||  axis === 'XYZE' ||  axis === 'XYZ') {
+        } else if (axis === 'E' || axis === 'XYZE' || axis === 'XYZ') {
 
             space = 'world';
 
@@ -323,17 +332,23 @@ v3d.TransformControls = function(camera, domElement) {
             offset.copy(pointEnd).sub(pointStart);
 
             if (space === 'local' && axis !== 'XYZ') {
+
                 offset.applyQuaternion(worldQuaternionInv);
+
             }
 
-            if (axis.indexOf('X') === -1) offset.x = 0;
-            if (axis.indexOf('Y') === -1) offset.y = 0;
-            if (axis.indexOf('Z') === -1) offset.z = 0;
+            if (axis.indexOf('X') === - 1) offset.x = 0;
+            if (axis.indexOf('Y') === - 1) offset.y = 0;
+            if (axis.indexOf('Z') === - 1) offset.z = 0;
 
             if (space === 'local' && axis !== 'XYZ') {
+
                 offset.applyQuaternion(quaternionStart).divide(parentScale);
+
             } else {
+
                 offset.applyQuaternion(parentQuaternionInv).divide(parentScale);
+
             }
 
             object.position.copy(offset).add(positionStart);
@@ -346,16 +361,22 @@ v3d.TransformControls = function(camera, domElement) {
 
                     object.position.applyQuaternion(_tempQuaternion.copy(quaternionStart).inverse());
 
-                    if (axis.search('X') !== -1) {
+                    if (axis.search('X') !== - 1) {
+
                         object.position.x = Math.round(object.position.x / this.translationSnap) * this.translationSnap;
+
                     }
 
-                    if (axis.search('Y') !== -1) {
+                    if (axis.search('Y') !== - 1) {
+
                         object.position.y = Math.round(object.position.y / this.translationSnap) * this.translationSnap;
+
                     }
 
-                    if (axis.search('Z') !== -1) {
+                    if (axis.search('Z') !== - 1) {
+
                         object.position.z = Math.round(object.position.z / this.translationSnap) * this.translationSnap;
+
                     }
 
                     object.position.applyQuaternion(quaternionStart);
@@ -365,23 +386,33 @@ v3d.TransformControls = function(camera, domElement) {
                 if (space === 'world') {
 
                     if (object.parent) {
+
                         object.position.add(_tempVector.setFromMatrixPosition(object.parent.matrixWorld));
+
                     }
 
-                    if (axis.search('X') !== -1) {
+                    if (axis.search('X') !== - 1) {
+
                         object.position.x = Math.round(object.position.x / this.translationSnap) * this.translationSnap;
+
                     }
 
-                    if (axis.search('Y') !== -1) {
+                    if (axis.search('Y') !== - 1) {
+
                         object.position.y = Math.round(object.position.y / this.translationSnap) * this.translationSnap;
+
                     }
 
-                    if (axis.search('Z') !== -1) {
+                    if (axis.search('Z') !== - 1) {
+
                         object.position.z = Math.round(object.position.z / this.translationSnap) * this.translationSnap;
+
                     }
 
                     if (object.parent) {
+
                         object.position.sub(_tempVector.setFromMatrixPosition(object.parent.matrixWorld));
+
                     }
 
                 }
@@ -390,11 +421,11 @@ v3d.TransformControls = function(camera, domElement) {
 
         } else if (mode === 'scale') {
 
-            if (axis.search('XYZ') !== -1) {
+            if (axis.search('XYZ') !== - 1) {
 
                 var d = pointEnd.length() / pointStart.length();
 
-                if (pointEnd.dot(pointStart) < 0) d *= -1;
+                if (pointEnd.dot(pointStart) < 0) d *= - 1;
 
                 _tempVector2.set(d, d, d);
 
@@ -408,14 +439,20 @@ v3d.TransformControls = function(camera, domElement) {
 
                 _tempVector2.divide(_tempVector);
 
-                if (axis.search('X') === -1) {
+                if (axis.search('X') === - 1) {
+
                     _tempVector2.x = 1;
+
                 }
-                if (axis.search('Y') === -1) {
+                if (axis.search('Y') === - 1) {
+
                     _tempVector2.y = 1;
+
                 }
-                if (axis.search('Z') === -1) {
+                if (axis.search('Z') === - 1) {
+
                     _tempVector2.z = 1;
+
                 }
 
             }
@@ -423,6 +460,28 @@ v3d.TransformControls = function(camera, domElement) {
             // Apply scale
 
             object.scale.copy(scaleStart).multiply(_tempVector2);
+
+            if (this.scaleSnap) {
+
+                if (axis.search('X') !== - 1) {
+
+                    object.scale.x = Math.round(object.scale.x / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
+
+                }
+
+                if (axis.search('Y') !== - 1) {
+
+                    object.scale.y = Math.round(object.scale.y / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
+
+                }
+
+                if (axis.search('Z') !== - 1) {
+
+                    object.scale.z = Math.round(object.scale.z / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
+
+                }
+
+            }
 
         } else if (mode === 'rotate') {
 
@@ -438,7 +497,7 @@ v3d.TransformControls = function(camera, domElement) {
                 startNorm.copy(pointStart).normalize();
                 endNorm.copy(pointEnd).normalize();
 
-                rotationAngle *= (endNorm.cross(startNorm).dot(eye) < 0 ? 1 : -1);
+                rotationAngle *= (endNorm.cross(startNorm).dot(eye) < 0 ? 1 : - 1);
 
             } else if (axis === 'XYZE') {
 
@@ -452,7 +511,9 @@ v3d.TransformControls = function(camera, domElement) {
                 _tempVector.copy(_unit[axis]);
 
                 if (space === 'local') {
+
                     _tempVector.applyQuaternion(worldQuaternion);
+
                 }
 
                 rotationAngle = offset.dot(_tempVector.cross(eye).normalize()) * ROTATION_SPEED;
@@ -507,15 +568,27 @@ v3d.TransformControls = function(camera, domElement) {
 
     function getPointer(event) {
 
-        var pointer = event.changedTouches ? event.changedTouches[0] : event;
+        if (document.pointerLockElement) {
 
-        var rect = domElement.getBoundingClientRect();
+            return {
+                x: 0,
+                y: 0,
+                button: event.button
+            };
 
-        return {
-            x: (pointer.clientX - rect.left) / rect.width * 2 - 1,
-            y: - (pointer.clientY - rect.top) / rect.height * 2 + 1,
-            button: event.button
-        };
+        } else {
+
+            var pointer = event.changedTouches ? event.changedTouches[0] : event;
+
+            var rect = domElement.getBoundingClientRect();
+
+            return {
+                x: (pointer.clientX - rect.left) / rect.width * 2 - 1,
+                y: - (pointer.clientY - rect.top) / rect.height * 2 + 1,
+                button: event.button
+            };
+
+        }
 
     }
 
@@ -558,7 +631,7 @@ v3d.TransformControls = function(camera, domElement) {
 
     }
 
-    // TODO: depricate
+    // TODO: deprecate
 
     this.getMode = function() {
 
@@ -584,6 +657,12 @@ v3d.TransformControls = function(camera, domElement) {
 
     };
 
+    this.setScaleSnap = function(scaleSnap) {
+
+        scope.scaleSnap = scaleSnap;
+
+    };
+
     this.setSize = function(size) {
 
         scope.size = size;
@@ -598,7 +677,7 @@ v3d.TransformControls = function(camera, domElement) {
 
     this.update = function() {
 
-        console.warn('v3d.TransformControls: update function has been depricated.');
+        console.warn('v3d.TransformControls: update function has no more functionality and therefore has been deprecated.');
 
     };
 
@@ -606,9 +685,9 @@ v3d.TransformControls = function(camera, domElement) {
 
 v3d.TransformControls.prototype = Object.assign(Object.create(v3d.Object3D.prototype), {
 
-  constructor: v3d.TransformControls,
+    constructor: v3d.TransformControls,
 
-  isTransformControls: true
+    isTransformControls: true
 
 });
 
@@ -656,16 +735,16 @@ v3d.TransformControlsGizmo = function() {
     var matBlue = gizmoMaterial.clone();
     matBlue.color.set(0x0000ff);
 
-    var matWhiteTransperent = gizmoMaterial.clone();
-    matWhiteTransperent.opacity = 0.25;
+    var matWhiteTransparent = gizmoMaterial.clone();
+    matWhiteTransparent.opacity = 0.25;
 
-    var matYellowTransparent = matWhiteTransperent.clone();
+    var matYellowTransparent = matWhiteTransparent.clone();
     matYellowTransparent.color.set(0xffff00);
 
-    var matCyanTransparent = matWhiteTransperent.clone();
+    var matCyanTransparent = matWhiteTransparent.clone();
     matCyanTransparent.color.set(0x00ffff);
 
-    var matMagentaTransparent = matWhiteTransperent.clone();
+    var matMagentaTransparent = matWhiteTransparent.clone();
     matMagentaTransparent.color.set(0xff00ff);
 
     var matYellow = gizmoMaterial.clone();
@@ -702,20 +781,20 @@ v3d.TransformControlsGizmo = function() {
     var scaleHandleGeometry = new v3d.BoxBufferGeometry(0.125, 0.125, 0.125);
 
     var lineGeometry = new v3d.BufferGeometry();
-    lineGeometry.addAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0,    1, 0, 0], 3));
+    lineGeometry.setAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0,    1, 0, 0], 3));
 
     var CircleGeometry = function(radius, arc) {
 
         var geometry = new v3d.BufferGeometry();
         var vertices = [];
 
-        for (var i = 0; i <= 64 * arc; ++i) {
+        for (var i = 0; i <= 64 * arc; ++ i) {
 
             vertices.push(0, Math.cos(i / 32 * Math.PI) * radius, Math.sin(i / 32 * Math.PI) * radius);
 
         }
 
-        geometry.addAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
+        geometry.setAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
 
         return geometry;
 
@@ -723,11 +802,11 @@ v3d.TransformControlsGizmo = function() {
 
     // Special geometry for transform helper. If scaled with position vector it spans from [0,0,0] to position
 
-    var TranslateHelperGeometry = function(radius, arc) {
+    var TranslateHelperGeometry = function() {
 
-        var geometry = new v3d.BufferGeometry()
+        var geometry = new v3d.BufferGeometry();
 
-        geometry.addAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0, 1, 1, 1], 3));
+        geometry.setAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0, 1, 1, 1], 3));
 
         return geometry;
 
@@ -737,7 +816,7 @@ v3d.TransformControlsGizmo = function() {
 
     var gizmoTranslate = {
         X: [
-            [new v3d.Mesh(arrowGeometry, matRed), [1, 0, 0], [0, 0, -Math.PI / 2], null, 'fwd'],
+            [new v3d.Mesh(arrowGeometry, matRed), [1, 0, 0], [0, 0, - Math.PI / 2], null, 'fwd'],
             [new v3d.Mesh(arrowGeometry, matRed), [1, 0, 0], [0, 0, Math.PI / 2], null, 'bwd'],
             [new v3d.Line(lineGeometry, matLineRed)]
         ],
@@ -748,32 +827,32 @@ v3d.TransformControlsGizmo = function() {
         ],
         Z: [
             [new v3d.Mesh(arrowGeometry, matBlue), [0, 0, 1], [Math.PI / 2, 0, 0], null, 'fwd'],
-            [new v3d.Mesh(arrowGeometry, matBlue), [0, 0, 1], [-Math.PI / 2, 0, 0], null, 'bwd'],
-            [new v3d.Line(lineGeometry, matLineBlue), null, [0, -Math.PI / 2, 0]]
+            [new v3d.Mesh(arrowGeometry, matBlue), [0, 0, 1], [- Math.PI / 2, 0, 0], null, 'bwd'],
+            [new v3d.Line(lineGeometry, matLineBlue), null, [0, - Math.PI / 2, 0]]
         ],
         XYZ: [
-            [new v3d.Mesh(new v3d.OctahedronBufferGeometry(0.1, 0), matWhiteTransperent), [0, 0, 0], [0, 0, 0]]
+            [new v3d.Mesh(new v3d.OctahedronBufferGeometry(0.1, 0), matWhiteTransparent.clone()), [0, 0, 0], [0, 0, 0]]
         ],
         XY: [
-            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.295, 0.295), matYellowTransparent), [0.15, 0.15, 0]],
+            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.295, 0.295), matYellowTransparent.clone()), [0.15, 0.15, 0]],
             [new v3d.Line(lineGeometry, matLineYellow), [0.18, 0.3, 0], null, [0.125, 1, 1]],
             [new v3d.Line(lineGeometry, matLineYellow), [0.3, 0.18, 0], [0, 0, Math.PI / 2], [0.125, 1, 1]]
         ],
         YZ: [
-            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.295, 0.295), matCyanTransparent), [0, 0.15, 0.15], [0, Math.PI / 2, 0]],
+            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.295, 0.295), matCyanTransparent.clone()), [0, 0.15, 0.15], [0, Math.PI / 2, 0]],
             [new v3d.Line(lineGeometry, matLineCyan), [0, 0.18, 0.3], [0, 0, Math.PI / 2], [0.125, 1, 1]],
-            [new v3d.Line(lineGeometry, matLineCyan), [0, 0.3, 0.18], [0, -Math.PI / 2, 0], [0.125, 1, 1]]
+            [new v3d.Line(lineGeometry, matLineCyan), [0, 0.3, 0.18], [0, - Math.PI / 2, 0], [0.125, 1, 1]]
         ],
         XZ: [
-            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.295, 0.295), matMagentaTransparent), [0.15, 0, 0.15], [-Math.PI / 2, 0, 0]],
+            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.295, 0.295), matMagentaTransparent.clone()), [0.15, 0, 0.15], [- Math.PI / 2, 0, 0]],
             [new v3d.Line(lineGeometry, matLineMagenta), [0.18, 0, 0.3], null, [0.125, 1, 1]],
-            [new v3d.Line(lineGeometry, matLineMagenta), [0.3, 0, 0.18], [0, -Math.PI / 2, 0], [0.125, 1, 1]]
+            [new v3d.Line(lineGeometry, matLineMagenta), [0.3, 0, 0.18], [0, - Math.PI / 2, 0], [0.125, 1, 1]]
         ]
     };
 
     var pickerTranslate = {
         X: [
-            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 1, 4, 1, false), matInvisible), [0.6, 0, 0], [0, 0, -Math.PI / 2]]
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 1, 4, 1, false), matInvisible), [0.6, 0, 0], [0, 0, - Math.PI / 2]]
         ],
         Y: [
             [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 1, 4, 1, false), matInvisible), [0, 0.6, 0]]
@@ -791,7 +870,7 @@ v3d.TransformControlsGizmo = function() {
             [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.4, 0.4), matInvisible), [0, 0.2, 0.2], [0, Math.PI / 2, 0]]
         ],
         XZ: [
-            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.4, 0.4), matInvisible), [0.2, 0, 0.2], [-Math.PI / 2, 0, 0]]
+            [new v3d.Mesh(new v3d.PlaneBufferGeometry(0.4, 0.4), matInvisible), [0.2, 0, 0.2], [- Math.PI / 2, 0, 0]]
         ]
     };
 
@@ -806,13 +885,13 @@ v3d.TransformControlsGizmo = function() {
             [new v3d.Line(TranslateHelperGeometry(), matHelper), null, null, null, 'helper']
         ],
         X: [
-            [new v3d.Line(lineGeometry, matHelper.clone()), [-1e3, 0, 0], null, [1e6, 1, 1], 'helper']
+            [new v3d.Line(lineGeometry, matHelper.clone()), [- 1e3, 0, 0], null, [1e6, 1, 1], 'helper']
         ],
         Y: [
-            [new v3d.Line(lineGeometry, matHelper.clone()), [0, -1e3, 0], [0, 0, Math.PI / 2], [1e6, 1, 1], 'helper']
+            [new v3d.Line(lineGeometry, matHelper.clone()), [0, - 1e3, 0], [0, 0, Math.PI / 2], [1e6, 1, 1], 'helper']
         ],
         Z: [
-            [new v3d.Line(lineGeometry, matHelper.clone()), [0, 0, -1e3], [0, -Math.PI / 2, 0], [1e6, 1, 1], 'helper']
+            [new v3d.Line(lineGeometry, matHelper.clone()), [0, 0, - 1e3], [0, - Math.PI / 2, 0], [1e6, 1, 1], 'helper']
         ]
     };
 
@@ -822,7 +901,7 @@ v3d.TransformControlsGizmo = function() {
             [new v3d.Mesh(new v3d.OctahedronBufferGeometry(0.04, 0), matRed), [0, 0, 0.99], null, [1, 3, 1]],
         ],
         Y: [
-            [new v3d.Line(CircleGeometry(1, 0.5), matLineGreen), null, [0, 0, -Math.PI / 2]],
+            [new v3d.Line(CircleGeometry(1, 0.5), matLineGreen), null, [0, 0, - Math.PI / 2]],
             [new v3d.Mesh(new v3d.OctahedronBufferGeometry(0.04, 0), matGreen), [0, 0, 0.99], null, [3, 1, 1]],
         ],
         Z: [
@@ -831,9 +910,9 @@ v3d.TransformControlsGizmo = function() {
         ],
         E: [
             [new v3d.Line(CircleGeometry(1.25, 1), matLineYellowTransparent), null, [0, Math.PI / 2, 0]],
-            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.03, 0, 0.15, 4, 1, false), matLineYellowTransparent), [1.17, 0, 0], [0, 0, -Math.PI / 2], [1, 1, 0.001]],
-            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.03, 0, 0.15, 4, 1, false), matLineYellowTransparent), [-1.17, 0, 0], [0, 0, Math.PI / 2], [1, 1, 0.001]],
-            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.03, 0, 0.15, 4, 1, false), matLineYellowTransparent), [0, -1.17, 0], [Math.PI, 0, 0], [1, 1, 0.001]],
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.03, 0, 0.15, 4, 1, false), matLineYellowTransparent), [1.17, 0, 0], [0, 0, - Math.PI / 2], [1, 1, 0.001]],
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.03, 0, 0.15, 4, 1, false), matLineYellowTransparent), [- 1.17, 0, 0], [0, 0, Math.PI / 2], [1, 1, 0.001]],
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.03, 0, 0.15, 4, 1, false), matLineYellowTransparent), [0, - 1.17, 0], [Math.PI, 0, 0], [1, 1, 0.001]],
             [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.03, 0, 0.15, 4, 1, false), matLineYellowTransparent), [0, 1.17, 0], [0, 0, 0], [1, 1, 0.001]],
         ],
         XYZE: [
@@ -843,19 +922,19 @@ v3d.TransformControlsGizmo = function() {
 
     var helperRotate = {
         AXIS: [
-            [new v3d.Line(lineGeometry, matHelper.clone()), [-1e3, 0, 0], null, [1e6, 1, 1], 'helper']
+            [new v3d.Line(lineGeometry, matHelper.clone()), [- 1e3, 0, 0], null, [1e6, 1, 1], 'helper']
         ]
     };
 
     var pickerRotate = {
         X: [
-            [new v3d.Mesh(new v3d.TorusBufferGeometry(1, 0.1, 4, 24), matInvisible), [0, 0, 0], [0, -Math.PI / 2, -Math.PI / 2]],
+            [new v3d.Mesh(new v3d.TorusBufferGeometry(1, 0.1, 4, 24), matInvisible), [0, 0, 0], [0, - Math.PI / 2, - Math.PI / 2]],
         ],
         Y: [
             [new v3d.Mesh(new v3d.TorusBufferGeometry(1, 0.1, 4, 24), matInvisible), [0, 0, 0], [Math.PI / 2, 0, 0]],
         ],
         Z: [
-            [new v3d.Mesh(new v3d.TorusBufferGeometry(1, 0.1, 4, 24), matInvisible), [0, 0, 0], [0, 0, -Math.PI / 2]],
+            [new v3d.Mesh(new v3d.TorusBufferGeometry(1, 0.1, 4, 24), matInvisible), [0, 0, 0], [0, 0, - Math.PI / 2]],
         ],
         E: [
             [new v3d.Mesh(new v3d.TorusBufferGeometry(1.25, 0.1, 2, 24), matInvisible)]
@@ -867,7 +946,7 @@ v3d.TransformControlsGizmo = function() {
 
     var gizmoScale = {
         X: [
-            [new v3d.Mesh(scaleHandleGeometry, matRed), [0.8, 0, 0], [0, 0, -Math.PI / 2]],
+            [new v3d.Mesh(scaleHandleGeometry, matRed), [0.8, 0, 0], [0, 0, - Math.PI / 2]],
             [new v3d.Line(lineGeometry, matLineRed), null, null, [0.8, 1, 1]]
         ],
         Y: [
@@ -876,7 +955,7 @@ v3d.TransformControlsGizmo = function() {
         ],
         Z: [
             [new v3d.Mesh(scaleHandleGeometry, matBlue), [0, 0, 0.8], [Math.PI / 2, 0, 0]],
-            [new v3d.Line(lineGeometry, matLineBlue), null, [0, -Math.PI / 2, 0], [0.8, 1, 1]]
+            [new v3d.Line(lineGeometry, matLineBlue), null, [0, - Math.PI / 2, 0], [0.8, 1, 1]]
         ],
         XY: [
             [new v3d.Mesh(scaleHandleGeometry, matYellowTransparent), [0.85, 0.85, 0], null, [2, 2, 0.2]],
@@ -886,27 +965,27 @@ v3d.TransformControlsGizmo = function() {
         YZ: [
             [new v3d.Mesh(scaleHandleGeometry, matCyanTransparent), [0, 0.85, 0.85], null, [0.2, 2, 2]],
             [new v3d.Line(lineGeometry, matLineCyan), [0, 0.855, 0.98], [0, 0, Math.PI / 2], [0.125, 1, 1]],
-            [new v3d.Line(lineGeometry, matLineCyan), [0, 0.98, 0.855], [0, -Math.PI / 2, 0], [0.125, 1, 1]]
+            [new v3d.Line(lineGeometry, matLineCyan), [0, 0.98, 0.855], [0, - Math.PI / 2, 0], [0.125, 1, 1]]
         ],
         XZ: [
             [new v3d.Mesh(scaleHandleGeometry, matMagentaTransparent), [0.85, 0, 0.85], null, [2, 0.2, 2]],
             [new v3d.Line(lineGeometry, matLineMagenta), [0.855, 0, 0.98], null, [0.125, 1, 1]],
-            [new v3d.Line(lineGeometry, matLineMagenta), [0.98, 0, 0.855], [0, -Math.PI / 2, 0], [0.125, 1, 1]]
+            [new v3d.Line(lineGeometry, matLineMagenta), [0.98, 0, 0.855], [0, - Math.PI / 2, 0], [0.125, 1, 1]]
         ],
         XYZX: [
-            [new v3d.Mesh(new v3d.BoxBufferGeometry(0.125, 0.125, 0.125), matWhiteTransperent), [1.1, 0, 0]],
+            [new v3d.Mesh(new v3d.BoxBufferGeometry(0.125, 0.125, 0.125), matWhiteTransparent.clone()), [1.1, 0, 0]],
         ],
         XYZY: [
-            [new v3d.Mesh(new v3d.BoxBufferGeometry(0.125, 0.125, 0.125), matWhiteTransperent), [0, 1.1, 0]],
+            [new v3d.Mesh(new v3d.BoxBufferGeometry(0.125, 0.125, 0.125), matWhiteTransparent.clone()), [0, 1.1, 0]],
         ],
         XYZZ: [
-            [new v3d.Mesh(new v3d.BoxBufferGeometry(0.125, 0.125, 0.125), matWhiteTransperent), [0, 0, 1.1]],
+            [new v3d.Mesh(new v3d.BoxBufferGeometry(0.125, 0.125, 0.125), matWhiteTransparent.clone()), [0, 0, 1.1]],
         ]
     };
 
     var pickerScale = {
         X: [
-            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 0.8, 4, 1, false), matInvisible), [0.5, 0, 0], [0, 0, -Math.PI / 2]]
+            [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 0.8, 4, 1, false), matInvisible), [0.5, 0, 0], [0, 0, - Math.PI / 2]]
         ],
         Y: [
             [new v3d.Mesh(new v3d.CylinderBufferGeometry(0.2, 0, 0.8, 4, 1, false), matInvisible), [0, 0.5, 0]]
@@ -936,13 +1015,13 @@ v3d.TransformControlsGizmo = function() {
 
     var helperScale = {
         X: [
-            [new v3d.Line(lineGeometry, matHelper.clone()), [-1e3, 0, 0], null, [1e6, 1, 1], 'helper']
+            [new v3d.Line(lineGeometry, matHelper.clone()), [- 1e3, 0, 0], null, [1e6, 1, 1], 'helper']
         ],
         Y: [
-            [new v3d.Line(lineGeometry, matHelper.clone()), [0, -1e3, 0], [0, 0, Math.PI / 2], [1e6, 1, 1], 'helper']
+            [new v3d.Line(lineGeometry, matHelper.clone()), [0, - 1e3, 0], [0, 0, Math.PI / 2], [1e6, 1, 1], 'helper']
         ],
         Z: [
-            [new v3d.Line(lineGeometry, matHelper.clone()), [0, 0, -1e3], [0, -Math.PI / 2, 0], [1e6, 1, 1], 'helper']
+            [new v3d.Line(lineGeometry, matHelper.clone()), [0, 0, - 1e3], [0, - Math.PI / 2, 0], [1e6, 1, 1], 'helper']
         ]
     };
 
@@ -967,20 +1046,27 @@ v3d.TransformControlsGizmo = function() {
                 object.tag = tag;
 
                 if (position) {
+
                     object.position.set(position[0], position[1], position[2]);
+
                 }
                 if (rotation) {
+
                     object.rotation.set(rotation[0], rotation[1], rotation[2]);
+
                 }
                 if (scale) {
+
                     object.scale.set(scale[0], scale[1], scale[2]);
+
                 }
 
                 object.updateMatrix();
 
                 var tempGeometry = object.geometry.clone();
-                tempGeometry.applyMatrix(object.matrix);
+                tempGeometry.applyMatrix4(object.matrix);
                 object.geometry = tempGeometry;
+                object.renderOrder = Infinity;
 
                 object.position.set(0, 0, 0);
                 object.rotation.set(0, 0, 0);
@@ -1081,7 +1167,7 @@ v3d.TransformControlsGizmo = function() {
                 if (handle.name === 'AXIS') {
 
                     handle.position.copy(this.worldPositionStart);
-                    handle.visible = !!this.axis;
+                    handle.visible = !! this.axis;
 
                     if (this.axis === 'X') {
 
@@ -1089,7 +1175,9 @@ v3d.TransformControlsGizmo = function() {
                         handle.quaternion.copy(quaternion).multiply(tempQuaternion);
 
                         if (Math.abs(alignVector.copy(unitX).applyQuaternion(quaternion).dot(this.eye)) > 0.9) {
+
                             handle.visible = false;
+
                         }
 
                     }
@@ -1100,7 +1188,9 @@ v3d.TransformControlsGizmo = function() {
                         handle.quaternion.copy(quaternion).multiply(tempQuaternion);
 
                         if (Math.abs(alignVector.copy(unitY).applyQuaternion(quaternion).dot(this.eye)) > 0.9) {
+
                             handle.visible = false;
+
                         }
 
                     }
@@ -1111,7 +1201,9 @@ v3d.TransformControlsGizmo = function() {
                         handle.quaternion.copy(quaternion).multiply(tempQuaternion);
 
                         if (Math.abs(alignVector.copy(unitZ).applyQuaternion(quaternion).dot(this.eye)) > 0.9) {
+
                             handle.visible = false;
+
                         }
 
                     }
@@ -1147,7 +1239,7 @@ v3d.TransformControlsGizmo = function() {
 
                     handle.position.copy(this.worldPositionStart);
                     handle.quaternion.copy(this.worldQuaternionStart);
-                    tempVector.set(1e-10, 1e-10, 1e-10).add(this.worldPositionStart).sub(this.worldPosition).multiplyScalar(-1);
+                    tempVector.set(1e-10, 1e-10, 1e-10).add(this.worldPositionStart).sub(this.worldPosition).multiplyScalar(- 1);
                     tempVector.applyQuaternion(this.worldQuaternionStart.clone().inverse());
                     handle.scale.copy(tempVector);
                     handle.visible = this.dragging;
@@ -1168,7 +1260,7 @@ v3d.TransformControlsGizmo = function() {
 
                     if (this.axis) {
 
-                        handle.visible = this.axis.search(handle.name) !== -1;
+                        handle.visible = this.axis.search(handle.name) !== - 1;
 
                     }
 
@@ -1193,78 +1285,132 @@ v3d.TransformControlsGizmo = function() {
 
 
                 if (handle.name === 'X' || handle.name === 'XYZX') {
+
                     if (Math.abs(alignVector.copy(unitX).applyQuaternion(quaternion).dot(this.eye)) > AXIS_HIDE_TRESHOLD) {
+
                         handle.scale.set(1e-10, 1e-10, 1e-10);
                         handle.visible = false;
+
                     }
+
                 }
                 if (handle.name === 'Y' || handle.name === 'XYZY') {
+
                     if (Math.abs(alignVector.copy(unitY).applyQuaternion(quaternion).dot(this.eye)) > AXIS_HIDE_TRESHOLD) {
+
                         handle.scale.set(1e-10, 1e-10, 1e-10);
                         handle.visible = false;
+
                     }
+
                 }
                 if (handle.name === 'Z' || handle.name === 'XYZZ') {
+
                     if (Math.abs(alignVector.copy(unitZ).applyQuaternion(quaternion).dot(this.eye)) > AXIS_HIDE_TRESHOLD) {
+
                         handle.scale.set(1e-10, 1e-10, 1e-10);
                         handle.visible = false;
+
                     }
+
                 }
                 if (handle.name === 'XY') {
+
                     if (Math.abs(alignVector.copy(unitZ).applyQuaternion(quaternion).dot(this.eye)) < PLANE_HIDE_TRESHOLD) {
+
                         handle.scale.set(1e-10, 1e-10, 1e-10);
                         handle.visible = false;
+
                     }
+
                 }
                 if (handle.name === 'YZ') {
+
                     if (Math.abs(alignVector.copy(unitX).applyQuaternion(quaternion).dot(this.eye)) < PLANE_HIDE_TRESHOLD) {
+
                         handle.scale.set(1e-10, 1e-10, 1e-10);
                         handle.visible = false;
+
                     }
+
                 }
                 if (handle.name === 'XZ') {
+
                     if (Math.abs(alignVector.copy(unitY).applyQuaternion(quaternion).dot(this.eye)) < PLANE_HIDE_TRESHOLD) {
+
                         handle.scale.set(1e-10, 1e-10, 1e-10);
                         handle.visible = false;
+
                     }
+
                 }
 
                 // Flip translate and scale axis ocluded behind another axis
 
-                if (handle.name.search('X') !== -1) {
+                if (handle.name.search('X') !== - 1) {
+
                     if (alignVector.copy(unitX).applyQuaternion(quaternion).dot(this.eye) < AXIS_FLIP_TRESHOLD) {
+
                         if (handle.tag === 'fwd') {
+
                             handle.visible = false;
+
                         } else {
-                            handle.scale.x *= -1;
+
+                            handle.scale.x *= - 1;
+
                         }
+
                     } else if (handle.tag === 'bwd') {
+
                         handle.visible = false;
+
                     }
+
                 }
 
-                if (handle.name.search('Y') !== -1) {
+                if (handle.name.search('Y') !== - 1) {
+
                     if (alignVector.copy(unitY).applyQuaternion(quaternion).dot(this.eye) < AXIS_FLIP_TRESHOLD) {
+
                         if (handle.tag === 'fwd') {
+
                             handle.visible = false;
+
                         } else {
-                            handle.scale.y *= -1;
+
+                            handle.scale.y *= - 1;
+
                         }
+
                     } else if (handle.tag === 'bwd') {
+
                         handle.visible = false;
+
                     }
+
                 }
 
-                if (handle.name.search('Z') !== -1) {
+                if (handle.name.search('Z') !== - 1) {
+
                     if (alignVector.copy(unitZ).applyQuaternion(quaternion).dot(this.eye) < AXIS_FLIP_TRESHOLD) {
+
                         if (handle.tag === 'fwd') {
+
                             handle.visible = false;
+
                         } else {
-                            handle.scale.z *= -1;
+
+                            handle.scale.z *= - 1;
+
                         }
+
                     } else if (handle.tag === 'bwd') {
+
                         handle.visible = false;
+
                     }
+
                 }
 
             } else if (this.mode === 'rotate') {
@@ -1282,7 +1428,7 @@ v3d.TransformControlsGizmo = function() {
 
                 if (handle.name === 'X') {
 
-                    tempQuaternion.setFromAxisAngle(unitX, Math.atan2(-alignVector.y, alignVector.z));
+                    tempQuaternion.setFromAxisAngle(unitX, Math.atan2(- alignVector.y, alignVector.z));
                     tempQuaternion.multiplyQuaternions(tempQuaternion2, tempQuaternion);
                     handle.quaternion.copy(tempQuaternion);
 
@@ -1307,10 +1453,10 @@ v3d.TransformControlsGizmo = function() {
             }
 
             // Hide disabled axes
-            handle.visible = handle.visible && (handle.name.indexOf("X") === -1 || this.showX);
-            handle.visible = handle.visible && (handle.name.indexOf("Y") === -1 || this.showY);
-            handle.visible = handle.visible && (handle.name.indexOf("Z") === -1 || this.showZ);
-            handle.visible = handle.visible && (handle.name.indexOf("E") === -1 || (this.showX && this.showY && this.showZ));
+            handle.visible = handle.visible && (handle.name.indexOf("X") === - 1 || this.showX);
+            handle.visible = handle.visible && (handle.name.indexOf("Y") === - 1 || this.showY);
+            handle.visible = handle.visible && (handle.name.indexOf("Z") === - 1 || this.showZ);
+            handle.visible = handle.visible && (handle.name.indexOf("E") === - 1 || (this.showX && this.showY && this.showZ));
 
             // highlight selected axis
 
@@ -1332,7 +1478,11 @@ v3d.TransformControlsGizmo = function() {
                     handle.material.opacity = 1.0;
                     handle.material.color.lerp(new v3d.Color(1, 1, 1), 0.5);
 
-                } else if (this.axis.split('').some(function(a) { return handle.name === a; })) {
+                } else if (this.axis.split('').some(function(a) {
+
+                    return handle.name === a;
+
+                })) {
 
                     handle.material.opacity = 1.0;
                     handle.material.color.lerp(new v3d.Color(1, 1, 1), 0.5);
@@ -1401,9 +1551,11 @@ v3d.TransformControlsPlane = function() {
         alignVector.copy(unitY);
 
         switch (this.mode) {
+
             case 'translate':
             case 'scale':
                 switch (this.axis) {
+
                     case 'X':
                         alignVector.copy(this.eye).cross(unitX);
                         dirVector.copy(unitX).cross(alignVector);
@@ -1430,12 +1582,14 @@ v3d.TransformControlsPlane = function() {
                     case 'E':
                         dirVector.set(0, 0, 0);
                         break;
+
                 }
                 break;
             case 'rotate':
             default:
                 // special case for rotate
                 dirVector.set(0, 0, 0);
+
         }
 
         if (dirVector.length() === 0) {

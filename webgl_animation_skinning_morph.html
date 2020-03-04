@@ -4,66 +4,44 @@
     <title>Verge3D webgl - skinning and morphing</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
     <style>
       body {
-        font-family: Monospace;
-        background-color: #000;
-        margin: 0px;
-        overflow: hidden;
+        color: #222;
       }
-      #info {
-        position: absolute;
-        top: 10px;
-        width: 100%;
-        text-align: center;
-        z-index: 100;
-        display:block;
+
+      a {
+        color: #2fa1d6;
       }
-      #info p {
+
+      p {
         max-width: 600px;
         margin-left: auto;
         margin-right: auto;
         padding: 0 2em;
-      }
-      #info a {
-        color: #2fa1d6;
-        font-weight: bold;
-      }
-      .dg.ac {
-        z-index: 999 !important;
       }
     </style>
   </head>
 
   <body>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - webgl - skinning and morphing<br />
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - skinning and morphing<br />
       <p>
-        The animation system allows clips to be played individually, looped, or crossfaded with
-        other clips. This example shows a character looping in one of several base animation states,
-        then transitioning smoothly to one-time actions. Facial expressions are controlled
-        independently with morph targets.
+        The animation system allows clips to be played individually, looped, or crossfaded with other clips. This example shows a character looping in one of several base animation states, then transitioning smoothly to one-time actions. Facial expressions are controlled independently with morph targets.
       </p>
       Model by
       <a href="https://www.patreon.com/quaternius" target="_blank" rel="noopener">Tomás Laulhé</a>,
       modifications by <a href="https://donmccurdy.com/" target="_blank" rel="noopener">Don McCurdy</a>. CC0.<br />
     </div>
 
-    <script src="../build/v3d.js"></script>
+    <script type="module">
 
-    <script src="js/loaders/GLTFLoader.js"></script>
+      import * as v3d from '../build/v3d.module.js';
 
-    <script src="js/WebGL.js"></script>
-    <script src="js/libs/stats.min.js"></script>
-    <script src="js/libs/dat.gui.min.js"></script>
+      import Stats from './jsm/libs/stats.module.js';
+      import { GUI } from './jsm/libs/dat.gui.module.js';
 
-    <script>
-
-      if (WEBGL.isWebGLAvailable() === false) {
-
-        document.body.appendChild(WEBGL.getWebGLErrorMessage());
-
-      }
+      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
 
       var container, stats, clock, gui, mixer, actions, activeAction, previousAction;
       var camera, scene, renderer, model, face;
@@ -111,7 +89,7 @@
 
         // model
 
-        var loader = new v3d.GLTFLoader();
+        var loader = new GLTFLoader();
         loader.load('models/gltf/RobotExpressive/RobotExpressive.glb', function(gltf) {
 
           model = gltf.scene;
@@ -128,8 +106,7 @@
         renderer = new v3d.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.gammaOutput = true;
-        renderer.gammaFactor = 2.2;
+        renderer.outputEncoding = v3d.sRGBEncoding;
         container.appendChild(renderer.domElement);
 
         window.addEventListener('resize', onWindowResize, false);
@@ -145,7 +122,7 @@
         var states = ['Idle', 'Walking', 'Running', 'Dance', 'Death', 'Sitting', 'Standing'];
         var emotes = ['Jump', 'Yes', 'No', 'Wave', 'Punch', 'ThumbsUp'];
 
-        gui = new dat.GUI();
+        gui = new GUI();
 
         mixer = new v3d.AnimationMixer(model);
 
@@ -159,8 +136,8 @@
 
           if (emotes.indexOf(clip.name) >= 0 || states.indexOf(clip.name) >= 4) {
 
-              action.clampWhenFinished = true;
-              action.loop = v3d.LoopOnce;
+            action.clampWhenFinished = true;
+            action.loop = v3d.LoopOnce;
 
           }
 

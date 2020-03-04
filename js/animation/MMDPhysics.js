@@ -11,6 +11,8 @@
  *  - Physics in Worker
  */
 
+/* global Ammo */
+
 v3d.MMDPhysics = (function() {
 
     /**
@@ -659,7 +661,7 @@ v3d.MMDPhysics = (function() {
         negativeVector3: function(v) {
 
             var v2 = this.allocVector3();
-            v2.setValue(-v.x(), -v.y(), -v.z());
+            v2.setValue(- v.x(), - v.y(), - v.z());
             return v2;
 
         },
@@ -741,7 +743,7 @@ v3d.MMDPhysics = (function() {
             var t = m[0] + m[4] + m[8];
             var s, x, y, z, w;
 
-            if(t > 0) {
+            if (t > 0) {
 
                 s = Math.sqrt(t + 1.0) * 2;
                 w = 0.25 * s;
@@ -749,7 +751,7 @@ v3d.MMDPhysics = (function() {
                 y = (m[2] - m[6]) / s;
                 z = (m[3] - m[1]) / s;
 
-            } else if((m[0] > m[4]) && (m[0] > m[8])) {
+            } else if ((m[0] > m[4]) && (m[0] > m[8])) {
 
                 s = Math.sqrt(1.0 + m[0] - m[4] - m[8]) * 2;
                 w = (m[7] - m[5]) / s;
@@ -757,7 +759,7 @@ v3d.MMDPhysics = (function() {
                 y = (m[1] + m[3]) / s;
                 z = (m[2] + m[6]) / s;
 
-            } else if(m[4] > m[8]) {
+            } else if (m[4] > m[8]) {
 
                 s = Math.sqrt(1.0 + m[4] - m[0] - m[8]) * 2;
                 w = (m[2] - m[6]) / s;
@@ -794,7 +796,7 @@ v3d.MMDPhysics = (function() {
      */
     function RigidBody(mesh, world, params, manager) {
 
-        this.mesh  = mesh;
+        this.mesh = mesh;
         this.world = world;
         this.params = params;
         this.manager = manager;
@@ -882,7 +884,7 @@ v3d.MMDPhysics = (function() {
 
             function generateShape(p) {
 
-                switch(p.shapeType) {
+                switch (p.shapeType) {
 
                     case 0:
                         return new Ammo.btSphereShape(p.width);
@@ -912,7 +914,7 @@ v3d.MMDPhysics = (function() {
             var localInertia = manager.allocVector3();
             localInertia.setValue(0, 0, 0);
 
-            if(weight !== 0) {
+            if (weight !== 0) {
 
                 shape.calculateLocalInertia(weight, localInertia);
 
@@ -994,14 +996,8 @@ v3d.MMDPhysics = (function() {
         _getWorldTransformForBone: function() {
 
             var manager = this.manager;
-
-            var tr = manager.allocTransform();
-            this.body.getMotionState().getWorldTransform(tr);
-            var tr2 = manager.multiplyTransforms(tr, this.boneOffsetFormInverse);
-
-            manager.freeTransform(tr);
-
-            return tr2;
+            var tr = this.body.getCenterOfMassTransform();
+            return manager.multiplyTransforms(tr, this.boneOffsetFormInverse);
 
         },
 
@@ -1057,7 +1053,11 @@ v3d.MMDPhysics = (function() {
             //this.bone.quaternion.multiply(thQ2);
 
             thQ3.setFromRotationMatrix(this.bone.matrix);
-            this.bone.quaternion.copy(thQ2.multiply(thQ3));
+
+            // Renormalizing quaternion here because repeatedly transforming
+            // quaternion continuously accumulates floating point error and
+            // can end up being overflow. See #15335
+            this.bone.quaternion.copy(thQ2.multiply(thQ3).normalize());
 
             manager.freeThreeQuaternion(thQ);
             manager.freeThreeQuaternion(thQ2);
@@ -1072,19 +1072,24 @@ v3d.MMDPhysics = (function() {
 
             var manager = this.manager;
 
-            var tr = this.body.getCenterOfMassTransform();
-            var origin = tr.getOrigin();
-            
-            var matrixInv = manager.allocThreeMatrix4();
-            matrixInv.copy(this.bone.parent.matrixWorld).getInverse(matrixInv);
-            
-            var pos = manager.allocThreeVector3();
-            pos.set(origin.x(), origin.y(), origin.z()).applyMatrix4(matrixInv);
+            var tr = this._getWorldTransformForBone();
 
-            this.bone.position.copy(pos);
+            var thV = manager.allocThreeVector3();
 
-            manager.freeThreeVector3(pos);
-            manager.freeThreeMatrix4(matrixInv);
+            var o = manager.getOrigin(tr);
+            thV.set(o.x(), o.y(), o.z());
+
+            if (this.bone.parent) {
+
+                this.bone.parent.worldToLocal(thV);
+
+            }
+
+            this.bone.position.copy(thV);
+
+            manager.freeThreeVector3(thV);
+
+            manager.freeTransform(tr);
 
         }
 
@@ -1100,7 +1105,7 @@ v3d.MMDPhysics = (function() {
      */
     function Constraint(mesh, world, bodyA, bodyB, params, manager) {
 
-        this.mesh  = mesh;
+        this.mesh = mesh;
         this.world = world;
         this.bodyA = bodyA;
         this.bodyB = bodyB;
@@ -1170,7 +1175,7 @@ v3d.MMDPhysics = (function() {
 
             for (var i = 0; i < 3; i++) {
 
-                if(params.springPosition[i] !== 0) {
+                if (params.springPosition[i] !== 0) {
 
                     constraint.enableSpring(i, true);
                     constraint.setStiffness(i, params.springPosition[i]);
@@ -1181,7 +1186,7 @@ v3d.MMDPhysics = (function() {
 
             for (var i = 0; i < 3; i++) {
 
-                if(params.springRotation[i] !== 0) {
+                if (params.springRotation[i] !== 0) {
 
                     constraint.enableSpring(i + 3, true);
                     constraint.setStiffness(i + 3, params.springRotation[i]);

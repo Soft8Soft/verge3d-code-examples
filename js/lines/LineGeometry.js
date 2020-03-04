@@ -87,7 +87,7 @@ v3d.LineGeometry.prototype = Object.assign(Object.create(v3d.LineSegmentsGeometr
 
     },
 
-    copy: function(source) {
+    copy: function(/* source */) {
 
         // todo
 

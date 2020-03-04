@@ -4,25 +4,34 @@
     <title>Verge3D webgl - morph targets - horse</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
     <style>
       body {
-        font-family: Monospace;
         background-color: #f0f0f0;
-        margin: 0px;
-        overflow: hidden;
+        color: #444;
+      }
+      a {
+        color: #08f;
       }
     </style>
   </head>
   <body>
 
-    <script src="../build/v3d.js"></script>
-    <script src="js/libs/stats.min.js"></script>
-    <script src="js/loaders/GLTFLoader.js"></script>
+    <div id="info">
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - morph targets - horse<br/>
+      model by <a href="http://mirada.com/">mirada</a> from <a href="http://ro.me">rome</a>
+    </div>
 
-    <script>
+    <script type="module">
+
+      import * as v3d from '../build/v3d.module.js';
+
+      import Stats from './jsm/libs/stats.module.js';
+
+      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
 
       var container, stats;
-      var camera, scene, projector, renderer;
+      var camera, scene, renderer;
       var mesh, mixer;
 
       init();
@@ -32,14 +41,6 @@
 
         container = document.createElement('div');
         document.body.appendChild(container);
-
-        var info = document.createElement('div');
-        info.style.position = 'absolute';
-        info.style.top = '10px';
-        info.style.width = '100%';
-        info.style.textAlign = 'center';
-        info.innerHTML = '<a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - morph targets - horse. model by <a href="http://mirada.com/">mirada</a> from <a href="http://ro.me">rome</a>';
-        container.appendChild(info);
 
         //
 
@@ -57,10 +58,10 @@
         scene.add(light);
 
         var light = new v3d.DirectionalLight(0xffefef, 1.5);
-        light.position.set(-1, -1, -1).normalize();
+        light.position.set(- 1, - 1, - 1).normalize();
         scene.add(light);
 
-        var loader = new v3d.GLTFLoader();
+        var loader = new GLTFLoader();
         loader.load("models/gltf/Horse.glb", function(gltf) {
 
           mesh = gltf.scene.children[0];
@@ -79,8 +80,7 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
 
-        renderer.gammaOutput = true;
-        renderer.gammaFactor = 2.2;
+        renderer.outputEncoding = v3d.sRGBEncoding;
 
         container.appendChild(renderer.domElement);
 
@@ -124,8 +124,8 @@
 
         theta += 0.1;
 
-        camera.position.x = radius * Math.sin(v3d.Math.degToRad(theta));
-        camera.position.z = radius * Math.cos(v3d.Math.degToRad(theta));
+        camera.position.x = radius * Math.sin(v3d.MathUtils.degToRad(theta));
+        camera.position.z = radius * Math.cos(v3d.MathUtils.degToRad(theta));
 
         camera.lookAt(camera.target);
 

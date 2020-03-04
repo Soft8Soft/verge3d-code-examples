@@ -78,11 +78,11 @@ v3d.CCDIKSolver = (function() {
                     var links = ik.links;
                     var iteration = ik.iteration !== undefined ? ik.iteration : 1;
 
-                    for (var j = 0; j < iteration; j++) {
+                    for (var j = 0; j < iteration; j ++) {
 
                         var rotated = false;
 
-                        for (var k = 0, kl = links.length; k < kl; k++) {
+                        for (var k = 0, kl = links.length; k < kl; k ++) {
 
                             var link = bones[links[k].index];
 
@@ -115,9 +115,9 @@ v3d.CCDIKSolver = (function() {
 
                                 angle = 1.0;
 
-                            } else if (angle < -1.0) {
+                            } else if (angle < - 1.0) {
 
-                                angle = -1.0;
+                                angle = - 1.0;
 
                             }
 
@@ -399,7 +399,7 @@ v3d.CCDIKSolver = (function() {
 
                 var geometry = new v3d.BufferGeometry();
                 var vertices = new Float32Array((2 + ik.links.length) * 3);
-                geometry.addAttribute('position', new v3d.BufferAttribute(vertices, 3));
+                geometry.setAttribute('position', new v3d.BufferAttribute(vertices, 3));
 
                 return geometry;
 

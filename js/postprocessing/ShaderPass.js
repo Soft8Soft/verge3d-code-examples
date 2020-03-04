@@ -30,13 +30,14 @@ v3d.ShaderPass = function(shader, textureID) {
     }
 
     this.fsQuad = new v3d.Pass.FullScreenQuad(this.material);
+
 };
 
 v3d.ShaderPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     constructor: v3d.ShaderPass,
 
-    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer /*, deltaTime, maskActive */) {
 
         if (this.uniforms[this.textureID]) {
 

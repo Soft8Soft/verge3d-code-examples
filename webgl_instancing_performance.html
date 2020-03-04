@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Verge3D webgl - instancing - performance</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <link type="text/css" rel="stylesheet" href="main.css">
+  <style>
+    #info {
+      background-color: rgba(0,0,0,0.75);
+    }
+
+    .dg .folder .gui-stats {
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="info">
+
+    <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - instancing - performance
+
+  </div>
+
+  <div id="container"></div>
+
+  <script type="module">
+    import * as v3d from '../build/v3d.module.js';
+
+    import Stats from './jsm/libs/stats.module.js';
+    import { GUI } from './jsm/libs/dat.gui.module.js';
+
+    import { OrbitControls } from './jsm/controls/OrbitControls.js';
+    import { BufferGeometryUtils } from './jsm/utils/BufferGeometryUtils.js';
+
+    var container, stats, gui, guiStatsEl;
+    var camera, controls, scene, renderer, material;
+
+    // gui
+
+    var Method = {
+      INSTANCED: 'INSTANCED',
+      MERGED: 'MERGED',
+      NAIVE: 'NAIVE'
+    };
+
+    var api = {
+      method: Method.INSTANCED,
+      count: 1000
+    };
+
+    //
+
+    init();
+    initMesh();
+    animate();
+
+    //
+
+    function clean() {
+
+      var meshes = [];
+
+      scene.traverse(function(object) {
+
+        if (object.isMesh) meshes.push(object);
+
+      });
+
+      for (var i = 0; i < meshes.length; i++) {
+
+        var mesh = meshes[i];
+        mesh.material.dispose();
+        mesh.geometry.dispose();
+
+        scene.remove(mesh);
+
+      }
+
+    }
+
+    var randomizeMatrix = function() {
+
+      var position = new v3d.Vector3();
+      var rotation = new v3d.Euler();
+      var quaternion = new v3d.Quaternion();
+      var scale = new v3d.Vector3();
+
+      return function(matrix) {
+
+        position.x = Math.random() * 40 - 20;
+        position.y = Math.random() * 40 - 20;
+        position.z = Math.random() * 40 - 20;
+
+        rotation.x = Math.random() * 2 * Math.PI;
+        rotation.y = Math.random() * 2 * Math.PI;
+        rotation.z = Math.random() * 2 * Math.PI;
+
+        quaternion.setFromEuler(rotation);
+
+        scale.x = scale.y = scale.z = Math.random() * 1;
+
+        matrix.compose(position, quaternion, scale);
+
+      };
+
+    }();
+
+    function initMesh() {
+
+      clean();
+
+      // make instances
+      new v3d.BufferGeometryLoader()
+        .setPath('models/json/')
+        .load('suzanne_buffergeometry.json', function(geometry) {
+
+          material = new v3d.MeshNormalMaterial();
+
+          geometry.computeVertexNormals();
+
+          console.time(api.method + ' (build)'  );
+
+          switch (api.method) {
+
+            case Method.INSTANCED:
+              makeInstanced(geometry);
+              break;
+
+            case Method.MERGED:
+              makeMerged(geometry);
+              break;
+
+            case Method.NAIVE:
+              makeNaive(geometry);
+              break;
+
+          }
+
+          console.timeEnd(api.method + ' (build)');
+
+      });
+
+    }
+
+    function makeInstanced(geometry) {
+
+      var matrix = new v3d.Matrix4();
+      var mesh = new v3d.InstancedMesh(geometry, material, api.count);
+
+      for (var i = 0; i < api.count; i++) {
+
+        randomizeMatrix(matrix);
+        mesh.setMatrixAt(i, matrix);
+
+      }
+
+      scene.add(mesh);
+
+      //
+
+      var geometryByteLength = getGeometryByteLength(geometry);
+
+      guiStatsEl.innerHTML = [
+
+        '<i>GPU draw calls</i>: 1',
+        '<i>GPU memory</i>: ' + formatBytes(api.count * 16 + geometryByteLength, 2)
+
+      ].join('<br/>');
+
+    }
+
+    function makeMerged(geometry) {
+
+      var instanceGeometry;
+      var geometries = [];
+      var matrix = new v3d.Matrix4();
+
+      for (var i = 0; i < api.count; i++) {
+
+        randomizeMatrix(matrix);
+
+        var instanceGeometry = geometry.clone();
+        instanceGeometry.applyMatrix4(matrix);
+
+        geometries.push(instanceGeometry);
+
+      }
+
+      var mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries);
+
+      scene.add(new v3d.Mesh(mergedGeometry, material));
+
+      //
+
+      guiStatsEl.innerHTML = [
+
+        '<i>GPU draw calls</i>: 1',
+        '<i>GPU memory</i>: ' + formatBytes(getGeometryByteLength(mergedGeometry), 2)
+
+      ].join('<br/>');
+
+    }
+
+    function makeNaive(geometry) {
+
+      var matrix = new v3d.Matrix4();
+
+      for (var i = 0; i < api.count; i++) {
+
+        randomizeMatrix(matrix);
+
+        var mesh = new v3d.Mesh(geometry, material);
+        mesh.applyMatrix4(matrix);
+
+        scene.add(mesh);
+
+      }
+
+      //
+
+      var geometryByteLength = getGeometryByteLength(geometry);
+
+      guiStatsEl.innerHTML = [
+
+        '<i>GPU draw calls</i>: ' + api.count,
+        '<i>GPU memory</i>: ' + formatBytes(api.count * 16 + geometryByteLength, 2)
+
+      ].join('<br/>');
+
+    }
+
+    function init() {
+
+      var width = window.innerWidth;
+      var height = window.innerHeight;
+
+      // camera
+
+      camera = new v3d.PerspectiveCamera(70, width / height, 1, 100);
+      camera.position.z = 30;
+
+      // renderer
+
+      renderer = new v3d.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(width, height);
+      renderer.outputEncoding = v3d.sRGBEncoding;
+
+      container = document.getElementById('container');
+      container.appendChild(renderer.domElement);
+
+      // scene
+
+      scene = new v3d.Scene();
+      scene.background = new v3d.Color(0xffffff);
+
+      // controls
+
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.autoRotate = true;
+
+      // stats
+
+      stats = new Stats();
+      container.appendChild(stats.dom);
+
+      // gui
+
+      gui = new GUI();
+      gui.add(api, 'method', Method).onChange(initMesh);
+      gui.add(api, 'count', 1, 10000).step(1).onChange(initMesh);
+
+      var perfFolder = gui.addFolder('Performance');
+
+      guiStatsEl = document.createElement('li');
+      guiStatsEl.classList.add('gui-stats');
+
+      perfFolder.__ul.appendChild(guiStatsEl);
+      perfFolder.open();
+
+      // listeners
+
+      window.addEventListener('resize', onWindowResize, false);
+
+      Object.assign(window, {scene});
+
+    }
+
+    //
+
+    function onWindowResize() {
+
+      var width = window.innerWidth;
+      var height = window.innerHeight;
+
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+
+      renderer.setSize(width, height);
+
+    }
+
+    function animate() {
+
+      requestAnimationFrame(animate);
+
+      controls.update();
+      stats.update();
+
+      render();
+
+    }
+
+    function render() {
+
+      renderer.render(scene, camera);
+
+    }
+
+    //
+
+    function getGeometryByteLength(geometry) {
+
+      var total = 0;
+
+      if (geometry.index) total += geometry.index.array.byteLength;
+
+      for (var name in geometry.attributes) {
+
+        total += geometry.attributes[name].array.byteLength;
+
+      }
+
+      return total;
+
+    }
+
+    // Source: https://stackoverflow.com/a/18650828/1314762
+    function formatBytes(bytes, decimals) {
+
+      if (bytes === 0) return '0 bytes';
+
+      var k = 1024;
+      var dm = decimals < 0 ? 0 : decimals;
+      var sizes = ['bytes', 'KB', 'MB'];
+
+      var i = Math.floor(Math.log(bytes) / Math.log(k));
+
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+
+    }
+
+  </script>
+
+</body>
+</html>

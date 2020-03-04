@@ -4,26 +4,14 @@
     <title>Verge3D webgl - dual fisheye panorama</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
     <style>
       body {
-        background-color: #000000;
-        margin: 0px;
-        overflow: hidden;
+        background-color: #fff;
+        color: #444;
       }
-
-      #info {
-        position: absolute;
-        top: 0px; width: 100%;
-        color: #000000;
-        padding: 5px;
-        font-family:Monospace;
-        font-size:13px;
-        font-weight: bold;
-        text-align:center;
-      }
-
       a {
-        color: #0000ff;
+        color: #08f;
       }
     </style>
   </head>
@@ -31,12 +19,12 @@
 
     <div id="container"></div>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D webgl</a> - dualfisheye panorama.
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D webgl</a> - dualfisheye panorama
     </div>
 
-    <script src="../build/v3d.js"></script>
+    <script type="module">
 
-    <script>
+      import * as v3d from '../build/v3d.module.js';
 
       var camera, scene, renderer;
 
@@ -167,7 +155,7 @@
 
         distance += event.deltaY * 0.05;
 
-        distance = v3d.Math.clamp(distance, 400, 1000);
+        distance = v3d.MathUtils.clamp(distance, 400, 1000);
 
       }
 
@@ -187,8 +175,8 @@
         }
 
         lat = Math.max(- 85, Math.min(85, lat));
-        phi = v3d.Math.degToRad(90 - lat);
-        theta = v3d.Math.degToRad(lon - 180);
+        phi = v3d.MathUtils.degToRad(90 - lat);
+        theta = v3d.MathUtils.degToRad(lon - 180);
 
         camera.position.x = distance * Math.sin(phi) * Math.cos(theta);
         camera.position.y = distance * Math.cos(phi);

@@ -1,4 +1,4 @@
-/*
+/**
  * @author Daosheng Mu / https://github.com/DaoshengMu/
  * @author mrdoob / http://mrdoob.com/
  * @author takahirox / https://github.com/takahirox/
@@ -6,11 +6,11 @@
 
 v3d.TGALoader = function(manager) {
 
-    this.manager = (manager !== undefined) ? manager : v3d.DefaultLoadingManager;
+    v3d.Loader.call(this, manager);
 
 };
 
-v3d.TGALoader.prototype = {
+v3d.TGALoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
     constructor: v3d.TGALoader,
 
@@ -60,7 +60,7 @@ v3d.TGALoader.prototype = {
                     }
                     break;
 
-                // check colormap type
+                    // check colormap type
 
                 case TGA_TYPE_RGB:
                 case TGA_TYPE_GREY:
@@ -73,12 +73,12 @@ v3d.TGALoader.prototype = {
                     }
                     break;
 
-                // What the need of a file without data ?
+                    // What the need of a file without data ?
 
                 case TGA_TYPE_NO_DATA:
                     console.error('v3d.TGALoader: No data.');
 
-                // Invalid type ?
+                    // Invalid type ?
 
                 default:
                     console.error('v3d.TGALoader: Invalid type "%s".', header.image_type);
@@ -471,7 +471,7 @@ v3d.TGALoader.prototype = {
                 flags: content[offset ++]
             };
 
-            // check tga if it is valid format
+        // check tga if it is valid format
 
         tgaCheckHeader(header);
 
@@ -538,13 +538,6 @@ v3d.TGALoader.prototype = {
 
         return useOffscreen ? canvas.transferToImageBitmap() : canvas;
 
-    },
-
-    setPath: function(value) {
-
-        this.path = value;
-        return this;
-
     }
 
-};
+});

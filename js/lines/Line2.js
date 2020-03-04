@@ -18,14 +18,6 @@ v3d.Line2.prototype = Object.assign(Object.create(v3d.LineSegments2.prototype), 
 
     constructor: v3d.Line2,
 
-    isLine2: true,
-
-    copy: function(source) {
-
-        // todo
-
-        return this;
-
-    }
+    isLine2: true
 
 });

@@ -44,7 +44,7 @@ v3d.HalftonePass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     constructor: v3d.HalftonePass,
 
-    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer/*, deltaTime, maskActive*/) {
 
          this.material.uniforms["tDiffuse"].value = readBuffer.texture;
 

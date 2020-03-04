@@ -4,45 +4,7 @@
   <title>Verge3D webgl - marching cubes</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <style>
-    body {
-      color: #fff;
-      font-family: Monospace;
-      font-size: 13px;
-      text-align: center;
-
-      background-color: #000;
-      margin: 0px;
-      overflow: hidden;
-    }
-
-    #info {
-      color: #ffffff;
-      position: absolute;
-      top: 0px;
-      width: 100%;
-      padding: 5px;
-    }
-
-    a {
-      color: gold;
-    }
-
-    #webglmessage {
-      font-family: monospace;
-      font-size: 13px;
-
-      text-align: center;
-      background: rgb(0, 0, 50);
-      color: #fff;
-      padding: 1em;
-
-      width: 475px;
-      margin: 5em auto 0;
-
-      display: none;
-    }
-  </style>
+  <link type="text/css" rel="stylesheet" href="main.css">
 </head>
 
 <body>
@@ -50,28 +12,19 @@
   <div id="container"></div>
   <div id="info">
     <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> -
-    marching cubes -
-    [based on greggman's <a href="https://webglsamples.org/blob/blob.html">blob</a>, original code by Henrik Rydgård]
+    marching cubes<br/>
+    based on greggman's <a href="https://webglsamples.org/blob/blob.html">blob</a>, original code by Henrik Rydgård
   </div>
 
-  <script src="../build/v3d.js"></script>
+  <script type="module">
+    import * as v3d from '../build/v3d.module.js';
 
-  <script src="js/controls/OrbitControls.js"></script>
+    import Stats from './jsm/libs/stats.module.js';
 
-  <script src="js/MarchingCubes.js"></script>
-  <script src="js/ShaderToon.js"></script>
-
-  <script src="js/WebGL.js"></script>
-  <script src="js/libs/stats.min.js"></script>
-  <script src="js/libs/dat.gui.min.js"></script>
-
-
-  <script>
-    if (WEBGL.isWebGLAvailable() === false) {
-
-      document.body.appendChild(WEBGL.getWebGLErrorMessage());
-
-    }
+    import { GUI } from './jsm/libs/dat.gui.module.js';
+    import { OrbitControls } from './jsm/controls/OrbitControls.js';
+    import { MarchingCubes } from './jsm/objects/MarchingCubes.js';
+    import { ToonShader1, ToonShader2, ToonShaderHatching, ToonShaderDotted } from './jsm/shaders/ToonShader.js';
 
     var container, stats;
 
@@ -127,7 +80,7 @@
 
       resolution = 28;
 
-      effect = new v3d.MarchingCubes(resolution, materials[current_material].m, true, true);
+      effect = new MarchingCubes(resolution, materials[current_material].m, true, true);
       effect.position.set(0, 0, 0);
       effect.scale.set(700, 700, 700);
 
@@ -139,7 +92,7 @@
       // RENDERER
 
       renderer = new v3d.WebGLRenderer();
-      renderer.gammaOutput = true;
+      renderer.outputEncoding = v3d.sRGBEncoding;
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -151,7 +104,7 @@
 
       // CONTROLS
 
-      var controls = new v3d.OrbitControls(camera, renderer.domElement);
+      var controls = new OrbitControls(camera, renderer.domElement);
 
       // STATS
 
@@ -199,12 +152,12 @@
 
       // toons
 
-      var toonMaterial1 = createShaderMaterial("toon1", light, ambientLight);
-      var toonMaterial2 = createShaderMaterial("toon2", light, ambientLight);
-      var hatchingMaterial = createShaderMaterial("hatching", light, ambientLight);
-      var dottedMaterial = createShaderMaterial("dotted", light, ambientLight);
+      var toonMaterial1 = createShaderMaterial(ToonShader1, light, ambientLight);
+      var toonMaterial2 = createShaderMaterial(ToonShader2, light, ambientLight);
+      var hatchingMaterial = createShaderMaterial(ToonShaderHatching, light, ambientLight);
+      var dottedMaterial = createShaderMaterial(ToonShaderDotted, light, ambientLight);
 
-      var texture = new v3d.TextureLoader().load("textures/UV_Grid_Sm.jpg");
+      var texture = new v3d.TextureLoader().load("textures/uv_grid_opengl.jpg");
       texture.wrapS = v3d.RepeatWrapping;
       texture.wrapT = v3d.RepeatWrapping;
 
@@ -281,9 +234,7 @@
 
     }
 
-    function createShaderMaterial(id, light, ambientLight) {
-
-      var shader = v3d.ShaderToon[id];
+    function createShaderMaterial(shader, light, ambientLight) {
 
       var u = v3d.UniformsUtils.clone(shader.uniforms);
 
@@ -361,7 +312,7 @@
 
       var h, m_h, m_s, m_l;
 
-      var gui = new dat.GUI();
+      var gui = new GUI();
 
       // material (type)
 
@@ -423,14 +374,14 @@
 
       var i, ballx, bally, ballz, subtract, strength;
       var rainbow = [
-          new v3d.Color(0xff0000),
-          new v3d.Color(0xff7f00),
-          new v3d.Color(0xffff00),
-          new v3d.Color(0x00ff00),
-          new v3d.Color(0x0000ff),
-          new v3d.Color(0x4b0082),
-          new v3d.Color(0x9400d3)
-        ];
+        new v3d.Color(0xff0000),
+        new v3d.Color(0xff7f00),
+        new v3d.Color(0xffff00),
+        new v3d.Color(0x00ff00),
+        new v3d.Color(0x0000ff),
+        new v3d.Color(0x4b0082),
+        new v3d.Color(0x9400d3)
+      ];
       subtract = 12;
       strength = 1.2 / ((Math.sqrt(numblobs) - 1) / 4 + 1);
 

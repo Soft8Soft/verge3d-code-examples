@@ -4,37 +4,7 @@
     <title>Verge3D - water</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        background:#777;
-        padding:0;
-        margin:0;
-        font-weight: bold;
-        overflow:hidden;
-      }
-
-      #info {
-        position: absolute;
-        top: 0px;
-        width: 100%;
-        color: #ffffff;
-        padding: 5px;
-        font-family:Monospace;
-        font-size:13px;
-        text-align:center;
-      }
-
-      a { color: #ffffff; }
-    </style>
-
-    <script src="../build/v3d.js"></script>
-    <script src="js/controls/OrbitControls.js"></script>
-    <script src="js/objects/Reflector.js"></script>
-    <script src="js/objects/Refractor.js"></script>
-    <script src="js/objects/Water2.js"></script>
-    <script src="js/WebGL.js"></script>
-    <script src="js/libs/dat.gui.min.js"></script>
-
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
   <body>
 
@@ -43,197 +13,186 @@
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener noreferrer">Verge3D</a> - water
     </div>
 
-    <script>
+    <script type="module">
 
-    if (WEBGL.isWebGLAvailable() === false) {
+      import * as v3d from '../build/v3d.module.js';
 
-      document.body.appendChild(WEBGL.getWebGLErrorMessage());
+      import { GUI } from './jsm/libs/dat.gui.module.js';
+      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { Water } from './jsm/objects/Water2.js';
 
-    }
+      var scene, camera, clock, renderer, water;
 
-    var scene, camera, clock, renderer, water;
+      var torusKnot;
 
-    var torusKnot;
+      var params = {
+        color: '#ffffff',
+        scale: 4,
+        flowX: 1,
+        flowY: 1
+      };
 
-    var params = {
-      color: '#ffffff',
-      scale: 4,
-      flowX: 1,
-      flowY: 1
-    };
+      init();
+      animate();
 
-    init();
-    animate();
+      function init() {
 
-    function init() {
+        // scene
 
-      // scene
+        scene = new v3d.Scene();
 
-      scene = new v3d.Scene();
+        // camera
 
-      // camera
+        camera = new v3d.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(- 15, 7, 15);
+        camera.lookAt(scene.position);
 
-      camera = new v3d.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-      camera.position.set(- 15, 7, 15);
-      camera.lookAt(scene.position);
+        // clock
 
-      // clock
+        clock = new v3d.Clock();
 
-      clock = new v3d.Clock();
+        // mesh
 
-      // mesh
+        var torusKnotGeometry = new v3d.TorusKnotBufferGeometry(3, 1, 256, 32);
+        var torusKnotMaterial = new v3d.MeshNormalMaterial();
 
-      var torusKnotGeometry = new v3d.TorusKnotBufferGeometry(3, 1, 256, 32);
-      var torusKnotMaterial = new v3d.MeshNormalMaterial();
+        torusKnot = new v3d.Mesh(torusKnotGeometry, torusKnotMaterial);
+        torusKnot.position.y = 4;
+        torusKnot.scale.set(0.5, 0.5, 0.5);
+        scene.add(torusKnot);
 
-      torusKnot = new v3d.Mesh(torusKnotGeometry, torusKnotMaterial);
-      torusKnot.position.y = 4;
-      torusKnot.scale.set(0.5, 0.5, 0.5);
-      scene.add(torusKnot);
+        // ground
 
-      // ground
+        var groundGeometry = new v3d.PlaneBufferGeometry(20, 20);
+        var groundMaterial = new v3d.MeshStandardMaterial({ roughness: 0.8, metalness: 0.4 });
+        var ground = new v3d.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = Math.PI * - 0.5;
+        scene.add(ground);
 
-      var groundGeometry = new v3d.PlaneBufferGeometry(20, 20);
-      var groundMaterial = new v3d.MeshStandardMaterial({ roughness: 0.8, metalness: 0.4 });
-      var ground = new v3d.Mesh(groundGeometry, groundMaterial);
-      ground.rotation.x = Math.PI * - 0.5;
-      scene.add(ground);
+        var textureLoader = new v3d.TextureLoader();
+        textureLoader.load('textures/hardwood2_diffuse.jpg', function(map) {
 
-      var textureLoader = new v3d.TextureLoader();
-      textureLoader.load('textures/hardwood2_diffuse.jpg', function(map) {
+          map.wrapS = v3d.RepeatWrapping;
+          map.wrapT = v3d.RepeatWrapping;
+          map.anisotropy = 16;
+          map.repeat.set(4, 4);
+          groundMaterial.map = map;
+          groundMaterial.needsUpdate = true;
 
-        map.wrapS = v3d.RepeatWrapping;
-        map.wrapT = v3d.RepeatWrapping;
-        map.anisotropy = 16;
-        map.repeat.set(4, 4);
-        groundMaterial.map = map;
-        groundMaterial.needsUpdate = true;
+        });
 
-      });
+        // water
 
-      // water
+        var waterGeometry = new v3d.PlaneBufferGeometry(20, 20);
 
-      var waterGeometry = new v3d.PlaneBufferGeometry(20, 20);
+        water = new Water(waterGeometry, {
+          color: params.color,
+          scale: params.scale,
+          flowDirection: new v3d.Vector2(params.flowX, params.flowY),
+          textureWidth: 1024,
+          textureHeight: 1024
+        });
 
-      water = new v3d.Water(waterGeometry, {
-        color: params.color,
-        scale: params.scale,
-        flowDirection: new v3d.Vector2(params.flowX, params.flowY),
-        textureWidth: 1024,
-        textureHeight: 1024
-      });
+        water.position.y = 1;
+        water.rotation.x = Math.PI * - 0.5;
+        scene.add(water);
 
-      water.position.y = 1;
-      water.rotation.x = Math.PI * - 0.5;
-      scene.add(water);
+        // skybox
 
-      // skybox
+        var cubeTextureLoader = new v3d.CubeTextureLoader();
+        cubeTextureLoader.setPath('textures/cube/Park2/');
 
-      var cubeTextureLoader = new v3d.CubeTextureLoader();
-      cubeTextureLoader.setPath('textures/cube/skybox/');
+        var cubeTexture = cubeTextureLoader.load([
+          "posx.jpg", "negx.jpg",
+          "posy.jpg", "negy.jpg",
+          "posz.jpg", "negz.jpg"
+        ]);
 
-      var cubeTexture = cubeTextureLoader.load([
-        'px.jpg', 'nx.jpg',
-        'py.jpg', 'ny.jpg',
-        'pz.jpg', 'nz.jpg',
-      ]);
+        scene.background = cubeTexture;
 
-      var cubeShader = v3d.ShaderLib['cube'];
-      cubeShader.uniforms['tCube'].value = cubeTexture;
+        // light
 
-      var skyBoxMaterial = new v3d.ShaderMaterial({
-        fragmentShader: cubeShader.fragmentShader,
-        vertexShader: cubeShader.vertexShader,
-        uniforms: cubeShader.uniforms,
-        side: v3d.BackSide
-      });
+        var ambientLight = new v3d.AmbientLight(0xcccccc, 0.4);
+        scene.add(ambientLight);
 
-      var skyBox = new v3d.Mesh(new v3d.BoxBufferGeometry(1000, 1000, 1000), skyBoxMaterial);
-      scene.add(skyBox);
+        var directionalLight = new v3d.DirectionalLight(0xffffff, 0.6);
+        directionalLight.position.set(- 1, 1, 1);
+        scene.add(directionalLight);
 
-      // light
+        // renderer
 
-      var ambientLight = new v3d.AmbientLight(0xcccccc, 0.4);
-      scene.add(ambientLight);
+        renderer = new v3d.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
 
-      var directionalLight = new v3d.DirectionalLight(0xffffff, 0.6);
-      directionalLight.position.set(- 1, 1, 1);
-      scene.add(directionalLight);
+        // dat.gui
 
-      // renderer
+        var gui = new GUI();
 
-      renderer = new v3d.WebGLRenderer({ antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
-      document.body.appendChild(renderer.domElement);
+        gui.addColor(params, 'color').onChange(function(value) {
 
-      // dat.gui
+          water.material.uniforms['color'].value.set(value);
 
-      var gui = new dat.GUI();
+        });
+        gui.add(params, 'scale', 1, 10).onChange(function(value) {
 
-      gui.addColor(params, 'color').onChange(function(value) {
+          water.material.uniforms['config'].value.w = value;
 
-        water.material.uniforms["color"].value.set(value);
+        });
+        gui.add(params, 'flowX', - 1, 1).step(0.01).onChange(function(value) {
 
-      });
-      gui.add(params, 'scale', 1, 10).onChange(function(value) {
+          water.material.uniforms['flowDirection'].value.x = value;
+          water.material.uniforms['flowDirection'].value.normalize();
 
-        water.material.uniforms["config"].value.w = value;
+        });
+        gui.add(params, 'flowY', - 1, 1).step(0.01).onChange(function(value) {
 
-      });
-      gui.add(params, 'flowX', - 1, 1).step(0.01).onChange(function(value) {
+          water.material.uniforms['flowDirection'].value.y = value;
+          water.material.uniforms['flowDirection'].value.normalize();
 
-        water.material.uniforms["flowDirection"].value.x = value;
-        water.material.uniforms["flowDirection"].value.normalize();
+        });
 
-      });
-      gui.add(params, 'flowY', - 1, 1).step(0.01).onChange(function(value) {
+        gui.open();
 
-        water.material.uniforms["flowDirection"].value.y = value;
-        water.material.uniforms["flowDirection"].value.normalize();
+        //
 
-      });
+        var controls = new OrbitControls(camera, renderer.domElement);
 
-      gui.open();
+        //
 
-      //
+        window.addEventListener('resize', onResize, false);
 
-      var controls = new v3d.OrbitControls(camera, renderer.domElement);
+      }
 
-      //
+      function onResize() {
 
-      window.addEventListener('resize', onResize, false);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
-    }
+      }
 
-    function onResize() {
+      function animate() {
 
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+        requestAnimationFrame(animate);
 
-    }
+        render();
 
-    function animate() {
+      }
 
-      requestAnimationFrame(animate);
+      function render() {
 
-      render();
+        var delta = clock.getDelta();
 
-    }
+        torusKnot.rotation.x += delta;
+        torusKnot.rotation.y += delta * 0.5;
 
-    function render() {
+        renderer.render(scene, camera);
 
-      var delta = clock.getDelta();
+      }
 
-      torusKnot.rotation.x += delta;
-      torusKnot.rotation.y += delta * 0.5;
-
-      renderer.render(scene, camera);
-
-    }
-
-  </script>
+    </script>
 
 </body>
 </html>

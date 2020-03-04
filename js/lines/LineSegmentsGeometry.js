@@ -9,15 +9,13 @@ v3d.LineSegmentsGeometry = function() {
 
     this.type = 'LineSegmentsGeometry';
 
-    var plane = new v3d.BufferGeometry();
-
     var positions = [- 1, 2, 0, 1, 2, 0, - 1, 1, 0, 1, 1, 0, - 1, 0, 0, 1, 0, 0, - 1, - 1, 0, 1, - 1, 0];
     var uvs = [- 1, 2, 1, 2, - 1, 1, 1, 1, - 1, - 1, 1, - 1, - 1, - 2, 1, - 2];
     var index = [0, 2, 1, 2, 3, 1, 2, 4, 3, 4, 5, 3, 4, 6, 5, 6, 7, 5];
 
     this.setIndex(index);
-    this.addAttribute('position', new v3d.Float32BufferAttribute(positions, 3));
-    this.addAttribute('uv', new v3d.Float32BufferAttribute(uvs, 2));
+    this.setAttribute('position', new v3d.Float32BufferAttribute(positions, 3));
+    this.setAttribute('uv', new v3d.Float32BufferAttribute(uvs, 2));
 
 };
 
@@ -27,16 +25,16 @@ v3d.LineSegmentsGeometry.prototype = Object.assign(Object.create(v3d.InstancedBu
 
     isLineSegmentsGeometry: true,
 
-    applyMatrix: function(matrix) {
+    applyMatrix4: function(matrix) {
 
         var start = this.attributes.instanceStart;
         var end = this.attributes.instanceEnd;
 
         if (start !== undefined) {
 
-            matrix.applyToBufferAttribute(start);
+            start.applyMatrix4(matrix);
 
-            matrix.applyToBufferAttribute(end);
+            end.applyMatrix4(matrix);
 
             start.data.needsUpdate = true;
 
@@ -74,8 +72,8 @@ v3d.LineSegmentsGeometry.prototype = Object.assign(Object.create(v3d.InstancedBu
 
         var instanceBuffer = new v3d.InstancedInterleavedBuffer(lineSegments, 6, 1); // xyz, xyz
 
-        this.addAttribute('instanceStart', new v3d.InterleavedBufferAttribute(instanceBuffer, 3, 0)); // xyz
-        this.addAttribute('instanceEnd', new v3d.InterleavedBufferAttribute(instanceBuffer, 3, 3)); // xyz
+        this.setAttribute('instanceStart', new v3d.InterleavedBufferAttribute(instanceBuffer, 3, 0)); // xyz
+        this.setAttribute('instanceEnd', new v3d.InterleavedBufferAttribute(instanceBuffer, 3, 3)); // xyz
 
         //
 
@@ -102,8 +100,8 @@ v3d.LineSegmentsGeometry.prototype = Object.assign(Object.create(v3d.InstancedBu
 
         var instanceColorBuffer = new v3d.InstancedInterleavedBuffer(colors, 6, 1); // rgb, rgb
 
-        this.addAttribute('instanceColorStart', new v3d.InterleavedBufferAttribute(instanceColorBuffer, 3, 0)); // rgb
-        this.addAttribute('instanceColorEnd', new v3d.InterleavedBufferAttribute(instanceColorBuffer, 3, 3)); // rgb
+        this.setAttribute('instanceColorStart', new v3d.InterleavedBufferAttribute(instanceColorBuffer, 3, 0)); // rgb
+        this.setAttribute('instanceColorEnd', new v3d.InterleavedBufferAttribute(instanceColorBuffer, 3, 3)); // rgb
 
         return this;
 
@@ -243,17 +241,11 @@ v3d.LineSegmentsGeometry.prototype = Object.assign(Object.create(v3d.InstancedBu
 
     },
 
-    clone: function() {
+    applyMatrix: function(matrix) {
 
-        // todo
+        console.warn('v3d.LineSegmentsGeometry: applyMatrix() has been renamed to applyMatrix4().');
 
-    },
-
-    copy: function(source) {
-
-        // todo
-
-        return this;
+        return this.applyMatrix4(matrix);
 
     }
 

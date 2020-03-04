@@ -34,7 +34,7 @@ v3d.FilmPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     constructor: v3d.FilmPass,
 
-    render: function(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+    render: function(renderer, writeBuffer, readBuffer, deltaTime /*, maskActive */) {
 
         this.uniforms["tDiffuse"].value = readBuffer.texture;
         this.uniforms["time"].value += deltaTime;

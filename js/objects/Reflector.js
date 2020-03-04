@@ -28,12 +28,10 @@ v3d.Reflector = function(geometry, options) {
     var rotationMatrix = new v3d.Matrix4();
     var lookAtPosition = new v3d.Vector3(0, 0, - 1);
     var clipPlane = new v3d.Vector4();
-    var viewport = new v3d.Vector4();
 
     var view = new v3d.Vector3();
     var target = new v3d.Vector3();
     var q = new v3d.Vector4();
-    var size = new v3d.Vector2();
 
     var textureMatrix = new v3d.Matrix4();
     var virtualCamera = new v3d.PerspectiveCamera();
@@ -47,7 +45,7 @@ v3d.Reflector = function(geometry, options) {
 
     var renderTarget = new v3d.WebGLRenderTarget(textureWidth, textureHeight, parameters);
 
-    if (!v3d.Math.isPowerOfTwo(textureWidth) || ! v3d.Math.isPowerOfTwo(textureHeight)) {
+    if (!v3d.MathUtils.isPowerOfTwo(textureWidth) || ! v3d.MathUtils.isPowerOfTwo(textureHeight)) {
 
         renderTarget.texture.generateMipmaps = false;
 
@@ -155,34 +153,26 @@ v3d.Reflector = function(geometry, options) {
 
         var currentRenderTarget = renderer.getRenderTarget();
 
-        var currentVrEnabled = renderer.vr.enabled;
+        var currentXrEnabled = renderer.xr.enabled;
         var currentShadowAutoUpdate = renderer.shadowMap.autoUpdate;
 
-        renderer.vr.enabled = false; // Avoid camera modification and recursion
+        renderer.xr.enabled = false; // Avoid camera modification and recursion
         renderer.shadowMap.autoUpdate = false; // Avoid re-computing shadows
 
         renderer.setRenderTarget(renderTarget);
         renderer.clear();
         renderer.render(scene, virtualCamera);
 
-        renderer.vr.enabled = currentVrEnabled;
+        renderer.xr.enabled = currentXrEnabled;
         renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
 
         renderer.setRenderTarget(currentRenderTarget);
 
         // Restore viewport
 
-        var bounds = camera.bounds;
+        var viewport = camera.viewport;
 
-        if (bounds !== undefined) {
-
-            renderer.getSize(size);
-            var pixelRatio = renderer.getPixelRatio();
-
-            viewport.x = bounds.x * size.width * pixelRatio;
-            viewport.y = bounds.y * size.height * pixelRatio;
-            viewport.z = bounds.z * size.width * pixelRatio;
-            viewport.w = bounds.w * size.height * pixelRatio;
+        if (viewport !== undefined) {
 
             renderer.state.viewport(viewport);
 
@@ -208,17 +198,14 @@ v3d.Reflector.ReflectorShader = {
     uniforms: {
 
         'color': {
-            type: 'c',
             value: null
         },
 
         'tDiffuse': {
-            type: 't',
             value: null
         },
 
         'textureMatrix': {
-            type: 'm4',
             value: null
         }
 

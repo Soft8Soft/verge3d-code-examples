@@ -4,26 +4,7 @@
     <title>Verge3D webgl - simple global illumination</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        margin: 0px;
-        background-color: #000000;
-        overflow: hidden;
-      }
-
-      a { color: #0078ff; }
-
-      #info {
-        position: absolute;
-        top: 5px;
-        width: 100%;
-        color:#fff;
-        font-family:Monospace;
-        font-size:13px;
-        font-weight: bold;
-        text-align: center;
-      }
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
   <body>
 
@@ -31,10 +12,11 @@
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - simple global illumination (<a href="http://www.iquilezles.org/www/articles/simplegi/simplegi.htm">article</a>)
     </div>
 
-    <script src="../build/v3d.js"></script>
-    <script src="js/controls/OrbitControls.js"></script>
+    <script type="module">
 
-    <script>
+      import * as v3d from '../build/v3d.module.js';
+
+      import { OrbitControls } from './jsm/controls/OrbitControls.js';
 
       // HACK:
 
@@ -91,7 +73,7 @@
           if (attributes.color === undefined) {
 
             var colors = new Float32Array(positions.length);
-            geometry.addAttribute('color', new v3d.BufferAttribute(colors, 3).setDynamic(true));
+            geometry.setAttribute('color', new v3d.BufferAttribute(colors, 3).setUsage(v3d.DynamicDrawUsage));
 
           }
 
@@ -177,29 +159,10 @@
         // sphere
 
         var geometry = new v3d.TorusKnotBufferGeometry(0.75, 0.3, 128, 32, 1);
-        // var geometry = new v3d.BoxBufferGeometry(1, 1, 1, 10, 10, 10)
         var material = new v3d.MeshBasicMaterial({ vertexColors: v3d.VertexColors });
 
         var mesh = new v3d.Mesh(geometry, material);
-        // mesh.position.y = 1;
         scene.add(mesh);
-
-        /*
-        var geometry = new v3d.SphereBufferGeometry(0.5, 16, 8);
-
-        for (var i = 0; i < 10; i++) {
-
-          var material = new v3d.MeshBasicMaterial({ color: Math.random() * 0xffffff, side: v3d.DoubleSide });
-
-          var mesh = new v3d.Mesh(geometry, material);
-          mesh.position.x = Math.random() * 3 - 1.5;
-          mesh.position.y = Math.random() * 3 - 1.5;
-          mesh.position.z = Math.random() * 3 - 1.5;
-          mesh.updateMatrix();
-          scene.add(mesh);
-
-        }
-        */
 
         // room
 
@@ -225,7 +188,7 @@
 
         new SimpleGI(renderer, scene);
 
-        var controls = new v3d.OrbitControls(camera);
+        var controls = new OrbitControls(camera, renderer.domElement);
 
         window.addEventListener('resize', onWindowResize, false);
 

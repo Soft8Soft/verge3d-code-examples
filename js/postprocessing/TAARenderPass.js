@@ -12,7 +12,7 @@
  *
  */
 
-v3d.TAARenderPass = function(scene, camera, params) {
+v3d.TAARenderPass = function(scene, camera, clearColor, clearAlpha) {
 
     if (v3d.SSAARenderPass === undefined) {
 
@@ -20,7 +20,7 @@ v3d.TAARenderPass = function(scene, camera, params) {
 
     }
 
-    v3d.SSAARenderPass.call(this, scene, camera, params);
+    v3d.SSAARenderPass.call(this, scene, camera, clearColor, clearAlpha);
 
     this.sampleLevel = 0;
     this.accumulate = false;

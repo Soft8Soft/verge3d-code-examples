@@ -4,44 +4,18 @@
     <title>Verge3D webgl - convex geometry</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-      body {
-        font-family: Monospace;
-        background-color: #000;
-        margin: 0px;
-        overflow: hidden;
-      }
-      #info {
-        position: absolute;
-        color: #fff;
-        top: 0px;
-        width: 100%;
-        padding: 5px;
-        text-align:center;
-      }
-      a {
-        color: #fff;
-      }
-    </style>
+    <link type="text/css" rel="stylesheet" href="main.css">
   </head>
   <body>
 
-    <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - ConvexGeometry</div>
+    <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - convex geometry</div>
 
-    <script src="../build/v3d.js"></script>
-    <script src="js/controls/OrbitControls.js"></script>
-    <script src="js/QuickHull.js"></script>
-    <script src="js/geometries/ConvexGeometry.js"></script>
-    <script src="js/WebGL.js"></script>
-    <script src="js/libs/stats.min.js"></script>
+    <script type="module">
 
-    <script>
+      import * as v3d from '../build/v3d.module.js';
 
-      if (WEBGL.isWebGLAvailable() === false) {
-
-        document.body.appendChild(WEBGL.getWebGLErrorMessage());
-
-      }
+      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { ConvexBufferGeometry } from './jsm/geometries/ConvexGeometry.js';
 
       var group, camera, scene, renderer;
 
@@ -65,7 +39,7 @@
 
         // controls
 
-        var controls = new v3d.OrbitControls(camera, renderer.domElement);
+        var controls = new OrbitControls(camera, renderer.domElement);
         controls.minDistance = 20;
         controls.maxDistance = 50;
         controls.maxPolarAngle = Math.PI / 2;
@@ -121,7 +95,7 @@
           transparent: true
         });
 
-        var meshGeometry = new v3d.ConvexBufferGeometry(vertices);
+        var meshGeometry = new ConvexBufferGeometry(vertices);
 
         var mesh = new v3d.Mesh(meshGeometry, meshMaterial);
         mesh.material.side = v3d.BackSide; // back faces
@@ -138,12 +112,6 @@
         window.addEventListener('resize', onWindowResize, false);
 
       }
-
-      // function randomPoint() {
-
-      //   return new v3d.Vector3(v3d.Math.randFloat(- 1, 1), v3d.Math.randFloat(- 1, 1), v3d.Math.randFloat(- 1, 1));
-
-      // }
 
       function onWindowResize() {
 
