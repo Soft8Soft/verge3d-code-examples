@@ -16,11 +16,11 @@
       import { GUI } from './jsm/libs/dat.gui.module.js';
       import Stats from './jsm/libs/stats.module.js';
 
-      var camera, scene, renderer, object, stats;
-      var planes, planeObjects, planeHelpers;
-      var clock;
+      let camera, scene, renderer, object, stats;
+      let planes, planeObjects, planeHelpers;
+      let clock;
 
-      var params = {
+      const params = {
 
         animate: true,
         planeX: {
@@ -53,8 +53,8 @@
 
       function createPlaneStencilGroup(geometry, plane, renderOrder) {
 
-        var group = new v3d.Group();
-        var baseMat = new v3d.MeshBasicMaterial();
+        const group = new v3d.Group();
+        const baseMat = new v3d.MeshBasicMaterial();
         baseMat.depthWrite = false;
         baseMat.depthTest = false;
         baseMat.colorWrite = false;
@@ -62,26 +62,26 @@
         baseMat.stencilFunc = v3d.AlwaysStencilFunc;
 
         // back faces
-        var mat0 = baseMat.clone();
+        const mat0 = baseMat.clone();
         mat0.side = v3d.BackSide;
         mat0.clippingPlanes = [plane];
         mat0.stencilFail = v3d.IncrementWrapStencilOp;
         mat0.stencilZFail = v3d.IncrementWrapStencilOp;
         mat0.stencilZPass = v3d.IncrementWrapStencilOp;
 
-        var mesh0 = new v3d.Mesh(geometry, mat0);
+        const mesh0 = new v3d.Mesh(geometry, mat0);
         mesh0.renderOrder = renderOrder;
         group.add(mesh0);
 
         // front faces
-        var mat1 = baseMat.clone();
+        const mat1 = baseMat.clone();
         mat1.side = v3d.FrontSide;
         mat1.clippingPlanes = [plane];
         mat1.stencilFail = v3d.DecrementWrapStencilOp;
         mat1.stencilZFail = v3d.DecrementWrapStencilOp;
         mat1.stencilZPass = v3d.DecrementWrapStencilOp;
 
-        var mesh1 = new v3d.Mesh(geometry, mat1);
+        const mesh1 = new v3d.Mesh(geometry, mat1);
         mesh1.renderOrder = renderOrder;
 
         group.add(mesh1);
@@ -101,7 +101,7 @@
 
         scene.add(new v3d.AmbientLight(0xffffff, 0.5));
 
-        var dirLight = new v3d.DirectionalLight(0xffffff, 1);
+        const dirLight = new v3d.DirectionalLight(0xffffff, 1);
         dirLight.position.set(5, 10, 7.5);
         dirLight.castShadow = true;
         dirLight.shadow.camera.right = 2;
@@ -127,21 +127,22 @@
 
         });
 
-        var geometry = new v3d.TorusKnotBufferGeometry(0.4, 0.15, 220, 60);
+        const geometry = new v3d.TorusKnotBufferGeometry(0.4, 0.15, 220, 60);
         object = new v3d.Group();
         scene.add(object);
 
         // Set up clip plane rendering
         planeObjects = [];
-        var planeGeom = new v3d.PlaneBufferGeometry(4, 4);
-        for (var i = 0; i < 3; i++) {
+        const planeGeom = new v3d.PlaneBufferGeometry(4, 4);
 
-          var poGroup = new v3d.Group();
-          var plane = planes[i];
-          var stencilGroup = createPlaneStencilGroup(geometry, plane, i + 1);
+        for (let i = 0; i < 3; i++) {
+
+          const poGroup = new v3d.Group();
+          const plane = planes[i];
+          const stencilGroup = createPlaneStencilGroup(geometry, plane, i + 1);
 
           // plane is clipped by the other clipping planes
-          var planeMat =
+          const planeMat =
             new v3d.MeshStandardMaterial({
 
               color: 0xE91E63,
@@ -157,12 +158,13 @@
               stencilZPass: v3d.ReplaceStencilOp,
 
             });
-          var po = new v3d.Mesh(planeGeom, planeMat);
+          const po = new v3d.Mesh(planeGeom, planeMat);
           po.onAfterRender = function(renderer) {
 
             renderer.clearStencil();
 
           };
+
           po.renderOrder = i + 1.1;
 
           object.add(stencilGroup);
@@ -172,7 +174,7 @@
 
         }
 
-        var material = new v3d.MeshStandardMaterial({
+        const material = new v3d.MeshStandardMaterial({
 
           color: 0xFFC107,
           metalness: 0.1,
@@ -184,13 +186,13 @@
         });
 
         // add the color
-        var clippedColorFront = new v3d.Mesh(geometry, material);
+        const clippedColorFront = new v3d.Mesh(geometry, material);
         clippedColorFront.castShadow = true;
         clippedColorFront.renderOrder = 6;
         object.add(clippedColorFront);
 
 
-        var ground = new v3d.Mesh(
+        const ground = new v3d.Mesh(
           new v3d.PlaneBufferGeometry(9, 9, 1, 1),
           new v3d.ShadowMaterial({ color: 0, opacity: 0.25, side: v3d.DoubleSide })
         );
@@ -216,16 +218,16 @@
         renderer.localClippingEnabled = true;
 
         // Controls
-        var controls = new OrbitControls(camera, renderer.domElement);
+        const controls = new OrbitControls(camera, renderer.domElement);
         controls.minDistance = 2;
         controls.maxDistance = 20;
         controls.update();
 
         // GUI
-        var gui = new GUI();
+        const gui = new GUI();
         gui.add(params, 'animate');
 
-        var planeX = gui.addFolder('planeX');
+        const planeX = gui.addFolder('planeX');
         planeX.add(params.planeX, 'displayHelper').onChange(v => planeHelpers[0].visible = v);
         planeX.add(params.planeX, 'constant').min(- 1).max(1).onChange(d => planes[0].constant = d);
         planeX.add(params.planeX, 'negated').onChange(() => {
@@ -236,7 +238,7 @@
         });
         planeX.open();
 
-        var planeY = gui.addFolder('planeY');
+        const planeY = gui.addFolder('planeY');
         planeY.add(params.planeY, 'displayHelper').onChange(v => planeHelpers[1].visible = v);
         planeY.add(params.planeY, 'constant').min(- 1).max(1).onChange(d => planes[1].constant = d);
         planeY.add(params.planeY, 'negated').onChange(() => {
@@ -247,7 +249,7 @@
         });
         planeY.open();
 
-        var planeZ = gui.addFolder('planeZ');
+        const planeZ = gui.addFolder('planeZ');
         planeZ.add(params.planeZ, 'displayHelper').onChange(v => planeHelpers[2].visible = v);
         planeZ.add(params.planeZ, 'constant').min(- 1).max(1).onChange(d => planes[2].constant = d);
         planeZ.add(params.planeZ, 'negated').onChange(() => {
@@ -271,7 +273,7 @@
 
       function animate() {
 
-        var delta = clock.getDelta();
+        const delta = clock.getDelta();
 
         requestAnimationFrame(animate);
 
@@ -282,10 +284,10 @@
 
         }
 
-        for (var i = 0; i < planeObjects.length; i++) {
+        for (let i = 0; i < planeObjects.length; i++) {
 
-          var plane = planes[i];
-          var po = planeObjects[i];
+          const plane = planes[i];
+          const po = planeObjects[i];
           plane.coplanarPoint(po.position);
           po.lookAt(
             po.position.x - plane.normal.x,

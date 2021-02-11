@@ -1,7 +1,3 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 v3d.EffectComposer = function(renderer, renderTarget) {
 
     this.renderer = renderer;
@@ -11,8 +7,7 @@ v3d.EffectComposer = function(renderer, renderTarget) {
         var parameters = {
             minFilter: v3d.LinearFilter,
             magFilter: v3d.LinearFilter,
-            format: v3d.RGBAFormat,
-            stencilBuffer: false
+            format: v3d.RGBAFormat
         };
 
         var size = renderer.getSize(new v3d.Vector2());
@@ -82,6 +77,19 @@ Object.assign(v3d.EffectComposer.prototype, {
     insertPass: function(pass, index) {
 
         this.passes.splice(index, 0, pass);
+        pass.setSize(this._width * this._pixelRatio, this._height * this._pixelRatio);
+
+    },
+
+    removePass: function(pass) {
+
+        const index = this.passes.indexOf(pass);
+
+        if (index !== - 1) {
+
+            this.passes.splice(index, 1);
+
+        }
 
     },
 

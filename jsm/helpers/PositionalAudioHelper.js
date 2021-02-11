@@ -1,7 +1,3 @@
-/**
- * @author Mugen87 / http://github.com/Mugen87
- */
-
 import {
     BufferGeometry,
     BufferAttribute,
@@ -26,6 +22,8 @@ function PositionalAudioHelper(audio, range, divisionsInnerAngle, divisionsOuter
     var materialOuterAngle = new LineBasicMaterial({ color: 0xffff00 });
 
     Line.call(this, geometry, [materialOuterAngle, materialInnerAngle]);
+
+    this.type = 'PositionalAudioHelper';
 
     this.update();
 

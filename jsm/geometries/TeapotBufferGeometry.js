@@ -1,6 +1,12 @@
+import {
+    BufferAttribute,
+    BufferGeometry,
+    Matrix4,
+    Vector3,
+    Vector4
+} from '../../../build/v3d.module.js';
+
 /**
- * @author Eric Haines / http://erichaines.com/
- *
  * Tessellates the famous Utah teapot database by Martin Newell into triangles.
  *
  * Parameters: size = 50, segments = 10, bottom = true, lid = true, body = true,
@@ -48,14 +54,6 @@
  * See https://en.wikipedia.org/wiki/Utah_teapot for the history of the teapot
  *
  */
-
-import {
-    BufferAttribute,
-    BufferGeometry,
-    Matrix4,
-    Vector3,
-    Vector4
-} from "../../../build/v3d.module.js";
 
 var TeapotBufferGeometry = function(size, segments, bottom, lid, body, fitLid, blinn) {
 
@@ -690,6 +688,7 @@ var TeapotBufferGeometry = function(size, segments, bottom, lid, body, fitLid, b
                         indices[indexCount ++] = v3;
 
                     }
+
                     if (notDegenerate(v1, v3, v4)) {
 
                         indices[indexCount ++] = v1;

@@ -19,14 +19,14 @@
 
       import Stats from './jsm/libs/stats.module.js';
 
-      var container, stats;
+      let stats;
 
-      var camera, scene, renderer;
+      let camera, scene, renderer;
 
-      var mouseX = 0, mouseY = 0;
+      let mouseX = 0, mouseY = 0;
 
-      var windowHalfX = window.innerWidth / 2;
-      var windowHalfY = window.innerHeight / 2;
+      let windowHalfX = window.innerWidth / 2;
+      let windowHalfY = window.innerHeight / 2;
 
       document.addEventListener('mousemove', onDocumentMouseMove, false);
 
@@ -36,7 +36,7 @@
 
       function init() {
 
-        container = document.createElement('div');
+        const container = document.createElement('div');
         document.body.appendChild(container);
 
         camera = new v3d.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000);
@@ -46,16 +46,16 @@
         scene.background = new v3d.Color(0xffffff);
         scene.matrixAutoUpdate = false;
 
-        var material = new v3d.MeshNormalMaterial();
+        const material = new v3d.MeshNormalMaterial();
 
-        var loader = new v3d.BufferGeometryLoader();
+        const loader = new v3d.BufferGeometryLoader();
         loader.load('models/json/suzanne_buffergeometry.json', function(geometry) {
 
           geometry.computeVertexNormals();
 
-          for (var i = 0; i < 7700; i++) {
+          for (let i = 0; i < 7700; i++) {
 
-            var mesh = new v3d.Mesh(geometry, material);
+            const mesh = new v3d.Mesh(geometry, material);
 
             mesh.position.x = Math.random() * 10000 - 5000;
             mesh.position.y = Math.random() * 10000 - 5000;
@@ -75,7 +75,6 @@
         renderer = new v3d.WebGLRenderer();
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
-        //renderer.sortObjects = false;
 
         container.appendChild(renderer.domElement);
 

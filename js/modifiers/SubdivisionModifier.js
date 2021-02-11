@@ -1,7 +1,4 @@
 /**
- *    @author zz85 / http://twitter.com/blurspline / http://www.lab4games.net/zz85/blog
- *    @author centerionware / http://www.centerionware.com
- *
  *    Subdivision Geometry Modifier
  *        using Loop Subdivision Scheme
  *
@@ -23,7 +20,9 @@ v3d.SubdivisionModifier = function(subdivisions) {
 // Applies the "modify" pattern
 v3d.SubdivisionModifier.prototype.modify = function(geometry) {
 
-    if (geometry.isBufferGeometry) {
+    var isBufferGeometry = geometry.isBufferGeometry;
+
+    if (isBufferGeometry) {
 
         geometry = new v3d.Geometry().fromBufferGeometry(geometry);
 
@@ -33,7 +32,7 @@ v3d.SubdivisionModifier.prototype.modify = function(geometry) {
 
     }
 
-    geometry.mergeVertices();
+    geometry.mergeVertices(6);
 
     var repeats = this.subdivisions;
 
@@ -46,7 +45,15 @@ v3d.SubdivisionModifier.prototype.modify = function(geometry) {
     geometry.computeFaceNormals();
     geometry.computeVertexNormals();
 
-    return geometry;
+    if (isBufferGeometry) {
+
+        return new v3d.BufferGeometry().fromGeometry(geometry);
+
+    } else {
+
+        return geometry;
+
+    }
 
 };
 
@@ -61,7 +68,7 @@ v3d.SubdivisionModifier.prototype.modify = function(geometry) {
         var vertexIndexA = Math.min(a, b);
         var vertexIndexB = Math.max(a, b);
 
-        var key = vertexIndexA + "_" + vertexIndexB;
+        var key = vertexIndexA + '_' + vertexIndexB;
 
         return map[key];
 
@@ -73,7 +80,7 @@ v3d.SubdivisionModifier.prototype.modify = function(geometry) {
         var vertexIndexA = Math.min(a, b);
         var vertexIndexB = Math.max(a, b);
 
-        var key = vertexIndexA + "_" + vertexIndexB;
+        var key = vertexIndexA + '_' + vertexIndexB;
 
         var edge;
 

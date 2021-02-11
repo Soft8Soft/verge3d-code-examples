@@ -1,10 +1,4 @@
 /**
- * @author Don McCurdy / https://www.donmccurdy.com
- * @author Austin Eng / https://github.com/austinEng
- * @author Shrek Shao / https://github.com/shrekshao
- */
-
-/**
  * Loader for Basis Universal GPU Texture Codec.
  *
  * Basis Universal is a "supercompressed" GPU texture and texture video
@@ -31,12 +25,15 @@ v3d.BasisTextureLoader = function(manager) {
     this.workerConfig = {
         format: null,
         astcSupported: false,
+        bptcSupported: false,
         etcSupported: false,
         dxtSupported: false,
         pvrtcSupported: false,
     };
 
 };
+
+v3d.BasisTextureLoader.taskCache = new WeakMap();
 
 v3d.BasisTextureLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
@@ -62,15 +59,20 @@ v3d.BasisTextureLoader.prototype = Object.assign(Object.create(v3d.Loader.protot
 
         var config = this.workerConfig;
 
-        config.astcSupported = !! renderer.extensions.get('WEBGL_compressed_texture_astc');
-        config.etcSupported = !! renderer.extensions.get('WEBGL_compressed_texture_etc1');
-        config.dxtSupported = !! renderer.extensions.get('WEBGL_compressed_texture_s3tc');
-        config.pvrtcSupported = !! renderer.extensions.get('WEBGL_compressed_texture_pvrtc')
-            || !! renderer.extensions.get('WEBKIT_WEBGL_compressed_texture_pvrtc');
+        config.astcSupported = renderer.extensions.has('WEBGL_compressed_texture_astc');
+        config.bptcSupported = renderer.extensions.has('EXT_texture_compression_bptc');
+        config.etcSupported = renderer.extensions.has('WEBGL_compressed_texture_etc1');
+        config.dxtSupported = renderer.extensions.has('WEBGL_compressed_texture_s3tc');
+        config.pvrtcSupported = renderer.extensions.has('WEBGL_compressed_texture_pvrtc')
+            || renderer.extensions.has('WEBKIT_WEBGL_compressed_texture_pvrtc');
 
         if (config.astcSupported) {
 
             config.format = v3d.BasisTextureLoader.BASIS_FORMAT.cTFASTC_4x4;
+
+        } else if (config.bptcSupported) {
+
+            config.format = v3d.BasisTextureLoader.BASIS_FORMAT.cTFBC7_M5;
 
         } else if (config.dxtSupported) {
 
@@ -99,10 +101,21 @@ v3d.BasisTextureLoader.prototype = Object.assign(Object.create(v3d.Loader.protot
         var loader = new v3d.FileLoader(this.manager);
 
         loader.setResponseType('arraybuffer');
+        loader.setWithCredentials(this.withCredentials);
 
         loader.load(url, (buffer) => {
 
-            this._createTexture(buffer)
+            // Check for an existing task using this buffer. A transferred buffer cannot be transferred
+            // again from this thread.
+            if (v3d.BasisTextureLoader.taskCache.has(buffer)) {
+
+                var cachedTask = v3d.BasisTextureLoader.taskCache.get(buffer);
+
+                return cachedTask.promise.then(onLoad).catch(onError);
+
+            }
+
+            this._createTexture(buffer, url)
                 .then(onLoad)
                 .catch(onError);
 
@@ -111,10 +124,11 @@ v3d.BasisTextureLoader.prototype = Object.assign(Object.create(v3d.Loader.protot
     },
 
     /**
-     * @param  {ArrayBuffer} buffer
+     * @param    {ArrayBuffer} buffer
+     * @param    {string} url
      * @return {Promise<v3d.CompressedTexture>}
      */
-    _createTexture: function(buffer) {
+    _createTexture: function(buffer, url) {
 
         var worker;
         var taskID;
@@ -149,6 +163,9 @@ v3d.BasisTextureLoader.prototype = Object.assign(Object.create(v3d.Loader.protot
                     case v3d.BasisTextureLoader.BASIS_FORMAT.cTFASTC_4x4:
                         texture = new v3d.CompressedTexture(mipmaps, width, height, v3d.RGBA_ASTC_4x4_Format);
                         break;
+                    case v3d.BasisTextureLoader.BASIS_FORMAT.cTFBC7_M5:
+                        texture = new v3d.CompressedTexture(mipmaps, width, height, v3d.RGBA_BPTC_Format);
+                        break;
                     case v3d.BasisTextureLoader.BASIS_FORMAT.cTFBC1:
                     case v3d.BasisTextureLoader.BASIS_FORMAT.cTFBC3:
                         texture = new v3d.CompressedTexture(mipmaps, width, height, v3d.BasisTextureLoader.DXT_FORMAT_MAP[config.format], v3d.UnsignedByteType);
@@ -176,8 +193,10 @@ v3d.BasisTextureLoader.prototype = Object.assign(Object.create(v3d.Loader.protot
 
             });
 
+        // Note: replaced '.finally()' with '.catch().then()' block - iOS 11 support (#19416)
         texturePending
-            .finally(() => {
+            .catch(() => true)
+            .then(() => {
 
                 if (worker && taskID) {
 
@@ -187,6 +206,14 @@ v3d.BasisTextureLoader.prototype = Object.assign(Object.create(v3d.Loader.protot
                 }
 
             });
+
+        // Cache the task result.
+        v3d.BasisTextureLoader.taskCache.set(buffer, {
+
+            url: url,
+            promise: texturePending
+
+        });
 
         return texturePending;
 
@@ -199,6 +226,7 @@ v3d.BasisTextureLoader.prototype = Object.assign(Object.create(v3d.Loader.protot
             // Load transcoder wrapper.
             var jsLoader = new v3d.FileLoader(this.manager);
             jsLoader.setPath(this.transcoderPath);
+            jsLoader.setWithCredentials(this.withCredentials);
             var jsContent = new Promise((resolve, reject) => {
 
                 jsLoader.load('basis_transcoder.js', resolve, undefined, reject);
@@ -209,6 +237,7 @@ v3d.BasisTextureLoader.prototype = Object.assign(Object.create(v3d.Loader.protot
             var binaryLoader = new v3d.FileLoader(this.manager);
             binaryLoader.setPath(this.transcoderPath);
             binaryLoader.setResponseType('arraybuffer');
+            binaryLoader.setWithCredentials(this.withCredentials);
             var binaryContent = new Promise((resolve, reject) => {
 
                 binaryLoader.load('basis_transcoder.wasm', resolve, undefined, reject);
@@ -407,7 +436,7 @@ v3d.BasisTextureLoader.BasisWorker = function() {
         transcoderPending = new Promise((resolve) => {
 
             BasisModule = { wasmBinary, onRuntimeInitialized: resolve };
-            BASIS(BasisModule);
+            BASIS(BasisModule); // eslint-disable-line no-undef
 
         }).then(() => {
 
@@ -454,7 +483,7 @@ v3d.BasisTextureLoader.BasisWorker = function() {
         if (!width || ! height || ! levels) {
 
             cleanup();
-            throw new Error('v3d.BasisTextureLoader:  Invalid .basis file');
+            throw new Error('v3d.BasisTextureLoader:    Invalid .basis file');
 
         }
 

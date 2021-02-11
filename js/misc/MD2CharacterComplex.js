@@ -1,7 +1,3 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 v3d.MD2CharacterComplex = function() {
 
     var scope = this;
@@ -147,8 +143,8 @@ v3d.MD2CharacterComplex = function() {
 
         // SKINS
 
-        this.skinsBody = loadTextures(config.baseUrl + "skins/", config.skins);
-        this.skinsWeapon = loadTextures(config.baseUrl + "skins/", weaponsTextures);
+        this.skinsBody = loadTextures(config.baseUrl + 'skins/', config.skins);
+        this.skinsWeapon = loadTextures(config.baseUrl + 'skins/', weaponsTextures);
 
         // BODY
 
@@ -342,13 +338,13 @@ v3d.MD2CharacterComplex = function() {
 
         if (controls.crouch) {
 
-            moveAnimation = animations["crouchMove"];
-            idleAnimation = animations["crouchIdle"];
+            moveAnimation = animations['crouchMove'];
+            idleAnimation = animations['crouchIdle'];
 
         } else {
 
-            moveAnimation = animations["move"];
-            idleAnimation = animations["idle"];
+            moveAnimation = animations['move'];
+            idleAnimation = animations['idle'];
 
         }
 
@@ -356,8 +352,8 @@ v3d.MD2CharacterComplex = function() {
 
         if (controls.jump) {
 
-            moveAnimation = animations["jump"];
-            idleAnimation = animations["jump"];
+            moveAnimation = animations['jump'];
+            idleAnimation = animations['jump'];
 
         }
 
@@ -365,13 +361,13 @@ v3d.MD2CharacterComplex = function() {
 
             if (controls.crouch) {
 
-                moveAnimation = animations["crouchAttack"];
-                idleAnimation = animations["crouchAttack"];
+                moveAnimation = animations['crouchAttack'];
+                idleAnimation = animations['crouchAttack'];
 
             } else {
 
-                moveAnimation = animations["attack"];
-                idleAnimation = animations["attack"];
+                moveAnimation = animations['attack'];
+                idleAnimation = animations['attack'];
 
             }
 

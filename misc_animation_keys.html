@@ -18,8 +18,8 @@
 
       import Stats from './jsm/libs/stats.module.js';
 
-      var stats, clock;
-      var scene, camera, renderer, mixer;
+      let stats, clock;
+      let scene, camera, renderer, mixer;
 
       init();
       animate();
@@ -31,56 +31,56 @@
         //
 
         camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 1000);
-        camera.position.set(50, 50, 100);
+        camera.position.set(25, 25, 50);
         camera.lookAt(scene.position);
 
         //
 
-        var axesHelper = new v3d.AxesHelper(10);
+        const axesHelper = new v3d.AxesHelper(10);
         scene.add(axesHelper);
 
         //
 
-        var geometry = new v3d.BoxBufferGeometry(5, 5, 5);
-        var material = new v3d.MeshBasicMaterial({ color: 0xffffff, transparent: true });
-        var mesh = new v3d.Mesh(geometry, material);
+        const geometry = new v3d.BoxBufferGeometry(5, 5, 5);
+        const material = new v3d.MeshBasicMaterial({ color: 0xffffff, transparent: true });
+        const mesh = new v3d.Mesh(geometry, material);
         scene.add(mesh);
 
         // create a keyframe track (i.e. a timed sequence of keyframes) for each animated property
         // Note: the keyframe track type should correspond to the type of the property being animated
 
         // POSITION
-        var positionKF = new v3d.VectorKeyframeTrack('.position', [0, 1, 2], [0, 0, 0, 30, 0, 0, 0, 0, 0]);
+        const positionKF = new v3d.VectorKeyframeTrack('.position', [0, 1, 2], [0, 0, 0, 30, 0, 0, 0, 0, 0]);
 
         // SCALE
-        var scaleKF = new v3d.VectorKeyframeTrack('.scale', [0, 1, 2], [1, 1, 1, 2, 2, 2, 1, 1, 1]);
+        const scaleKF = new v3d.VectorKeyframeTrack('.scale', [0, 1, 2], [1, 1, 1, 2, 2, 2, 1, 1, 1]);
 
         // ROTATION
         // Rotation should be performed using quaternions, using a v3d.QuaternionKeyframeTrack
         // Interpolating Euler angles (.rotation property) can be problematic and is currently not supported
 
         // set up rotation about x axis
-        var xAxis = new v3d.Vector3(1, 0, 0);
+        const xAxis = new v3d.Vector3(1, 0, 0);
 
-        var qInitial = new v3d.Quaternion().setFromAxisAngle(xAxis, 0);
-        var qFinal = new v3d.Quaternion().setFromAxisAngle(xAxis, Math.PI);
-        var quaternionKF = new v3d.QuaternionKeyframeTrack('.quaternion', [0, 1, 2], [qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w, qInitial.x, qInitial.y, qInitial.z, qInitial.w]);
+        const qInitial = new v3d.Quaternion().setFromAxisAngle(xAxis, 0);
+        const qFinal = new v3d.Quaternion().setFromAxisAngle(xAxis, Math.PI);
+        const quaternionKF = new v3d.QuaternionKeyframeTrack('.quaternion', [0, 1, 2], [qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w, qInitial.x, qInitial.y, qInitial.z, qInitial.w]);
 
         // COLOR
-        var colorKF = new v3d.ColorKeyframeTrack('.material.color', [0, 1, 2], [1, 0, 0, 0, 1, 0, 0, 0, 1], v3d.InterpolateDiscrete);
+        const colorKF = new v3d.ColorKeyframeTrack('.material.color', [0, 1, 2], [1, 0, 0, 0, 1, 0, 0, 0, 1], v3d.InterpolateDiscrete);
 
         // OPACITY
-        var opacityKF = new v3d.NumberKeyframeTrack('.material.opacity', [0, 1, 2], [1, 0, 1]);
+        const opacityKF = new v3d.NumberKeyframeTrack('.material.opacity', [0, 1, 2], [1, 0, 1]);
 
         // create an animation sequence with the tracks
         // If a negative time value is passed, the duration will be calculated from the times of the passed tracks array
-        var clip = new v3d.AnimationClip('Action', 3, [scaleKF, positionKF, quaternionKF, colorKF, opacityKF]);
+        const clip = new v3d.AnimationClip('Action', 3, [scaleKF, positionKF, quaternionKF, colorKF, opacityKF]);
 
         // setup the v3d.AnimationMixer
         mixer = new v3d.AnimationMixer(mesh);
 
         // create a ClipAction and set it to play
-        var clipAction = mixer.clipAction(clip);
+        const clipAction = mixer.clipAction(clip);
         clipAction.play();
 
         //
@@ -124,7 +124,7 @@
 
       function render() {
 
-        var delta = clock.getDelta();
+        const delta = clock.getDelta();
 
         if (mixer) {
 

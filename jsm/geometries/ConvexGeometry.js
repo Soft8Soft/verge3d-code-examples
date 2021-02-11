@@ -1,13 +1,9 @@
-/**
- * @author Mugen87 / https://github.com/Mugen87
- */
-
 import {
     BufferGeometry,
     Float32BufferAttribute,
     Geometry
-} from "../../../build/v3d.module.js";
-import { ConvexHull } from "../math/ConvexHull.js";
+} from '../../../build/v3d.module.js';
+import { ConvexHull } from '../math/ConvexHull.js';
 
 // ConvexGeometry
 

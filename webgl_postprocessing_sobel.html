@@ -28,11 +28,11 @@
       import { LuminosityShader } from './jsm/shaders/LuminosityShader.js';
       import { SobelOperatorShader } from './jsm/shaders/SobelOperatorShader.js';
 
-      var camera, scene, renderer, composer;
+      let camera, scene, renderer, composer;
 
-      var effectSobel;
+      let effectSobel;
 
-      var params = {
+      const params = {
         enable: true
       };
 
@@ -45,24 +45,24 @@
 
         scene = new v3d.Scene();
 
-        camera = new v3d.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+        camera = new v3d.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 200);
         camera.position.set(0, 10, 25);
         camera.lookAt(scene.position);
 
         //
 
-        var geometry = new v3d.TorusKnotBufferGeometry(8, 3, 256, 32, 2, 3);
-        var material = new v3d.MeshPhongMaterial({ color: 0xffff00 });
+        const geometry = new v3d.TorusKnotBufferGeometry(8, 3, 256, 32, 2, 3);
+        const material = new v3d.MeshPhongMaterial({ color: 0xffff00 });
 
-        var mesh = new v3d.Mesh(geometry, material);
+        const mesh = new v3d.Mesh(geometry, material);
         scene.add(mesh);
 
         //
 
-        var ambientLight = new v3d.AmbientLight(0xcccccc, 0.4);
+        const ambientLight = new v3d.AmbientLight(0xcccccc, 0.4);
         scene.add(ambientLight);
 
-        var pointLight = new v3d.PointLight(0xffffff, 0.8);
+        const pointLight = new v3d.PointLight(0xffffff, 0.8);
         camera.add(pointLight);
         scene.add(camera);
 
@@ -76,12 +76,12 @@
         // postprocessing
 
         composer = new EffectComposer(renderer);
-        var renderPass = new RenderPass(scene, camera);
+        const renderPass = new RenderPass(scene, camera);
         composer.addPass(renderPass);
 
         // color to grayscale conversion
 
-        var effectGrayScale = new ShaderPass(LuminosityShader);
+        const effectGrayScale = new ShaderPass(LuminosityShader);
         composer.addPass(effectGrayScale);
 
         // you might want to use a gaussian blur filter before
@@ -94,11 +94,13 @@
         effectSobel.uniforms['resolution'].value.y = window.innerHeight * window.devicePixelRatio;
         composer.addPass(effectSobel);
 
-        var controls = new OrbitControls(camera, renderer.domElement);
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.minDistance = 10;
+        controls.maxDistance = 100;
 
         //
 
-        var gui = new GUI();
+        const gui = new GUI();
 
         gui.add(params, 'enable');
         gui.open();

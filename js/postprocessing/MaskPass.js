@@ -1,7 +1,3 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 v3d.MaskPass = function(scene, camera) {
 
     v3d.Pass.call(this);

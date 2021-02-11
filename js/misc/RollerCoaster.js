@@ -1,7 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
 v3d.RollerCoasterGeometry = function(curve, divisions) {
 
     v3d.BufferGeometry.call(this);

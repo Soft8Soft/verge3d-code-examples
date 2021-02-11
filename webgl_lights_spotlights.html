@@ -21,32 +21,32 @@
       import { OrbitControls } from './jsm/controls/OrbitControls.js';
 
 
-      var renderer = new v3d.WebGLRenderer();
+      const renderer = new v3d.WebGLRenderer();
       renderer.setPixelRatio(window.devicePixelRatio);
 
-      var camera = new v3d.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 2000);
+      const camera = new v3d.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 2000);
 
-      var controls = new OrbitControls(camera, renderer.domElement);
+      const controls = new OrbitControls(camera, renderer.domElement);
 
-      var scene = new v3d.Scene();
+      const scene = new v3d.Scene();
 
-      var matFloor = new v3d.MeshPhongMaterial();
-      var matBox = new v3d.MeshPhongMaterial({ color: 0xaaaaaa });
+      const matFloor = new v3d.MeshPhongMaterial();
+      const matBox = new v3d.MeshPhongMaterial({ color: 0xaaaaaa });
 
-      var geoFloor = new v3d.PlaneBufferGeometry(2000, 2000);
-      var geoBox = new v3d.BoxBufferGeometry(3, 1, 2);
+      const geoFloor = new v3d.PlaneBufferGeometry(2000, 2000);
+      const geoBox = new v3d.BoxBufferGeometry(3, 1, 2);
 
-      var mshFloor = new v3d.Mesh(geoFloor, matFloor);
+      const mshFloor = new v3d.Mesh(geoFloor, matFloor);
       mshFloor.rotation.x = - Math.PI * 0.5;
-      var mshBox = new v3d.Mesh(geoBox, matBox);
+      const mshBox = new v3d.Mesh(geoBox, matBox);
 
-      var ambient = new v3d.AmbientLight(0x111111);
+      const ambient = new v3d.AmbientLight(0x111111);
 
-      var spotLight1 = createSpotlight(0xFF7F00);
-      var spotLight2 = createSpotlight(0x00FF7F);
-      var spotLight3 = createSpotlight(0x7F00FF);
+      const spotLight1 = createSpotlight(0xFF7F00);
+      const spotLight2 = createSpotlight(0x00FF7F);
+      const spotLight3 = createSpotlight(0x7F00FF);
 
-      var lightHelper1, lightHelper2, lightHelper3;
+      let lightHelper1, lightHelper2, lightHelper3;
 
       function init() {
 
@@ -91,7 +91,7 @@
 
       function createSpotlight(color) {
 
-        var newObj = new v3d.SpotLight(color, 2);
+        const newObj = new v3d.SpotLight(color, 2);
 
         newObj.castShadow = true;
         newObj.angle = 0.3;

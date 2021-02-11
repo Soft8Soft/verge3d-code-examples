@@ -1,7 +1,3 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 v3d.Gyroscope = function() {
 
     v3d.Object3D.call(this);

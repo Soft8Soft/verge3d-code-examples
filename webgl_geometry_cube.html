@@ -12,8 +12,8 @@
 
       import * as v3d from '../build/v3d.module.js';
 
-      var camera, scene, renderer;
-      var mesh;
+      let camera, scene, renderer;
+      let mesh;
 
       init();
       animate();
@@ -25,10 +25,10 @@
 
         scene = new v3d.Scene();
 
-        var texture = new v3d.TextureLoader().load('textures/crate.gif');
+        const texture = new v3d.TextureLoader().load('textures/crate.gif');
 
-        var geometry = new v3d.BoxBufferGeometry(200, 200, 200);
-        var material = new v3d.MeshBasicMaterial({ map: texture });
+        const geometry = new v3d.BoxBufferGeometry(200, 200, 200);
+        const material = new v3d.MeshBasicMaterial({ map: texture });
 
         mesh = new v3d.Mesh(geometry, material);
         scene.add(mesh);

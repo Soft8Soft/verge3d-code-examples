@@ -13,44 +13,46 @@
 
       import Stats from './jsm/libs/stats.module.js';
 
-      var container, stats;
+      let stats;
 
-      var camera, scene, renderer;
+      let camera, scene, renderer, clock;
 
       init();
       animate();
 
       function init() {
 
-        container = document.createElement('div');
+        const container = document.createElement('div');
         document.body.appendChild(container);
 
         camera = new v3d.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10);
         camera.position.set(0, 0, 1);
 
+        clock = new v3d.Clock();
+
         scene = new v3d.Scene();
 
-        var colorArray = [new v3d.Color(0xff0080), new v3d.Color(0xffffff), new v3d.Color(0x8000ff)];
-        var positions = [];
-        var colors = [];
+        const colorArray = [new v3d.Color(0xff0080), new v3d.Color(0xffffff), new v3d.Color(0x8000ff)];
+        const positions = [];
+        const colors = [];
 
-        for (var i = 0; i < 100; i++) {
+        for (let i = 0; i < 100; i++) {
 
           positions.push(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
 
-          var clr = colorArray[Math.floor(Math.random() * colorArray.length)];
+          const clr = colorArray[Math.floor(Math.random() * colorArray.length)];
 
           colors.push(clr.r, clr.g, clr.b);
 
         }
 
-        var geometry = new v3d.BufferGeometry();
+        const geometry = new v3d.BufferGeometry();
         geometry.setAttribute('position', new v3d.Float32BufferAttribute(positions, 3));
         geometry.setAttribute('color', new v3d.Float32BufferAttribute(colors, 3));
 
-        var material = new v3d.PointsMaterial({ size: 4, vertexColors: v3d.VertexColors, depthTest: false, sizeAttenuation: false });
+        const material = new v3d.PointsMaterial({ size: 4, vertexColors: true, depthTest: false, sizeAttenuation: false });
 
-        var mesh = new v3d.Points(geometry, material);
+        const mesh = new v3d.Points(geometry, material);
         scene.add(mesh);
 
         renderer = new v3d.WebGLRenderer({ preserveDrawingBuffer: true });
@@ -90,7 +92,9 @@
 
       function render() {
 
-        scene.rotation.y = Date.now() / 2000;
+        const elapsedTime = clock.getElapsedTime();
+
+        scene.rotation.y = elapsedTime * 0.5;
 
         renderer.render(scene, camera);
 

@@ -37,104 +37,108 @@
       import { RenderPass } from './jsm/postprocessing/RenderPass.js';
       import { UnrealBloomPass } from './jsm/postprocessing/UnrealBloomPass.js';
 
-      var scene, camera, controls, pointLight, stats;
-      var composer, renderer, mixer;
+      let camera, stats;
+      let composer, renderer, mixer, clock;
 
-      var params = {
+      const params = {
         exposure: 1,
         bloomStrength: 1.5,
         bloomThreshold: 0,
         bloomRadius: 0
       };
 
-      var clock = new v3d.Clock();
-      var container = document.getElementById('container');
+      init();
 
-      stats = new Stats();
-      container.appendChild(stats.dom);
+      function init() {
 
-      renderer = new v3d.WebGLRenderer({ antialias: true });
-      renderer.setPixelRatio(window.devicePixelRatio);
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.toneMapping = v3d.ReinhardToneMapping;
-      container.appendChild(renderer.domElement);
+        const container = document.getElementById('container');
 
-      scene = new v3d.Scene();
+        stats = new Stats();
+        container.appendChild(stats.dom);
 
-      camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 100);
-      camera.position.set(- 5, 2.5, - 3.5);
-      scene.add(camera);
+        clock = new v3d.Clock();
 
-      controls = new OrbitControls(camera, renderer.domElement);
-      controls.maxPolarAngle = Math.PI * 0.5;
-      controls.minDistance = 1;
-      controls.maxDistance = 10;
+        renderer = new v3d.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.toneMapping = v3d.ReinhardToneMapping;
+        container.appendChild(renderer.domElement);
 
-      scene.add(new v3d.AmbientLight(0x404040));
+        const scene = new v3d.Scene();
 
-      pointLight = new v3d.PointLight(0xffffff, 1);
-      camera.add(pointLight);
+        camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 100);
+        camera.position.set(- 5, 2.5, - 3.5);
+        scene.add(camera);
 
-      var renderScene = new RenderPass(scene, camera);
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.maxPolarAngle = Math.PI * 0.5;
+        controls.minDistance = 1;
+        controls.maxDistance = 10;
 
-      var bloomPass = new UnrealBloomPass(new v3d.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-      bloomPass.threshold = params.bloomThreshold;
-      bloomPass.strength = params.bloomStrength;
-      bloomPass.radius = params.bloomRadius;
+        scene.add(new v3d.AmbientLight(0x404040));
 
-      composer = new EffectComposer(renderer);
-      composer.addPass(renderScene);
-      composer.addPass(bloomPass);
+        const pointLight = new v3d.PointLight(0xffffff, 1);
+        camera.add(pointLight);
 
-      new GLTFLoader().load('models/gltf/PrimaryIonDrive.glb', function(gltf) {
+        const renderScene = new RenderPass(scene, camera);
 
-        var model = gltf.scene;
+        const bloomPass = new UnrealBloomPass(new v3d.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        bloomPass.threshold = params.bloomThreshold;
+        bloomPass.strength = params.bloomStrength;
+        bloomPass.radius = params.bloomRadius;
 
-        scene.add(model);
+        composer = new EffectComposer(renderer);
+        composer.addPass(renderScene);
+        composer.addPass(bloomPass);
 
-        // Mesh contains self-intersecting semi-transparent faces, which display
-        // z-fighting unless depthWrite is disabled.
-        var core = model.getObjectByName('geo1_HoloFillDark_0');
-        core.material.depthWrite = false;
+        new GLTFLoader().load('models/gltf/PrimaryIonDrive.glb', function(gltf) {
 
-        mixer = new v3d.AnimationMixer(model);
-        var clip = gltf.animations[0];
-        mixer.clipAction(clip.optimize()).play();
+          const model = gltf.scene;
 
-        animate();
+          scene.add(model);
 
-      });
+          mixer = new v3d.AnimationMixer(model);
+          const clip = gltf.animations[0];
+          mixer.clipAction(clip.optimize()).play();
 
-      var gui = new GUI();
+          animate();
 
-      gui.add(params, 'exposure', 0.1, 2).onChange(function(value) {
+        });
 
-        renderer.toneMappingExposure = Math.pow(value, 4.0);
+        const gui = new GUI();
 
-      });
+        gui.add(params, 'exposure', 0.1, 2).onChange(function(value) {
 
-      gui.add(params, 'bloomThreshold', 0.0, 1.0).onChange(function(value) {
+          renderer.toneMappingExposure = Math.pow(value, 4.0);
 
-        bloomPass.threshold = Number(value);
+        });
 
-      });
+        gui.add(params, 'bloomThreshold', 0.0, 1.0).onChange(function(value) {
 
-      gui.add(params, 'bloomStrength', 0.0, 3.0).onChange(function(value) {
+          bloomPass.threshold = Number(value);
 
-        bloomPass.strength = Number(value);
+        });
 
-      });
+        gui.add(params, 'bloomStrength', 0.0, 3.0).onChange(function(value) {
 
-      gui.add(params, 'bloomRadius', 0.0, 1.0).step(0.01).onChange(function(value) {
+          bloomPass.strength = Number(value);
 
-        bloomPass.radius = Number(value);
+        });
 
-      });
+        gui.add(params, 'bloomRadius', 0.0, 1.0).step(0.01).onChange(function(value) {
 
-      window.onresize = function() {
+          bloomPass.radius = Number(value);
 
-        var width = window.innerWidth;
-        var height = window.innerHeight;
+        });
+
+        window.addEventListener('resize', onWindowResize);
+
+      }
+
+      function onWindowResize() {
+
+        const width = window.innerWidth;
+        const height = window.innerHeight;
 
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
@@ -142,8 +146,7 @@
         renderer.setSize(width, height);
         composer.setSize(width, height);
 
-      };
-
+      }
 
       function animate() {
 

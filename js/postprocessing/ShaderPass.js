@@ -1,12 +1,8 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 v3d.ShaderPass = function(shader, textureID) {
 
     v3d.Pass.call(this);
 
-    this.textureID = (textureID !== undefined) ? textureID : "tDiffuse";
+    this.textureID = (textureID !== undefined) ? textureID : 'tDiffuse';
 
     if (shader instanceof v3d.ShaderMaterial) {
 

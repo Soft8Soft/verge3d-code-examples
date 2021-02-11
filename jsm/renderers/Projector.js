@@ -1,16 +1,9 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author supereggbert / http://www.paulbrunt.co.uk/
- * @author julianwa / https://github.com/julianwa
- */
-
 import {
     BackSide,
     Box3,
     BufferGeometry,
     Color,
     DoubleSide,
-    FaceColors,
     FrontSide,
     Frustum,
     Geometry,
@@ -24,9 +17,8 @@ import {
     Sprite,
     Vector2,
     Vector3,
-    Vector4,
-    VertexColors
-} from "../../../build/v3d.module.js";
+    Vector4
+} from '../../../build/v3d.module.js';
 
 var RenderableObject = function() {
 
@@ -290,7 +282,7 @@ var Projector = function() {
 
                 _line.material = object.material;
 
-                if (object.material.vertexColors === VertexColors) {
+                if (object.material.vertexColors) {
 
                     _line.vertexColors[0].fromArray(colors, a * 3);
                     _line.vertexColors[1].fromArray(colors, b * 3);
@@ -344,7 +336,7 @@ var Projector = function() {
 
                 _face.material = material;
 
-                if (material.vertexColors === FaceColors || material.vertexColors === VertexColors) {
+                if (material.vertexColors) {
 
                     _face.color.fromArray(colors, a * 3);
 
@@ -854,7 +846,7 @@ var Projector = function() {
 
                             _line.material = object.material;
 
-                            if (object.material.vertexColors === VertexColors) {
+                            if (object.material.vertexColors) {
 
                                 _line.vertexColors[0].copy(object.geometry.colors[v]);
                                 _line.vertexColors[1].copy(object.geometry.colors[v - 1]);

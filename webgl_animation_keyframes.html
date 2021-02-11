@@ -37,54 +37,55 @@
       import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
       import { DRACOLoader } from './jsm/loaders/DRACOLoader.js';
 
-      var scene, camera, pointLight, stats;
-      var renderer, mixer, controls;
+      let mixer;
 
-      var clock = new v3d.Clock();
-      var container = document.getElementById('container');
+      const clock = new v3d.Clock();
+      const container = document.getElementById('container');
 
-      stats = new Stats();
+      const stats = new Stats();
       container.appendChild(stats.dom);
 
-      renderer = new v3d.WebGLRenderer({ antialias: true });
+      const renderer = new v3d.WebGLRenderer({ antialias: true });
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.outputEncoding = v3d.sRGBEncoding;
       container.appendChild(renderer.domElement);
 
-      scene = new v3d.Scene();
+      const scene = new v3d.Scene();
       scene.background = new v3d.Color(0xbfe3dd);
 
-      camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 100);
+      const camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 100);
       camera.position.set(5, 2, 8);
 
-      controls = new OrbitControls(camera, renderer.domElement);
+      const controls = new OrbitControls(camera, renderer.domElement);
       controls.target.set(0, 0.5, 0);
+      controls.update();
       controls.enablePan = false;
+      controls.enableDamping = true;
 
-      scene.add(new v3d.AmbientLight(0x404040));
+      scene.add(new v3d.HemisphereLight(0xffffff, 0x000000, 0.4));
 
-      pointLight = new v3d.PointLight(0xffffff, 1);
-      pointLight.position.copy(camera.position);
-      scene.add(pointLight);
+      const dirLight = new v3d.DirectionalLight(0xffffff, 1);
+      dirLight.position.set(5, 2, 8);
+      scene.add(dirLight);
 
       // envmap
-      var path = 'textures/cube/Park2/';
-      var format = '.jpg';
-      var envMap = new v3d.CubeTextureLoader().load([
+      const path = 'textures/cube/Park2/';
+      const format = '.jpg';
+      const envMap = new v3d.CubeTextureLoader().load([
         path + 'posx' + format, path + 'negx' + format,
         path + 'posy' + format, path + 'negy' + format,
         path + 'posz' + format, path + 'negz' + format
       ]);
 
-      var dracoLoader = new DRACOLoader();
+      const dracoLoader = new DRACOLoader();
       dracoLoader.setDecoderPath('js/libs/draco/gltf/');
 
-      var loader = new GLTFLoader();
+      const loader = new GLTFLoader();
       loader.setDRACOLoader(dracoLoader);
       loader.load('models/gltf/LittlestTokyo.glb', function(gltf) {
 
-        var model = gltf.scene;
+        const model = gltf.scene;
         model.position.set(1, 1, 0);
         model.scale.set(0.01, 0.01, 0.01);
         model.traverse(function(child) {
@@ -121,9 +122,11 @@
 
         requestAnimationFrame(animate);
 
-        var delta = clock.getDelta();
+        const delta = clock.getDelta();
+
         mixer.update(delta);
-        controls.update(delta);
+
+        controls.update();
 
         stats.update();
 

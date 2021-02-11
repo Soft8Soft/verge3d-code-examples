@@ -1,6 +1,4 @@
 /**
- * @author Mugen87 / https://github.com/Mugen87
- *
  * References:
  *    http://www.valvesoftware.com/publications/2010/siggraph2010_vlachos_waterflow.pdf
  *     http://graphicsrunner.blogspot.de/2010/08/water-using-flow-maps.html
@@ -26,6 +24,7 @@ v3d.Water = function(geometry, options) {
     var reflectivity = options.reflectivity || 0.02;
     var scale = options.scale || 1;
     var shader = options.shader || v3d.Water.WaterShader;
+    var encoding = options.encoding !== undefined ? options.encoding : v3d.LinearEncoding;
 
     var textureLoader = new v3d.TextureLoader();
 
@@ -57,13 +56,15 @@ v3d.Water = function(geometry, options) {
     var reflector = new v3d.Reflector(geometry, {
         textureWidth: textureWidth,
         textureHeight: textureHeight,
-        clipBias: clipBias
+        clipBias: clipBias,
+        encoding: encoding
     });
 
     var refractor = new v3d.Refractor(geometry, {
         textureWidth: textureWidth,
         textureHeight: textureHeight,
-        clipBias: clipBias
+        clipBias: clipBias,
+        encoding: encoding
     });
 
     reflector.matrixAutoUpdate = false;
@@ -85,14 +86,14 @@ v3d.Water = function(geometry, options) {
     if (flowMap !== undefined) {
 
         this.material.defines.USE_FLOWMAP = '';
-        this.material.uniforms["tFlowMap"] = {
+        this.material.uniforms['tFlowMap'] = {
             type: 't',
             value: flowMap
         };
 
     } else {
 
-        this.material.uniforms["flowDirection"] = {
+        this.material.uniforms['flowDirection'] = {
             type: 'v2',
             value: flowDirection
         };
@@ -104,23 +105,23 @@ v3d.Water = function(geometry, options) {
     normalMap0.wrapS = normalMap0.wrapT = v3d.RepeatWrapping;
     normalMap1.wrapS = normalMap1.wrapT = v3d.RepeatWrapping;
 
-    this.material.uniforms["tReflectionMap"].value = reflector.getRenderTarget().texture;
-    this.material.uniforms["tRefractionMap"].value = refractor.getRenderTarget().texture;
-    this.material.uniforms["tNormalMap0"].value = normalMap0;
-    this.material.uniforms["tNormalMap1"].value = normalMap1;
+    this.material.uniforms['tReflectionMap'].value = reflector.getRenderTarget().texture;
+    this.material.uniforms['tRefractionMap'].value = refractor.getRenderTarget().texture;
+    this.material.uniforms['tNormalMap0'].value = normalMap0;
+    this.material.uniforms['tNormalMap1'].value = normalMap1;
 
     // water
 
-    this.material.uniforms["color"].value = color;
-    this.material.uniforms["reflectivity"].value = reflectivity;
-    this.material.uniforms["textureMatrix"].value = textureMatrix;
+    this.material.uniforms['color'].value = color;
+    this.material.uniforms['reflectivity'].value = reflectivity;
+    this.material.uniforms['textureMatrix'].value = textureMatrix;
 
     // inital values
 
-    this.material.uniforms["config"].value.x = 0; // flowMapOffset0
-    this.material.uniforms["config"].value.y = halfCycle; // flowMapOffset1
-    this.material.uniforms["config"].value.z = halfCycle; // halfCycle
-    this.material.uniforms["config"].value.w = scale; // scale
+    this.material.uniforms['config'].value.x = 0; // flowMapOffset0
+    this.material.uniforms['config'].value.y = halfCycle; // flowMapOffset1
+    this.material.uniforms['config'].value.z = halfCycle; // halfCycle
+    this.material.uniforms['config'].value.w = scale; // scale
 
     // functions
 
@@ -142,7 +143,7 @@ v3d.Water = function(geometry, options) {
     function updateFlow() {
 
         var delta = clock.getDelta();
-        var config = scope.material.uniforms["config"];
+        var config = scope.material.uniforms['config'];
 
         config.value.x += flowSpeed * delta; // flowMapOffset0
         config.value.y = config.value.x + halfCycle; // flowMapOffset1
@@ -236,6 +237,7 @@ v3d.Water.WaterShader = {
 
     vertexShader: [
 
+        '#include <common>',
         '#include <fog_pars_vertex>',
         '#include <logdepthbuf_pars_vertex>',
 

@@ -17,7 +17,11 @@
 
       import * as v3d from '../build/v3d.module.js';
 
-      var camera, scene, renderer, clock, dataTexture, diffuseMap;
+      let camera, scene, renderer, clock, dataTexture, diffuseMap;
+
+      let last = 0;
+      const position = new v3d.Vector2();
+      const color = new v3d.Color();
 
       init();
 
@@ -30,23 +34,23 @@
 
         clock = new v3d.Clock();
 
-        var loader = new v3d.TextureLoader();
+        const loader = new v3d.TextureLoader();
         diffuseMap = loader.load('textures/floors/FloorsCheckerboard_S_Diffuse.jpg', animate);
         diffuseMap.minFilter = v3d.LinearFilter;
         diffuseMap.generateMipmaps = false;
 
-        var geometry = new v3d.PlaneBufferGeometry(2, 2);
-        var material = new v3d.MeshBasicMaterial({ map: diffuseMap });
+        const geometry = new v3d.PlaneBufferGeometry(2, 2);
+        const material = new v3d.MeshBasicMaterial({ map: diffuseMap });
 
-        var mesh = new v3d.Mesh(geometry, material);
+        const mesh = new v3d.Mesh(geometry, material);
         scene.add(mesh);
 
         //
 
-        var width = 32;
-        var height = 32;
+        const width = 32;
+        const height = 32;
 
-        var data = new Uint8Array(width * height * 3);
+        const data = new Uint8Array(width * height * 3);
         dataTexture = new v3d.DataTexture(data, width, height, v3d.RGBFormat);
 
         //
@@ -71,14 +75,11 @@
 
       }
 
-      var last = 0;
-      var position = new v3d.Vector2();
-
       function animate() {
 
         requestAnimationFrame(animate);
 
-        var elapsedTime = clock.getElapsedTime();
+        const elapsedTime = clock.getElapsedTime();
 
         if (elapsedTime - last > 0.1) {
 
@@ -101,24 +102,22 @@
 
       }
 
-      var color = new v3d.Color();
-
       function updateDataTexture(texture) {
 
-        var size = texture.image.width * texture.image.height;
-        var data = texture.image.data;
+        const size = texture.image.width * texture.image.height;
+        const data = texture.image.data;
 
         // generate a random color and update texture data
 
         color.setHex(Math.random() * 0xffffff);
 
-        var r = Math.floor(color.r * 255);
-        var g = Math.floor(color.g * 255);
-        var b = Math.floor(color.b * 255);
+        const r = Math.floor(color.r * 255);
+        const g = Math.floor(color.g * 255);
+        const b = Math.floor(color.b * 255);
 
-        for (var i = 0; i < size; i++) {
+        for (let i = 0; i < size; i++) {
 
-          var stride = i * 3;
+          const stride = i * 3;
 
           data[stride] = r;
           data[stride + 1] = g;

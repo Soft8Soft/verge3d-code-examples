@@ -19,10 +19,10 @@
 
       import { GeometryUtils } from './jsm/utils/GeometryUtils.js';
 
-      var renderer, scene, camera, stats;
-      var objects = [];
+      let renderer, scene, camera, stats;
+      const objects = [];
 
-      var WIDTH = window.innerWidth, HEIGHT = window.innerHeight;
+      const WIDTH = window.innerWidth, HEIGHT = window.innerHeight;
 
       init();
       animate();
@@ -36,24 +36,24 @@
         scene.background = new v3d.Color(0x111111);
         scene.fog = new v3d.Fog(0x111111, 150, 200);
 
-        var subdivisions = 6;
-        var recursion = 1;
+        const subdivisions = 6;
+        const recursion = 1;
 
-        var points = GeometryUtils.hilbert3D(new v3d.Vector3(0, 0, 0), 25.0, recursion, 0, 1, 2, 3, 4, 5, 6, 7);
-        var spline = new v3d.CatmullRomCurve3(points);
+        const points = GeometryUtils.hilbert3D(new v3d.Vector3(0, 0, 0), 25.0, recursion, 0, 1, 2, 3, 4, 5, 6, 7);
+        const spline = new v3d.CatmullRomCurve3(points);
 
-        var samples = spline.getPoints(points.length * subdivisions);
-        var geometrySpline = new v3d.BufferGeometry().setFromPoints(samples);
+        const samples = spline.getPoints(points.length * subdivisions);
+        const geometrySpline = new v3d.BufferGeometry().setFromPoints(samples);
 
-        var line = new v3d.Line(geometrySpline, new v3d.LineDashedMaterial({ color: 0xffffff, dashSize: 1, gapSize: 0.5 }));
+        const line = new v3d.Line(geometrySpline, new v3d.LineDashedMaterial({ color: 0xffffff, dashSize: 1, gapSize: 0.5 }));
         line.computeLineDistances();
 
         objects.push(line);
         scene.add(line);
 
-        var geometryCube = cube(50);
+        const geometryBox = box(50, 50, 50);
 
-        var lineSegments = new v3d.LineSegments(geometryCube, new v3d.LineDashedMaterial({ color: 0xffaa00, dashSize: 3, gapSize: 1 }));
+        const lineSegments = new v3d.LineSegments(geometryBox, new v3d.LineDashedMaterial({ color: 0xffaa00, dashSize: 3, gapSize: 1 }));
         lineSegments.computeLineDistances();
 
         objects.push(lineSegments);
@@ -63,7 +63,7 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(WIDTH, HEIGHT);
 
-        var container = document.getElementById('container');
+        const container = document.getElementById('container');
         container.appendChild(renderer.domElement);
 
         stats = new Stats();
@@ -75,49 +75,51 @@
 
       }
 
-      function cube(size) {
+      function box(width, height, depth) {
 
-        var h = size * 0.5;
+        width = width * 0.5,
+        height = height * 0.5,
+        depth = depth * 0.5;
 
-        var geometry = new v3d.BufferGeometry();
-        var position = [];
+        const geometry = new v3d.BufferGeometry();
+        const position = [];
 
         position.push(
-          - h, - h, - h,
-          - h, h, - h,
+          - width, - height, - depth,
+          - width, height, - depth,
 
-          - h, h, - h,
-          h, h, - h,
+          - width, height, - depth,
+          width, height, - depth,
 
-          h, h, - h,
-          h, - h, - h,
+          width, height, - depth,
+          width, - height, - depth,
 
-          h, - h, - h,
-          - h, - h, - h,
+          width, - height, - depth,
+          - width, - height, - depth,
 
-          - h, - h, h,
-          - h, h, h,
+          - width, - height, depth,
+          - width, height, depth,
 
-          - h, h, h,
-          h, h, h,
+          - width, height, depth,
+          width, height, depth,
 
-          h, h, h,
-          h, - h, h,
+          width, height, depth,
+          width, - height, depth,
 
-          h, - h, h,
-          - h, - h, h,
+          width, - height, depth,
+          - width, - height, depth,
 
-          - h, - h, - h,
-          - h, - h, h,
+          - width, - height, - depth,
+          - width, - height, depth,
 
-          - h, h, - h,
-          - h, h, h,
+          - width, height, - depth,
+          - width, height, depth,
 
-          h, h, - h,
-          h, h, h,
+          width, height, - depth,
+          width, height, depth,
 
-          h, - h, - h,
-          h, - h, h
+          width, - height, - depth,
+          width, - height, depth
          );
 
         geometry.setAttribute('position', new v3d.Float32BufferAttribute(position, 3));
@@ -146,7 +148,7 @@
 
       function render() {
 
-        var time = Date.now() * 0.001;
+        const time = Date.now() * 0.001;
 
         scene.traverse(function(object) {
 

@@ -1,7 +1,3 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 v3d.MorphAnimMesh = function(geometry, material) {
 
     v3d.Mesh.call(this, geometry, material);

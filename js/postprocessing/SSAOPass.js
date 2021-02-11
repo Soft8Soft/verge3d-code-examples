@@ -1,7 +1,3 @@
-/**
- * @author Mugen87 / https://github.com/Mugen87
- */
-
 v3d.SSAOPass = function(scene, camera, width, height) {
 
     v3d.Pass.call(this);
@@ -23,12 +19,14 @@ v3d.SSAOPass = function(scene, camera, width, height) {
     this.minDistance = 0.005;
     this.maxDistance = 0.1;
 
+    this._visibilityCache = new Map();
+
     //
 
     this.generateSampleKernel();
     this.generateRandomKernelRotations();
 
-    // beauty render target with depth buffer
+    // beauty render target
 
     var depthTexture = new v3d.DepthTexture();
     depthTexture.type = v3d.UnsignedShortType;
@@ -38,17 +36,16 @@ v3d.SSAOPass = function(scene, camera, width, height) {
     this.beautyRenderTarget = new v3d.WebGLRenderTarget(this.width, this.height, {
         minFilter: v3d.LinearFilter,
         magFilter: v3d.LinearFilter,
-        format: v3d.RGBAFormat,
-        depthTexture: depthTexture,
-        depthBuffer: true
+        format: v3d.RGBAFormat
     });
 
-    // normal render target
+    // normal render target with depth buffer
 
     this.normalRenderTarget = new v3d.WebGLRenderTarget(this.width, this.height, {
         minFilter: v3d.NearestFilter,
         magFilter: v3d.NearestFilter,
-        format: v3d.RGBAFormat
+        format: v3d.RGBAFormat,
+        depthTexture: depthTexture
     });
 
     // ssao render target
@@ -79,14 +76,14 @@ v3d.SSAOPass = function(scene, camera, width, height) {
 
     this.ssaoMaterial.uniforms['tDiffuse'].value = this.beautyRenderTarget.texture;
     this.ssaoMaterial.uniforms['tNormal'].value = this.normalRenderTarget.texture;
-    this.ssaoMaterial.uniforms['tDepth'].value = this.beautyRenderTarget.depthTexture;
+    this.ssaoMaterial.uniforms['tDepth'].value = this.normalRenderTarget.depthTexture;
     this.ssaoMaterial.uniforms['tNoise'].value = this.noiseTexture;
     this.ssaoMaterial.uniforms['kernel'].value = this.kernel;
     this.ssaoMaterial.uniforms['cameraNear'].value = this.camera.near;
     this.ssaoMaterial.uniforms['cameraFar'].value = this.camera.far;
     this.ssaoMaterial.uniforms['resolution'].value.set(this.width, this.height);
     this.ssaoMaterial.uniforms['cameraProjectionMatrix'].value.copy(this.camera.projectionMatrix);
-    this.ssaoMaterial.uniforms['cameraInverseProjectionMatrix'].value.getInverse(this.camera.projectionMatrix);
+    this.ssaoMaterial.uniforms['cameraInverseProjectionMatrix'].value.copy(this.camera.projectionMatrixInverse);
 
     // normal material
 
@@ -113,7 +110,7 @@ v3d.SSAOPass = function(scene, camera, width, height) {
         fragmentShader: v3d.SSAODepthShader.fragmentShader,
         blending: v3d.NoBlending
     });
-    this.depthRenderMaterial.uniforms['tDepth'].value = this.beautyRenderTarget.depthTexture;
+    this.depthRenderMaterial.uniforms['tDepth'].value = this.normalRenderTarget.depthTexture;
     this.depthRenderMaterial.uniforms['cameraNear'].value = this.camera.near;
     this.depthRenderMaterial.uniforms['cameraFar'].value = this.camera.far;
 
@@ -168,15 +165,17 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     render: function(renderer, writeBuffer /*, readBuffer, deltaTime, maskActive */) {
 
-        // render beauty and depth
+        // render beauty
 
         renderer.setRenderTarget(this.beautyRenderTarget);
         renderer.clear();
         renderer.render(this.scene, this.camera);
 
-        // render normals
+        // render normals and depth (honor only meshes, points and lines do not contribute to SSAO)
 
+        this.overrideVisibility();
         this.renderOverride(renderer, this.normalMaterial, this.normalRenderTarget, 0x7777ff, 1.0);
+        this.restoreVisibility();
 
         // render SSAO
 
@@ -253,7 +252,7 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
     renderPass: function(renderer, passMaterial, renderTarget, clearColor, clearAlpha) {
 
         // save original state
-        this.originalClearColor.copy(renderer.getClearColor());
+        renderer.getClearColor(this.originalClearColor);
         var originalClearAlpha = renderer.getClearAlpha();
         var originalAutoClear = renderer.autoClear;
 
@@ -281,7 +280,7 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     renderOverride: function(renderer, overrideMaterial, renderTarget, clearColor, clearAlpha) {
 
-        this.originalClearColor.copy(renderer.getClearColor());
+        renderer.getClearColor(this.originalClearColor);
         var originalClearAlpha = renderer.getClearAlpha();
         var originalAutoClear = renderer.autoClear;
 
@@ -323,7 +322,7 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         this.ssaoMaterial.uniforms['resolution'].value.set(width, height);
         this.ssaoMaterial.uniforms['cameraProjectionMatrix'].value.copy(this.camera.projectionMatrix);
-        this.ssaoMaterial.uniforms['cameraInverseProjectionMatrix'].value.getInverse(this.camera.projectionMatrix);
+        this.ssaoMaterial.uniforms['cameraInverseProjectionMatrix'].value.copy(this.camera.projectionMatrixInverse);
 
         this.blurMaterial.uniforms['resolution'].value.set(width, height);
 
@@ -388,6 +387,37 @@ v3d.SSAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
         this.noiseTexture = new v3d.DataTexture(data, width, height, v3d.RGBAFormat, v3d.FloatType);
         this.noiseTexture.wrapS = v3d.RepeatWrapping;
         this.noiseTexture.wrapT = v3d.RepeatWrapping;
+
+    },
+
+    overrideVisibility: function() {
+
+        var scene = this.scene;
+        var cache = this._visibilityCache;
+
+        scene.traverse(function(object) {
+
+            cache.set(object, object.visible);
+
+            if (object.isPoints || object.isLine) object.visible = false;
+
+        });
+
+    },
+
+    restoreVisibility: function() {
+
+        var scene = this.scene;
+        var cache = this._visibilityCache;
+
+        scene.traverse(function(object) {
+
+            var visible = cache.get(object);
+            object.visible = visible;
+
+        });
+
+        cache.clear();
 
     }
 

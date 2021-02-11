@@ -1,7 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
 v3d.ClearPass = function(clearColor, clearAlpha) {
 
     v3d.Pass.call(this);
@@ -10,6 +6,7 @@ v3d.ClearPass = function(clearColor, clearAlpha) {
 
     this.clearColor = (clearColor !== undefined) ? clearColor : 0x000000;
     this.clearAlpha = (clearAlpha !== undefined) ? clearAlpha : 0;
+    this._oldClearColor = new v3d.Color();
 
 };
 
@@ -19,11 +16,11 @@ v3d.ClearPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     render: function(renderer, writeBuffer, readBuffer /*, deltaTime, maskActive */) {
 
-        var oldClearColor, oldClearAlpha;
+        var oldClearAlpha;
 
         if (this.clearColor) {
 
-            oldClearColor = renderer.getClearColor().getHex();
+            renderer.getClearColor(this._oldClearColor);
             oldClearAlpha = renderer.getClearAlpha();
 
             renderer.setClearColor(this.clearColor, this.clearAlpha);
@@ -35,7 +32,7 @@ v3d.ClearPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         if (this.clearColor) {
 
-            renderer.setClearColor(oldClearColor, oldClearAlpha);
+            renderer.setClearColor(this._oldClearColor, oldClearAlpha);
 
         }
 

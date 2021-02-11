@@ -1,6 +1,4 @@
 /**
- * @author takahiro / https://github.com/takahirox
- *
  * CCD Algorithm
  *  - https://sites.google.com/site/auraliusproject/ccd-algorithm
  *
@@ -97,7 +95,7 @@ v3d.CCDIKSolver = (function() {
                             // don't use getWorldPosition/Quaternion() here for the performance
                             // because they call updateMatrixWorld(true) inside.
                             link.matrixWorld.decompose(linkPos, invLinkQ, linkScale);
-                            invLinkQ.inverse();
+                            invLinkQ.invert();
                             effectorPos.setFromMatrixPosition(effector.matrixWorld);
 
                             // work in link world
@@ -334,7 +332,7 @@ v3d.CCDIKSolver = (function() {
                     var iks = this.iks;
                     var bones = mesh.skeleton.bones;
 
-                    matrix.getInverse(mesh.matrixWorld);
+                    matrix.copy(mesh.matrixWorld).invert();
 
                     for (var i = 0, il = iks.length; i < il; i++) {
 
@@ -392,7 +390,7 @@ v3d.CCDIKSolver = (function() {
 
         _init: function() {
 
-            var self = this;
+            var scope = this;
             var iks = this.iks;
 
             function createLineGeometry(ik) {
@@ -407,25 +405,25 @@ v3d.CCDIKSolver = (function() {
 
             function createTargetMesh() {
 
-                return new v3d.Mesh(self.sphereGeometry, self.targetSphereMaterial);
+                return new v3d.Mesh(scope.sphereGeometry, scope.targetSphereMaterial);
 
             }
 
             function createEffectorMesh() {
 
-                return new v3d.Mesh(self.sphereGeometry, self.effectorSphereMaterial);
+                return new v3d.Mesh(scope.sphereGeometry, scope.effectorSphereMaterial);
 
             }
 
             function createLinkMesh() {
 
-                return new v3d.Mesh(self.sphereGeometry, self.linkSphereMaterial);
+                return new v3d.Mesh(scope.sphereGeometry, scope.linkSphereMaterial);
 
             }
 
             function createLine(ik) {
 
-                return new v3d.Line(createLineGeometry(ik), self.lineMaterial);
+                return new v3d.Line(createLineGeometry(ik), scope.lineMaterial);
 
             }
 

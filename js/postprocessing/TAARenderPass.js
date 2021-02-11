@@ -2,8 +2,6 @@
  *
  * Temporal Anti-Aliasing Render Pass
  *
- * @author bhouston / http://clara.io/
- *
  * When there is no motion in the scene, the TAA render pass accumulates jittered camera samples across frames to create a high quality anti-aliased result.
  *
  * References:
@@ -16,7 +14,7 @@ v3d.TAARenderPass = function(scene, camera, clearColor, clearAlpha) {
 
     if (v3d.SSAARenderPass === undefined) {
 
-        console.error("v3d.TAARenderPass relies on v3d.SSAARenderPass");
+        console.error('v3d.TAARenderPass relies on v3d.SSAARenderPass');
 
     }
 
@@ -49,14 +47,14 @@ v3d.TAARenderPass.prototype = Object.assign(Object.create(v3d.SSAARenderPass.pro
         if (!this.sampleRenderTarget) {
 
             this.sampleRenderTarget = new v3d.WebGLRenderTarget(readBuffer.width, readBuffer.height, this.params);
-            this.sampleRenderTarget.texture.name = "TAARenderPass.sample";
+            this.sampleRenderTarget.texture.name = 'TAARenderPass.sample';
 
         }
 
         if (!this.holdRenderTarget) {
 
             this.holdRenderTarget = new v3d.WebGLRenderTarget(readBuffer.width, readBuffer.height, this.params);
-            this.holdRenderTarget.texture.name = "TAARenderPass.hold";
+            this.holdRenderTarget.texture.name = 'TAARenderPass.hold';
 
         }
 
@@ -75,8 +73,8 @@ v3d.TAARenderPass.prototype = Object.assign(Object.create(v3d.SSAARenderPass.pro
 
         if (this.accumulateIndex >= 0 && this.accumulateIndex < jitterOffsets.length) {
 
-            this.copyUniforms["opacity"].value = sampleWeight;
-            this.copyUniforms["tDiffuse"].value = writeBuffer.texture;
+            this.copyUniforms['opacity'].value = sampleWeight;
+            this.copyUniforms['tDiffuse'].value = writeBuffer.texture;
 
             // render the scene multiple times, each slightly jitter offset from the last and accumulate the results.
             var numSamplesPerFrame = Math.pow(2, this.sampleLevel);
@@ -115,8 +113,8 @@ v3d.TAARenderPass.prototype = Object.assign(Object.create(v3d.SSAARenderPass.pro
 
         if (accumulationWeight > 0) {
 
-            this.copyUniforms["opacity"].value = 1.0;
-            this.copyUniforms["tDiffuse"].value = this.sampleRenderTarget.texture;
+            this.copyUniforms['opacity'].value = 1.0;
+            this.copyUniforms['tDiffuse'].value = this.sampleRenderTarget.texture;
             renderer.setRenderTarget(writeBuffer);
             renderer.clear();
             this.fsQuad.render(renderer);
@@ -125,8 +123,8 @@ v3d.TAARenderPass.prototype = Object.assign(Object.create(v3d.SSAARenderPass.pro
 
         if (accumulationWeight < 1.0) {
 
-            this.copyUniforms["opacity"].value = 1.0 - accumulationWeight;
-            this.copyUniforms["tDiffuse"].value = this.holdRenderTarget.texture;
+            this.copyUniforms['opacity'].value = 1.0 - accumulationWeight;
+            this.copyUniforms['tDiffuse'].value = this.holdRenderTarget.texture;
             renderer.setRenderTarget(writeBuffer);
             if (accumulationWeight === 0) renderer.clear();
             this.fsQuad.render(renderer);

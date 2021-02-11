@@ -1,10 +1,3 @@
-/**
- * @author Filipe Caixeta / http://filipecaixeta.com.br
- * @author Mugen87 / https://github.com/Mugen87
- *
- * Description: A v3d loader for PCD ascii and binary files.
- */
-
 v3d.PCDLoader = function(manager) {
 
     v3d.Loader.call(this, manager);
@@ -25,6 +18,8 @@ v3d.PCDLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
         var loader = new v3d.FileLoader(scope.manager);
         loader.setPath(scope.path);
         loader.setResponseType('arraybuffer');
+        loader.setRequestHeader(scope.requestHeader);
+        loader.setWithCredentials(scope.withCredentials);
         loader.load(url, function(data) {
 
             try {
@@ -39,9 +34,11 @@ v3d.PCDLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
                 } else {
 
-                    throw e;
+                    console.error(e);
 
                 }
+
+                scope.manager.itemError(url);
 
             }
 
@@ -87,6 +84,7 @@ v3d.PCDLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                         if (inPtr >= inLength) throw new Error('Invalid compressed data');
 
                     }
+
                     ref -= inData[inPtr ++];
                     if (outPtr + len + 2 > outLength) throw new Error('Output buffer is not large enough');
                     if (ref < 0) throw new Error('Invalid compressed data');
@@ -200,7 +198,7 @@ v3d.PCDLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                 } else {
 
                     PCDheader.offset[PCDheader.fields[i]] = sizeSum;
-                    sizeSum += PCDheader.size[i];
+                    sizeSum += PCDheader.size[i] * PCDheader.count[i];
 
                 }
 
@@ -369,7 +367,7 @@ v3d.PCDLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
         if (color.length > 0) {
 
-            material.vertexColors = v3d.VertexColors;
+            material.vertexColors = true;
 
         } else {
 

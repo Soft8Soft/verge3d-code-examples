@@ -9,9 +9,6 @@
       body {
         color: #666;
       }
-      a {
-        color: #08f;
-      }
     </style>
   </head>
   <body>
@@ -29,11 +26,11 @@
 
       import { FirstPersonControls } from './jsm/controls/FirstPersonControls.js';
 
-      var camera, controls, scene, renderer, stats;
+      let camera, controls, scene, renderer, stats;
 
-      var mesh, geometry, material, clock;
+      let mesh, geometry, material, clock;
 
-      var worldWidth = 128, worldDepth = 128;
+      const worldWidth = 128, worldDepth = 128;
 
       init();
       animate();
@@ -52,17 +49,17 @@
         geometry = new v3d.PlaneBufferGeometry(20000, 20000, worldWidth - 1, worldDepth - 1);
         geometry.rotateX(- Math.PI / 2);
 
-        var position = geometry.attributes.position;
+        const position = geometry.attributes.position;
         position.usage = v3d.DynamicDrawUsage;
 
-        for (var i = 0; i < position.count; i++) {
+        for (let i = 0; i < position.count; i++) {
 
-          var y = 35 * Math.sin(i / 2);
+          const y = 35 * Math.sin(i / 2);
           position.setY(i, y);
 
         }
 
-        var texture = new v3d.TextureLoader().load('textures/water.jpg');
+        const texture = new v3d.TextureLoader().load('textures/water.jpg');
         texture.wrapS = texture.wrapT = v3d.RepeatWrapping;
         texture.repeat.set(5, 5);
 
@@ -114,14 +111,14 @@
 
       function render() {
 
-        var delta = clock.getDelta();
-        var time = clock.getElapsedTime() * 10;
+        const delta = clock.getDelta();
+        const time = clock.getElapsedTime() * 10;
 
-        var position = geometry.attributes.position;
+        const position = geometry.attributes.position;
 
-        for (var i = 0; i < position.count; i++) {
+        for (let i = 0; i < position.count; i++) {
 
-          var y = 35 * Math.sin(i / 5 + (time + i) / 7);
+          const y = 35 * Math.sin(i / 5 + (time + i) / 7);
           position.setY(i, y);
 
         }

@@ -1,8 +1,3 @@
-/**
- * @author Mugen87 / https://github.com/Mugen87
- *
- */
-
 v3d.Refractor = function(geometry, options) {
 
     v3d.Mesh.call(this, geometry);
@@ -35,8 +30,7 @@ v3d.Refractor = function(geometry, options) {
     var parameters = {
         minFilter: v3d.LinearFilter,
         magFilter: v3d.LinearFilter,
-        format: v3d.RGBFormat,
-        stencilBuffer: false
+        format: v3d.RGBFormat
     };
 
     var renderTarget = new v3d.WebGLRenderTarget(textureWidth, textureHeight, parameters);
@@ -56,9 +50,9 @@ v3d.Refractor = function(geometry, options) {
         transparent: true // ensures, refractors are drawn from farthest to closest
     });
 
-    this.material.uniforms["color"].value = color;
-    this.material.uniforms["tDiffuse"].value = renderTarget.texture;
-    this.material.uniforms["textureMatrix"].value = textureMatrix;
+    this.material.uniforms['color'].value = color;
+    this.material.uniforms['tDiffuse'].value = renderTarget.texture;
+    this.material.uniforms['textureMatrix'].value = textureMatrix;
 
     // functions
 
@@ -120,7 +114,7 @@ v3d.Refractor = function(geometry, options) {
         return function updateVirtualCamera(camera) {
 
             virtualCamera.matrixWorld.copy(camera.matrixWorld);
-            virtualCamera.matrixWorldInverse.getInverse(virtualCamera.matrixWorld);
+            virtualCamera.matrixWorldInverse.copy(virtualCamera.matrixWorld).invert();
             virtualCamera.projectionMatrix.copy(camera.projectionMatrix);
             virtualCamera.far = camera.far; // used in WebGLBackground
 
@@ -196,7 +190,7 @@ v3d.Refractor = function(geometry, options) {
         renderer.shadowMap.autoUpdate = false; // avoid re-computing shadows
 
         renderer.setRenderTarget(renderTarget);
-        renderer.clear();
+        if (renderer.autoClear === false) renderer.clear();
         renderer.render(scene, virtualCamera);
 
         renderer.xr.enabled = currentXrEnabled;
@@ -220,6 +214,10 @@ v3d.Refractor = function(geometry, options) {
     //
 
     this.onBeforeRender = function(renderer, scene, camera) {
+
+        // Render
+
+        renderTarget.texture.encoding = renderer.outputEncoding;
 
         // ensure refractors are rendered only once per frame
 

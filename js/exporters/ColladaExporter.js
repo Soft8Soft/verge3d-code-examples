@@ -1,5 +1,4 @@
 /**
- * @author Garrett Johnson / http://gkjohnson.github.io/
  * https://github.com/gkjohnson/collada-exporter-js
  *
  * Usage:
@@ -100,8 +99,8 @@ v3d.ColladaExporter.prototype = {
             canvas = canvas || document.createElement('canvas');
             ctx = ctx || canvas.getContext('2d');
 
-            canvas.width = image.naturalWidth;
-            canvas.height = image.naturalHeight;
+            canvas.width = image.width;
+            canvas.height = image.height;
 
             ctx.drawImage(image, 0, 0);
 
@@ -254,6 +253,15 @@ v3d.ColladaExporter.prototype = {
 
                 }
 
+                // serialize lightmap uvs
+                if ('uv2' in bufferGeometry.attributes) {
+
+                    var uvName = `${ meshid }-texcoord2`;
+                    gnode += getAttribute(bufferGeometry.attributes.uv2, uvName, ['S', 'T'], 'float');
+                    triangleInputs += `<input semantic="TEXCOORD" source="#${ uvName }" offset="0" set="1" />`;
+
+                }
+
                 // serialize colors
                 if ('color' in bufferGeometry.attributes) {
 
@@ -288,7 +296,7 @@ v3d.ColladaExporter.prototype = {
 
                 }
 
-                gnode += `</mesh></geometry>`;
+                gnode += '</mesh></geometry>';
 
                 libraryGeometries.push(gnode);
 
@@ -387,10 +395,10 @@ v3d.ColladaExporter.prototype = {
                 if (m.transparent === true) {
 
                     transparencyNode +=
-                        `<transparent>` +
+                        '<transparent>' +
                         (
                             m.map ?
-                                `<texture texture="diffuse-sampler"></texture>` :
+                                '<texture texture="diffuse-sampler"></texture>' :
                                 '<float>1</float>'
                         ) +
                         '</transparent>';
@@ -425,6 +433,17 @@ v3d.ColladaExporter.prototype = {
                                 `<color sid="diffuse">${ diffuse.r } ${ diffuse.g } ${ diffuse.b } 1</color>`
                         ) +
                         '</diffuse>'
+                            : ''
+                    ) +
+
+                    (
+                        type !== 'constant' ?
+                            '<bump>' +
+
+                        (
+                            m.normalMap ? '<texture texture="bump-sampler" texcoord="TEXCOORD" />' : ''
+                        ) +
+                        '</bump>'
                             : ''
                     ) +
 
@@ -483,11 +502,20 @@ v3d.ColladaExporter.prototype = {
                             ''
                     ) +
 
+                    (
+                        m.normalMap ?
+                            '<newparam sid="bump-surface"><surface type="2D">' +
+                            `<init_from>${ processTexture(m.normalMap) }</init_from>` +
+                            '</surface></newparam>' +
+                            '<newparam sid="bump-sampler"><sampler2D><source>bump-surface</source></sampler2D></newparam>' :
+                            ''
+                    ) +
+
                     techniqueNode +
 
                     (
                         m.side === v3d.DoubleSide ?
-                            `<extra><technique profile="v3dJS"><double_sided sid="double_sided" type="int">1</double_sided></technique></extra>` :
+                            '<extra><technique profile="v3dJS"><double_sided sid="double_sided" type="int">1</double_sided></technique></extra>' :
                             ''
                     ) +
 
@@ -542,8 +570,8 @@ v3d.ColladaExporter.prototype = {
                     matidsArray = new Array(materials.length);
 
                 }
-                matids = matidsArray.fill()
-                    .map((v, i) => processMaterial(materials[i % materials.length]));
+
+                matids = matidsArray.fill().map((v, i) => processMaterial(materials[i % materials.length]));
 
                 node +=
                     `<instance_geometry url="#${ meshid }">` +

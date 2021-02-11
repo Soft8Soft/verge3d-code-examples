@@ -17,8 +17,6 @@
       <a href="http://3mf.io" target="_blank" rel="noopener">3MF</a> file with materials
     </div>
 
-    <script src="js/libs/jszip.min.js"></script>
-
     <script type="module">
 
       import * as v3d from '../build/v3d.module.js';
@@ -26,7 +24,7 @@
       import { OrbitControls } from './jsm/controls/OrbitControls.js';
       import { ThreeMFLoader } from './jsm/loaders/3MFLoader.js';
 
-      var camera, scene, renderer;
+      let camera, scene, renderer;
 
       init();
 
@@ -42,11 +40,11 @@
 
         //
 
-        var hemiLight = new v3d.HemisphereLight(0xffffff, 0x444444);
+        const hemiLight = new v3d.HemisphereLight(0xffffff, 0x444444);
         hemiLight.position.set(0, 100, 0);
         scene.add(hemiLight);
 
-        var dirLight = new v3d.DirectionalLight(0xffffff);
+        const dirLight = new v3d.DirectionalLight(0xffffff);
         dirLight.position.set(- 0, 40, 50);
         dirLight.castShadow = true;
         dirLight.shadow.camera.top = 50;
@@ -58,13 +56,13 @@
         dirLight.shadow.mapSize.set(1024, 1024);
         scene.add(dirLight);
 
-        // scene.add(new CameraHelper(dirLight.shadow.camera));
+        // scene.add(new v3d.CameraHelper(dirLight.shadow.camera));
 
         //
 
-        var manager = new v3d.LoadingManager();
+        const manager = new v3d.LoadingManager();
 
-        var loader = new ThreeMFLoader(manager);
+        const loader = new ThreeMFLoader(manager);
         loader.load('./models/3mf/truck.3mf', function(object) {
 
           object.quaternion.setFromEuler(new v3d.Euler(- Math.PI / 2, 0, 0));   // z-up conversion
@@ -89,7 +87,7 @@
 
         //
 
-        var ground = new v3d.Mesh(new v3d.PlaneBufferGeometry(1000, 1000), new v3d.MeshPhongMaterial({ color: 0x999999, depthWrite: false }));
+        const ground = new v3d.Mesh(new v3d.PlaneBufferGeometry(1000, 1000), new v3d.MeshPhongMaterial({ color: 0x999999, depthWrite: false }));
         ground.rotation.x = - Math.PI / 2;
         ground.position.y = 11;
         ground.receiveShadow = true;
@@ -107,7 +105,7 @@
 
         //
 
-        var controls = new OrbitControls(camera, renderer.domElement);
+        const controls = new OrbitControls(camera, renderer.domElement);
         controls.addEventListener('change', render);
         controls.minDistance = 50;
         controls.maxDistance = 200;

@@ -1,14 +1,8 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author alteredq / http://alteredqualia.com/
- * @author paulirish / http://paulirish.com/
- */
-
 import {
     MathUtils,
     Spherical,
     Vector3
-} from "../../../build/v3d.module.js";
+} from '../../../build/v3d.module.js';
 
 var FirstPersonControls = function(object, domElement) {
 

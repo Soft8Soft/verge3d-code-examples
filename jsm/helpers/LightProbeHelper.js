@@ -1,7 +1,3 @@
-/**
- * @author WestLangley / http://github.com/WestLangley
- */
-
 import {
     Mesh,
     ShaderMaterial,
@@ -105,6 +101,8 @@ function LightProbeHelper(lightProbe, size) {
     var geometry = new SphereBufferGeometry(1, 32, 16);
 
     Mesh.call(this, geometry, material);
+
+    this.type = 'LightProbeHelper';
 
     this.onBeforeRender();
 

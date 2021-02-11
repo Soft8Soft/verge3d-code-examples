@@ -1,7 +1,3 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 v3d.MorphBlendMesh = function(geometry, material) {
 
     v3d.Mesh.call(this, geometry, material);
@@ -222,7 +218,7 @@ v3d.MorphBlendMesh.prototype = Object.assign(Object.create(v3d.Mesh.prototype), 
 
         } else {
 
-            console.warn("v3d.MorphBlendMesh: animation[" + name + "] undefined in .playAnimation()");
+            console.warn('v3d.MorphBlendMesh: animation[' + name + '] undefined in .playAnimation()');
 
         }
 

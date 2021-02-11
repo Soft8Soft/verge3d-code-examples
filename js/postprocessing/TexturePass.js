@@ -1,13 +1,9 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 v3d.TexturePass = function(map, opacity) {
 
     v3d.Pass.call(this);
 
     if (v3d.CopyShader === undefined)
-        console.error("v3d.TexturePass relies on v3d.CopyShader");
+        console.error('v3d.TexturePass relies on v3d.CopyShader');
 
     var shader = v3d.CopyShader;
 
@@ -43,8 +39,8 @@ v3d.TexturePass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         this.fsQuad.material = this.material;
 
-        this.uniforms["opacity"].value = this.opacity;
-        this.uniforms["tDiffuse"].value = this.map;
+        this.uniforms['opacity'].value = this.opacity;
+        this.uniforms['tDiffuse'].value = this.map;
         this.material.transparent = (this.opacity < 1.0);
 
         renderer.setRenderTarget(this.renderToScreen ? null : readBuffer);

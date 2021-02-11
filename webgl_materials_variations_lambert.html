@@ -19,12 +19,12 @@
 
       import { OrbitControls } from './jsm/controls/OrbitControls.js';
 
-      var container, stats;
+      let container, stats;
 
-      var camera, scene, renderer;
-      var particleLight;
+      let camera, scene, renderer;
+      let particleLight;
 
-      var loader = new v3d.FontLoader();
+      const loader = new v3d.FontLoader();
       loader.load('fonts/gentilis_regular.typeface.json', function(font) {
 
         init(font);
@@ -37,15 +37,14 @@
         container = document.createElement('div');
         document.body.appendChild(container);
 
-        camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 2000);
+        camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 2500);
         camera.position.set(0.0, 400, 400 * 3.5);
 
         //
 
-        var reflectionCube = new v3d.CubeTextureLoader()
+        const reflectionCube = new v3d.CubeTextureLoader()
           .setPath('textures/cube/SwedishRoyalCastle/')
           .load(['px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg']);
-        reflectionCube.format = v3d.RGBFormat;
         reflectionCube.encoding = v3d.sRGBEncoding;
 
         scene = new v3d.Scene();
@@ -53,35 +52,35 @@
 
         // Materials
 
-        var imgTexture = new v3d.TextureLoader().load("textures/planets/moon_1024.jpg");
+        let imgTexture = new v3d.TextureLoader().load("textures/planets/moon_1024.jpg");
         imgTexture.wrapS = imgTexture.wrapT = v3d.RepeatWrapping;
         imgTexture.encoding = v3d.sRGBEncoding;
         imgTexture.anisotropy = 16;
         imgTexture = null;
 
-        var cubeWidth = 400;
-        var numberOfSphersPerSide = 5;
-        var sphereRadius = (cubeWidth / numberOfSphersPerSide) * 0.8 * 0.5;
-        var stepSize = 1.0 / numberOfSphersPerSide;
+        const cubeWidth = 400;
+        const numberOfSphersPerSide = 5;
+        const sphereRadius = (cubeWidth / numberOfSphersPerSide) * 0.8 * 0.5;
+        const stepSize = 1.0 / numberOfSphersPerSide;
 
-        var geometry = new v3d.SphereBufferGeometry(sphereRadius, 32, 16);
+        const geometry = new v3d.SphereBufferGeometry(sphereRadius, 32, 16);
 
-        for (var alpha = 0; alpha <= 1.0; alpha += stepSize) {
+        for (let alpha = 0; alpha <= 1.0; alpha += stepSize) {
 
-          for (var beta = 0; beta <= 1.0; beta += stepSize) {
+          for (let beta = 0; beta <= 1.0; beta += stepSize) {
 
-            for (var gamma = 0; gamma <= 1.0; gamma += stepSize) {
+            for (let gamma = 0; gamma <= 1.0; gamma += stepSize) {
 
-              var diffuseColor = new v3d.Color().setHSL(alpha, 0.5, gamma * 0.5 + 0.1);
+              const diffuseColor = new v3d.Color().setHSL(alpha, 0.5, gamma * 0.5 + 0.1);
 
-              var material = new v3d.MeshLambertMaterial({
+              const material = new v3d.MeshLambertMaterial({
                 map: imgTexture,
                 color: diffuseColor,
                 reflectivity: beta,
                 envMap: alpha < 0.5 ? reflectionCube : null
               });
 
-              var mesh = new v3d.Mesh(geometry, material);
+              const mesh = new v3d.Mesh(geometry, material);
 
               mesh.position.x = alpha * 400 - 200;
               mesh.position.y = beta * 400 - 200;
@@ -97,7 +96,7 @@
 
         function addLabel(name, location) {
 
-          var textGeo = new v3d.TextBufferGeometry(name, {
+          const textGeo = new v3d.TextBufferGeometry(name, {
 
             font: font,
 
@@ -107,8 +106,8 @@
 
           });
 
-          var textMaterial = new v3d.MeshBasicMaterial({ color: 0xffffff });
-          var textMesh = new v3d.Mesh(textGeo, textMaterial);
+          const textMaterial = new v3d.MeshBasicMaterial({ color: 0xffffff });
+          const textMesh = new v3d.Mesh(textGeo, textMaterial);
           textMesh.position.copy(location);
           scene.add(textMesh);
 
@@ -133,11 +132,11 @@
 
         scene.add(new v3d.AmbientLight(0x222222));
 
-        var directionalLight = new v3d.DirectionalLight(0xffffff, 1);
+        const directionalLight = new v3d.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(directionalLight);
 
-        var pointLight = new v3d.PointLight(0xffffff, 2, 800);
+        const pointLight = new v3d.PointLight(0xffffff, 2, 800);
         particleLight.add(pointLight);
 
         //
@@ -153,7 +152,9 @@
         stats = new Stats();
         container.appendChild(stats.dom);
 
-        var controls = new OrbitControls(camera, renderer.domElement);
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.minDistance = 200;
+        controls.maxDistance = 2000;
 
         window.addEventListener('resize', onWindowResize, false);
 
@@ -181,7 +182,7 @@
 
       function render() {
 
-        var timer = Date.now() * 0.00025;
+        const timer = Date.now() * 0.00025;
 
         //camera.position.x = Math.cos(timer) * 800;
         //camera.position.z = Math.sin(timer) * 800;

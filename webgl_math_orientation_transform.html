@@ -17,13 +17,13 @@
 
       import * as v3d from '../build/v3d.module.js';
 
-      var camera, scene, renderer, mesh, target;
+      let camera, scene, renderer, mesh, target;
 
-      var spherical = new v3d.Spherical();
-      var rotationMatrix = new v3d.Matrix4();
-      var targetQuaternion = new v3d.Quaternion();
-      var clock = new v3d.Clock();
-      var speed = 2;
+      const spherical = new v3d.Spherical();
+      const rotationMatrix = new v3d.Matrix4();
+      const targetQuaternion = new v3d.Quaternion();
+      const clock = new v3d.Clock();
+      const speed = 2;
 
       init();
       animate();
@@ -35,25 +35,25 @@
 
         scene = new v3d.Scene();
 
-        var geometry = new v3d.ConeBufferGeometry(0.1, 0.5, 8);
+        const geometry = new v3d.ConeBufferGeometry(0.1, 0.5, 8);
         geometry.rotateX(Math.PI * 0.5);
-        var material = new v3d.MeshNormalMaterial();
+        const material = new v3d.MeshNormalMaterial();
 
         mesh = new v3d.Mesh(geometry, material);
         scene.add(mesh);
 
         //
 
-        var targetGeometry = new v3d.SphereBufferGeometry(0.05);
-        var targetMaterial = new v3d.MeshBasicMaterial({ color: 0xff0000 });
+        const targetGeometry = new v3d.SphereBufferGeometry(0.05);
+        const targetMaterial = new v3d.MeshBasicMaterial({ color: 0xff0000 });
         target = new v3d.Mesh(targetGeometry, targetMaterial);
         scene.add(target);
 
         //
 
-        var sphereGeometry = new v3d.SphereBufferGeometry(2, 32, 32);
-        var sphereMaterial = new v3d.MeshBasicMaterial({ color: 0xcccccc, wireframe: true, transparent: true, opacity: 0.3 });
-        var sphere = new v3d.Mesh(sphereGeometry, sphereMaterial);
+        const sphereGeometry = new v3d.SphereBufferGeometry(2, 32, 32);
+        const sphereMaterial = new v3d.MeshBasicMaterial({ color: 0xcccccc, wireframe: true, transparent: true, opacity: 0.3 });
+        const sphere = new v3d.Mesh(sphereGeometry, sphereMaterial);
         scene.add(sphere);
 
         //
@@ -86,11 +86,11 @@
 
         requestAnimationFrame(animate);
 
-        var delta = clock.getDelta();
+        const delta = clock.getDelta();
 
         if (!mesh.quaternion.equals(targetQuaternion)) {
 
-          var step = speed * delta;
+          const step = speed * delta;
           mesh.quaternion.rotateTowards(targetQuaternion, step);
 
         }

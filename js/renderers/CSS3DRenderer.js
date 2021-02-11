@@ -1,14 +1,12 @@
 /**
  * Based on http://www.emagix.net/academic/mscs-project/item/camera-sync-with-css3-and-webgl-threejs
- * @author mrdoob / http://mrdoob.com/
- * @author yomotsu / https://yomotsu.net/
  */
 
 v3d.CSS3DObject = function(element) {
 
     v3d.Object3D.call(this);
 
-    this.element = element;
+    this.element = element || document.createElement('div');
     this.element.style.position = 'absolute';
     this.element.style.pointerEvents = 'auto';
 
@@ -28,8 +26,21 @@ v3d.CSS3DObject = function(element) {
 
 };
 
-v3d.CSS3DObject.prototype = Object.create(v3d.Object3D.prototype);
-v3d.CSS3DObject.prototype.constructor = v3d.CSS3DObject;
+v3d.CSS3DObject.prototype = Object.assign(Object.create(v3d.Object3D.prototype), {
+
+    constructor: v3d.CSS3DObject,
+
+    copy: function(source, recursive) {
+
+        v3d.Object3D.prototype.copy.call(this, source, recursive);
+
+        this.element = source.element.cloneNode(true);
+
+        return this;
+
+    }
+
+});
 
 v3d.CSS3DSprite = function(element) {
 
@@ -44,7 +55,7 @@ v3d.CSS3DSprite.prototype.constructor = v3d.CSS3DSprite;
 
 v3d.CSS3DRenderer = function() {
 
-    var _this = this
+    var _this = this;
 
     var _width, _height;
     var _widthHalf, _heightHalf;
@@ -210,6 +221,8 @@ v3d.CSS3DRenderer = function() {
                 cache.objects.set(object, objectData);
 
             }
+
+            element.style.display = object.visible ? '' : 'none';
 
             if (element.parentNode !== cameraElement) {
 

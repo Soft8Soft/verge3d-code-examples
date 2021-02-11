@@ -1,14 +1,10 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
 import {
     BufferAttribute,
     BufferGeometry,
     Quaternion,
     Raycaster,
     Vector3
-} from "../../../build/v3d.module.js";
+} from '../../../build/v3d.module.js';
 
 var RollerCoasterGeometry = function(curve, divisions) {
 

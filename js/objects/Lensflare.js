@@ -1,8 +1,3 @@
-/**
- * @author Mugen87 / https://github.com/Mugen87
- * @author mrdoob / http://mrdoob.com/
- */
-
 v3d.Lensflare = function() {
 
     v3d.Mesh.call(this, v3d.Lensflare.Geometry, new v3d.MeshBasicMaterial({ opacity: 0, transparent: true }));
@@ -197,8 +192,8 @@ v3d.Lensflare = function() {
             // render pink quad
 
             var uniforms = material1a.uniforms;
-            uniforms["scale"].value = scale;
-            uniforms["screenPosition"].value = positionScreen;
+            uniforms['scale'].value = scale;
+            uniforms['screenPosition'].value = positionScreen;
 
             renderer.renderBufferDirect(camera, null, geometry, material1a, mesh1, null);
 
@@ -209,8 +204,8 @@ v3d.Lensflare = function() {
             // restore graphics
 
             var uniforms = material1b.uniforms;
-            uniforms["scale"].value = scale;
-            uniforms["screenPosition"].value = positionScreen;
+            uniforms['scale'].value = scale;
+            uniforms['screenPosition'].value = positionScreen;
 
             renderer.renderBufferDirect(camera, null, geometry, material1b, mesh1, null);
 
@@ -225,15 +220,15 @@ v3d.Lensflare = function() {
 
                 var uniforms = material2.uniforms;
 
-                uniforms["color"].value.copy(element.color);
-                uniforms["map"].value = element.texture;
-                uniforms["screenPosition"].value.x = positionScreen.x + vecX * element.distance;
-                uniforms["screenPosition"].value.y = positionScreen.y + vecY * element.distance;
+                uniforms['color'].value.copy(element.color);
+                uniforms['map'].value = element.texture;
+                uniforms['screenPosition'].value.x = positionScreen.x + vecX * element.distance;
+                uniforms['screenPosition'].value.y = positionScreen.y + vecY * element.distance;
 
                 var size = element.size / viewport.w;
                 var invAspect = viewport.w / viewport.z;
 
-                uniforms["scale"].value.set(size * invAspect, size);
+                uniforms['scale'].value.set(size * invAspect, size);
 
                 material2.uniformsNeedUpdate = true;
 

@@ -1,8 +1,3 @@
-/**
- * @author WestLangley / http://github.com/WestLangley
- *
- */
-
 v3d.LineSegmentsGeometry = function() {
 
     v3d.InstancedBufferGeometry.call(this);
@@ -36,7 +31,7 @@ v3d.LineSegmentsGeometry.prototype = Object.assign(Object.create(v3d.InstancedBu
 
             end.applyMatrix4(matrix);
 
-            start.data.needsUpdate = true;
+            start.needsUpdate = true;
 
         }
 
@@ -133,7 +128,7 @@ v3d.LineSegmentsGeometry.prototype = Object.assign(Object.create(v3d.InstancedBu
 
     },
 
-    fromLineSegements: function(lineSegments) {
+    fromLineSegments: function(lineSegments) {
 
         var geometry = lineSegments.geometry;
 
@@ -143,7 +138,7 @@ v3d.LineSegmentsGeometry.prototype = Object.assign(Object.create(v3d.InstancedBu
 
         } else if (geometry.isBufferGeometry) {
 
-            this.setPositions(geometry.position.array); // assumes non-indexed
+            this.setPositions(geometry.attributes.position.array); // assumes non-indexed
 
         }
 

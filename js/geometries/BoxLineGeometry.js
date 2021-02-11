@@ -1,7 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
 v3d.BoxLineGeometry = function(width, height, depth, widthSegments, heightSegments, depthSegments) {
 
     v3d.BufferGeometry.call(this);

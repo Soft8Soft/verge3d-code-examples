@@ -1,7 +1,3 @@
-/**
- * @author bhouston / http://clara.io/
- */
-
 v3d.CubeTexturePass = function(camera, envMap, opacity) {
 
     v3d.Pass.call(this);

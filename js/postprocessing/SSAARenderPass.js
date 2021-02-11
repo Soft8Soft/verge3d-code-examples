@@ -2,8 +2,6 @@
 *
 * Supersample Anti-Aliasing Render Pass
 *
-* @author bhouston / http://clara.io/
-*
 * This manual approach to SSAA re-renders the scene ones for each sample with camera jitter and accumulates the results.
 *
 * References: https://en.wikipedia.org/wiki/Supersampling
@@ -23,8 +21,9 @@ v3d.SSAARenderPass = function(scene, camera, clearColor, clearAlpha) {
     // as we need to clear the buffer in this pass, clearColor must be set to something, defaults to black.
     this.clearColor = (clearColor !== undefined) ? clearColor : 0x000000;
     this.clearAlpha = (clearAlpha !== undefined) ? clearAlpha : 0;
+    this._oldClearColor = new v3d.Color();
 
-    if (v3d.CopyShader === undefined) console.error("v3d.SSAARenderPass relies on v3d.CopyShader");
+    if (v3d.CopyShader === undefined) console.error('v3d.SSAARenderPass relies on v3d.CopyShader');
 
     var copyShader = v3d.CopyShader;
     this.copyUniforms = v3d.UniformsUtils.clone(copyShader.uniforms);
@@ -70,7 +69,7 @@ v3d.SSAARenderPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), 
         if (!this.sampleRenderTarget) {
 
             this.sampleRenderTarget = new v3d.WebGLRenderTarget(readBuffer.width, readBuffer.height, { minFilter: v3d.LinearFilter, magFilter: v3d.LinearFilter, format: v3d.RGBAFormat });
-            this.sampleRenderTarget.texture.name = "SSAARenderPass.sample";
+            this.sampleRenderTarget.texture.name = 'SSAARenderPass.sample';
 
         }
 
@@ -79,12 +78,12 @@ v3d.SSAARenderPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), 
         var autoClear = renderer.autoClear;
         renderer.autoClear = false;
 
-        var oldClearColor = renderer.getClearColor().getHex();
+        renderer.getClearColor(this._oldClearColor);
         var oldClearAlpha = renderer.getClearAlpha();
 
         var baseSampleWeight = 1.0 / jitterOffsets.length;
         var roundingRange = 1 / 32;
-        this.copyUniforms["tDiffuse"].value = this.sampleRenderTarget.texture;
+        this.copyUniforms['tDiffuse'].value = this.sampleRenderTarget.texture;
 
         var width = readBuffer.width, height = readBuffer.height;
 
@@ -114,7 +113,7 @@ v3d.SSAARenderPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), 
 
             }
 
-            this.copyUniforms["opacity"].value = sampleWeight;
+            this.copyUniforms['opacity'].value = sampleWeight;
             renderer.setClearColor(this.clearColor, this.clearAlpha);
             renderer.setRenderTarget(this.sampleRenderTarget);
             renderer.clear();
@@ -136,7 +135,7 @@ v3d.SSAARenderPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), 
         if (this.camera.clearViewOffset) this.camera.clearViewOffset();
 
         renderer.autoClear = autoClear;
-        renderer.setClearColor(oldClearColor, oldClearAlpha);
+        renderer.setClearColor(this._oldClearColor, oldClearAlpha);
 
     }
 

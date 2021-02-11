@@ -1,6 +1,12 @@
+import {
+    Line3,
+    Mesh,
+    Plane,
+    Vector3
+} from '../../../build/v3d.module.js';
+import { ConvexBufferGeometry } from '../geometries/ConvexGeometry.js';
+
 /**
- * @author yomboprime https://github.com/yomboprime
- *
  * @fileoverview This class can be used to subdivide a convex Geometry object into pieces.
  *
  * Usage:
@@ -28,14 +34,6 @@
  * @param {double} smallDelta Max distance to consider that a point belongs to a plane.
  *
 */
-
-import {
-    Line3,
-    Mesh,
-    Plane,
-    Vector3
-} from "../../../build/v3d.module.js";
-import { ConvexBufferGeometry } from "../geometries/ConvexGeometry.js";
 
 var ConvexObjectBreaker = function(minSizeForBreak, smallDelta) {
 
@@ -360,7 +358,7 @@ ConvexObjectBreaker.prototype = {
                     if (intersection === undefined) {
 
                         // Shouldn't happen
-                        console.error("Internal error: segment does not intersect plane.");
+                        console.error('Internal error: segment does not intersect plane.');
                         output.segmentedObject1 = null;
                         output.segmentedObject2 = null;
                         return 0;
@@ -396,6 +394,7 @@ ConvexObjectBreaker.prototype = {
                 radius1 = Math.max(radius1, p.x, p.y, p.z);
 
             }
+
             this.tempCM1.add(object.position);
 
         }
@@ -415,6 +414,7 @@ ConvexObjectBreaker.prototype = {
                 radius2 = Math.max(radius2, p.x, p.y, p.z);
 
             }
+
             this.tempCM2.add(object.position);
 
         }

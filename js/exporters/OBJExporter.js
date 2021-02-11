@@ -1,7 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
 v3d.OBJExporter = function() {};
 
 v3d.OBJExporter.prototype = {
@@ -17,6 +13,7 @@ v3d.OBJExporter.prototype = {
         var indexNormals = 0;
 
         var vertex = new v3d.Vector3();
+        var color = new v3d.Color();
         var normal = new v3d.Vector3();
         var uv = new v3d.Vector2();
 
@@ -66,7 +63,7 @@ v3d.OBJExporter.prototype = {
                         vertex.y = vertices.getY(i);
                         vertex.z = vertices.getZ(i);
 
-                        // transfrom the vertex to world space
+                        // transform the vertex to world space
                         vertex.applyMatrix4(mesh.matrixWorld);
 
                         // transform the vertex to export format
@@ -104,7 +101,7 @@ v3d.OBJExporter.prototype = {
                         normal.y = normals.getY(i);
                         normal.z = normals.getZ(i);
 
-                        // transfrom the normal to world space
+                        // transform the normal to world space
                         normal.applyMatrix3(normalMatrixWorld).normalize();
 
                         // transform the normal to export format
@@ -129,7 +126,7 @@ v3d.OBJExporter.prototype = {
                         }
 
                         // transform the face to export format
-                        output += 'f ' + face.join(' ') + "\n";
+                        output += 'f ' + face.join(' ') + '\n';
 
                     }
 
@@ -146,7 +143,7 @@ v3d.OBJExporter.prototype = {
                         }
 
                         // transform the face to export format
-                        output += 'f ' + face.join(' ') + "\n";
+                        output += 'f ' + face.join(' ') + '\n';
 
                     }
 
@@ -194,7 +191,7 @@ v3d.OBJExporter.prototype = {
                         vertex.y = vertices.getY(i);
                         vertex.z = vertices.getZ(i);
 
-                        // transfrom the vertex to world space
+                        // transform the vertex to world space
                         vertex.applyMatrix4(line.matrixWorld);
 
                         // transform the vertex to export format
@@ -239,6 +236,69 @@ v3d.OBJExporter.prototype = {
 
         };
 
+        var parsePoints = function(points) {
+
+            var nbVertex = 0;
+
+            var geometry = points.geometry;
+
+            if (geometry instanceof v3d.Geometry) {
+
+                geometry = new v3d.BufferGeometry().setFromObject(points);
+
+            }
+
+            if (geometry instanceof v3d.BufferGeometry) {
+
+                var vertices = geometry.getAttribute('position');
+                var colors = geometry.getAttribute('color');
+
+                output += 'o ' + points.name + '\n';
+
+                if (vertices !== undefined) {
+
+                    for (i = 0, l = vertices.count; i < l; i++, nbVertex ++) {
+
+                        vertex.fromBufferAttribute(vertices, i);
+                        vertex.applyMatrix4(points.matrixWorld);
+
+                        output += 'v ' + vertex.x + ' ' + vertex.y + ' ' + vertex.z;
+
+                        if (colors !== undefined) {
+
+                            color.fromBufferAttribute(colors, i);
+
+                            output += ' ' + color.r + ' ' + color.g + ' ' + color.b;
+
+                        }
+
+                        output += '\n';
+
+                    }
+
+                }
+
+                output += 'p ';
+
+                for (j = 1, l = vertices.count; j <= l; j ++) {
+
+                    output += (indexVertex + j) + ' ';
+
+                }
+
+                output += '\n';
+
+            } else {
+
+                console.warn('v3d.OBJExporter.parsePoints(): geometry type unsupported', geometry);
+
+            }
+
+            // update index
+            indexVertex += nbVertex;
+
+        };
+
         object.traverse(function(child) {
 
             if (child instanceof v3d.Mesh) {
@@ -250,6 +310,12 @@ v3d.OBJExporter.prototype = {
             if (child instanceof v3d.Line) {
 
                 parseLine(child);
+
+            }
+
+            if (child instanceof v3d.Points) {
+
+                parsePoints(child);
 
             }
 

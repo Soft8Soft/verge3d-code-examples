@@ -1,7 +1,3 @@
-/**
- * @author mpk / http://polko.me/
- */
-
 v3d.SMAAPass = function(width, height) {
 
     v3d.Pass.call(this);
@@ -10,21 +6,19 @@ v3d.SMAAPass = function(width, height) {
 
     this.edgesRT = new v3d.WebGLRenderTarget(width, height, {
         depthBuffer: false,
-        stencilBuffer: false,
         generateMipmaps: false,
         minFilter: v3d.LinearFilter,
         format: v3d.RGBFormat
     });
-    this.edgesRT.texture.name = "SMAAPass.edges";
+    this.edgesRT.texture.name = 'SMAAPass.edges';
 
     this.weightsRT = new v3d.WebGLRenderTarget(width, height, {
         depthBuffer: false,
-        stencilBuffer: false,
         generateMipmaps: false,
         minFilter: v3d.LinearFilter,
         format: v3d.RGBAFormat
     });
-    this.weightsRT.texture.name = "SMAAPass.weights";
+    this.weightsRT.texture.name = 'SMAAPass.weights';
 
     // textures
     var scope = this;
@@ -39,7 +33,7 @@ v3d.SMAAPass = function(width, height) {
     };
 
     this.areaTexture = new v3d.Texture();
-    this.areaTexture.name = "SMAAPass.area";
+    this.areaTexture.name = 'SMAAPass.area';
     this.areaTexture.image = areaTextureImage;
     this.areaTexture.format = v3d.RGBFormat;
     this.areaTexture.minFilter = v3d.LinearFilter;
@@ -56,7 +50,7 @@ v3d.SMAAPass = function(width, height) {
     };
 
     this.searchTexture = new v3d.Texture();
-    this.searchTexture.name = "SMAAPass.search";
+    this.searchTexture.name = 'SMAAPass.search';
     this.searchTexture.image = searchTextureImage;
     this.searchTexture.magFilter = v3d.NearestFilter;
     this.searchTexture.minFilter = v3d.NearestFilter;
@@ -67,13 +61,13 @@ v3d.SMAAPass = function(width, height) {
 
     if (v3d.SMAAEdgesShader === undefined) {
 
-        console.error("v3d.SMAAPass relies on v3d.SMAAShader");
+        console.error('v3d.SMAAPass relies on v3d.SMAAShader');
 
     }
 
     this.uniformsEdges = v3d.UniformsUtils.clone(v3d.SMAAEdgesShader.uniforms);
 
-    this.uniformsEdges["resolution"].value.set(1 / width, 1 / height);
+    this.uniformsEdges['resolution'].value.set(1 / width, 1 / height);
 
     this.materialEdges = new v3d.ShaderMaterial({
         defines: Object.assign({}, v3d.SMAAEdgesShader.defines),
@@ -86,10 +80,10 @@ v3d.SMAAPass = function(width, height) {
 
     this.uniformsWeights = v3d.UniformsUtils.clone(v3d.SMAAWeightsShader.uniforms);
 
-    this.uniformsWeights["resolution"].value.set(1 / width, 1 / height);
-    this.uniformsWeights["tDiffuse"].value = this.edgesRT.texture;
-    this.uniformsWeights["tArea"].value = this.areaTexture;
-    this.uniformsWeights["tSearch"].value = this.searchTexture;
+    this.uniformsWeights['resolution'].value.set(1 / width, 1 / height);
+    this.uniformsWeights['tDiffuse'].value = this.edgesRT.texture;
+    this.uniformsWeights['tArea'].value = this.areaTexture;
+    this.uniformsWeights['tSearch'].value = this.searchTexture;
 
     this.materialWeights = new v3d.ShaderMaterial({
         defines: Object.assign({}, v3d.SMAAWeightsShader.defines),
@@ -102,8 +96,8 @@ v3d.SMAAPass = function(width, height) {
 
     this.uniformsBlend = v3d.UniformsUtils.clone(v3d.SMAABlendShader.uniforms);
 
-    this.uniformsBlend["resolution"].value.set(1 / width, 1 / height);
-    this.uniformsBlend["tDiffuse"].value = this.weightsRT.texture;
+    this.uniformsBlend['resolution'].value.set(1 / width, 1 / height);
+    this.uniformsBlend['tDiffuse'].value = this.weightsRT.texture;
 
     this.materialBlend = new v3d.ShaderMaterial({
         uniforms: this.uniformsBlend,
@@ -125,7 +119,7 @@ v3d.SMAAPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         // pass 1
 
-        this.uniformsEdges["tDiffuse"].value = readBuffer.texture;
+        this.uniformsEdges['tDiffuse'].value = readBuffer.texture;
 
         this.fsQuad.material = this.materialEdges;
 
@@ -143,7 +137,7 @@ v3d.SMAAPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         // pass 3
 
-        this.uniformsBlend["tColor"].value = readBuffer.texture;
+        this.uniformsBlend['tColor'].value = readBuffer.texture;
 
         this.fsQuad.material = this.materialBlend;
 

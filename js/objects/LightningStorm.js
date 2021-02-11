@@ -1,6 +1,4 @@
 /**
- * @author yomboprime https://github.com/yomboprime
- *
  * @fileoverview Lightning strike object generator
  *
  *

@@ -1,8 +1,3 @@
-/**
- * @author WestLangley / http://github.com/WestLangley
- *
- */
-
 v3d.Wireframe = function(geometry, material) {
 
     v3d.Mesh.call(this);

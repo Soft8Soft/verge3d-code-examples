@@ -24,7 +24,7 @@
       import { OrbitControls } from './jsm/controls/OrbitControls.js';
       import { HDRCubeTextureLoader } from './jsm/loaders/HDRCubeTextureLoader.js';
 
-      var params = {
+      const params = {
         envMap: 'HDR',
         roughness: 0.0,
         metalness: 0.0,
@@ -32,45 +32,48 @@
         debug: false
       };
 
-      var container, stats;
-      var camera, scene, renderer, controls;
-      var torusMesh, planeMesh;
-      var generatedCubeRenderTarget, ldrCubeRenderTarget, hdrCubeRenderTarget, rgbmCubeRenderTarget;
-      var ldrCubeMap, hdrCubeMap, rgbmCubeMap;
+      let container, stats;
+      let camera, scene, renderer, controls;
+      let torusMesh, planeMesh;
+      let generatedCubeRenderTarget, ldrCubeRenderTarget, hdrCubeRenderTarget, rgbmCubeRenderTarget;
+      let ldrCubeMap, hdrCubeMap, rgbmCubeMap;
 
       init();
       animate();
 
       function getEnvScene() {
 
-        var envScene = new v3d.Scene();
+        const envScene = new v3d.Scene();
 
-        var geometry = new v3d.BoxBufferGeometry();
+        const geometry = new v3d.BoxBufferGeometry();
         geometry.deleteAttribute('uv');
-        var roomMaterial = new v3d.MeshStandardMaterial({ metalness: 0, side: v3d.BackSide });
-        var room = new v3d.Mesh(geometry, roomMaterial);
+        const roomMaterial = new v3d.MeshStandardMaterial({ metalness: 0, side: v3d.BackSide });
+        const room = new v3d.Mesh(geometry, roomMaterial);
         room.scale.setScalar(10);
         envScene.add(room);
 
-        var mainLight = new v3d.PointLight(0xffffff, 50, 0, 2);
+        const mainLight = new v3d.PointLight(0xffffff, 50, 0, 2);
         envScene.add(mainLight);
 
-        var lightMaterial = new v3d.MeshLambertMaterial({ color: 0x000000, emissive: 0xffffff, emissiveIntensity: 10 });
+        const lightMaterial = new v3d.MeshLambertMaterial({ color: 0x000000, emissive: 0xffffff, emissiveIntensity: 10 });
 
-        var light1 = new v3d.Mesh(geometry, lightMaterial);
+        const light1 = new v3d.Mesh(geometry, lightMaterial);
+        light1.material.color.setHex(0xff0000);
         light1.position.set(- 5, 2, 0);
         light1.scale.set(0.1, 1, 1);
         envScene.add(light1);
 
-        var light2 = new v3d.Mesh(geometry, lightMaterial);
+        const light2 = new v3d.Mesh(geometry, lightMaterial.clone());
+        light2.material.color.setHex(0x00ff00);
         light2.position.set(0, 5, 0);
         light2.scale.set(1, 0.1, 1);
         envScene.add(light2);
 
-        var light2 = new v3d.Mesh(geometry, lightMaterial);
-        light2.position.set(2, 1, 5);
-        light2.scale.set(1.5, 2, 0.1);
-        envScene.add(light2);
+        const light3 = new v3d.Mesh(geometry, lightMaterial.clone());
+        light3.material.color.setHex(0x0000ff);
+        light3.position.set(2, 1, 5);
+        light3.scale.set(1.5, 2, 0.1);
+        envScene.add(light3);
 
         return envScene;
 
@@ -89,12 +92,13 @@
 
         renderer = new v3d.WebGLRenderer();
         renderer.physicallyCorrectLights = true;
-        renderer.toneMapping = v3d.LinearToneMapping;
+        renderer.toneMapping = v3d.ACESFilmicToneMapping;
 
         //
 
-        var geometry = new v3d.TorusKnotBufferGeometry(18, 8, 150, 20);
-        var material = new v3d.MeshStandardMaterial({
+        let geometry = new v3d.TorusKnotBufferGeometry(18, 8, 150, 20);
+        // let geometry = new v3d.SphereBufferGeometry(26, 64, 32);
+        let material = new v3d.MeshStandardMaterial({
           color: 0xffffff,
           metalness: params.metalness,
           roughness: params.roughness
@@ -104,8 +108,8 @@
         scene.add(torusMesh);
 
 
-        var geometry = new v3d.PlaneBufferGeometry(200, 200);
-        var material = new v3d.MeshBasicMaterial();
+        geometry = new v3d.PlaneBufferGeometry(200, 200);
+        material = new v3d.MeshBasicMaterial();
 
         planeMesh = new v3d.Mesh(geometry, material);
         planeMesh.position.y = - 50;
@@ -118,7 +122,7 @@
 
         };
 
-        var hdrUrls = ['px.hdr', 'nx.hdr', 'py.hdr', 'ny.hdr', 'pz.hdr', 'nz.hdr'];
+        const hdrUrls = ['px.hdr', 'nx.hdr', 'py.hdr', 'ny.hdr', 'pz.hdr', 'nz.hdr'];
         hdrCubeMap = new HDRCubeTextureLoader()
           .setPath('./textures/cube/pisaHDR/')
           .setDataType(v3d.UnsignedByteType)
@@ -131,7 +135,7 @@
 
           });
 
-        var ldrUrls = ['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'];
+        const ldrUrls = ['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'];
         ldrCubeMap = new v3d.CubeTextureLoader()
           .setPath('./textures/cube/pisa/')
           .load(ldrUrls, function() {
@@ -143,7 +147,7 @@
           });
 
 
-        var rgbmUrls = ['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'];
+        const rgbmUrls = ['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'];
         rgbmCubeMap = new v3d.CubeTextureLoader()
           .setPath('./textures/cube/pisaRGBM16/')
           .load(rgbmUrls, function() {
@@ -158,10 +162,10 @@
 
           });
 
-        var pmremGenerator = new v3d.PMREMGenerator(renderer);
+        const pmremGenerator = new v3d.PMREMGenerator(renderer);
         pmremGenerator.compileCubemapShader();
 
-        var envScene = getEnvScene();
+        const envScene = getEnvScene();
         generatedCubeRenderTarget = pmremGenerator.fromScene(envScene, 0.04);
 
         renderer.setPixelRatio(window.devicePixelRatio);
@@ -180,7 +184,7 @@
 
         window.addEventListener('resize', onWindowResize, false);
 
-        var gui = new GUI();
+        const gui = new GUI();
 
         gui.add(params, 'envMap', ['Generated', 'LDR', 'HDR', 'RGBM16']);
         gui.add(params, 'roughness', 0, 1, 0.01);
@@ -193,8 +197,8 @@
 
       function onWindowResize() {
 
-        var width = window.innerWidth;
-        var height = window.innerHeight;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
 
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
@@ -218,7 +222,7 @@
         torusMesh.material.roughness = params.roughness;
         torusMesh.material.metalness = params.metalness;
 
-        var renderTarget, cubeMap;
+        let renderTarget, cubeMap;
 
         switch (params.envMap) {
 
@@ -241,7 +245,7 @@
 
         }
 
-        var newEnvMap = renderTarget ? renderTarget.texture : null;
+        const newEnvMap = renderTarget ? renderTarget.texture : null;
 
         if (newEnvMap && newEnvMap !== torusMesh.material.envMap) {
 

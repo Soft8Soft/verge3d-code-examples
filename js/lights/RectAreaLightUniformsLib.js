@@ -1,7 +1,5 @@
 /**
  * Uniforms library for RectAreaLight shared webgl shaders
- * @author abelnation
- * @author WestLangley / http://github.com/WestLangley
  *
  * NOTE: This is a temporary location for the BRDF approximation texture data
  *       based off of Eric Heitz's work (see citation below).  BRDF data for
@@ -29,18 +27,30 @@ v3d.RectAreaLightUniformsLib = {
 
         // data textures
 
-        var ltc_1 = new v3d.DataTexture(new Float32Array(LTC_MAT_1), 64, 64, v3d.RGBAFormat, v3d.FloatType, v3d.UVMapping, v3d.ClampToEdgeWrapping, v3d.ClampToEdgeWrapping, v3d.LinearFilter, v3d.NearestFilter, 1);
-        var ltc_2 = new v3d.DataTexture(new Float32Array(LTC_MAT_2), 64, 64, v3d.RGBAFormat, v3d.FloatType, v3d.UVMapping, v3d.ClampToEdgeWrapping, v3d.ClampToEdgeWrapping, v3d.LinearFilter, v3d.NearestFilter, 1);
+        const ltc_float_1 = new Float32Array(LTC_MAT_1);
+        const ltc_float_2 = new Float32Array(LTC_MAT_2);
 
-        v3d.UniformsLib.LTC_1 = ltc_1;
-        v3d.UniformsLib.LTC_2 = ltc_2;
+        v3d.UniformsLib.LTC_FLOAT_1 = new v3d.DataTexture(ltc_float_1, 64, 64, v3d.RGBAFormat, v3d.FloatType, v3d.UVMapping, v3d.ClampToEdgeWrapping, v3d.ClampToEdgeWrapping, v3d.LinearFilter, v3d.NearestFilter, 1);
+        v3d.UniformsLib.LTC_FLOAT_2 = new v3d.DataTexture(ltc_float_2, 64, 64, v3d.RGBAFormat, v3d.FloatType, v3d.UVMapping, v3d.ClampToEdgeWrapping, v3d.ClampToEdgeWrapping, v3d.LinearFilter, v3d.NearestFilter, 1);
 
-        // add ltc data textures to material uniforms
+        const ltc_half_1 = new Uint16Array(LTC_MAT_1.length);
 
-        var ltc = { ltc_1: { value: null }, ltc_2: { value: null } };
+        LTC_MAT_1.forEach(function(x, index) {
 
-        Object.assign(v3d.ShaderLib.standard.uniforms, ltc);
-        Object.assign(v3d.ShaderLib.physical.uniforms, ltc);
+            ltc_half_1[index] = v3d.DataUtils.toHalfFloat(x);
+
+        });
+
+        const ltc_half_2 = new Uint16Array(LTC_MAT_2.length);
+
+        LTC_MAT_2.forEach(function(x, index) {
+
+            ltc_half_2[index] = v3d.DataUtils.toHalfFloat(x);
+
+        });
+
+        v3d.UniformsLib.LTC_HALF_1 = new v3d.DataTexture(ltc_half_1, 64, 64, v3d.RGBAFormat, v3d.HalfFloatType, v3d.UVMapping, v3d.ClampToEdgeWrapping, v3d.ClampToEdgeWrapping, v3d.LinearFilter, v3d.NearestFilter, 1);
+        v3d.UniformsLib.LTC_HALF_2 = new v3d.DataTexture(ltc_half_2, 64, 64, v3d.RGBAFormat, v3d.HalfFloatType, v3d.UVMapping, v3d.ClampToEdgeWrapping, v3d.ClampToEdgeWrapping, v3d.LinearFilter, v3d.NearestFilter, 1);
 
     }
 

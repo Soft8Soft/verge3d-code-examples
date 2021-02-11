@@ -1,12 +1,8 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 v3d.GlitchPass = function(dt_size) {
 
     v3d.Pass.call(this);
 
-    if (v3d.DigitalGlitch === undefined) console.error("v3d.GlitchPass relies on v3d.DigitalGlitch");
+    if (v3d.DigitalGlitch === undefined) console.error('v3d.GlitchPass relies on v3d.DigitalGlitch');
 
     var shader = v3d.DigitalGlitch;
     this.uniforms = v3d.UniformsUtils.clone(shader.uniforms);
@@ -14,7 +10,7 @@ v3d.GlitchPass = function(dt_size) {
     if (dt_size == undefined) dt_size = 64;
 
 
-    this.uniforms["tDisp"].value = this.generateHeightmap(dt_size);
+    this.uniforms['tDisp'].value = this.generateHeightmap(dt_size);
 
 
     this.material = new v3d.ShaderMaterial({
@@ -37,7 +33,7 @@ v3d.GlitchPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     render: function(renderer, writeBuffer, readBuffer /*, deltaTime, maskActive */) {
 
-        this.uniforms["tDiffuse"].value = readBuffer.texture;
+        this.uniforms['tDiffuse'].value = readBuffer.texture;
         this.uniforms['seed'].value = Math.random();//default seeding
         this.uniforms['byp'].value = 0;
 

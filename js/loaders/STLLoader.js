@@ -1,10 +1,4 @@
 /**
- * @author aleeper / http://adamleeper.com/
- * @author mrdoob / http://mrdoob.com/
- * @author gero3 / https://github.com/gero3
- * @author Mugen87 / https://github.com/Mugen87
- * @author neverhood311 / https://github.com/neverhood311
- *
  * Description: A v3d loader for STL ASCII files, as created by Solidworks and other CAD programs.
  *
  * Supports both binary and ASCII encoded files, with automatic detection of type.
@@ -25,7 +19,7 @@
  * For binary STLs geometry might contain colors for vertices. To use it:
  *  // use the same code to load STL as above
  *  if (geometry.hasColors) {
- *    material = new v3d.MeshPhongMaterial({ opacity: geometry.alpha, vertexColors: v3d.VertexColors });
+ *    material = new v3d.MeshPhongMaterial({ opacity: geometry.alpha, vertexColors: true });
  *  } else { .... }
  *  var mesh = new v3d.Mesh(geometry, material);
  *
@@ -70,22 +64,31 @@ v3d.STLLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
         var scope = this;
 
-        var loader = new v3d.FileLoader(scope.manager);
-        loader.setPath(scope.path);
+        var loader = new v3d.FileLoader(this.manager);
+        loader.setPath(this.path);
         loader.setResponseType('arraybuffer');
+        loader.setRequestHeader(this.requestHeader);
+        loader.setWithCredentials(this.withCredentials);
+
         loader.load(url, function(text) {
 
             try {
 
                 onLoad(scope.parse(text));
 
-            } catch (exception) {
+            } catch (e) {
 
                 if (onError) {
 
-                    onError(exception);
+                    onError(e);
+
+                } else {
+
+                    console.error(e);
 
                 }
+
+                scope.manager.itemError(url);
 
             }
 

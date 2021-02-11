@@ -19,15 +19,12 @@ v3d.BokehPass = function(scene, camera, params) {
     var width = params.width || window.innerWidth || 1;
     var height = params.height || window.innerHeight || 1;
 
-    this.renderTargetColor = new v3d.WebGLRenderTarget(width, height, {
-        minFilter: v3d.LinearFilter,
-        magFilter: v3d.LinearFilter,
-        format: v3d.RGBFormat
+    this.renderTargetDepth = new v3d.WebGLRenderTarget(width, height, {
+        minFilter: v3d.NearestFilter,
+        magFilter: v3d.NearestFilter
     });
-    this.renderTargetColor.texture.name = "BokehPass.color";
 
-    this.renderTargetDepth = this.renderTargetColor.clone();
-    this.renderTargetDepth.texture.name = "BokehPass.depth";
+    this.renderTargetDepth.texture.name = 'BokehPass.depth';
 
     // depth material
 
@@ -39,21 +36,21 @@ v3d.BokehPass = function(scene, camera, params) {
 
     if (v3d.BokehShader === undefined) {
 
-        console.error("v3d.BokehPass relies on v3d.BokehShader");
+        console.error('v3d.BokehPass relies on v3d.BokehShader');
 
     }
 
     var bokehShader = v3d.BokehShader;
     var bokehUniforms = v3d.UniformsUtils.clone(bokehShader.uniforms);
 
-    bokehUniforms["tDepth"].value = this.renderTargetDepth.texture;
+    bokehUniforms['tDepth'].value = this.renderTargetDepth.texture;
 
-    bokehUniforms["focus"].value = focus;
-    bokehUniforms["aspect"].value = aspect;
-    bokehUniforms["aperture"].value = aperture;
-    bokehUniforms["maxblur"].value = maxblur;
-    bokehUniforms["nearClip"].value = camera.near;
-    bokehUniforms["farClip"].value = camera.far;
+    bokehUniforms['focus'].value = focus;
+    bokehUniforms['aspect'].value = aspect;
+    bokehUniforms['aperture'].value = aperture;
+    bokehUniforms['maxblur'].value = maxblur;
+    bokehUniforms['nearClip'].value = camera.near;
+    bokehUniforms['farClip'].value = camera.far;
 
     this.materialBokeh = new v3d.ShaderMaterial({
         defines: Object.assign({}, bokehShader.defines),
@@ -67,7 +64,7 @@ v3d.BokehPass = function(scene, camera, params) {
 
     this.fsQuad = new v3d.Pass.FullScreenQuad(this.materialBokeh);
 
-    this.oldClearColor = new v3d.Color();
+    this._oldClearColor = new v3d.Color();
 
 };
 
@@ -81,7 +78,7 @@ v3d.BokehPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         this.scene.overrideMaterial = this.materialDepth;
 
-        this.oldClearColor.copy(renderer.getClearColor());
+        renderer.getClearColor(this._oldClearColor);
         var oldClearAlpha = renderer.getClearAlpha();
         var oldAutoClear = renderer.autoClear;
         renderer.autoClear = false;
@@ -94,9 +91,9 @@ v3d.BokehPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         // Render bokeh composite
 
-        this.uniforms["tColor"].value = readBuffer.texture;
-        this.uniforms["nearClip"].value = this.camera.near;
-        this.uniforms["farClip"].value = this.camera.far;
+        this.uniforms['tColor'].value = readBuffer.texture;
+        this.uniforms['nearClip'].value = this.camera.near;
+        this.uniforms['farClip'].value = this.camera.far;
 
         if (this.renderToScreen) {
 
@@ -112,7 +109,7 @@ v3d.BokehPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
         }
 
         this.scene.overrideMaterial = null;
-        renderer.setClearColor(this.oldClearColor);
+        renderer.setClearColor(this._oldClearColor);
         renderer.setClearAlpha(oldClearAlpha);
         renderer.autoClear = oldAutoClear;
 

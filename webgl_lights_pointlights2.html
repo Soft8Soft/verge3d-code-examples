@@ -21,19 +21,19 @@
 
       import { TrackballControls } from './jsm/controls/TrackballControls.js';
 
-      var camera, scene, renderer, controls;
-      var light1, light2, light3, light4, light5, light6;
+      let camera, scene, renderer, controls;
+      let light1, light2, light3, light4, light5, light6;
 
-      var clock = new v3d.Clock();
+      const clock = new v3d.Clock();
 
-      var stats;
+      let stats;
 
       init();
       animate();
 
       function init() {
 
-        var container = document.getElementById('container');
+        const container = document.getElementById('container');
 
         // CAMERA
 
@@ -49,33 +49,32 @@
 
         // TEXTURES
 
-        var textureLoader = new v3d.TextureLoader();
+        const textureLoader = new v3d.TextureLoader();
 
-        var texture = textureLoader.load("textures/disturb.jpg");
+        const texture = textureLoader.load("textures/disturb.jpg");
         texture.repeat.set(20, 10);
         texture.wrapS = texture.wrapT = v3d.RepeatWrapping;
-        texture.format = v3d.RGBFormat;
         texture.encoding = v3d.sRGBEncoding;
 
         // MATERIALS
 
-        var groundMaterial = new v3d.MeshPhongMaterial({ color: 0xffffff, map: texture });
-        var objectMaterial = new v3d.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5, metalness: 1.0 });
+        const groundMaterial = new v3d.MeshPhongMaterial({ color: 0xffffff, map: texture });
+        const objectMaterial = new v3d.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5, metalness: 1.0 });
 
         // GROUND
 
-        var mesh = new v3d.Mesh(new v3d.PlaneBufferGeometry(800, 400, 2, 2), groundMaterial);
+        const mesh = new v3d.Mesh(new v3d.PlaneBufferGeometry(800, 400, 2, 2), groundMaterial);
         mesh.position.y = - 5;
         mesh.rotation.x = - Math.PI / 2;
         scene.add(mesh);
 
         // OBJECTS
 
-        var objectGeometry = new v3d.TorusBufferGeometry(1.5, 0.4, 8, 16);
+        const objectGeometry = new v3d.TorusBufferGeometry(1.5, 0.4, 8, 16);
 
-        for (var i = 0; i < 5000; i++) {
+        for (let i = 0; i < 5000; i++) {
 
-          var mesh = new v3d.Mesh(objectGeometry, objectMaterial);
+          const mesh = new v3d.Mesh(objectGeometry, objectMaterial);
 
           mesh.position.x = 400 * (0.5 - Math.random());
           mesh.position.y = 50 * (0.5 - Math.random()) + 25;
@@ -92,13 +91,13 @@
 
         // LIGHTS
 
-        var intensity = 2.5;
-        var distance = 100;
-        var decay = 2.0;
+        const intensity = 2.5;
+        const distance = 100;
+        const decay = 2.0;
 
-        var c1 = 0xff0040, c2 = 0x0040ff, c3 = 0x80ff80, c4 = 0xffaa00, c5 = 0x00ffaa, c6 = 0xff1100;
+        const c1 = 0xff0040, c2 = 0x0040ff, c3 = 0x80ff80, c4 = 0xffaa00, c5 = 0x00ffaa, c6 = 0xff1100;
 
-        var sphere = new v3d.SphereBufferGeometry(0.25, 16, 8);
+        const sphere = new v3d.SphereBufferGeometry(0.25, 16, 8);
 
         light1 = new v3d.PointLight(c1, intensity, distance, decay);
         light1.add(new v3d.Mesh(sphere, new v3d.MeshBasicMaterial({ color: c1 })));
@@ -124,7 +123,7 @@
         light6.add(new v3d.Mesh(sphere, new v3d.MeshBasicMaterial({ color: c6 })));
         scene.add(light6);
 
-        var dlight = new v3d.DirectionalLight(0xffffff, 0.05);
+        const dlight = new v3d.DirectionalLight(0xffffff, 0.05);
         dlight.position.set(0.5, 1, 0).normalize();
         scene.add(dlight);
 
@@ -183,8 +182,8 @@
 
       function render() {
 
-        var time = Date.now() * 0.00025;
-        var d = 150;
+        const time = Date.now() * 0.00025;
+        const d = 150;
 
         light1.position.x = Math.sin(time * 0.7) * d;
         light1.position.z = Math.cos(time * 0.3) * d;

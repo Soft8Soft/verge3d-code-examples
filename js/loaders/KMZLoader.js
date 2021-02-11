@@ -1,7 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
 v3d.KMZLoader = function(manager) {
 
     v3d.Loader.call(this, manager);
@@ -19,9 +15,29 @@ v3d.KMZLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
         var loader = new v3d.FileLoader(scope.manager);
         loader.setPath(scope.path);
         loader.setResponseType('arraybuffer');
+        loader.setRequestHeader(scope.requestHeader);
+        loader.setWithCredentials(scope.withCredentials);
         loader.load(url, function(text) {
 
-            onLoad(scope.parse(text));
+            try {
+
+                onLoad(scope.parse(text));
+
+            } catch (e) {
+
+                if (onError) {
+
+                    onError(e);
+
+                } else {
+
+                    console.error(e);
+
+                }
+
+                scope.manager.itemError(url);
+
+            }
 
         }, onProgress, onError);
 

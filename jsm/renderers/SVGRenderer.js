@@ -1,22 +1,16 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
 import {
     Box2,
     Camera,
     Color,
-    FaceColors,
     Matrix3,
     Matrix4,
     Object3D,
-    Vector3,
-    VertexColors
-} from "../../../build/v3d.module.js";
-import { Projector } from "../renderers/Projector.js";
-import { RenderableFace } from "../renderers/Projector.js";
-import { RenderableLine } from "../renderers/Projector.js";
-import { RenderableSprite } from "../renderers/Projector.js";
+    Vector3
+} from '../../../build/v3d.module.js';
+import { Projector } from '../renderers/Projector.js';
+import { RenderableFace } from '../renderers/Projector.js';
+import { RenderableLine } from '../renderers/Projector.js';
+import { RenderableSprite } from '../renderers/Projector.js';
 
 var SVGObject = function(node) {
 
@@ -87,8 +81,8 @@ var SVGRenderer = function() {
 
         switch (quality) {
 
-            case "high": _quality = 1; break;
-            case "low": _quality = 0; break;
+            case 'high': _quality = 1; break;
+            case 'low': _quality = 0; break;
 
         }
 
@@ -113,6 +107,15 @@ var SVGRenderer = function() {
 
         _clipBox.min.set(- _svgWidthHalf, - _svgHeightHalf);
         _clipBox.max.set(_svgWidthHalf, _svgHeightHalf);
+
+    };
+
+    this.getSize = function() {
+
+        return {
+            width: _svgWidth,
+            height: _svgHeight
+        };
 
     };
 
@@ -373,7 +376,7 @@ var SVGRenderer = function() {
         }
 
         var path = 'M' + convert(v1.x - scaleX * 0.5) + ',' + convert(v1.y - scaleY * 0.5) + 'h' + convert(scaleX) + 'v' + convert(scaleY) + 'h' + convert(- scaleX) + 'z';
-        var style = "";
+        var style = '';
 
         if (material.isSpriteMaterial || material.isPointsMaterial) {
 
@@ -395,7 +398,7 @@ var SVGRenderer = function() {
 
             if (material.isLineDashedMaterial) {
 
-                style = style + ';stroke-dasharray:' + material.dashSize + "," + material.gapSize;
+                style = style + ';stroke-dasharray:' + material.dashSize + ',' + material.gapSize;
 
             }
 
@@ -417,7 +420,7 @@ var SVGRenderer = function() {
 
             _color.copy(material.color);
 
-            if (material.vertexColors === FaceColors || material.vertexColors === VertexColors) {
+            if (material.vertexColors) {
 
                 _color.multiply(element.color);
 
@@ -427,7 +430,7 @@ var SVGRenderer = function() {
 
             _diffuseColor.copy(material.color);
 
-            if (material.vertexColors === FaceColors || material.vertexColors === VertexColors) {
+            if (material.vertexColors) {
 
                 _diffuseColor.multiply(element.color);
 

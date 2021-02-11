@@ -1,8 +1,5 @@
 /**
- * @author meatbags / xavierburrow.com, github/meatbags
- *
  * RGB Halftone pass for three.js effects composer. Requires v3d.HalftoneShader.
- *
  */
 
 v3d.HalftonePass = function(width, height, params) {
@@ -46,7 +43,7 @@ v3d.HalftonePass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     render: function(renderer, writeBuffer, readBuffer/*, deltaTime, maskActive*/) {
 
-         this.material.uniforms["tDiffuse"].value = readBuffer.texture;
+         this.material.uniforms['tDiffuse'].value = readBuffer.texture;
 
          if (this.renderToScreen) {
 

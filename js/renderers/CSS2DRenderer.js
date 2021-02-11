@@ -1,12 +1,9 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
 v3d.CSS2DObject = function(element) {
 
     v3d.Object3D.call(this);
 
-    this.element = element;
+    this.element = element || document.createElement('div');
+
     this.element.style.position = 'absolute';
 
     this.addEventListener('removed', function() {
@@ -25,8 +22,21 @@ v3d.CSS2DObject = function(element) {
 
 };
 
-v3d.CSS2DObject.prototype = Object.create(v3d.Object3D.prototype);
-v3d.CSS2DObject.prototype.constructor = v3d.CSS2DObject;
+v3d.CSS2DObject.prototype = Object.assign(Object.create(v3d.Object3D.prototype), {
+
+    constructor: v3d.CSS2DObject,
+
+    copy: function(source, recursive) {
+
+        v3d.Object3D.prototype.copy.call(this, source, recursive);
+
+        this.element = source.element.cloneNode(true);
+
+        return this;
+
+    }
+
+});
 
 //
 

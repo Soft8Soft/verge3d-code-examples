@@ -51,7 +51,6 @@
 
   </head>
   <body>
-    <canvas></canvas>
     <div id="info">
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">threejs</a> webgl - depth texture<br/>
       Stores render target depth in a texture attachment.<br/>
@@ -69,21 +68,30 @@
 
       import Stats from './jsm/libs/stats.module.js';
 
+      import { GUI } from './jsm/libs/dat.gui.module.js';
       import { OrbitControls } from './jsm/controls/OrbitControls.js';
 
-      var camera, scene, renderer, controls, stats;
-      var target;
-      var postScene, postCamera;
-      var supportsExtension = true;
+      let camera, scene, renderer, controls, stats;
+      let target;
+      let postScene, postCamera, postMaterial;
+      let supportsExtension = true;
+
+      const params = {
+        format: v3d.DepthFormat,
+        type: v3d.UnsignedShortType
+      };
+
+      const formats = { DepthFormat: v3d.DepthFormat, DepthStencilFormat: v3d.DepthStencilFormat };
+      const types = { UnsignedShortType: v3d.UnsignedShortType, UnsignedIntType: v3d.UnsignedIntType, UnsignedInt248Type: v3d.UnsignedInt248Type };
 
       init();
       animate();
 
       function init() {
 
-        renderer = new v3d.WebGLRenderer({ canvas: document.querySelector('canvas') });
+        renderer = new v3d.WebGLRenderer();
 
-        if (!renderer.extensions.get('WEBGL_depth_texture')) {
+        if (renderer.capabilities.isWebGL2 === false && renderer.extensions.has('WEBGL_depth_texture') === false) {
 
           supportsExtension = false;
           document.querySelector('#error').style.display = 'block';
@@ -93,6 +101,7 @@
 
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
         //
 
@@ -104,21 +113,11 @@
 
         controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
 
-        // Create a multi render target with Float buffers
-        target = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight);
-        target.texture.format = v3d.RGBFormat;
-        target.texture.minFilter = v3d.NearestFilter;
-        target.texture.magFilter = v3d.NearestFilter;
-        target.texture.generateMipmaps = false;
-        target.stencilBuffer = false;
-        target.depthBuffer = true;
-        target.depthTexture = new v3d.DepthTexture();
-        target.depthTexture.type = v3d.UnsignedShortType;
+        // Create a render target with depth texture
+        setupRenderTarget();
 
         // Our scene
-        scene = new v3d.Scene();
         setupScene();
 
         // Setup post-processing step
@@ -127,24 +126,51 @@
         onWindowResize();
         window.addEventListener('resize', onWindowResize, false);
 
+        //
+        const gui = new GUI({ width: 300 });
+
+        gui.add(params, 'format', formats).onChange(setupRenderTarget);
+        gui.add(params, 'type', types).onChange(setupRenderTarget);
+        gui.open();
+
+      }
+
+      function setupRenderTarget() {
+
+        if (target) target.dispose();
+
+        const format = parseFloat(params.format);
+        const type = parseFloat(params.type);
+
+        target = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight);
+        target.texture.format = v3d.RGBFormat;
+        target.texture.minFilter = v3d.NearestFilter;
+        target.texture.magFilter = v3d.NearestFilter;
+        target.texture.generateMipmaps = false;
+        target.stencilBuffer = (format === v3d.DepthStencilFormat) ? true : false;
+        target.depthBuffer = true;
+        target.depthTexture = new v3d.DepthTexture();
+        target.depthTexture.format = format;
+        target.depthTexture.type = type;
+
       }
 
       function setupPost() {
 
         // Setup post processing stage
         postCamera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
-        var postMaterial = new v3d.ShaderMaterial({
+        postMaterial = new v3d.ShaderMaterial({
           vertexShader: document.querySelector('#post-vert').textContent.trim(),
           fragmentShader: document.querySelector('#post-frag').textContent.trim(),
           uniforms: {
             cameraNear: { value: camera.near },
             cameraFar: { value: camera.far },
-            tDiffuse: { value: target.texture },
-            tDepth: { value: target.depthTexture }
+            tDiffuse: { value: null },
+            tDepth: { value: null }
           }
         });
-        var postPlane = new v3d.PlaneBufferGeometry(2, 2);
-        var postQuad = new v3d.Mesh(postPlane, postMaterial);
+        const postPlane = new v3d.PlaneBufferGeometry(2, 2);
+        const postQuad = new v3d.Mesh(postPlane, postMaterial);
         postScene = new v3d.Scene();
         postScene.add(postQuad);
 
@@ -152,23 +178,21 @@
 
       function setupScene() {
 
-        //var diffuse = new TextureLoader().load('textures/brick_diffuse.jpg');
-        //diffuse.wrapS = diffuse.wrapT = RepeatWrapping;
+        scene = new v3d.Scene();
 
-        // Setup some geometries
-        var geometry = new v3d.TorusKnotBufferGeometry(1, 0.3, 128, 64);
-        var material = new v3d.MeshBasicMaterial({ color: 'blue' });
+        const geometry = new v3d.TorusKnotBufferGeometry(1, 0.3, 128, 64);
+        const material = new v3d.MeshBasicMaterial({ color: 'blue' });
 
-        var count = 50;
-        var scale = 5;
+        const count = 50;
+        const scale = 5;
 
-        for (var i = 0; i < count; i++) {
+        for (let i = 0; i < count; i++) {
 
-          var r = Math.random() * 2.0 * Math.PI;
-          var z = (Math.random() * 2.0) - 1.0;
-          var zScale = Math.sqrt(1.0 - z * z) * scale;
+          const r = Math.random() * 2.0 * Math.PI;
+          const z = (Math.random() * 2.0) - 1.0;
+          const zScale = Math.sqrt(1.0 - z * z) * scale;
 
-          var mesh = new v3d.Mesh(geometry, material);
+          const mesh = new v3d.Mesh(geometry, material);
           mesh.position.set(
             Math.cos(r) * zScale,
             Math.sin(r) * zScale,
@@ -183,11 +207,11 @@
 
       function onWindowResize() {
 
-        var aspect = window.innerWidth / window.innerHeight;
+        const aspect = window.innerWidth / window.innerHeight;
         camera.aspect = aspect;
         camera.updateProjectionMatrix();
 
-        var dpr = renderer.getPixelRatio();
+        const dpr = renderer.getPixelRatio();
         target.setSize(window.innerWidth * dpr, window.innerHeight * dpr);
         renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -204,6 +228,9 @@
         renderer.render(scene, camera);
 
         // render post FX
+        postMaterial.uniforms.tDiffuse.value = target.texture;
+        postMaterial.uniforms.tDepth.value = target.depthTexture;
+
         renderer.setRenderTarget(null);
         renderer.render(postScene, postCamera);
 

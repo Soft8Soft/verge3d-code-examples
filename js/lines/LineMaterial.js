@@ -1,12 +1,11 @@
 /**
- * @author WestLangley / http://github.com/WestLangley
- *
  * parameters = {
  *  color: <hex>,
  *  linewidth: <float>,
  *  dashed: <boolean>,
  *  dashScale: <float>,
  *  dashSize: <float>,
+ *  dashOffset: <float>,
  *  gapSize: <float>,
  *  resolution: <Vector2>, // to be set by renderer
  * }
@@ -18,7 +17,9 @@ v3d.UniformsLib.line = {
     resolution: { value: new v3d.Vector2(1, 1) },
     dashScale: { value: 1 },
     dashSize: { value: 1 },
-    gapSize: { value: 1 } // todo FIX - maybe change to totalSize
+    dashOffset: { value: 0 },
+    gapSize: { value: 1 }, // todo FIX - maybe change to totalSize
+    opacity: { value: 1 }
 
 };
 
@@ -185,6 +186,7 @@ v3d.ShaderLib['line'] = {
         #ifdef USE_DASH
 
             uniform float dashSize;
+            uniform float dashOffset;
             uniform float gapSize;
 
         #endif
@@ -207,7 +209,7 @@ v3d.ShaderLib['line'] = {
 
                 if (vUv.y < - 1.0 || vUv.y > 1.0) discard; // discard endcaps
 
-                if (mod(vLineDistance, dashSize + gapSize) > dashSize) discard; // todo - FIX
+                if (mod(vLineDistance + dashOffset, dashSize + gapSize) > dashSize) discard; // todo - FIX
 
             #endif
 
@@ -328,6 +330,24 @@ v3d.LineMaterial = function(parameters) {
 
         },
 
+        dashOffset: {
+
+            enumerable: true,
+
+            get: function() {
+
+                return this.uniforms.dashOffset.value;
+
+            },
+
+            set: function(value) {
+
+                this.uniforms.dashOffset.value = value;
+
+            }
+
+        },
+
         gapSize: {
 
             enumerable: true,
@@ -341,6 +361,24 @@ v3d.LineMaterial = function(parameters) {
             set: function(value) {
 
                 this.uniforms.gapSize.value = value;
+
+            }
+
+        },
+
+        opacity: {
+
+            enumerable: true,
+
+            get: function() {
+
+                return this.uniforms.opacity.value;
+
+            },
+
+            set: function(value) {
+
+                this.uniforms.opacity.value = value;
 
             }
 
@@ -374,4 +412,3 @@ v3d.LineMaterial.prototype = Object.create(v3d.ShaderMaterial.prototype);
 v3d.LineMaterial.prototype.constructor = v3d.LineMaterial;
 
 v3d.LineMaterial.prototype.isLineMaterial = true;
-

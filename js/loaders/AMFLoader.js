@@ -1,6 +1,4 @@
 /**
- * @author tamarintech / https://tamarintech.com
- *
  * Description: Early release of an AMF Loader following the pattern of the
  * example loaders in the three.js project.
  *
@@ -35,9 +33,29 @@ v3d.AMFLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
         var loader = new v3d.FileLoader(scope.manager);
         loader.setPath(scope.path);
         loader.setResponseType('arraybuffer');
+        loader.setRequestHeader(scope.requestHeader);
+        loader.setWithCredentials(scope.withCredentials);
         loader.load(url, function(text) {
 
-            onLoad(scope.parse(text));
+            try {
+
+                onLoad(scope.parse(text));
+
+            } catch (e) {
+
+                if (onError) {
+
+                    onError(e);
+
+                } else {
+
+                    console.error(e);
+
+                }
+
+                scope.manager.itemError(url);
+
+            }
 
         }, onProgress, onError);
 
@@ -289,6 +307,7 @@ v3d.AMFLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                     }
 
                 }
+
                 currVerticesNode = currVerticesNode.nextElementSibling;
 
             }

@@ -1,8 +1,3 @@
-/**
-* @author Prashant Sharma / spidersharma03
-* @author Ben Houston / http://clara.io / bhouston
-*/
-
 v3d.HDRCubeTextureLoader = function(manager) {
 
     v3d.Loader.call(this, manager);
@@ -75,6 +70,7 @@ v3d.HDRCubeTextureLoader.prototype = Object.assign(Object.create(v3d.Loader.prot
             new v3d.FileLoader(scope.manager)
                 .setPath(scope.path)
                 .setResponseType('arraybuffer')
+                .setWithCredentials(scope.withCredentials)
                 .load(urls[i], function(buffer) {
 
                     loaded ++;

@@ -1,10 +1,3 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- * @authod mrdoob / http://mrdoob.com/
- * @authod arodic / http://aleksandarrodic.com/
- * @authod fonserbc / http://fonserbc.github.io/
-*/
-
 v3d.StereoEffect = function(renderer) {
 
     var _stereo = new v3d.StereoCamera();

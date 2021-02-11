@@ -1,7 +1,4 @@
 /**
- * @author herzig / http://github.com/herzig
- * @author Mugen87 / https://github.com/Mugen87
- *
  * Description: reads BVH files and outputs a single v3d.Skeleton and an v3d.AnimationClip
  *
  * Currently only supports bvh files containing a single root.
@@ -27,9 +24,29 @@ v3d.BVHLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
         var loader = new v3d.FileLoader(scope.manager);
         loader.setPath(scope.path);
+        loader.setRequestHeader(scope.requestHeader);
+        loader.setWithCredentials(scope.withCredentials);
         loader.load(url, function(text) {
 
-            onLoad(scope.parse(text));
+            try {
+
+                onLoad(scope.parse(text));
+
+            } catch (e) {
+
+                if (onError) {
+
+                    onError(e);
+
+                } else {
+
+                    console.error(e);
+
+                }
+
+                scope.manager.itemError(url);
+
+            }
 
         }, onProgress, onError);
 
@@ -382,6 +399,7 @@ v3d.BVHLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
             var line;
             // skip empty lines
             while ((line = lines.shift().trim()).length === 0) { }
+
             return line;
 
         }

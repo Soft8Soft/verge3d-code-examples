@@ -1,5 +1,4 @@
 /**
- * @author renej
  * NURBS curve object
  *
  * Derives from Curve, overriding getPoint and getTangent.
@@ -7,11 +6,6 @@
  * Implementation is based on (x, y [, z=0 [, w=1]]) control points with w=weight.
  *
  **/
-
-
-/**************************************************************
- *    NURBS curve
- **************************************************************/
 
 v3d.NURBSCurve = function(degree, knots /* array of reals */, controlPoints /* array of Vector(2|3|4) */, startKnot /* index in knots */, endKnot /* index in knots */) {
 
@@ -38,7 +32,9 @@ v3d.NURBSCurve.prototype = Object.create(v3d.Curve.prototype);
 v3d.NURBSCurve.prototype.constructor = v3d.NURBSCurve;
 
 
-v3d.NURBSCurve.prototype.getPoint = function(t) {
+v3d.NURBSCurve.prototype.getPoint = function(t, optionalTarget) {
+
+    var point = optionalTarget || new v3d.Vector3();
 
     var u = this.knots[this.startKnot] + t * (this.knots[this.endKnot] - this.knots[this.startKnot]); // linear mapping t->u
 
@@ -52,17 +48,18 @@ v3d.NURBSCurve.prototype.getPoint = function(t) {
 
     }
 
-    return new v3d.Vector3(hpoint.x, hpoint.y, hpoint.z);
+    return point.set(hpoint.x, hpoint.y, hpoint.z);
 
 };
 
 
-v3d.NURBSCurve.prototype.getTangent = function(t) {
+v3d.NURBSCurve.prototype.getTangent = function(t, optionalTarget) {
+
+    var tangent = optionalTarget || new v3d.Vector3();
 
     var u = this.knots[0] + t * (this.knots[this.knots.length - 1] - this.knots[0]);
     var ders = v3d.NURBSUtils.calcNURBSDerivatives(this.degree, this.knots, this.controlPoints, u, 1);
-    var tangent = ders[1].clone();
-    tangent.normalize();
+    tangent.copy(ders[1]).normalize();
 
     return tangent;
 

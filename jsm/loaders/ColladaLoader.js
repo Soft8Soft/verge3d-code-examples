@@ -1,8 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
- */
-
 import {
     AmbientLight,
     AnimationClip,
@@ -40,8 +35,8 @@ import {
     TextureLoader,
     Vector3,
     VectorKeyframeTrack
-} from "../../../build/v3d.module.js";
-import { TGALoader } from "../loaders/TGALoader.js";
+} from '../../../build/v3d.module.js';
+import { TGALoader } from '../loaders/TGALoader.js';
 
 var ColladaLoader = function(manager) {
 
@@ -61,9 +56,29 @@ ColladaLoader.prototype = Object.assign(Object.create(Loader.prototype), {
 
         var loader = new FileLoader(scope.manager);
         loader.setPath(scope.path);
+        loader.setRequestHeader(scope.requestHeader);
+        loader.setWithCredentials(scope.withCredentials);
         loader.load(url, function(text) {
 
-            onLoad(scope.parse(text, path));
+            try {
+
+                onLoad(scope.parse(text, path));
+
+            } catch (e) {
+
+                if (onError) {
+
+                    onError(e);
+
+                } else {
+
+                    console.error(e);
+
+                }
+
+                scope.manager.itemError(url);
+
+            }
 
         }, onProgress, onError);
 
@@ -257,6 +272,8 @@ ColladaLoader.prototype = Object.assign(Object.create(Loader.prototype), {
                 channels: {}
             };
 
+            var hasChildren = false;
+
             for (var i = 0, l = xml.childNodes.length; i < l; i++) {
 
                 var child = xml.childNodes[i];
@@ -282,6 +299,12 @@ ColladaLoader.prototype = Object.assign(Object.create(Loader.prototype), {
                         data.channels[id] = parseAnimationChannel(child);
                         break;
 
+                    case 'animation':
+                        // hierarchy of related animations
+                        parseAnimation(child);
+                        hasChildren = true;
+                        break;
+
                     default:
                         console.log(child);
 
@@ -289,7 +312,13 @@ ColladaLoader.prototype = Object.assign(Object.create(Loader.prototype), {
 
             }
 
-            library.animations[xml.getAttribute('id')] = data;
+            if (hasChildren === false) {
+
+                // since 'id' attributes can be optional, it's necessary to generate a UUID for unqiue assignment
+
+                library.animations[xml.getAttribute('id') || MathUtils.generateUUID()] = data;
+
+            }
 
         }
 
@@ -2096,6 +2125,7 @@ ColladaLoader.prototype = Object.assign(Object.create(Loader.prototype), {
                             data.stride = parseInt(accessor.getAttribute('stride'));
 
                         }
+
                         break;
 
                 }
@@ -2368,6 +2398,7 @@ ColladaLoader.prototype = Object.assign(Object.create(Loader.prototype), {
                                             }
 
                                         }
+
                                         break;
 
                                     case 'NORMAL':
@@ -2396,6 +2427,7 @@ ColladaLoader.prototype = Object.assign(Object.create(Loader.prototype), {
                                 }
 
                             }
+
                             break;
 
                         case 'NORMAL':
@@ -2947,7 +2979,7 @@ ColladaLoader.prototype = Object.assign(Object.create(Loader.prototype), {
 
                 if (targetElement) {
 
-                    // get the parent of the transfrom element
+                    // get the parent of the transform element
 
                     var parentVisualElement = targetElement.parentElement;
 
@@ -3595,12 +3627,7 @@ ColladaLoader.prototype = Object.assign(Object.create(Loader.prototype), {
 
             }
 
-            if (object.name === '') {
-
-                object.name = (type === 'JOINT') ? data.sid : data.name;
-
-            }
-
+            object.name = (type === 'JOINT') ? data.sid : data.name;
             object.matrix.copy(matrix);
             object.matrix.decompose(object.position, object.quaternion, object.scale);
 
@@ -3704,6 +3731,7 @@ ColladaLoader.prototype = Object.assign(Object.create(Loader.prototype), {
                             object = new Mesh(geometry.data, material);
 
                         }
+
                         break;
 
                 }
@@ -3967,6 +3995,7 @@ ColladaLoader.prototype = Object.assign(Object.create(Loader.prototype), {
         setupKinematics();
 
         var scene = parseScene(getElementsByTagName(collada, 'scene')[0]);
+        scene.animations = animations;
 
         if (asset.upAxis === 'Z_UP') {
 
@@ -3977,7 +4006,12 @@ ColladaLoader.prototype = Object.assign(Object.create(Loader.prototype), {
         scene.scale.multiplyScalar(asset.unit);
 
         return {
-            animations: animations,
+            get animations() {
+
+                console.warn('v3d.ColladaLoader: Please access animations over scene.animations now.');
+                return animations;
+
+            },
             kinematics: kinematics,
             library: library,
             scene: scene

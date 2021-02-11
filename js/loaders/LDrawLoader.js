@@ -1,11 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author yomboprime / https://github.com/yomboprime/
- * @author gkjohnson / https://github.com/gkjohnson/
- *
- *
- */
-
 v3d.LDrawLoader = (function() {
 
     var conditionalLineVertShader = /* glsl */`
@@ -360,7 +352,7 @@ v3d.LDrawLoader = (function() {
 
         getLineNumberString: function() {
 
-            return this.lineNumber >= 0 ? " at line " + this.lineNumber : "";
+            return this.lineNumber >= 0 ? ' at line ' + this.lineNumber : '';
 
         }
 
@@ -542,8 +534,8 @@ v3d.LDrawLoader = (function() {
 
         // Add default main triangle and line edge materials (used in piecess that can be coloured with a main color)
         this.setMaterials([
-            this.parseColourMetaDirective(new LineParser("Main_Colour CODE 16 VALUE #FF8080 EDGE #333333")),
-            this.parseColourMetaDirective(new LineParser("Edge_Colour CODE 24 VALUE #A0A0A0 EDGE #333333"))
+            this.parseColourMetaDirective(new LineParser('Main_Colour CODE 16 VALUE #FF8080 EDGE #333333')),
+            this.parseColourMetaDirective(new LineParser('Edge_Colour CODE 24 VALUE #A0A0A0 EDGE #333333'))
         ]);
 
         // If this flag is set to true, each subobject will be a v3d.Object.
@@ -590,6 +582,8 @@ v3d.LDrawLoader = (function() {
 
             var fileLoader = new v3d.FileLoader(this.manager);
             fileLoader.setPath(this.path);
+            fileLoader.setRequestHeader(this.requestHeader);
+            fileLoader.setWithCredentials(this.withCredentials);
             fileLoader.load(url, function(text) {
 
                 scope.processObject(text, onLoad, null, url);
@@ -715,13 +709,13 @@ v3d.LDrawLoader = (function() {
 
             // Given a colour code search its material in the parse scopes stack
 
-            if (colourCode.startsWith("0x2")) {
+            if (colourCode.startsWith('0x2')) {
 
                 // Special 'direct' material value (RGB colour)
 
                 var colour = colourCode.substring(3);
 
-                return this.parseColourMetaDirective(new LineParser("Direct_Color_" + colour + " CODE -1 VALUE #" + colour + " EDGE #" + colour + ""));
+                return this.parseColourMetaDirective(new LineParser('Direct_Color_' + colour + ' CODE -1 VALUE #' + colour + ' EDGE #' + colour + ''));
 
             }
 
@@ -790,7 +784,7 @@ v3d.LDrawLoader = (function() {
             var name = lineParser.getToken();
             if (!name) {
 
-                throw 'LDrawLoader: Material name was expected after "!COLOUR tag' + lineParser.getLineNumberString() + ".";
+                throw 'LDrawLoader: Material name was expected after "!COLOUR tag' + lineParser.getLineNumberString() + '.';
 
             }
 
@@ -808,12 +802,12 @@ v3d.LDrawLoader = (function() {
 
                 switch (token.toUpperCase()) {
 
-                    case "CODE":
+                    case 'CODE':
 
                         code = lineParser.getToken();
                         break;
 
-                    case "VALUE":
+                    case 'VALUE':
 
                         colour = lineParser.getToken();
                         if (colour.startsWith('0x')) {
@@ -822,12 +816,13 @@ v3d.LDrawLoader = (function() {
 
                         } else if (!colour.startsWith('#')) {
 
-                            throw 'LDrawLoader: Invalid colour while parsing material' + lineParser.getLineNumberString() + ".";
+                            throw 'LDrawLoader: Invalid colour while parsing material' + lineParser.getLineNumberString() + '.';
 
                         }
+
                         break;
 
-                    case "EDGE":
+                    case 'EDGE':
 
                         edgeColour = lineParser.getToken();
                         if (edgeColour.startsWith('0x')) {
@@ -840,7 +835,7 @@ v3d.LDrawLoader = (function() {
                             edgeMaterial = this.getMaterial(edgeColour);
                             if (!edgeMaterial) {
 
-                                throw 'LDrawLoader: Invalid edge colour while parsing material' + lineParser.getLineNumberString() + ".";
+                                throw 'LDrawLoader: Invalid edge colour while parsing material' + lineParser.getLineNumberString() + '.';
 
                             }
 
@@ -848,6 +843,7 @@ v3d.LDrawLoader = (function() {
                             edgeMaterial = edgeMaterial.userData.edgeMaterial;
 
                         }
+
                         break;
 
                     case 'ALPHA':
@@ -856,7 +852,7 @@ v3d.LDrawLoader = (function() {
 
                         if (isNaN(alpha)) {
 
-                            throw 'LDrawLoader: Invalid alpha value in material definition' + lineParser.getLineNumberString() + ".";
+                            throw 'LDrawLoader: Invalid alpha value in material definition' + lineParser.getLineNumberString() + '.';
 
                         }
 
@@ -876,7 +872,7 @@ v3d.LDrawLoader = (function() {
 
                         if (isNaN(luminance)) {
 
-                            throw 'LDrawLoader: Invalid luminance value in material definition' + LineParser.getLineNumberString() + ".";
+                            throw 'LDrawLoader: Invalid luminance value in material definition' + LineParser.getLineNumberString() + '.';
 
                         }
 
@@ -910,7 +906,7 @@ v3d.LDrawLoader = (function() {
                         break;
 
                     default:
-                        throw 'LDrawLoader: Unknown token "' + token + '" while parsing material' + lineParser.getLineNumberString() + ".";
+                        throw 'LDrawLoader: Unknown token "' + token + '" while parsing material' + lineParser.getLineNumberString() + '.';
                         break;
 
                 }
@@ -995,21 +991,25 @@ v3d.LDrawLoader = (function() {
                     depthWrite: ! isTransparent
                 });
                 edgeMaterial.userData.code = code;
-                edgeMaterial.name = name + " - Edge";
+                edgeMaterial.name = name + ' - Edge';
                 edgeMaterial.userData.canHaveEnvMap = false;
 
                 // This is the material used for conditional edges
                 edgeMaterial.userData.conditionalEdgeMaterial = new v3d.ShaderMaterial({
                     vertexShader: conditionalLineVertShader,
                     fragmentShader: conditionalLineFragShader,
-                    uniforms: {
-                        diffuse: {
-                            value: new v3d.Color(edgeColour)
-                        },
-                        opacity: {
-                            value: alpha
+                    uniforms: v3d.UniformsUtils.merge([
+                        v3d.UniformsLib.fog,
+                        {
+                            diffuse: {
+                                value: new v3d.Color(edgeColour)
+                            },
+                            opacity: {
+                                value: alpha
+                            }
                         }
-                    },
+                    ]),
+                    fog: true,
                     transparent: isTransparent,
                     depthWrite: ! isTransparent
                 });
@@ -1084,6 +1084,7 @@ v3d.LDrawLoader = (function() {
                     colourCode = mainColourCode;
 
                 }
+
                 if (forEdge && colourCode === '24') {
 
                     colourCode = mainEdgeColourCode;
@@ -1174,40 +1175,36 @@ v3d.LDrawLoader = (function() {
 
                                     type = lp.getToken();
 
-                                    if (!parsingEmbeddedFiles) {
+                                    currentParseScope.triangles = [];
+                                    currentParseScope.lineSegments = [];
+                                    currentParseScope.conditionalSegments = [];
+                                    currentParseScope.type = type;
 
-                                        currentParseScope.triangles = [];
-                                        currentParseScope.lineSegments = [];
-                                        currentParseScope.conditionalSegments = [];
-                                        currentParseScope.type = type;
+                                    var isRoot = ! parentParseScope.isFromParse;
+                                    if (isRoot || scope.separateObjects && ! isPrimitiveType(type)) {
 
-                                        var isRoot = ! parentParseScope.isFromParse;
-                                        if (isRoot || scope.separateObjects && ! isPrimitiveType(type)) {
+                                        currentParseScope.groupObject = new v3d.Group();
 
-                                            currentParseScope.groupObject = new v3d.Group();
-
-                                            currentParseScope.groupObject.userData.startingConstructionStep = currentParseScope.startingConstructionStep;
-
-                                        }
-
-                                        // If the scale of the object is negated then the triangle winding order
-                                        // needs to be flipped.
-                                        var matrix = currentParseScope.matrix;
-                                        if (
-                                            matrix.determinant() < 0 && (
-                                                scope.separateObjects && isPrimitiveType(type) ||
-                                                ! scope.separateObjects
-                                            )) {
-
-                                            currentParseScope.inverted = ! currentParseScope.inverted;
-
-                                        }
-
-                                        triangles = currentParseScope.triangles;
-                                        lineSegments = currentParseScope.lineSegments;
-                                        conditionalSegments = currentParseScope.conditionalSegments;
+                                        currentParseScope.groupObject.userData.startingConstructionStep = currentParseScope.startingConstructionStep;
 
                                     }
+
+                                    // If the scale of the object is negated then the triangle winding order
+                                    // needs to be flipped.
+                                    var matrix = currentParseScope.matrix;
+                                    if (
+                                        matrix.determinant() < 0 && (
+                                            scope.separateObjects && isPrimitiveType(type) ||
+                                            ! scope.separateObjects
+                                        )) {
+
+                                        currentParseScope.inverted = ! currentParseScope.inverted;
+
+                                    }
+
+                                    triangles = currentParseScope.triangles;
+                                    lineSegments = currentParseScope.lineSegments;
+                                    conditionalSegments = currentParseScope.conditionalSegments;
 
                                     break;
 
@@ -1223,6 +1220,7 @@ v3d.LDrawLoader = (function() {
                                         console.warn('LDrawLoader: Error parsing material' + lp.getLineNumberString());
 
                                     }
+
                                     break;
 
                                 case '!CATEGORY':
@@ -1248,6 +1246,7 @@ v3d.LDrawLoader = (function() {
                                         });
 
                                     }
+
                                     break;
 
                                 case 'FILE':
@@ -1356,7 +1355,7 @@ v3d.LDrawLoader = (function() {
                             0, 0, 0, 1
                         );
 
-                        var fileName = lp.getRemainingString().trim().replace(/\\/g, "/");
+                        var fileName = lp.getRemainingString().trim().replace(/\\/g, '/');
 
                         if (scope.fileMap[fileName]) {
 
@@ -1700,8 +1699,8 @@ v3d.LDrawLoader = (function() {
                 var isRoot = ! parentParseScope.isFromParse;
                 if (scope.separateObjects && ! isPrimitiveType(parseScope.type) || isRoot) {
 
-
                     const objGroup = parseScope.groupObject;
+
                     if (parseScope.triangles.length > 0) {
 
                         objGroup.add(createObject(parseScope.triangles, 3));
@@ -1745,12 +1744,14 @@ v3d.LDrawLoader = (function() {
                     for (var i = 0, l = lineSegments.length; i < l; i++) {
 
                         var ls = lineSegments[i];
+
                         if (separateObjects) {
 
                             ls.v0.applyMatrix4(parseScope.matrix);
                             ls.v1.applyMatrix4(parseScope.matrix);
 
                         }
+
                         parentLineSegments.push(ls);
 
                     }
@@ -1758,6 +1759,7 @@ v3d.LDrawLoader = (function() {
                     for (var i = 0, l = conditionalSegments.length; i < l; i++) {
 
                         var os = conditionalSegments[i];
+
                         if (separateObjects) {
 
                             os.v0.applyMatrix4(parseScope.matrix);
@@ -1766,6 +1768,7 @@ v3d.LDrawLoader = (function() {
                             os.c1.applyMatrix4(parseScope.matrix);
 
                         }
+
                         parentConditionalSegments.push(os);
 
                     }
@@ -1773,6 +1776,7 @@ v3d.LDrawLoader = (function() {
                     for (var i = 0, l = triangles.length; i < l; i++) {
 
                         var tri = triangles[i];
+
                         if (separateObjects) {
 
                             tri.v0 = tri.v0.clone().applyMatrix4(parseScope.matrix);
@@ -1784,6 +1788,7 @@ v3d.LDrawLoader = (function() {
                             tri.faceNormal.crossVectors(tempVec0, tempVec1).normalize();
 
                         }
+
                         parentTriangles.push(tri);
 
                     }
@@ -1856,7 +1861,7 @@ v3d.LDrawLoader = (function() {
                         break;
 
                     case LDrawLoader.FILE_LOCATION_TRY_RELATIVE:
-                        subobjectURL = url.substring(0, url.lastIndexOf("/") + 1) + subobjectURL;
+                        subobjectURL = url.substring(0, url.lastIndexOf('/') + 1) + subobjectURL;
                         newLocationState = subobject.locationState + 1;
                         break;
 
@@ -1876,6 +1881,7 @@ v3d.LDrawLoader = (function() {
                             newLocationState = LDrawLoader.FILE_LOCATION_AS_IS;
 
                         }
+
                         break;
 
                     case LDrawLoader.FILE_LOCATION_NOT_FOUND:
@@ -1895,6 +1901,8 @@ v3d.LDrawLoader = (function() {
                 // and use it when processing the next model.
                 var fileLoader = new v3d.FileLoader(scope.manager);
                 fileLoader.setPath(scope.path);
+                fileLoader.setRequestHeader(scope.requestHeader);
+                fileLoader.setWithCredentials(scope.withCredentials);
                 fileLoader.load(subobjectURL, function(text) {
 
                     scope.processObject(text, function(subobjectGroup) {

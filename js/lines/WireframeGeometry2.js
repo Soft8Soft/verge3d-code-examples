@@ -1,8 +1,3 @@
-/**
- * @author WestLangley / http://github.com/WestLangley
- *
- */
-
 v3d.WireframeGeometry2 = function(geometry) {
 
     v3d.LineSegmentsGeometry.call(this);

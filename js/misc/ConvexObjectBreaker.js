@@ -1,6 +1,4 @@
 /**
- * @author yomboprime https://github.com/yomboprime
- *
  * @fileoverview This class can be used to subdivide a convex Geometry object into pieces.
  *
  * Usage:
@@ -352,7 +350,7 @@ v3d.ConvexObjectBreaker.prototype = {
                     if (intersection === undefined) {
 
                         // Shouldn't happen
-                        console.error("Internal error: segment does not intersect plane.");
+                        console.error('Internal error: segment does not intersect plane.');
                         output.segmentedObject1 = null;
                         output.segmentedObject2 = null;
                         return 0;
@@ -388,6 +386,7 @@ v3d.ConvexObjectBreaker.prototype = {
                 radius1 = Math.max(radius1, p.x, p.y, p.z);
 
             }
+
             this.tempCM1.add(object.position);
 
         }
@@ -407,6 +406,7 @@ v3d.ConvexObjectBreaker.prototype = {
                 radius2 = Math.max(radius2, p.x, p.y, p.z);
 
             }
+
             this.tempCM2.add(object.position);
 
         }

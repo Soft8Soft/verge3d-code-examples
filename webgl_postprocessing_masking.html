@@ -21,8 +21,8 @@
       import { MaskPass, ClearMaskPass } from './jsm/postprocessing/MaskPass.js';
       import { CopyShader } from './jsm/shaders/CopyShader.js';
 
-      var camera, composer, renderer;
-      var box, torus;
+      let camera, composer, renderer;
+      let box, torus;
 
       init();
       animate();
@@ -32,8 +32,8 @@
         camera = new v3d.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
         camera.position.z = 10;
 
-        var scene1 = new v3d.Scene();
-        var scene2 = new v3d.Scene();
+        const scene1 = new v3d.Scene();
+        const scene2 = new v3d.Scene();
 
         box = new v3d.Mesh(new v3d.BoxBufferGeometry(4, 4, 4));
         scene1.add(box);
@@ -50,30 +50,30 @@
 
         //
 
-        var clearPass = new ClearPass();
+        const clearPass = new ClearPass();
 
-        var clearMaskPass = new ClearMaskPass();
+        const clearMaskPass = new ClearMaskPass();
 
-        var maskPass1 = new MaskPass(scene1, camera);
-        var maskPass2 = new MaskPass(scene2, camera);
+        const maskPass1 = new MaskPass(scene1, camera);
+        const maskPass2 = new MaskPass(scene2, camera);
 
-        var texture1 = new v3d.TextureLoader().load('textures/758px-Canestra_di_frutta_(Caravaggio).jpg');
+        const texture1 = new v3d.TextureLoader().load('textures/758px-Canestra_di_frutta_(Caravaggio).jpg');
         texture1.minFilter = v3d.LinearFilter;
-        var texture2 = new v3d.TextureLoader().load('textures/2294472375_24a3b8ef46_o.jpg');
+        const texture2 = new v3d.TextureLoader().load('textures/2294472375_24a3b8ef46_o.jpg');
 
-        var texturePass1 = new TexturePass(texture1);
-        var texturePass2 = new TexturePass(texture2);
+        const texturePass1 = new TexturePass(texture1);
+        const texturePass2 = new TexturePass(texture2);
 
-        var outputPass = new ShaderPass(CopyShader);
+        const outputPass = new ShaderPass(CopyShader);
 
-        var parameters = {
+        const parameters = {
           minFilter: v3d.LinearFilter,
           magFilter: v3d.LinearFilter,
           format: v3d.RGBFormat,
           stencilBuffer: true
         };
 
-        var renderTarget = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight, parameters);
+        const renderTarget = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight, parameters);
 
         composer = new EffectComposer(renderer, renderTarget);
         composer.addPass(clearPass);
@@ -91,8 +91,8 @@
 
       function onWindowResize() {
 
-        var width = window.innerWidth;
-        var height = window.innerHeight;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
 
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
@@ -106,7 +106,7 @@
 
         requestAnimationFrame(animate);
 
-        var time = performance.now() * 0.001;
+        const time = performance.now() * 0.001 + 6000;
 
         box.position.x = Math.cos(time / 1.5) * 2;
         box.position.y = Math.sin(time) * 2;

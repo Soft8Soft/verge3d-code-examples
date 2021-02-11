@@ -1,18 +1,14 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 import {
     ShaderMaterial,
     UniformsUtils
-} from "../../../build/v3d.module.js";
-import { Pass } from "../postprocessing/Pass.js";
+} from '../../../build/v3d.module.js';
+import { Pass } from '../postprocessing/Pass.js';
 
 var ShaderPass = function(shader, textureID) {
 
     Pass.call(this);
 
-    this.textureID = (textureID !== undefined) ? textureID : "tDiffuse";
+    this.textureID = (textureID !== undefined) ? textureID : 'tDiffuse';
 
     if (shader instanceof ShaderMaterial) {
 

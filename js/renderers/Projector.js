@@ -1,9 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author supereggbert / http://www.paulbrunt.co.uk/
- * @author julianwa / https://github.com/julianwa
- */
-
 v3d.RenderableObject = function() {
 
     this.id = 0;
@@ -266,7 +260,7 @@ v3d.Projector = function() {
 
                 _line.material = object.material;
 
-                if (object.material.vertexColors === v3d.VertexColors) {
+                if (object.material.vertexColors) {
 
                     _line.vertexColors[0].fromArray(colors, a * 3);
                     _line.vertexColors[1].fromArray(colors, b * 3);
@@ -320,7 +314,7 @@ v3d.Projector = function() {
 
                 _face.material = material;
 
-                if (material.vertexColors === v3d.FaceColors || material.vertexColors === v3d.VertexColors) {
+                if (material.vertexColors) {
 
                     _face.color.fromArray(colors, a * 3);
 
@@ -830,7 +824,7 @@ v3d.Projector = function() {
 
                             _line.material = object.material;
 
-                            if (object.material.vertexColors === v3d.VertexColors) {
+                            if (object.material.vertexColors) {
 
                                 _line.vertexColors[0].copy(object.geometry.colors[v]);
                                 _line.vertexColors[1].copy(object.geometry.colors[v - 1]);

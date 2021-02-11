@@ -1,9 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author zz85 / http://joshuakoo.com/
- * @author yomboprime / https://yombo.org
- */
-
 v3d.SVGLoader = function(manager) {
 
     v3d.Loader.call(this, manager);
@@ -12,7 +6,7 @@ v3d.SVGLoader = function(manager) {
     this.defaultDPI = 90;
 
     // Accepted units: 'mm', 'cm', 'in', 'pt', 'pc', 'px'
-    this.defaultUnit = "px";
+    this.defaultUnit = 'px';
 
 };
 
@@ -26,9 +20,29 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
         var loader = new v3d.FileLoader(scope.manager);
         loader.setPath(scope.path);
+        loader.setRequestHeader(scope.requestHeader);
+        loader.setWithCredentials(scope.withCredentials);
         loader.load(url, function(text) {
 
-            onLoad(scope.parse(text));
+            try {
+
+                onLoad(scope.parse(text));
+
+            } catch (e) {
+
+                if (onError) {
+
+                    onError(e);
+
+                } else {
+
+                    console.error(e);
+
+                }
+
+                scope.manager.itemError(url);
+
+            }
 
         }, onProgress, onError);
 
@@ -44,11 +58,17 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
             var transform = getNodeTransform(node);
 
+            var traverseChildNodes = true;
+
             var path = null;
 
             switch (node.nodeName) {
 
                 case 'svg':
+                    break;
+
+                case 'style':
+                    parseCSSStylesheet(node);
                     break;
 
                 case 'g':
@@ -90,8 +110,28 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                     path = parseLineNode(node);
                     break;
 
+                case 'defs':
+                    traverseChildNodes = false;
+                    break;
+
+                case 'use':
+                    style = parseStyle(node, style);
+                    var usedNodeId = node.href.baseVal.substring(1);
+                    var usedNode = node.viewportElement.getElementById(usedNodeId);
+                    if (usedNode) {
+
+                        parseNode(usedNode, style);
+
+                    } else {
+
+                        console.warn('SVGLoader: \'use node\' references non-existent node id: ' + usedNodeId);
+
+                    }
+
+                    break;
+
                 default:
-                    console.log(node);
+                    // console.log(node);
 
             }
 
@@ -111,11 +151,15 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
             }
 
-            var nodes = node.childNodes;
+            if (traverseChildNodes) {
 
-            for (var i = 0; i < nodes.length; i++) {
+                var nodes = node.childNodes;
 
-                parseNode(nodes[i], style);
+                for (var i = 0; i < nodes.length; i++) {
+
+                    parseNode(nodes[i], style);
+
+                }
 
             }
 
@@ -192,6 +236,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'H':
@@ -207,6 +252,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'V':
@@ -222,6 +268,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'L':
@@ -238,6 +285,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'C':
@@ -261,6 +309,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'S':
@@ -284,6 +333,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'Q':
@@ -305,6 +355,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'T':
@@ -328,12 +379,16 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'A':
                         var numbers = parseFloats(data);
 
                         for (var j = 0, jl = numbers.length; j < jl; j += 7) {
+
+                            // skip command if start point == end point
+                            if (numbers[j + 5] == point.x && numbers[j + 6] == point.y) continue;
 
                             var start = point.clone();
                             point.x = numbers[j + 5];
@@ -347,6 +402,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'm':
@@ -372,6 +428,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'h':
@@ -387,6 +444,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'v':
@@ -402,6 +460,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'l':
@@ -418,6 +477,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'c':
@@ -441,6 +501,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 's':
@@ -464,6 +525,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'q':
@@ -485,6 +547,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 't':
@@ -508,12 +571,16 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'a':
                         var numbers = parseFloats(data);
 
                         for (var j = 0, jl = numbers.length; j < jl; j += 7) {
+
+                            // skip command if no displacement
+                            if (numbers[j + 5] == 0 && numbers[j + 6] == 0) continue;
 
                             var start = point.clone();
                             point.x += numbers[j + 5];
@@ -527,6 +594,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
 
                         }
+
                         break;
 
                     case 'Z':
@@ -541,6 +609,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
                             isFirstPoint = true;
 
                         }
+
                         break;
 
                     default:
@@ -558,6 +627,34 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
         }
 
+        function parseCSSStylesheet(node) {
+
+            if (!node.sheet || ! node.sheet.cssRules || ! node.sheet.cssRules.length) return;
+
+            for (var i = 0; i < node.sheet.cssRules.length; i++) {
+
+                var stylesheet = node.sheet.cssRules[i];
+
+                if (stylesheet.type !== 1) continue;
+
+                var selectorList = stylesheet.selectorText
+                    .split(/,/gm)
+                    .filter(Boolean)
+                    .map(i => i.trim());
+
+                for (var j = 0; j < selectorList.length; j ++) {
+
+                    stylesheets[selectorList[j]] = Object.assign(
+                        stylesheets[selectorList[j]] || {},
+                        stylesheet.style
+                    );
+
+                }
+
+            }
+
+        }
+
         /**
          * https://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes
          * https://mortoray.com/2017/02/16/rendering-an-svg-elliptical-arc-as-bezier-curves/ Appendix: Endpoint to center arc conversion
@@ -569,19 +666,27 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
         function parseArcCommand(path, rx, ry, x_axis_rotation, large_arc_flag, sweep_flag, start, end) {
 
+            if (rx == 0 || ry == 0) {
+
+                // draw a line if either of the radii == 0
+                path.lineTo(end.x, end.y);
+                return;
+
+            }
+
             x_axis_rotation = x_axis_rotation * Math.PI / 180;
 
             // Ensure radii are positive
             rx = Math.abs(rx);
             ry = Math.abs(ry);
 
-            // Compute (x1′, y1′)
+            // Compute (x1', y1')
             var dx2 = (start.x - end.x) / 2.0;
             var dy2 = (start.y - end.y) / 2.0;
             var x1p = Math.cos(x_axis_rotation) * dx2 + Math.sin(x_axis_rotation) * dy2;
             var y1p = - Math.sin(x_axis_rotation) * dx2 + Math.cos(x_axis_rotation) * dy2;
 
-            // Compute (cx′, cy′)
+            // Compute (cx', cy')
             var rxs = rx * rx;
             var rys = ry * ry;
             var x1ps = x1p * x1p;
@@ -608,7 +713,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
             var cxp = q * rx * y1p / ry;
             var cyp = - q * ry * x1p / rx;
 
-            // Step 3: Compute (cx, cy) from (cx′, cy′)
+            // Step 3: Compute (cx, cy) from (cx', cy')
             var cx = Math.cos(x_axis_rotation) * cxp - Math.sin(x_axis_rotation) * cyp + (start.x + end.x) / 2;
             var cy = Math.sin(x_axis_rotation) * cxp + Math.cos(x_axis_rotation) * cyp + (start.y + end.y) / 2;
 
@@ -794,15 +899,41 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
             style = Object.assign({}, style); // clone style
 
+            var stylesheetStyles = {};
+
+            if (node.hasAttribute('class')) {
+
+                var classSelectors = node.getAttribute('class')
+                    .split(/\s/)
+                    .filter(Boolean)
+                    .map(i => i.trim());
+
+                for (var i = 0; i < classSelectors.length; i++) {
+
+                    stylesheetStyles = Object.assign(stylesheetStyles, stylesheets['.' + classSelectors[i]]);
+
+                }
+
+            }
+
+            if (node.hasAttribute('id')) {
+
+                stylesheetStyles = Object.assign(stylesheetStyles, stylesheets['#' + node.getAttribute('id')]);
+
+            }
+
             function addStyle(svgName, jsName, adjustFunction) {
 
                 if (adjustFunction === undefined) adjustFunction = function copy(v) {
+
+                    if (v.startsWith('url')) console.warn('SVGLoader: url access in attributes is not implemented.');
 
                     return v;
 
                 };
 
                 if (node.hasAttribute(svgName)) style[jsName] = adjustFunction(node.getAttribute(svgName));
+                if (stylesheetStyles[svgName]) style[jsName] = adjustFunction(stylesheetStyles[svgName]);
                 if (node.style && node.style[svgName] !== '') style[jsName] = adjustFunction(node.style[svgName]);
 
             }
@@ -821,12 +952,14 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
             addStyle('fill', 'fill');
             addStyle('fill-opacity', 'fillOpacity', clamp);
+            addStyle('opacity', 'opacity', clamp);
             addStyle('stroke', 'stroke');
             addStyle('stroke-opacity', 'strokeOpacity', clamp);
             addStyle('stroke-width', 'strokeWidth', positive);
             addStyle('stroke-linejoin', 'strokeLineJoin');
             addStyle('stroke-linecap', 'strokeLineCap');
             addStyle('stroke-miterlimit', 'strokeMiterLimit', positive);
+            addStyle('visibility', 'visibility');
 
             return style;
 
@@ -879,55 +1012,55 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
         // Conversion: [fromUnit][toUnit] (-1 means dpi dependent)
         var unitConversion = {
 
-            "mm" : {
-                "mm": 1,
-                "cm": 0.1,
-                "in": 1 / 25.4,
-                "pt": 72 / 25.4,
-                "pc": 6 / 25.4,
-                "px": - 1
+            'mm': {
+                'mm': 1,
+                'cm': 0.1,
+                'in': 1 / 25.4,
+                'pt': 72 / 25.4,
+                'pc': 6 / 25.4,
+                'px': - 1
             },
-            "cm" : {
-                "mm": 10,
-                "cm": 1,
-                "in": 1 / 2.54,
-                "pt": 72 / 2.54,
-                "pc": 6 / 2.54,
-                "px": - 1
+            'cm': {
+                'mm': 10,
+                'cm': 1,
+                'in': 1 / 2.54,
+                'pt': 72 / 2.54,
+                'pc': 6 / 2.54,
+                'px': - 1
             },
-            "in" : {
-                "mm": 25.4,
-                "cm": 2.54,
-                "in": 1,
-                "pt": 72,
-                "pc": 6,
-                "px": - 1
+            'in': {
+                'mm': 25.4,
+                'cm': 2.54,
+                'in': 1,
+                'pt': 72,
+                'pc': 6,
+                'px': - 1
             },
-            "pt" : {
-                "mm": 25.4 / 72,
-                "cm": 2.54 / 72,
-                "in": 1 / 72,
-                "pt": 1,
-                "pc": 6 / 72,
-                "px": - 1
+            'pt': {
+                'mm': 25.4 / 72,
+                'cm': 2.54 / 72,
+                'in': 1 / 72,
+                'pt': 1,
+                'pc': 6 / 72,
+                'px': - 1
             },
-            "pc" : {
-                "mm": 25.4 / 6,
-                "cm": 2.54 / 6,
-                "in": 1 / 6,
-                "pt": 72 / 6,
-                "pc": 1,
-                "px": - 1
+            'pc': {
+                'mm': 25.4 / 6,
+                'cm': 2.54 / 6,
+                'in': 1 / 6,
+                'pt': 72 / 6,
+                'pc': 1,
+                'px': - 1
             },
-            "px" : {
-                "px": 1
+            'px': {
+                'px': 1
             }
 
         };
 
         function parseFloatWithUnits(string) {
 
-            var theUnit = "px";
+            var theUnit = 'px';
 
             if (typeof string === 'string' || string instanceof String) {
 
@@ -949,14 +1082,13 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
             var scale = undefined;
 
-            if (theUnit === "px" && scope.defaultUnit !== "px") {
+            if (theUnit === 'px' && scope.defaultUnit !== 'px') {
 
                 // Conversion scale from  pixels to inches, then to default units
 
-                scale = unitConversion["in"][scope.defaultUnit] / scope.defaultDPI;
+                scale = unitConversion['in'][scope.defaultUnit] / scope.defaultDPI;
 
-            }
-            else {
+            } else {
 
                 scale = unitConversion[theUnit][scope.defaultUnit];
 
@@ -964,7 +1096,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
                     // Conversion scale to pixels
 
-                    scale = unitConversion[theUnit]["in"] * scope.defaultDPI;
+                    scale = unitConversion[theUnit]['in'] * scope.defaultDPI;
 
                 }
 
@@ -978,7 +1110,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
         function getNodeTransform(node) {
 
-            if (!node.hasAttribute('transform')) {
+            if (!(node.hasAttribute('transform') || (node.nodeName === 'use' && (node.hasAttribute('x') || node.hasAttribute('y'))))) {
 
                 return null;
 
@@ -1003,142 +1135,156 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
             var transform = new v3d.Matrix3();
             var currentTransform = tempTransform0;
-            var transformsTexts = node.getAttribute('transform').split(')');
 
-            for (var tIndex = transformsTexts.length - 1; tIndex >= 0; tIndex --) {
+            if (node.nodeName === 'use' && (node.hasAttribute('x') || node.hasAttribute('y'))) {
 
-                var transformText = transformsTexts[tIndex].trim();
+                var tx = parseFloatWithUnits(node.getAttribute('x'));
+                var ty = parseFloatWithUnits(node.getAttribute('y'));
 
-                if (transformText === '') continue;
+                transform.translate(tx, ty);
 
-                var openParPos = transformText.indexOf('(');
-                var closeParPos = transformText.length;
+            }
 
-                if (openParPos > 0 && openParPos < closeParPos) {
+            if (node.hasAttribute('transform')) {
 
-                    var transformType = transformText.substr(0, openParPos);
+                var transformsTexts = node.getAttribute('transform').split(')');
 
-                    var array = parseFloats(transformText.substr(openParPos + 1, closeParPos - openParPos - 1));
+                for (var tIndex = transformsTexts.length - 1; tIndex >= 0; tIndex --) {
 
-                    currentTransform.identity();
+                    var transformText = transformsTexts[tIndex].trim();
 
-                    switch (transformType) {
+                    if (transformText === '') continue;
 
-                        case "translate":
+                    var openParPos = transformText.indexOf('(');
+                    var closeParPos = transformText.length;
 
-                            if (array.length >= 1) {
+                    if (openParPos > 0 && openParPos < closeParPos) {
 
-                                var tx = array[0];
-                                var ty = tx;
+                        var transformType = transformText.substr(0, openParPos);
 
-                                if (array.length >= 2) {
+                        var array = parseFloats(transformText.substr(openParPos + 1, closeParPos - openParPos - 1));
 
-                                    ty = array[1];
+                        currentTransform.identity();
 
-                                }
+                        switch (transformType) {
 
-                                currentTransform.translate(tx, ty);
+                            case 'translate':
 
-                            }
+                                if (array.length >= 1) {
 
-                            break;
+                                    var tx = array[0];
+                                    var ty = tx;
 
-                        case "rotate":
+                                    if (array.length >= 2) {
 
-                            if (array.length >= 1) {
+                                        ty = array[1];
 
-                                var angle = 0;
-                                var cx = 0;
-                                var cy = 0;
+                                    }
 
-                                // Angle
-                                angle = - array[0] * Math.PI / 180;
-
-                                if (array.length >= 3) {
-
-                                    // Center x, y
-                                    cx = array[1];
-                                    cy = array[2];
+                                    currentTransform.translate(tx, ty);
 
                                 }
 
-                                // Rotate around center (cx, cy)
-                                tempTransform1.identity().translate(- cx, - cy);
-                                tempTransform2.identity().rotate(angle);
-                                tempTransform3.multiplyMatrices(tempTransform2, tempTransform1);
-                                tempTransform1.identity().translate(cx, cy);
-                                currentTransform.multiplyMatrices(tempTransform1, tempTransform3);
+                                break;
 
-                            }
+                            case 'rotate':
 
-                            break;
+                                if (array.length >= 1) {
 
-                        case "scale":
+                                    var angle = 0;
+                                    var cx = 0;
+                                    var cy = 0;
 
-                            if (array.length >= 1) {
+                                    // Angle
+                                    angle = - array[0] * Math.PI / 180;
 
-                                var scaleX = array[0];
-                                var scaleY = scaleX;
+                                    if (array.length >= 3) {
 
-                                if (array.length >= 2) {
+                                        // Center x, y
+                                        cx = array[1];
+                                        cy = array[2];
 
-                                    scaleY = array[1];
+                                    }
+
+                                    // Rotate around center (cx, cy)
+                                    tempTransform1.identity().translate(- cx, - cy);
+                                    tempTransform2.identity().rotate(angle);
+                                    tempTransform3.multiplyMatrices(tempTransform2, tempTransform1);
+                                    tempTransform1.identity().translate(cx, cy);
+                                    currentTransform.multiplyMatrices(tempTransform1, tempTransform3);
 
                                 }
 
-                                currentTransform.scale(scaleX, scaleY);
+                                break;
 
-                            }
+                            case 'scale':
 
-                            break;
+                                if (array.length >= 1) {
 
-                        case "skewX":
+                                    var scaleX = array[0];
+                                    var scaleY = scaleX;
 
-                            if (array.length === 1) {
+                                    if (array.length >= 2) {
 
-                                currentTransform.set(
-                                    1, Math.tan(array[0] * Math.PI / 180), 0,
-                                    0, 1, 0,
-                                    0, 0, 1
-                                );
+                                        scaleY = array[1];
 
-                            }
+                                    }
 
-                            break;
+                                    currentTransform.scale(scaleX, scaleY);
 
-                        case "skewY":
+                                }
 
-                            if (array.length === 1) {
+                                break;
 
-                                currentTransform.set(
-                                    1, 0, 0,
-                                    Math.tan(array[0] * Math.PI / 180), 1, 0,
-                                    0, 0, 1
-                                );
+                            case 'skewX':
 
-                            }
+                                if (array.length === 1) {
 
-                            break;
+                                    currentTransform.set(
+                                        1, Math.tan(array[0] * Math.PI / 180), 0,
+                                        0, 1, 0,
+                                        0, 0, 1
+                                    );
 
-                        case "matrix":
+                                }
 
-                            if (array.length === 6) {
+                                break;
 
-                                currentTransform.set(
-                                    array[0], array[2], array[4],
-                                    array[1], array[3], array[5],
-                                    0, 0, 1
-                                );
+                            case 'skewY':
 
-                            }
+                                if (array.length === 1) {
 
-                            break;
+                                    currentTransform.set(
+                                        1, 0, 0,
+                                        Math.tan(array[0] * Math.PI / 180), 1, 0,
+                                        0, 0, 1
+                                    );
+
+                                }
+
+                                break;
+
+                            case 'matrix':
+
+                                if (array.length === 6) {
+
+                                    currentTransform.set(
+                                        array[0], array[2], array[4],
+                                        array[1], array[3], array[5],
+                                        0, 0, 1
+                                    );
+
+                                }
+
+                                break;
+
+                        }
 
                     }
 
-                }
+                    transform.premultiply(currentTransform);
 
-                transform.premultiply(currentTransform);
+                }
 
             }
 
@@ -1191,7 +1337,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
                         if (isRotated) {
 
-                            console.warn("SVGLoader: Elliptic arc or ellipse rotation or skewing is not implemented.");
+                            console.warn('SVGLoader: Elliptic arc or ellipse rotation or skewing is not implemented.');
 
                         }
 
@@ -1234,6 +1380,7 @@ v3d.SVGLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
         //
 
         var paths = [];
+        var stylesheets = {};
 
         var transformStack = [];
 
@@ -1436,6 +1583,7 @@ v3d.SVGLoader.pointsToStrokeWithBuffers = function() {
                     joinIsOnLeftSide = false;
 
                 }
+
                 if (iPoint === 1) initialJoinIsOnLeftSide = joinIsOnLeftSide;
 
                 tempV2_3.subVectors(nextPoint, currentPoint);
@@ -1463,6 +1611,7 @@ v3d.SVGLoader.pointsToStrokeWithBuffers = function() {
                         innerSideModified = true;
 
                     }
+
                     outerPoint.copy(tempV2_5).add(currentPoint);
                     innerPoint.add(currentPoint);
 

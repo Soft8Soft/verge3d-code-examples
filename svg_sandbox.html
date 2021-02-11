@@ -21,9 +21,9 @@
 
       import { SVGRenderer, SVGObject } from './jsm/renderers/SVGRenderer.js';
 
-      var camera, scene, renderer, stats;
+      let camera, scene, renderer, stats;
 
-      var mesh, group;
+      let group;
 
       init();
       animate();
@@ -38,10 +38,10 @@
 
         // QRCODE
 
-        var loader = new v3d.BufferGeometryLoader();
+        const loader = new v3d.BufferGeometryLoader();
         loader.load('models/json/QRCode_buffergeometry.json', function(geometry) {
 
-          mesh = new v3d.Mesh(geometry, new v3d.MeshLambertMaterial({ vertexColors: v3d.VertexColors }));
+          mesh = new v3d.Mesh(geometry, new v3d.MeshLambertMaterial({ vertexColors: true }));
           mesh.scale.x = mesh.scale.y = mesh.scale.z = 2;
           scene.add(mesh);
 
@@ -49,16 +49,16 @@
 
         // CUBES
 
-        var cube = new v3d.BoxBufferGeometry(100, 100, 100);
+        const boxGeometry = new v3d.BoxBufferGeometry(100, 100, 100);
 
-        mesh = new v3d.Mesh(cube, new v3d.MeshBasicMaterial({ color: 0x0000ff, opacity: 0.5, transparent: true }));
+        let mesh = new v3d.Mesh(boxGeometry, new v3d.MeshBasicMaterial({ color: 0x0000ff, opacity: 0.5, transparent: true }));
         mesh.position.x = 500;
         mesh.rotation.x = Math.random();
         mesh.rotation.y = Math.random();
         mesh.scale.x = mesh.scale.y = mesh.scale.z = 2;
         scene.add(mesh);
 
-        mesh = new v3d.Mesh(cube, new v3d.MeshBasicMaterial({ color: Math.random() * 0xffffff }));
+        mesh = new v3d.Mesh(boxGeometry, new v3d.MeshBasicMaterial({ color: Math.random() * 0xffffff }));
         mesh.position.x = 500;
         mesh.position.y = 500;
         mesh.rotation.x = Math.random();
@@ -83,19 +83,19 @@
 
         // POLYFIELD
 
-        var geometry = new v3d.BufferGeometry();
-        var material = new v3d.MeshBasicMaterial({ vertexColors: v3d.VertexColors, side: v3d.DoubleSide });
+        const geometry = new v3d.BufferGeometry();
+        const material = new v3d.MeshBasicMaterial({ vertexColors: true, side: v3d.DoubleSide });
 
-        var v = new v3d.Vector3();
-        var v0 = new v3d.Vector3();
-        var v1 = new v3d.Vector3();
-        var v2 = new v3d.Vector3();
-        var color = new v3d.Color();
+        const v = new v3d.Vector3();
+        const v0 = new v3d.Vector3();
+        const v1 = new v3d.Vector3();
+        const v2 = new v3d.Vector3();
+        const color = new v3d.Color();
 
-        var vertices = [];
-        var colors = [];
+        const vertices = [];
+        const colors = [];
 
-        for (var i = 0; i < 100; i++) {
+        for (let i = 0; i < 100; i++) {
 
           v.set(
             Math.random() * 1000 - 500,
@@ -148,10 +148,10 @@
 
         // SPRITES
 
-        for (var i = 0; i < 50; i++) {
+        for (let i = 0; i < 50; i++) {
 
-          var material = new v3d.SpriteMaterial({ color: Math.random() * 0xffffff });
-          var sprite = new v3d.Sprite(material);
+          const material = new v3d.SpriteMaterial({ color: Math.random() * 0xffffff });
+          const sprite = new v3d.Sprite(material);
           sprite.position.x = Math.random() * 1000 - 500;
           sprite.position.y = Math.random() * 1000 - 500;
           sprite.position.z = Math.random() * 1000 - 500;
@@ -162,14 +162,14 @@
 
         // CUSTOM
 
-        var node = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        const node = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         node.setAttribute('stroke', 'black');
         node.setAttribute('fill', 'red');
         node.setAttribute('r', '40');
 
-        for (var i = 0; i < 50; i++) {
+        for (let i = 0; i < 50; i++) {
 
-          var object = new SVGObject(node.cloneNode());
+          const object = new SVGObject(node.cloneNode());
           object.position.x = Math.random() * 1000 - 500;
           object.position.y = Math.random() * 1000 - 500;
           object.position.z = Math.random() * 1000 - 500;
@@ -179,16 +179,16 @@
 
         // CUSTOM FROM FILE
 
-        var fileLoader = new v3d.FileLoader();
+        const fileLoader = new v3d.FileLoader();
         fileLoader.load('models/svg/hexagon.svg', function(svg) {
 
-          var node = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-          var parser = new DOMParser();
-          var doc = parser.parseFromString(svg, 'image/svg+xml');
+          const node = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(svg, 'image/svg+xml');
 
           node.appendChild(doc.documentElement);
 
-          var object = new SVGObject(node);
+          const object = new SVGObject(node);
           object.position.x = 500;
           scene.add(object);
 
@@ -196,10 +196,10 @@
 
         // LIGHTS
 
-        var ambient = new v3d.AmbientLight(0x80ffff);
+        const ambient = new v3d.AmbientLight(0x80ffff);
         scene.add(ambient);
 
-        var directional = new v3d.DirectionalLight(0xffff00);
+        const directional = new v3d.DirectionalLight(0xffff00);
         directional.position.set(- 1, 0.5, 0);
         scene.add(directional);
 
@@ -239,7 +239,7 @@
 
       function render() {
 
-        var time = Date.now() * 0.0002;
+        const time = Date.now() * 0.0002;
 
         camera.position.x = Math.sin(time) * 500;
         camera.position.z = Math.cos(time) * 500;

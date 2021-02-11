@@ -1,8 +1,3 @@
-/**
- * @author WestLangley / http://github.com/WestLangley
- *
- */
-
 import {
     Box3,
     Float32BufferAttribute,
@@ -12,7 +7,7 @@ import {
     Sphere,
     Vector3,
     WireframeGeometry
-} from "../../../build/v3d.module.js";
+} from '../../../build/v3d.module.js';
 
 var LineSegmentsGeometry = function() {
 
@@ -47,7 +42,7 @@ LineSegmentsGeometry.prototype = Object.assign(Object.create(InstancedBufferGeom
 
             end.applyMatrix4(matrix);
 
-            start.data.needsUpdate = true;
+            start.needsUpdate = true;
 
         }
 
@@ -144,7 +139,7 @@ LineSegmentsGeometry.prototype = Object.assign(Object.create(InstancedBufferGeom
 
     },
 
-    fromLineSegements: function(lineSegments) {
+    fromLineSegments: function(lineSegments) {
 
         var geometry = lineSegments.geometry;
 
@@ -154,7 +149,7 @@ LineSegmentsGeometry.prototype = Object.assign(Object.create(InstancedBufferGeom
 
         } else if (geometry.isBufferGeometry) {
 
-            this.setPositions(geometry.position.array); // assumes non-indexed
+            this.setPositions(geometry.attributes.position.array); // assumes non-indexed
 
         }
 

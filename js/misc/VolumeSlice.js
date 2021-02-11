@@ -1,7 +1,6 @@
 /**
  * This class has been made to hold a slice of a volume data
  * @class
- * @author Valentin Demeusy / https://github.com/stity
  * @param   {v3d.Volume} volume    The associated volume
  * @param   {number}       [index=0] The index of the slice
  * @param   {string}       [axis='z']      For now only 'x', 'y' or 'z' but later it will change to a normal vector
@@ -169,6 +168,7 @@ v3d.VolumeSlice.prototype = {
             }
 
         }
+
         ctx.putImageData(imgData, 0, 0);
         this.ctx.drawImage(canvas, 0, 0, iLength, jLength, 0, 0, this.canvas.width, this.canvas.height);
 

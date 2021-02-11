@@ -1,19 +1,15 @@
-/**
- * @author HypnosNova / https://www.threejs.org.cn/gallery/
- */
-
 v3d.AfterimagePass = function(damp) {
 
     v3d.Pass.call(this);
 
     if (v3d.AfterimageShader === undefined)
-        console.error("v3d.AfterimagePass relies on v3d.AfterimageShader");
+        console.error('v3d.AfterimagePass relies on v3d.AfterimageShader');
 
     this.shader = v3d.AfterimageShader;
 
     this.uniforms = v3d.UniformsUtils.clone(this.shader.uniforms);
 
-    this.uniforms["damp"].value = damp !== undefined ? damp : 0.96;
+    this.uniforms['damp'].value = damp !== undefined ? damp : 0.96;
 
     this.textureComp = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
 
@@ -52,8 +48,8 @@ v3d.AfterimagePass.prototype = Object.assign(Object.create(v3d.Pass.prototype), 
 
     render: function(renderer, writeBuffer, readBuffer) {
 
-        this.uniforms["tOld"].value = this.textureOld.texture;
-        this.uniforms["tNew"].value = readBuffer.texture;
+        this.uniforms['tOld'].value = this.textureOld.texture;
+        this.uniforms['tNew'].value = readBuffer.texture;
 
         renderer.setRenderTarget(this.textureComp);
         this.compFsQuad.render(renderer);

@@ -1,7 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
 v3d.SVGObject = function(node) {
 
     v3d.Object3D.call(this);
@@ -71,8 +67,8 @@ v3d.SVGRenderer = function() {
 
         switch (quality) {
 
-            case "high": _quality = 1; break;
-            case "low": _quality = 0; break;
+            case 'high': _quality = 1; break;
+            case 'low': _quality = 0; break;
 
         }
 
@@ -97,6 +93,15 @@ v3d.SVGRenderer = function() {
 
         _clipBox.min.set(- _svgWidthHalf, - _svgHeightHalf);
         _clipBox.max.set(_svgWidthHalf, _svgHeightHalf);
+
+    };
+
+    this.getSize = function() {
+
+        return {
+            width: _svgWidth,
+            height: _svgHeight
+        };
 
     };
 
@@ -357,7 +362,7 @@ v3d.SVGRenderer = function() {
         }
 
         var path = 'M' + convert(v1.x - scaleX * 0.5) + ',' + convert(v1.y - scaleY * 0.5) + 'h' + convert(scaleX) + 'v' + convert(scaleY) + 'h' + convert(- scaleX) + 'z';
-        var style = "";
+        var style = '';
 
         if (material.isSpriteMaterial || material.isPointsMaterial) {
 
@@ -379,7 +384,7 @@ v3d.SVGRenderer = function() {
 
             if (material.isLineDashedMaterial) {
 
-                style = style + ';stroke-dasharray:' + material.dashSize + "," + material.gapSize;
+                style = style + ';stroke-dasharray:' + material.dashSize + ',' + material.gapSize;
 
             }
 
@@ -401,7 +406,7 @@ v3d.SVGRenderer = function() {
 
             _color.copy(material.color);
 
-            if (material.vertexColors === v3d.FaceColors || material.vertexColors === v3d.VertexColors) {
+            if (material.vertexColors) {
 
                 _color.multiply(element.color);
 
@@ -411,7 +416,7 @@ v3d.SVGRenderer = function() {
 
             _diffuseColor.copy(material.color);
 
-            if (material.vertexColors === v3d.FaceColors || material.vertexColors === v3d.VertexColors) {
+            if (material.vertexColors) {
 
                 _diffuseColor.multiply(element.color);
 

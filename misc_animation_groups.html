@@ -18,8 +18,8 @@
 
       import Stats from './jsm/libs/stats.module.js';
 
-      var stats, clock;
-      var scene, camera, renderer, mixer;
+      let stats, clock;
+      let scene, camera, renderer, mixer;
 
       init();
       animate();
@@ -36,20 +36,20 @@
 
         // all objects of this animation group share a common animation state
 
-        var animationGroup = new v3d.AnimationObjectGroup();
+        const animationGroup = new v3d.AnimationObjectGroup();
 
         //
 
-        var geometry = new v3d.BoxBufferGeometry(5, 5, 5);
-        var material = new v3d.MeshBasicMaterial({ transparent: true });
+        const geometry = new v3d.BoxBufferGeometry(5, 5, 5);
+        const material = new v3d.MeshBasicMaterial({ transparent: true });
 
         //
 
-        for (var i = 0; i < 5; i++) {
+        for (let i = 0; i < 5; i++) {
 
-          for (var j = 0; j < 5; j ++) {
+          for (let j = 0; j < 5; j ++) {
 
-            var mesh = new v3d.Mesh(geometry, material);
+            const mesh = new v3d.Mesh(geometry, material);
 
             mesh.position.x = 32 - (16 * i);
             mesh.position.y = 0;
@@ -64,23 +64,23 @@
 
         // create some keyframe tracks
 
-        var xAxis = new v3d.Vector3(1, 0, 0);
-        var qInitial = new v3d.Quaternion().setFromAxisAngle(xAxis, 0);
-        var qFinal = new v3d.Quaternion().setFromAxisAngle(xAxis, Math.PI);
-        var quaternionKF = new v3d.QuaternionKeyframeTrack('.quaternion', [0, 1, 2], [qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w, qInitial.x, qInitial.y, qInitial.z, qInitial.w]);
+        const xAxis = new v3d.Vector3(1, 0, 0);
+        const qInitial = new v3d.Quaternion().setFromAxisAngle(xAxis, 0);
+        const qFinal = new v3d.Quaternion().setFromAxisAngle(xAxis, Math.PI);
+        const quaternionKF = new v3d.QuaternionKeyframeTrack('.quaternion', [0, 1, 2], [qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w, qInitial.x, qInitial.y, qInitial.z, qInitial.w]);
 
-        var colorKF = new v3d.ColorKeyframeTrack('.material.color', [0, 1, 2], [1, 0, 0, 0, 1, 0, 0, 0, 1], v3d.InterpolateDiscrete);
-        var opacityKF = new v3d.NumberKeyframeTrack('.material.opacity', [0, 1, 2], [1, 0, 1]);
+        const colorKF = new v3d.ColorKeyframeTrack('.material.color', [0, 1, 2], [1, 0, 0, 0, 1, 0, 0, 0, 1], v3d.InterpolateDiscrete);
+        const opacityKF = new v3d.NumberKeyframeTrack('.material.opacity', [0, 1, 2], [1, 0, 1]);
 
         // create clip
 
-        var clip = new v3d.AnimationClip('default', 3, [quaternionKF, colorKF, opacityKF]);
+        const clip = new v3d.AnimationClip('default', 3, [quaternionKF, colorKF, opacityKF]);
 
         // apply the animation group to the mixer as the root object
 
         mixer = new v3d.AnimationMixer(animationGroup);
 
-        var clipAction = mixer.clipAction(clip);
+        const clipAction = mixer.clipAction(clip);
         clipAction.play();
 
         //
@@ -124,7 +124,7 @@
 
       function render() {
 
-        var delta = clock.getDelta();
+        const delta = clock.getDelta();
 
         if (mixer) {
 

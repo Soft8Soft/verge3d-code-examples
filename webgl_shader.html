@@ -67,30 +67,28 @@
 
       import * as v3d from '../build/v3d.module.js';
 
-      var container;
+      let camera, scene, renderer;
 
-      var camera, scene, renderer;
-
-      var uniforms;
+      let uniforms;
 
       init();
       animate();
 
       function init() {
 
-        container = document.getElementById('container');
+        const container = document.getElementById('container');
 
         camera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
 
         scene = new v3d.Scene();
 
-        var geometry = new v3d.PlaneBufferGeometry(2, 2);
+        const geometry = new v3d.PlaneBufferGeometry(2, 2);
 
         uniforms = {
-          "time": { value: 1.0 }
+          time: { value: 1.0 }
         };
 
-        var material = new v3d.ShaderMaterial({
+        const material = new v3d.ShaderMaterial({
 
           uniforms: uniforms,
           vertexShader: document.getElementById('vertexShader').textContent,
@@ -98,7 +96,7 @@
 
         });
 
-        var mesh = new v3d.Mesh(geometry, material);
+        const mesh = new v3d.Mesh(geometry, material);
         scene.add(mesh);
 
         renderer = new v3d.WebGLRenderer();
@@ -119,11 +117,11 @@
 
       //
 
-      function animate(timestamp) {
+      function animate() {
 
         requestAnimationFrame(animate);
 
-        uniforms["time"].value = timestamp / 1000;
+        uniforms['time'].value = performance.now() / 1000;
 
         renderer.render(scene, camera);
 

@@ -1,11 +1,3 @@
-/**
- *
- * Creator of typical test AnimationClips / KeyframeTracks
- *
- * @author Ben Houston / http://clara.io/
- * @author David Sarno / http://lighthaus.us/
- */
-
 v3d.AnimationClipCreator = function() {};
 
 v3d.AnimationClipCreator.CreateRotationAnimation = function(period, axis) {

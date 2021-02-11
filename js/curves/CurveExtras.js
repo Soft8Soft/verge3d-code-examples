@@ -1,6 +1,5 @@
 /**
  * A bunch of parametric curves
- * @author zz85
  *
  * Formulas collected from various sources
  * http://mathworld.wolfram.com/HeartCurve.html

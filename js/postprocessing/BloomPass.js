@@ -1,7 +1,3 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 v3d.BloomPass = function(strength, kernelSize, sigma, resolution) {
 
     v3d.Pass.call(this);
@@ -16,20 +12,20 @@ v3d.BloomPass = function(strength, kernelSize, sigma, resolution) {
     var pars = { minFilter: v3d.LinearFilter, magFilter: v3d.LinearFilter, format: v3d.RGBAFormat };
 
     this.renderTargetX = new v3d.WebGLRenderTarget(resolution, resolution, pars);
-    this.renderTargetX.texture.name = "BloomPass.x";
+    this.renderTargetX.texture.name = 'BloomPass.x';
     this.renderTargetY = new v3d.WebGLRenderTarget(resolution, resolution, pars);
-    this.renderTargetY.texture.name = "BloomPass.y";
+    this.renderTargetY.texture.name = 'BloomPass.y';
 
     // copy material
 
     if (v3d.CopyShader === undefined)
-        console.error("v3d.BloomPass relies on v3d.CopyShader");
+        console.error('v3d.BloomPass relies on v3d.CopyShader');
 
     var copyShader = v3d.CopyShader;
 
     this.copyUniforms = v3d.UniformsUtils.clone(copyShader.uniforms);
 
-    this.copyUniforms["opacity"].value = strength;
+    this.copyUniforms['opacity'].value = strength;
 
     this.materialCopy = new v3d.ShaderMaterial({
 
@@ -44,14 +40,14 @@ v3d.BloomPass = function(strength, kernelSize, sigma, resolution) {
     // convolution material
 
     if (v3d.ConvolutionShader === undefined)
-        console.error("v3d.BloomPass relies on v3d.ConvolutionShader");
+        console.error('v3d.BloomPass relies on v3d.ConvolutionShader');
 
     var convolutionShader = v3d.ConvolutionShader;
 
     this.convolutionUniforms = v3d.UniformsUtils.clone(convolutionShader.uniforms);
 
-    this.convolutionUniforms["uImageIncrement"].value = v3d.BloomPass.blurX;
-    this.convolutionUniforms["cKernel"].value = v3d.ConvolutionShader.buildKernel(sigma);
+    this.convolutionUniforms['uImageIncrement'].value = v3d.BloomPass.blurX;
+    this.convolutionUniforms['cKernel'].value = v3d.ConvolutionShader.buildKernel(sigma);
 
     this.materialConvolution = new v3d.ShaderMaterial({
 
@@ -59,8 +55,8 @@ v3d.BloomPass = function(strength, kernelSize, sigma, resolution) {
         vertexShader: convolutionShader.vertexShader,
         fragmentShader: convolutionShader.fragmentShader,
         defines: {
-            "KERNEL_SIZE_FLOAT": kernelSize.toFixed(1),
-            "KERNEL_SIZE_INT": kernelSize.toFixed(0)
+            'KERNEL_SIZE_FLOAT': kernelSize.toFixed(1),
+            'KERNEL_SIZE_INT': kernelSize.toFixed(0)
         }
 
     });
@@ -83,8 +79,8 @@ v3d.BloomPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         this.fsQuad.material = this.materialConvolution;
 
-        this.convolutionUniforms["tDiffuse"].value = readBuffer.texture;
-        this.convolutionUniforms["uImageIncrement"].value = v3d.BloomPass.blurX;
+        this.convolutionUniforms['tDiffuse'].value = readBuffer.texture;
+        this.convolutionUniforms['uImageIncrement'].value = v3d.BloomPass.blurX;
 
         renderer.setRenderTarget(this.renderTargetX);
         renderer.clear();
@@ -93,8 +89,8 @@ v3d.BloomPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         // Render quad with blured scene into texture (convolution pass 2)
 
-        this.convolutionUniforms["tDiffuse"].value = this.renderTargetX.texture;
-        this.convolutionUniforms["uImageIncrement"].value = v3d.BloomPass.blurY;
+        this.convolutionUniforms['tDiffuse'].value = this.renderTargetX.texture;
+        this.convolutionUniforms['uImageIncrement'].value = v3d.BloomPass.blurY;
 
         renderer.setRenderTarget(this.renderTargetY);
         renderer.clear();
@@ -104,7 +100,7 @@ v3d.BloomPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         this.fsQuad.material = this.materialCopy;
 
-        this.copyUniforms["tDiffuse"].value = this.renderTargetY.texture;
+        this.copyUniforms['tDiffuse'].value = this.renderTargetY.texture;
 
         if (maskActive) renderer.state.buffers.stencil.setTest(true);
 

@@ -22,16 +22,16 @@
 
       import { PLYLoader } from './jsm/loaders/PLYLoader.js';
 
-      var container, stats;
+      let container, stats;
 
-      var camera, scene, renderer;
+      let camera, scene, renderer;
 
-      var pointLight;
+      let pointLight;
 
-      var mouseX = 0, mouseY = 0;
+      let mouseX = 0, mouseY = 0;
 
-      var windowHalfX = window.innerWidth / 2;
-      var windowHalfY = window.innerHeight / 2;
+      let windowHalfX = window.innerWidth / 2;
+      let windowHalfY = window.innerHeight / 2;
 
       init();
       animate();
@@ -46,15 +46,15 @@
 
         //
 
-        var r = "textures/cube/Park3Med/";
+        const r = "textures/cube/Park3Med/";
 
-        var urls = [
+        const urls = [
           r + "px.jpg", r + "nx.jpg",
           r + "py.jpg", r + "ny.jpg",
           r + "pz.jpg", r + "nz.jpg"
         ];
 
-        var textureCube = new v3d.CubeTextureLoader().load(urls);
+        const textureCube = new v3d.CubeTextureLoader().load(urls);
         textureCube.mapping = v3d.CubeRefractionMapping;
 
         scene = new v3d.Scene();
@@ -62,7 +62,7 @@
 
         // LIGHTS
 
-        var ambient = new v3d.AmbientLight(0xffffff);
+        const ambient = new v3d.AmbientLight(0xffffff);
         scene.add(ambient);
 
         pointLight = new v3d.PointLight(0xffffff, 2);
@@ -70,17 +70,17 @@
 
         // light representation
 
-        var sphere = new v3d.SphereBufferGeometry(100, 16, 8);
+        const sphere = new v3d.SphereBufferGeometry(100, 16, 8);
 
-        var mesh = new v3d.Mesh(sphere, new v3d.MeshBasicMaterial({ color: 0xffffff }));
+        const mesh = new v3d.Mesh(sphere, new v3d.MeshBasicMaterial({ color: 0xffffff }));
         mesh.scale.set(0.05, 0.05, 0.05);
         pointLight.add(mesh);
 
         // material samples
 
-        var cubeMaterial3 = new v3d.MeshPhongMaterial({ color: 0xccddff, envMap: textureCube, refractionRatio: 0.98, reflectivity: 0.9 });
-        var cubeMaterial2 = new v3d.MeshPhongMaterial({ color: 0xccfffd, envMap: textureCube, refractionRatio: 0.985 });
-        var cubeMaterial1 = new v3d.MeshPhongMaterial({ color: 0xffffff, envMap: textureCube, refractionRatio: 0.98 });
+        const cubeMaterial3 = new v3d.MeshPhongMaterial({ color: 0xccddff, envMap: textureCube, refractionRatio: 0.98, reflectivity: 0.9 });
+        const cubeMaterial2 = new v3d.MeshPhongMaterial({ color: 0xccfffd, envMap: textureCube, refractionRatio: 0.985 });
+        const cubeMaterial1 = new v3d.MeshPhongMaterial({ color: 0xffffff, envMap: textureCube, refractionRatio: 0.98 });
 
         //
 
@@ -92,7 +92,7 @@
         stats = new Stats();
         container.appendChild(stats.dom);
 
-        var loader = new PLYLoader();
+        const loader = new PLYLoader();
         loader.load('models/ply/binary/Lucy100k.ply', function(geometry) {
 
           createScene(geometry, cubeMaterial1, cubeMaterial2, cubeMaterial3);
@@ -123,18 +123,18 @@
 
         geometry.computeVertexNormals();
 
-        var s = 1.5;
+        const s = 1.5;
 
-        var mesh = new v3d.Mesh(geometry, m1);
+        let mesh = new v3d.Mesh(geometry, m1);
         mesh.scale.x = mesh.scale.y = mesh.scale.z = s;
         scene.add(mesh);
 
-        var mesh = new v3d.Mesh(geometry, m2);
+        mesh = new v3d.Mesh(geometry, m2);
         mesh.position.x = - 1500;
         mesh.scale.x = mesh.scale.y = mesh.scale.z = s;
         scene.add(mesh);
 
-        var mesh = new v3d.Mesh(geometry, m3);
+        mesh = new v3d.Mesh(geometry, m3);
         mesh.position.x = 1500;
         mesh.scale.x = mesh.scale.y = mesh.scale.z = s;
         scene.add(mesh);
@@ -161,7 +161,7 @@
 
       function render() {
 
-        var timer = - 0.0002 * Date.now();
+        const timer = - 0.0002 * Date.now();
 
         camera.position.x += (mouseX - camera.position.x) * .05;
         camera.position.y += (- mouseY - camera.position.y) * .05;

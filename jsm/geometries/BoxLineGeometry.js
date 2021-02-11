@@ -1,11 +1,7 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
 import {
     BufferGeometry,
     Float32BufferAttribute
-} from "../../../build/v3d.module.js";
+} from '../../../build/v3d.module.js';
 
 var BoxLineGeometry = function(width, height, depth, widthSegments, heightSegments, depthSegments) {
 

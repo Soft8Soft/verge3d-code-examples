@@ -1,12 +1,8 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 import {
     AnimationClip,
     AnimationMixer,
     Mesh
-} from "../../../build/v3d.module.js";
+} from '../../../build/v3d.module.js';
 
 var MorphAnimMesh = function(geometry, material) {
 

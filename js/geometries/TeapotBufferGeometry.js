@@ -1,6 +1,4 @@
 /**
- * @author Eric Haines / http://erichaines.com/
- *
  * Tessellates the famous Utah teapot database by Martin Newell into triangles.
  *
  * Parameters: size = 50, segments = 10, bottom = true, lid = true, body = true,
@@ -682,6 +680,7 @@ v3d.TeapotBufferGeometry = function(size, segments, bottom, lid, body, fitLid, b
                         indices[indexCount ++] = v3;
 
                     }
+
                     if (notDegenerate(v1, v3, v4)) {
 
                         indices[indexCount ++] = v1;

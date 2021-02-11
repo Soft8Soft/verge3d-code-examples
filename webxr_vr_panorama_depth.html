@@ -14,38 +14,36 @@
       Created by <a href="https://orfleisher.com" target="_blank" rel="noopener">@juniorxsound</a>. Panorama from <a href="https://krpano.com/examples/?depthmap" target="_blank" rel="noopener">krpano</a>.
     </div>
 
-    <script src="js/vr/HelioWebXRPolyfill.js"></script>
-
     <script type="module">
 
       import * as v3d from '../build/v3d.module.js';
       import { VRButton } from './jsm/webxr/VRButton.js';
 
-      var camera, scene, renderer, sphere, clock;
+      let camera, scene, renderer, sphere, clock;
 
       init();
       animate();
 
       function init() {
 
-        var container = document.getElementById('container');
+        const container = document.getElementById('container');
 
         clock = new v3d.Clock();
 
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0x101010);
 
-        var light = new v3d.AmbientLight(0xffffff, 1);
+        const light = new v3d.AmbientLight(0xffffff, 1);
         scene.add(light);
 
         camera = new v3d.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 2000);
         scene.add(camera);
 
         // Create the panoramic sphere geometery
-        var panoSphereGeo = new v3d.SphereBufferGeometry(6, 256, 256);
+        const panoSphereGeo = new v3d.SphereBufferGeometry(6, 256, 256);
 
         // Create the panoramic sphere material
-        var panoSphereMat = new v3d.MeshStandardMaterial({
+        const panoSphereMat = new v3d.MeshStandardMaterial({
           side: v3d.BackSide,
           displacementScale: - 4.0
         });
@@ -54,13 +52,12 @@
         sphere = new v3d.Mesh(panoSphereGeo, panoSphereMat);
 
         // Load and assign the texture and depth map
-        var manager = new v3d.LoadingManager();
-        var loader = new v3d.TextureLoader(manager);
+        const manager = new v3d.LoadingManager();
+        const loader = new v3d.TextureLoader(manager);
 
         loader.load('./textures/kandao3.jpg', function(texture) {
 
           texture.minFilter = v3d.NearestFilter;
-          texture.format = v3d.RGBFormat;
           texture.generateMipmaps = false;
           sphere.material.map = texture;
 
@@ -69,7 +66,6 @@
         loader.load('./textures/kandao3_depthmap.jpg', function(depth) {
 
           depth.minFilter = v3d.NearestFilter;
-          depth.format = v3d.RGBFormat;
           depth.generateMipmaps = false;
           sphere.material.displacementMap = depth;
 
@@ -86,9 +82,10 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.xr.enabled = true;
+        renderer.xr.setReferenceSpaceType('local');
         container.appendChild(renderer.domElement);
 
-        document.body.appendChild(VRButton.createButton(renderer, { referenceSpaceType: 'local' }));
+        document.body.appendChild(VRButton.createButton(renderer));
 
         //
 
@@ -117,7 +114,7 @@
 
         if (renderer.xr.isPresenting === false) {
 
-          var time = clock.getElapsedTime();
+          const time = clock.getElapsedTime();
 
           sphere.rotation.y += 0.001;
           sphere.position.x = Math.sin(time) * 0.2;

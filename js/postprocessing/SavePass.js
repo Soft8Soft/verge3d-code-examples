@@ -1,17 +1,13 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 v3d.SavePass = function(renderTarget) {
 
     v3d.Pass.call(this);
 
     if (v3d.CopyShader === undefined)
-        console.error("v3d.SavePass relies on v3d.CopyShader");
+        console.error('v3d.SavePass relies on v3d.CopyShader');
 
     var shader = v3d.CopyShader;
 
-    this.textureID = "tDiffuse";
+    this.textureID = 'tDiffuse';
 
     this.uniforms = v3d.UniformsUtils.clone(shader.uniforms);
 
@@ -27,8 +23,8 @@ v3d.SavePass = function(renderTarget) {
 
     if (this.renderTarget === undefined) {
 
-        this.renderTarget = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight, { minFilter: v3d.LinearFilter, magFilter: v3d.LinearFilter, format: v3d.RGBFormat, stencilBuffer: false });
-        this.renderTarget.texture.name = "SavePass.rt";
+        this.renderTarget = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight, { minFilter: v3d.LinearFilter, magFilter: v3d.LinearFilter, format: v3d.RGBFormat });
+        this.renderTarget.texture.name = 'SavePass.rt';
 
     }
 

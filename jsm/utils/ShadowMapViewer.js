@@ -1,15 +1,27 @@
+import {
+    DoubleSide,
+    LinearFilter,
+    Mesh,
+    MeshBasicMaterial,
+    OrthographicCamera,
+    PlaneBufferGeometry,
+    Scene,
+    ShaderMaterial,
+    Texture,
+    UniformsUtils
+} from '../../../build/v3d.module.js';
+import { UnpackDepthRGBAShader } from '../shaders/UnpackDepthRGBAShader.js';
+
 /**
- * @author arya-s / https://github.com/arya-s
- *
  * This is a helper for visualising a given light's shadow map.
- * It works for shadow casting lights: v3d.DirectionalLight and v3d.SpotLight.
+ * It works for shadow casting lights: DirectionalLight and SpotLight.
  * It renders out the shadow map and displays it on a HUD.
  *
  * Example usage:
- *    1) Include <script src='examples/js/utils/ShadowMapViewer.js'><script> in your html file
+ *    1) Import ShadowMapViewer into your app.
  *
  *    2) Create a shadow casting light and name it optionally:
- *        var light = new v3d.DirectionalLight(0xffffff, 1);
+ *        var light = new DirectionalLight(0xffffff, 1);
  *        light.castShadow = true;
  *        light.name = 'Sun';
  *
@@ -26,20 +38,6 @@
  *
  *    6) If you set the position or size members directly, you need to call shadowMapViewer.update();
  */
-
-import {
-    DoubleSide,
-    LinearFilter,
-    Mesh,
-    MeshBasicMaterial,
-    OrthographicCamera,
-    PlaneBufferGeometry,
-    Scene,
-    ShaderMaterial,
-    Texture,
-    UniformsUtils
-} from "../../../build/v3d.module.js";
-import { UnpackDepthRGBAShader } from "../shaders/UnpackDepthRGBAShader.js";
 
 var ShadowMapViewer = function(light) {
 

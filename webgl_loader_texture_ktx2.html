@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D webgl - KTX2 texture loader</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
+  </head>
+  <body>
+
+    <div id="info">
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - webgl - KTX2 texture loader<br />
+      <a href="http://github.khronos.org/KTX-Specification/" target="_blank" rel="noopener">KTX2</a> with
+      <a href="https://github.com/binomialLLC/basis_universal" target="_blank">Basis Universal GPU Texture Codec</a>
+    </div>
+
+    <script src="./js/libs/basis/msc_basis_transcoder.js"></script>
+
+    <script type="module">
+
+      import * as v3d from '../build/v3d.module.js';
+
+      import { KTX2Loader } from './jsm/loaders/KTX2Loader.js';
+      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      const renderer = new v3d.WebGLRenderer({ antialias: true });
+      renderer.setSize(width, height);
+      renderer.outputEncoding = v3d.sRGBEncoding;
+      document.body.appendChild(renderer.domElement);
+
+      const scene = new v3d.Scene();
+      scene.background = new v3d.Color(0x202020);
+
+      const camera = new v3d.PerspectiveCamera(60, width / height, 0.1, 100);
+      camera.position.set(2, 1.5, 1);
+      camera.lookAt(scene.position);
+      scene.add(camera);
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.autoRotate = true;
+
+      // PlaneBufferGeometry UVs assume flipY=true, which compressed textures don't support.
+      const geometry = flipY(new v3d.PlaneBufferGeometry());
+      const material = new v3d.MeshBasicMaterial({
+        color: 0xFFFFFF,
+        side: v3d.DoubleSide
+      });
+      const mesh = new v3d.Mesh(geometry, material);
+      scene.add(mesh);
+
+      const formatStrings = {
+        [v3d.RGBAFormat]: "RGBA32",
+        [v3d.RGBA_ASTC_4x4_Format]: "RGBA_ASTC_4x4",
+        [v3d.RGB_S3TC_DXT1_Format]: "RGB_S3TC_DXT1",
+        [v3d.RGBA_S3TC_DXT5_Format]: "RGBA_S3TC_DXT5",
+        [v3d.RGB_PVRTC_4BPPV1_Format]: "RGB_PVRTC_4BPPV1",
+        [v3d.RGBA_PVRTC_4BPPV1_Format]: "RGBA_PVRTC_4BPPV1",
+        [v3d.RGB_ETC1_Format]: "RGB_ETC1",
+        [v3d.RGB_ETC2_Format]: "RGB_ETC2",
+        [v3d.RGBA_ETC2_EAC_Format]: "RGB_ETC2_EAC",
+      };
+
+      // Samples: sample_etc1s.ktx2, sample_uastc.ktx2
+      new KTX2Loader()
+        .detectSupport(renderer)
+        .load('./textures/compressed/sample_uastc.ktx2', (texture) => {
+
+          console.info(`transcoded to ${formatStrings[texture.format]}`);
+
+          material.map = texture;
+          material.transparent = true;
+
+          material.needsUpdate = true;
+
+        }, (p) => console.log(`...${p}`), (e) => console.error(e));
+
+      animate();
+
+      function animate() {
+
+        requestAnimationFrame(animate);
+
+        controls.update();
+
+        renderer.render(scene, camera);
+
+      }
+
+      window.addEventListener('resize', () => {
+
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height);
+
+      }, false);
+
+      /** Correct UVs to be compatible with `flipY=false` textures. */
+      function flipY(geometry) {
+
+        const uv = geometry.attributes.uv;
+
+        for (let i = 0; i < uv.count; i++) {
+
+          uv.setY(i, 1 - uv.getY(i));
+
+        }
+
+        return geometry;
+
+      }
+
+    </script>
+
+  </body>
+</html>

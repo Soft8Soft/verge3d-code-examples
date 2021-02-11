@@ -1,15 +1,10 @@
-/**
- * @author Nell Waliczek / https://github.com/NellWaliczek
- * @author Brandon Jones / https://github.com/toji
- */
-
 import {
     Mesh,
     MeshBasicMaterial,
     Object3D,
     Quaternion,
-    SphereGeometry,
-} from "../../../build/v3d.module.js";
+    SphereBufferGeometry,
+} from '../../../build/v3d.module.js';
 
 import { GLTFLoader } from '../loaders/GLTFLoader.js';
 
@@ -132,14 +127,14 @@ function findNodes(motionController, scene) {
             if (component.touchPointNode) {
 
                 // Attach a touch dot to the touchpad.
-                const sphereGeometry = new SphereGeometry(0.001);
+                const sphereGeometry = new SphereBufferGeometry(0.001);
                 const material = new MeshBasicMaterial({ color: 0x0000FF });
                 const sphere = new Mesh(sphereGeometry, material);
                 component.touchPointNode.add(sphere);
 
             } else {
 
-                console.warn(`Could not find touch dot, ${component.touchPointNodeName}, in touchpad component ${componentId}`);
+                console.warn(`Could not find touch dot, ${component.touchPointNodeName}, in touchpad component ${component.id}`);
 
             }
 
@@ -170,6 +165,7 @@ function findNodes(motionController, scene) {
                     return;
 
                 }
+
             }
 
             // If the target node cannot be found, skip this animation
@@ -179,11 +175,15 @@ function findNodes(motionController, scene) {
                 console.warn(`Could not find ${valueNodeName} in the model`);
 
             }
+
         });
+
     });
+
 }
 
 function addAssetSceneToControllerModel(controllerModel, scene) {
+
     // Find the nodes needed for animation and cache them on the motionController.
     findNodes(controllerModel.motionController, scene);
 
@@ -205,6 +205,7 @@ function addAssetSceneToControllerModel(controllerModel, scene) {
 
     // Add the glTF scene to the controllerModel.
     controllerModel.add(scene);
+
 }
 
 var XRControllerModelFactory = (function() {
@@ -237,7 +238,7 @@ var XRControllerModelFactory = (function() {
 
                 const xrInputSource = event.data;
 
-                if (xrInputSource.targetRayMode !== 'tracked-pointer' || !xrInputSource.gamepad) return;
+                if (xrInputSource.targetRayMode !== 'tracked-pointer' || ! xrInputSource.gamepad) return;
 
                 fetchProfile(xrInputSource, this.path, DEFAULT_PROFILE).then(({ profile, assetPath }) => {
 
@@ -247,7 +248,7 @@ var XRControllerModelFactory = (function() {
                         assetPath
                     );
 
-                    let cachedAsset = this._assetCache[controllerModel.motionController.assetUrl];
+                    const cachedAsset = this._assetCache[controllerModel.motionController.assetUrl];
                     if (cachedAsset) {
 
                         scene = cachedAsset.scene.clone();
@@ -258,7 +259,7 @@ var XRControllerModelFactory = (function() {
 
                         if (!this.gltfLoader) {
 
-                            throw new Error(`GLTFLoader not set.`);
+                            throw new Error('GLTFLoader not set.');
 
                         }
 
@@ -275,7 +276,7 @@ var XRControllerModelFactory = (function() {
                         null,
                         () => {
 
-                            throw new Error(`Asset ${motionController.assetUrl} missing or malformed.`);
+                            throw new Error(`Asset ${controllerModel.motionController.assetUrl} missing or malformed.`);
 
                         });
 

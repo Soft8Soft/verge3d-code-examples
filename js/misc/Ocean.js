@@ -1,7 +1,3 @@
-/*
-    three.js Ocean
-*/
-
 v3d.Ocean = function(renderer, camera, scene, options) {
 
     // flag used to trigger parameter changes
@@ -22,6 +18,7 @@ v3d.Ocean = function(renderer, camera, scene, options) {
         return value !== undefined ? value : defaultValue;
 
     }
+
     options = options || {};
     this.clearColor = optionalParameter(options.CLEAR_COLOR, [1.0, 1.0, 1.0, 0.0]);
     this.geometryOrigin = optionalParameter(options.GEOMETRY_ORIGIN, [- 1000.0, - 1000.0]);
@@ -51,7 +48,6 @@ v3d.Ocean = function(renderer, camera, scene, options) {
         wrapS: v3d.ClampToEdgeWrapping,
         wrapT: v3d.ClampToEdgeWrapping,
         format: v3d.RGBAFormat,
-        stencilBuffer: false,
         depthBuffer: false,
         premultiplyAlpha: false,
         type: renderTargetType
@@ -62,7 +58,6 @@ v3d.Ocean = function(renderer, camera, scene, options) {
         wrapS: v3d.ClampToEdgeWrapping,
         wrapT: v3d.ClampToEdgeWrapping,
         format: v3d.RGBAFormat,
-        stencilBuffer: false,
         depthBuffer: false,
         premultiplyAlpha: false,
         type: renderTargetType
@@ -73,7 +68,6 @@ v3d.Ocean = function(renderer, camera, scene, options) {
         wrapS: v3d.RepeatWrapping,
         wrapT: v3d.RepeatWrapping,
         format: v3d.RGBAFormat,
-        stencilBuffer: false,
         depthBuffer: false,
         premultiplyAlpha: false,
         type: renderTargetType
@@ -91,15 +85,15 @@ v3d.Ocean = function(renderer, camera, scene, options) {
     ////////////////////////////////////////
 
     // 0 - The vertex shader used in all of the simulation steps
-    var fullscreeenVertexShader = v3d.OceanShaders["ocean_sim_vertex"];
+    var fullscreeenVertexShader = v3d.OceanShaders['ocean_sim_vertex'];
 
     // 1 - Horizontal wave vertices used for FFT
-    var oceanHorizontalShader = v3d.OceanShaders["ocean_subtransform"];
+    var oceanHorizontalShader = v3d.OceanShaders['ocean_subtransform'];
     var oceanHorizontalUniforms = v3d.UniformsUtils.clone(oceanHorizontalShader.uniforms);
     this.materialOceanHorizontal = new v3d.ShaderMaterial({
         uniforms: oceanHorizontalUniforms,
         vertexShader: fullscreeenVertexShader.vertexShader,
-        fragmentShader: "#define HORIZONTAL \n" + oceanHorizontalShader.fragmentShader
+        fragmentShader: '#define HORIZONTAL \n' + oceanHorizontalShader.fragmentShader
     });
     this.materialOceanHorizontal.uniforms.u_transformSize = { value: this.resolution };
     this.materialOceanHorizontal.uniforms.u_subtransformSize = { value: null };
@@ -107,7 +101,7 @@ v3d.Ocean = function(renderer, camera, scene, options) {
     this.materialOceanHorizontal.depthTest = false;
 
     // 2 - Vertical wave vertices used for FFT
-    var oceanVerticalShader = v3d.OceanShaders["ocean_subtransform"];
+    var oceanVerticalShader = v3d.OceanShaders['ocean_subtransform'];
     var oceanVerticalUniforms = v3d.UniformsUtils.clone(oceanVerticalShader.uniforms);
     this.materialOceanVertical = new v3d.ShaderMaterial({
         uniforms: oceanVerticalUniforms,
@@ -120,7 +114,7 @@ v3d.Ocean = function(renderer, camera, scene, options) {
     this.materialOceanVertical.depthTest = false;
 
     // 3 - Initial spectrum used to generate height map
-    var initialSpectrumShader = v3d.OceanShaders["ocean_initial_spectrum"];
+    var initialSpectrumShader = v3d.OceanShaders['ocean_initial_spectrum'];
     var initialSpectrumUniforms = v3d.UniformsUtils.clone(initialSpectrumShader.uniforms);
     this.materialInitialSpectrum = new v3d.ShaderMaterial({
         uniforms: initialSpectrumUniforms,
@@ -132,7 +126,7 @@ v3d.Ocean = function(renderer, camera, scene, options) {
     this.materialInitialSpectrum.depthTest = false;
 
     // 4 - Phases used to animate heightmap
-    var phaseShader = v3d.OceanShaders["ocean_phase"];
+    var phaseShader = v3d.OceanShaders['ocean_phase'];
     var phaseUniforms = v3d.UniformsUtils.clone(phaseShader.uniforms);
     this.materialPhase = new v3d.ShaderMaterial({
         uniforms: phaseUniforms,
@@ -143,7 +137,7 @@ v3d.Ocean = function(renderer, camera, scene, options) {
     this.materialPhase.depthTest = false;
 
     // 5 - Shader used to update spectrum
-    var spectrumShader = v3d.OceanShaders["ocean_spectrum"];
+    var spectrumShader = v3d.OceanShaders['ocean_spectrum'];
     var spectrumUniforms = v3d.UniformsUtils.clone(spectrumShader.uniforms);
     this.materialSpectrum = new v3d.ShaderMaterial({
         uniforms: spectrumUniforms,
@@ -155,7 +149,7 @@ v3d.Ocean = function(renderer, camera, scene, options) {
     this.materialSpectrum.depthTest = false;
 
     // 6 - Shader used to update spectrum normals
-    var normalShader = v3d.OceanShaders["ocean_normals"];
+    var normalShader = v3d.OceanShaders['ocean_normals'];
     var normalUniforms = v3d.UniformsUtils.clone(normalShader.uniforms);
     this.materialNormal = new v3d.ShaderMaterial({
         uniforms: normalUniforms,
@@ -167,7 +161,7 @@ v3d.Ocean = function(renderer, camera, scene, options) {
     this.materialNormal.depthTest = false;
 
     // 7 - Shader used to update normals
-    var oceanShader = v3d.OceanShaders["ocean_main"];
+    var oceanShader = v3d.OceanShaders['ocean_main'];
     var oceanUniforms = v3d.UniformsUtils.clone(oceanShader.uniforms);
     this.materialOcean = new v3d.ShaderMaterial({
         uniforms: oceanUniforms,
@@ -182,6 +176,7 @@ v3d.Ocean = function(renderer, camera, scene, options) {
     this.materialOcean.uniforms.u_skyColor = { value: this.skyColor };
     this.materialOcean.uniforms.u_sunDirection = { value: new v3d.Vector3(this.sunDirectionX, this.sunDirectionY, this.sunDirectionZ) };
     this.materialOcean.uniforms.u_exposure = { value: this.exposure };
+    this.materialOcean.uniforms.u_size = { value: this.size };
 
     // Disable blending to prevent default premultiplied alpha values
     this.materialOceanHorizontal.blending = 0;
@@ -274,6 +269,7 @@ v3d.Ocean.prototype.renderWavePhase = function() {
 
     this.scene.overrideMaterial = this.materialPhase;
     this.screenQuad.material = this.materialPhase;
+
     if (this.initial) {
 
         this.materialPhase.uniforms.u_phases.value = this.pingPhaseTexture;
@@ -284,6 +280,7 @@ v3d.Ocean.prototype.renderWavePhase = function() {
         this.materialPhase.uniforms.u_phases.value = this.pingPhase ? this.pingPhaseFramebuffer.texture : this.pongPhaseFramebuffer.texture;
 
     }
+
     this.materialPhase.uniforms.u_deltaTime.value = this.deltaTime;
     this.materialPhase.uniforms.u_size.value = this.size;
     this.renderer.setRenderTarget(this.pingPhase ? this.pongPhaseFramebuffer : this.pingPhaseFramebuffer);
@@ -341,7 +338,9 @@ v3d.Ocean.prototype.renderSpectrumFFT = function() {
         }
 
     }
+
     this.scene.overrideMaterial = this.materialOceanVertical;
+
     for (var i = iterations; i < iterations * 2; i++) {
 
         if (i === iterations * 2 - 1) {

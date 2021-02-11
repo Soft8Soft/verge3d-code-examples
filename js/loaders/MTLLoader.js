@@ -1,7 +1,5 @@
 /**
  * Loads a Wavefront .mtl file specifying materials
- *
- * @author angelxuanchang
  */
 
 v3d.MTLLoader = function(manager) {
@@ -35,9 +33,29 @@ v3d.MTLLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
 
         var loader = new v3d.FileLoader(this.manager);
         loader.setPath(this.path);
+        loader.setRequestHeader(this.requestHeader);
+        loader.setWithCredentials(this.withCredentials);
         loader.load(url, function(text) {
 
-            onLoad(scope.parse(text, path));
+            try {
+
+                onLoad(scope.parse(text, path));
+
+            } catch (e) {
+
+                if (onError) {
+
+                    onError(e);
+
+                } else {
+
+                    console.error(e);
+
+                }
+
+                scope.manager.itemError(url);
+
+            }
 
         }, onProgress, onError);
 
@@ -372,7 +390,7 @@ v3d.MTLLoader.MaterialCreator.prototype = {
 
                     // Diffuse texture map
 
-                    setMapForType("map", value);
+                    setMapForType('map', value);
 
                     break;
 
@@ -380,7 +398,7 @@ v3d.MTLLoader.MaterialCreator.prototype = {
 
                     // Specular map
 
-                    setMapForType("specularMap", value);
+                    setMapForType('specularMap', value);
 
                     break;
 
@@ -388,13 +406,13 @@ v3d.MTLLoader.MaterialCreator.prototype = {
 
                     // Emissive map
 
-                    setMapForType("emissiveMap", value);
+                    setMapForType('emissiveMap', value);
 
                     break;
 
                 case 'norm':
 
-                    setMapForType("normalMap", value);
+                    setMapForType('normalMap', value);
 
                     break;
 
@@ -403,7 +421,7 @@ v3d.MTLLoader.MaterialCreator.prototype = {
 
                     // Bump texture map
 
-                    setMapForType("bumpMap", value);
+                    setMapForType('bumpMap', value);
 
                     break;
 
@@ -411,7 +429,7 @@ v3d.MTLLoader.MaterialCreator.prototype = {
 
                     // Alpha map
 
-                    setMapForType("alphaMap", value);
+                    setMapForType('alphaMap', value);
                     params.transparent = true;
 
                     break;

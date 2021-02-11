@@ -1,7 +1,3 @@
-/**
- * @author sunag / http://www.sunag.com.br/
- */
-
 import {
     BackSide
 } from '../../../../build/v3d.module.js';
@@ -73,7 +69,7 @@ NormalMapNode.Nodes = (function() {
 
 NormalMapNode.prototype = Object.create(TempNode.prototype);
 NormalMapNode.prototype.constructor = NormalMapNode;
-NormalMapNode.prototype.nodeType = "NormalMap";
+NormalMapNode.prototype.nodeType = 'NormalMap';
 
 NormalMapNode.prototype.generate = function(builder, output) {
 
@@ -101,7 +97,7 @@ NormalMapNode.prototype.generate = function(builder, output) {
 
     } else {
 
-        console.warn("v3d.NormalMapNode is not compatible with " + builder.shader + " shader.");
+        console.warn('v3d.NormalMapNode is not compatible with ' + builder.shader + ' shader.');
 
         return builder.format('vec3(0.0)', this.getType(builder), output);
 

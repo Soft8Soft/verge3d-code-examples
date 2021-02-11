@@ -1,12 +1,8 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 import {
     Object3D,
     Quaternion,
     Vector3
-} from "../../../build/v3d.module.js";
+} from '../../../build/v3d.module.js';
 
 var Gyroscope = function() {
 

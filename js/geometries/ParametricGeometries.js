@@ -1,8 +1,5 @@
 /**
- * @author zz85
- *
  * Experimenting of primitive geometry creation using Surface Parametric equations
- *
  */
 
 v3d.ParametricGeometries = {
@@ -96,14 +93,13 @@ v3d.ParametricGeometries = {
  *
  *********************************************/
 
-v3d.ParametricGeometries.TubeGeometry = function(path, segments, radius, segmentsRadius, closed, debug) {
+v3d.ParametricGeometries.TubeGeometry = function(path, segments, radius, segmentsRadius, closed) {
 
     this.path = path;
     this.segments = segments || 64;
     this.radius = radius || 1;
     this.segmentsRadius = segmentsRadius || 8;
     this.closed = closed || false;
-    if (debug) this.debug = new v3d.Object3D();
 
     var scope = this, numpoints = this.segments + 1;
 
@@ -118,6 +114,8 @@ v3d.ParametricGeometries.TubeGeometry = function(path, segments, radius, segment
     this.normals = normals;
     this.binormals = binormals;
 
+    var position = new v3d.Vector3();
+
     var ParametricTube = function(u, v, target) {
 
         v *= 2 * Math.PI;
@@ -125,28 +123,19 @@ v3d.ParametricGeometries.TubeGeometry = function(path, segments, radius, segment
         var i = u * (numpoints - 1);
         i = Math.floor(i);
 
-        var pos = path.getPointAt(u);
+        path.getPointAt(u, position);
 
-        var tangent = tangents[i];
         var normal = normals[i];
         var binormal = binormals[i];
-
-        if (scope.debug) {
-
-            scope.debug.add(new v3d.ArrowHelper(tangent, pos, radius, 0x0000ff));
-            scope.debug.add(new v3d.ArrowHelper(normal, pos, radius, 0xff0000));
-            scope.debug.add(new v3d.ArrowHelper(binormal, pos, radius, 0x00ff00));
-
-        }
 
         var cx = - scope.radius * Math.cos(v); // TODO: Hack: Negating it so it faces outside.
         var cy = scope.radius * Math.sin(v);
 
-        pos.x += cx * normal.x + cy * binormal.x;
-        pos.y += cx * normal.y + cy * binormal.y;
-        pos.z += cx * normal.z + cy * binormal.z;
+        position.x += cx * normal.x + cy * binormal.x;
+        position.y += cx * normal.y + cy * binormal.y;
+        position.z += cx * normal.z + cy * binormal.z;
 
-        target.copy(pos);
+        target.copy(position);
 
     };
 

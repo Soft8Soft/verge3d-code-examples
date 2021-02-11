@@ -44,7 +44,7 @@ function colorToString(color, forceCSSHex) {
     var h = Math.round(color.h);
     var s = color.s.toFixed(1);
     var v = color.v.toFixed(1);
-    if (forceCSSHex || colorFormat === 'v3d_CHAR_HEX' || colorFormat === 'SIX_CHAR_HEX') {
+    if (forceCSSHex || colorFormat === 'V3D_CHAR_HEX' || colorFormat === 'SIX_CHAR_HEX') {
 
         var str = color.hex.toString(16);
         while (str.length < 6) {
@@ -285,7 +285,7 @@ var Common = {
     },
     isFunction: function isFunction(obj) {
 
-        return Object.prototype.toString.call(obj) === '[object Function]';
+        return obj instanceof Function;
 
     }
 };
@@ -294,7 +294,7 @@ var INTERPRETATIONS = [
     {
         litmus: Common.isString,
         conversions: {
-            v3d_CHAR_HEX: {
+            V3D_CHAR_HEX: {
                 read: function read(original) {
 
                     var test = original.match(/^#([A-F0-9])([A-F0-9])([A-F0-9])$/i);
@@ -959,9 +959,10 @@ Object.defineProperty(Color.prototype, 'a', {
 Object.defineProperty(Color.prototype, 'hex', {
     get: function get$$1() {
 
-        if (!this.__state.space !== 'HEX') {
+        if (this.__state.space !== 'HEX') {
 
             this.__state.hex = ColorMath.rgb_to_hex(this.r, this.g, this.b);
+            this.__state.space = 'HEX';
 
         }
         return this.__state.hex;

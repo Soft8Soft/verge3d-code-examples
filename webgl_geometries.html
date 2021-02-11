@@ -16,7 +16,7 @@
 
       import Stats from './jsm/libs/stats.module.js';
 
-      var camera, scene, renderer, stats;
+      let camera, scene, renderer, stats;
 
       init();
       animate();
@@ -28,20 +28,20 @@
 
         scene = new v3d.Scene();
 
-        var object;
+        let object;
 
-        var ambientLight = new v3d.AmbientLight(0xcccccc, 0.4);
+        const ambientLight = new v3d.AmbientLight(0xcccccc, 0.4);
         scene.add(ambientLight);
 
-        var pointLight = new v3d.PointLight(0xffffff, 0.8);
+        const pointLight = new v3d.PointLight(0xffffff, 0.8);
         camera.add(pointLight);
         scene.add(camera);
 
-        var map = new v3d.TextureLoader().load('textures/uv_grid_opengl.jpg');
+        const map = new v3d.TextureLoader().load('textures/uv_grid_opengl.jpg');
         map.wrapS = map.wrapT = v3d.RepeatWrapping;
         map.anisotropy = 16;
 
-        var material = new v3d.MeshPhongMaterial({ map: map, side: v3d.DoubleSide });
+        const material = new v3d.MeshPhongMaterial({ map: map, side: v3d.DoubleSide });
 
         //
 
@@ -85,9 +85,9 @@
         object.position.set(- 300, 0, - 200);
         scene.add(object);
 
-        var points = [];
+        const points = [];
 
-        for (var i = 0; i < 50; i++) {
+        for (let i = 0; i < 50; i++) {
 
           points.push(new v3d.Vector2(Math.sin(i * 0.2) * Math.sin(i * 0.1) * 15 + 50, (i - 5) * 2));
 
@@ -143,7 +143,7 @@
 
       function render() {
 
-        var timer = Date.now() * 0.0001;
+        const timer = Date.now() * 0.0001;
 
         camera.position.x = Math.cos(timer) * 800;
         camera.position.z = Math.sin(timer) * 800;

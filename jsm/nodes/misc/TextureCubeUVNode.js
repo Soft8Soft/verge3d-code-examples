@@ -1,7 +1,3 @@
-/**
- * @author sunag / http://www.sunag.com.br/
- */
-
 import { TempNode } from '../core/TempNode.js';
 import { ConstNode } from '../core/ConstNode.js';
 import { StructNode } from '../core/StructNode.js';
@@ -34,10 +30,10 @@ TextureCubeUVNode.Nodes = (function() {
             vec2 f;
         }`);
 
-    var cubeUV_maxMipLevel = new ConstNode(`float cubeUV_maxMipLevel 8.0`, true);
-    var cubeUV_minMipLevel = new ConstNode(`float cubeUV_minMipLevel 4.0`, true);
-    var cubeUV_maxTileSize = new ConstNode(`float cubeUV_maxTileSize 256.0`, true);
-    var cubeUV_minTileSize = new ConstNode(`float cubeUV_minTileSize 16.0`, true);
+    var cubeUV_maxMipLevel = new ConstNode('float cubeUV_maxMipLevel 8.0', true);
+    var cubeUV_minMipLevel = new ConstNode('float cubeUV_minMipLevel 4.0', true);
+    var cubeUV_maxTileSize = new ConstNode('float cubeUV_maxTileSize 256.0', true);
+    var cubeUV_minTileSize = new ConstNode('float cubeUV_minTileSize 16.0', true);
 
     // These shader functions convert between the UV coordinates of a single face of
     // a cubemap, the 0-5 integer index of a cube face, and the direction vector for
@@ -66,17 +62,17 @@ TextureCubeUVNode.Nodes = (function() {
         `vec2 getUV(vec3 direction, float face) {
                 vec2 uv;
                 if (face == 0.0) {
-                    uv = vec2(-direction.z, direction.y) / abs(direction.x);
+                    uv = vec2(direction.z, direction.y) / abs(direction.x); // pos x
                 } else if (face == 1.0) {
-                    uv = vec2(direction.x, -direction.z) / abs(direction.y);
+                    uv = vec2(-direction.x, -direction.z) / abs(direction.y); // pos y
                 } else if (face == 2.0) {
-                    uv = direction.xy / abs(direction.z);
+                    uv = vec2(-direction.x, direction.y) / abs(direction.z); // pos z
                 } else if (face == 3.0) {
-                    uv = vec2(direction.z, direction.y) / abs(direction.x);
+                    uv = vec2(-direction.z, direction.y) / abs(direction.x); // neg x
                 } else if (face == 4.0) {
-                    uv = direction.xz / abs(direction.y);
+                    uv = vec2(-direction.x, direction.z) / abs(direction.y); // neg y
                 } else {
-                    uv = vec2(-direction.x, direction.y) / abs(direction.z);
+                    uv = vec2(direction.x, direction.y) / abs(direction.z); // neg z
                 }
                 return 0.5 * (uv + 1.0);
         }`);
@@ -106,7 +102,7 @@ TextureCubeUVNode.Nodes = (function() {
             uv.y += filterInt * 2.0 * cubeUV_minTileSize;
             uv.x += 3.0 * max(0.0, cubeUV_maxTileSize - 2.0 * faceSize);
             uv *= texelSize;
- 
+
             vec4 tl = texture2D(envMap, uv);
             uv.x += texelSize;
             vec4 tr = texture2D(envMap, uv);
@@ -121,21 +117,21 @@ TextureCubeUVNode.Nodes = (function() {
 
     // These defines must match with PMREMGenerator
 
-    var r0 = new ConstNode(`float r0 1.0`, true);
-    var v0 = new ConstNode(`float v0 0.339`, true);
-    var m0 = new ConstNode(`float m0 -2.0`, true);
-    var r1 = new ConstNode(`float r1 0.8`, true);
-    var v1 = new ConstNode(`float v1 0.276`, true);
-    var m1 = new ConstNode(`float m1 -1.0`, true);
-    var r4 = new ConstNode(`float r4 0.4`, true);
-    var v4 = new ConstNode(`float v4 0.046`, true);
-    var m4 = new ConstNode(`float m4 2.0`, true);
-    var r5 = new ConstNode(`float r5 0.305`, true);
-    var v5 = new ConstNode(`float v5 0.016`, true);
-    var m5 = new ConstNode(`float m5 3.0`, true);
-    var r6 = new ConstNode(`float r6 0.21`, true);
-    var v6 = new ConstNode(`float v6 0.0038`, true);
-    var m6 = new ConstNode(`float m6 4.0`, true);
+    var r0 = new ConstNode('float r0 1.0', true);
+    var v0 = new ConstNode('float v0 0.339', true);
+    var m0 = new ConstNode('float m0 -2.0', true);
+    var r1 = new ConstNode('float r1 0.8', true);
+    var v1 = new ConstNode('float v1 0.276', true);
+    var m1 = new ConstNode('float m1 -1.0', true);
+    var r4 = new ConstNode('float r4 0.4', true);
+    var v4 = new ConstNode('float v4 0.046', true);
+    var m4 = new ConstNode('float m4 2.0', true);
+    var r5 = new ConstNode('float r5 0.305', true);
+    var v5 = new ConstNode('float v5 0.016', true);
+    var m5 = new ConstNode('float m5 3.0', true);
+    var r6 = new ConstNode('float r6 0.21', true);
+    var v6 = new ConstNode('float v6 0.0038', true);
+    var m6 = new ConstNode('float m6 4.0', true);
 
     var defines = [r0, v0, m0, r1, v1, m1, r4, v4, m4, r5, v5, m5, r6, v6, m6];
 
@@ -167,7 +163,7 @@ TextureCubeUVNode.Nodes = (function() {
 
 TextureCubeUVNode.prototype = Object.create(TempNode.prototype);
 TextureCubeUVNode.prototype.constructor = TextureCubeUVNode;
-TextureCubeUVNode.prototype.nodeType = "TextureCubeUV";
+TextureCubeUVNode.prototype.nodeType = 'TextureCubeUV';
 
 TextureCubeUVNode.prototype.bilinearCubeUV = function(builder, texture, uv, mipInt) {
 
@@ -209,7 +205,7 @@ TextureCubeUVNode.prototype.bilinearCubeUV = function(builder, texture, uv, mipI
 
     // --
 
-    var output = new ExpressionNode(`mix(mix(cubeUV_TL, cubeUV_TR, cubeUV.f.x), mix(cubeUV_BL, cubeUV_BR, cubeUV.f.x), cubeUV.f.y)`, 'v4');
+    var output = new ExpressionNode('mix(mix(cubeUV_TL, cubeUV_TR, cubeUV.f.x), mix(cubeUV_BL, cubeUV_BR, cubeUV.f.x), cubeUV.f.y)', 'v4');
     output.keywords['cubeUV_TL'] = this.colorSpaceTLExp;
     output.keywords['cubeUV_TR'] = this.colorSpaceTRExp;
     output.keywords['cubeUV_BL'] = this.colorSpaceBLExp;
@@ -256,7 +252,7 @@ TextureCubeUVNode.prototype.generate = function(builder, output) {
 
     } else {
 
-        console.warn("v3d.TextureCubeUVNode is not compatible with " + builder.shader + " shader.");
+        console.warn('v3d.TextureCubeUVNode is not compatible with ' + builder.shader + ' shader.');
 
         return builder.format('vec4(0.0)', this.getType(builder), output);
 

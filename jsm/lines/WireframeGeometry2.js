@@ -1,12 +1,7 @@
-/**
- * @author WestLangley / http://github.com/WestLangley
- *
- */
-
 import {
     WireframeGeometry
-} from "../../../build/v3d.module.js";
-import { LineSegmentsGeometry } from "../lines/LineSegmentsGeometry.js";
+} from '../../../build/v3d.module.js';
+import { LineSegmentsGeometry } from '../lines/LineSegmentsGeometry.js';
 
 var WireframeGeometry2 = function(geometry) {
 

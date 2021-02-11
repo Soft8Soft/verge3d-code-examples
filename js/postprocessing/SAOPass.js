@@ -1,5 +1,4 @@
 /**
- * @author ludobaka / ludobaka.github.io
  * SAO implementation inspired from bhouston previous SAO work
  */
 
@@ -17,7 +16,7 @@ v3d.SAOPass = function(scene, camera, depthTexture, useNormals, resolution) {
     this.supportsNormalTexture = (useNormals !== undefined) ? useNormals : false;
 
     this.originalClearColor = new v3d.Color();
-    this.oldClearColor = new v3d.Color();
+    this._oldClearColor = new v3d.Color();
     this.oldClearAlpha = 1;
 
     this.params = {
@@ -88,7 +87,7 @@ v3d.SAOPass = function(scene, camera, depthTexture, useNormals, resolution) {
     this.saoMaterial.uniforms['tDepth'].value = (this.supportsDepthTextureExtension) ? depthTexture : this.depthRenderTarget.texture;
     this.saoMaterial.uniforms['tNormal'].value = this.normalRenderTarget.texture;
     this.saoMaterial.uniforms['size'].value.set(this.resolution.x, this.resolution.y);
-    this.saoMaterial.uniforms['cameraInverseProjectionMatrix'].value.getInverse(this.camera.projectionMatrix);
+    this.saoMaterial.uniforms['cameraInverseProjectionMatrix'].value.copy(this.camera.projectionMatrixInverse);
     this.saoMaterial.uniforms['cameraProjectionMatrix'].value = this.camera.projectionMatrix;
     this.saoMaterial.blending = v3d.NoBlending;
 
@@ -193,7 +192,7 @@ v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
         }
 
-        this.oldClearColor.copy(renderer.getClearColor());
+        renderer.getClearColor(this._oldClearColor);
         this.oldClearAlpha = renderer.getClearAlpha();
         var oldAutoClear = renderer.autoClear;
         renderer.autoClear = false;
@@ -304,7 +303,7 @@ v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
         // Rendering SAOPass result on top of previous pass
         this.renderPass(renderer, outputMaterial, this.renderToScreen ? null : readBuffer);
 
-        renderer.setClearColor(this.oldClearColor, this.oldClearAlpha);
+        renderer.setClearColor(this._oldClearColor, this.oldClearAlpha);
         renderer.autoClear = oldAutoClear;
 
     },
@@ -312,7 +311,7 @@ v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
     renderPass: function(renderer, passMaterial, renderTarget, clearColor, clearAlpha) {
 
         // save original state
-        this.originalClearColor.copy(renderer.getClearColor());
+        renderer.getClearColor(this.originalClearColor);
         var originalClearAlpha = renderer.getClearAlpha();
         var originalAutoClear = renderer.autoClear;
 
@@ -340,7 +339,7 @@ v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
 
     renderOverride: function(renderer, overrideMaterial, renderTarget, clearColor, clearAlpha) {
 
-        this.originalClearColor.copy(renderer.getClearColor());
+        renderer.getClearColor(this.originalClearColor);
         var originalClearAlpha = renderer.getClearAlpha();
         var originalAutoClear = renderer.autoClear;
 
@@ -377,7 +376,7 @@ v3d.SAOPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
         this.depthRenderTarget.setSize(width, height);
 
         this.saoMaterial.uniforms['size'].value.set(width, height);
-        this.saoMaterial.uniforms['cameraInverseProjectionMatrix'].value.getInverse(this.camera.projectionMatrix);
+        this.saoMaterial.uniforms['cameraInverseProjectionMatrix'].value.copy(this.camera.projectionMatrixInverse);
         this.saoMaterial.uniforms['cameraProjectionMatrix'].value = this.camera.projectionMatrix;
         this.saoMaterial.needsUpdate = true;
 

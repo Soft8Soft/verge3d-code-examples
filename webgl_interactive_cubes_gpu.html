@@ -32,13 +32,15 @@
       import { TrackballControls } from './jsm/controls/TrackballControls.js';
       import { BufferGeometryUtils } from './jsm/utils/BufferGeometryUtils.js';
 
-      var container, stats;
-      var camera, controls, scene, renderer;
-      var pickingData = [], pickingTexture, pickingScene;
-      var highlightBox;
+      let container, stats;
+      let camera, controls, scene, renderer;
+      let pickingTexture, pickingScene;
+      let highlightBox;
 
-      var mouse = new v3d.Vector2();
-      var offset = new v3d.Vector3(10, 10, 10);
+      const pickingData = [];
+
+      const mouse = new v3d.Vector2();
+      const offset = new v3d.Vector3(10, 10, 10);
 
       init();
       animate();
@@ -58,19 +60,19 @@
 
         scene.add(new v3d.AmbientLight(0x555555));
 
-        var light = new v3d.SpotLight(0xffffff, 1.5);
+        const light = new v3d.SpotLight(0xffffff, 1.5);
         light.position.set(0, 500, 2000);
         scene.add(light);
 
-        var pickingMaterial = new v3d.MeshBasicMaterial({ vertexColors: v3d.VertexColors });
-        var defaultMaterial = new v3d.MeshPhongMaterial({ color: 0xffffff, flatShading: true, vertexColors: v3d.VertexColors, shininess: 0  });
+        const pickingMaterial = new v3d.MeshBasicMaterial({ vertexColors: true });
+        const defaultMaterial = new v3d.MeshPhongMaterial({ color: 0xffffff, flatShading: true, vertexColors: true, shininess: 0  });
 
         function applyVertexColors(geometry, color) {
 
-          var position = geometry.attributes.position;
-          var colors = [];
+          const position = geometry.attributes.position;
+          const colors = [];
 
-          for (var i = 0; i < position.count; i++) {
+          for (let i = 0; i < position.count; i++) {
 
             colors.push(color.r, color.g, color.b);
 
@@ -80,28 +82,28 @@
 
         }
 
-        var geometriesDrawn = [];
-        var geometriesPicking = [];
+        const geometriesDrawn = [];
+        const geometriesPicking = [];
 
-        var matrix = new v3d.Matrix4();
-        var quaternion = new v3d.Quaternion();
-        var color = new v3d.Color();
+        const matrix = new v3d.Matrix4();
+        const quaternion = new v3d.Quaternion();
+        const color = new v3d.Color();
 
-        for (var i = 0; i < 5000; i++) {
+        for (let i = 0; i < 5000; i++) {
 
-          var geometry = new v3d.BoxBufferGeometry();
+          let geometry = new v3d.BoxBufferGeometry();
 
-          var position = new v3d.Vector3();
+          const position = new v3d.Vector3();
           position.x = Math.random() * 10000 - 5000;
           position.y = Math.random() * 6000 - 3000;
           position.z = Math.random() * 8000 - 4000;
 
-          var rotation = new v3d.Euler();
+          const rotation = new v3d.Euler();
           rotation.x = Math.random() * 2 * Math.PI;
           rotation.y = Math.random() * 2 * Math.PI;
           rotation.z = Math.random() * 2 * Math.PI;
 
-          var scale = new v3d.Vector3();
+          const scale = new v3d.Vector3();
           scale.x = Math.random() * 200 + 100;
           scale.y = Math.random() * 200 + 100;
           scale.z = Math.random() * 200 + 100;
@@ -135,7 +137,7 @@
 
         }
 
-        var objects = new v3d.Mesh(BufferGeometryUtils.mergeBufferGeometries(geometriesDrawn), defaultMaterial);
+        const objects = new v3d.Mesh(BufferGeometryUtils.mergeBufferGeometries(geometriesDrawn), defaultMaterial);
         scene.add(objects);
 
         pickingScene.add(new v3d.Mesh(BufferGeometryUtils.mergeBufferGeometries(geometriesPicking), pickingMaterial));
@@ -204,7 +206,7 @@
 
         //create buffer for reading single pixel
 
-        var pixelBuffer = new Uint8Array(4);
+        const pixelBuffer = new Uint8Array(4);
 
         //read the pixel
 
@@ -212,8 +214,8 @@
 
         //interpret the pixel as an ID
 
-        var id = (pixelBuffer[0] << 16) | (pixelBuffer[1] << 8) | (pixelBuffer[2]);
-        var data = pickingData[id];
+        const id = (pixelBuffer[0] << 16) | (pixelBuffer[1] << 8) | (pixelBuffer[2]);
+        const data = pickingData[id];
 
         if (data) {
 
