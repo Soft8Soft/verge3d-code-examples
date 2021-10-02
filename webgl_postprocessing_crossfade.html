@@ -153,7 +153,7 @@
 
           if (objectType === 'cube') {
 
-            geometry = new v3d.BoxBufferGeometry(1, 1, 1);
+            geometry = new v3d.BoxGeometry(1, 1, 1);
             geometry = geometry.toNonIndexed(); // merging needs consistent buffer geometries
             scale.y = Math.random() * 200 + 100;
             scale.z = Math.random() * 200 + 100;
@@ -161,7 +161,7 @@
 
           } else if (objectType === 'sphere') {
 
-            geometry = new v3d.IcosahedronBufferGeometry(1, 1);
+            geometry = new v3d.IcosahedronGeometry(1, 1);
             scale.y = scale.z = scale.x;
             color.setRGB(0.1 + 0.9 * Math.random(), 0, 0);
 
@@ -316,7 +316,7 @@
 
         });
 
-        const quadgeometry = new v3d.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
+        const quadgeometry = new v3d.PlaneGeometry(window.innerWidth, window.innerHeight);
 
         this.quad = new v3d.Mesh(quadgeometry, this.quadmaterial);
         this.scene.add(this.quad);

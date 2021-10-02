@@ -58,7 +58,7 @@
 
     scene = new v3d.Scene();
 
-    const geometry = new v3d.BoxBufferGeometry(200, 200, 200);
+    const geometry = new v3d.BoxGeometry(200, 200, 200);
     let material1, material2;
 
     // TODO: add cubemap support
@@ -135,7 +135,7 @@
 
     }
 
-    window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener('resize', onWindowResize);
 
   }
 

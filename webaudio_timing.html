@@ -80,7 +80,7 @@
 
       // floor
 
-      const floorGeometry = new v3d.PlaneBufferGeometry(10, 10);
+      const floorGeometry = new v3d.PlaneGeometry(10, 10);
       const floorMaterial = new v3d.MeshLambertMaterial({ color: 0x4676b6 });
 
       const floor = new v3d.Mesh(floorGeometry, floorMaterial);
@@ -93,7 +93,7 @@
       const count = 5;
       const radius = 3;
 
-      const ballGeometry = new v3d.SphereBufferGeometry(0.3, 32, 16);
+      const ballGeometry = new v3d.SphereGeometry(0.3, 32, 16);
       ballGeometry.translate(0, 0.3, 0);
       const ballMaterial = new v3d.MeshLambertMaterial({ color: 0xcccccc });
 
@@ -142,7 +142,7 @@
 
       //
 
-      window.addEventListener('resize', onWindowResize, false);
+      window.addEventListener('resize', onWindowResize);
 
     }
 

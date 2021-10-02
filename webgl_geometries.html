@@ -45,43 +45,43 @@
 
         //
 
-        object = new v3d.Mesh(new v3d.SphereBufferGeometry(75, 20, 10), material);
+        object = new v3d.Mesh(new v3d.SphereGeometry(75, 20, 10), material);
         object.position.set(- 300, 0, 200);
         scene.add(object);
 
-        object = new v3d.Mesh(new v3d.IcosahedronBufferGeometry(75, 1), material);
+        object = new v3d.Mesh(new v3d.IcosahedronGeometry(75, 1), material);
         object.position.set(- 100, 0, 200);
         scene.add(object);
 
-        object = new v3d.Mesh(new v3d.OctahedronBufferGeometry(75, 2), material);
+        object = new v3d.Mesh(new v3d.OctahedronGeometry(75, 2), material);
         object.position.set(100, 0, 200);
         scene.add(object);
 
-        object = new v3d.Mesh(new v3d.TetrahedronBufferGeometry(75, 0), material);
+        object = new v3d.Mesh(new v3d.TetrahedronGeometry(75, 0), material);
         object.position.set(300, 0, 200);
         scene.add(object);
 
         //
 
-        object = new v3d.Mesh(new v3d.PlaneBufferGeometry(100, 100, 4, 4), material);
+        object = new v3d.Mesh(new v3d.PlaneGeometry(100, 100, 4, 4), material);
         object.position.set(- 300, 0, 0);
         scene.add(object);
 
-        object = new v3d.Mesh(new v3d.BoxBufferGeometry(100, 100, 100, 4, 4, 4), material);
+        object = new v3d.Mesh(new v3d.BoxGeometry(100, 100, 100, 4, 4, 4), material);
         object.position.set(- 100, 0, 0);
         scene.add(object);
 
-        object = new v3d.Mesh(new v3d.CircleBufferGeometry(50, 20, 0, Math.PI * 2), material);
+        object = new v3d.Mesh(new v3d.CircleGeometry(50, 20, 0, Math.PI * 2), material);
         object.position.set(100, 0, 0);
         scene.add(object);
 
-        object = new v3d.Mesh(new v3d.RingBufferGeometry(10, 50, 20, 5, 0, Math.PI * 2), material);
+        object = new v3d.Mesh(new v3d.RingGeometry(10, 50, 20, 5, 0, Math.PI * 2), material);
         object.position.set(300, 0, 0);
         scene.add(object);
 
         //
 
-        object = new v3d.Mesh(new v3d.CylinderBufferGeometry(25, 75, 100, 40, 5), material);
+        object = new v3d.Mesh(new v3d.CylinderGeometry(25, 75, 100, 40, 5), material);
         object.position.set(- 300, 0, - 200);
         scene.add(object);
 
@@ -93,15 +93,15 @@
 
         }
 
-        object = new v3d.Mesh(new v3d.LatheBufferGeometry(points, 20), material);
+        object = new v3d.Mesh(new v3d.LatheGeometry(points, 20), material);
         object.position.set(- 100, 0, - 200);
         scene.add(object);
 
-        object = new v3d.Mesh(new v3d.TorusBufferGeometry(50, 20, 20, 20), material);
+        object = new v3d.Mesh(new v3d.TorusGeometry(50, 20, 20, 20), material);
         object.position.set(100, 0, - 200);
         scene.add(object);
 
-        object = new v3d.Mesh(new v3d.TorusKnotBufferGeometry(50, 10, 50, 20), material);
+        object = new v3d.Mesh(new v3d.TorusKnotGeometry(50, 10, 50, 20), material);
         object.position.set(300, 0, - 200);
         scene.add(object);
 
@@ -117,7 +117,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

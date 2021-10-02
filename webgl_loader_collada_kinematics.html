@@ -77,7 +77,7 @@
 
         scene.add(dae);
 
-        particleLight = new v3d.Mesh(new v3d.SphereBufferGeometry(4, 8, 8), new v3d.MeshBasicMaterial({ color: 0xffffff }));
+        particleLight = new v3d.Mesh(new v3d.SphereGeometry(4, 8, 8), new v3d.MeshBasicMaterial({ color: 0xffffff }));
         scene.add(particleLight);
 
         // Lights
@@ -100,7 +100,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

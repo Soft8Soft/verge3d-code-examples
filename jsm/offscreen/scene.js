@@ -22,7 +22,7 @@ function init(canvas, width, height, pixelRatio, path) {
 
         var texture = new v3d.CanvasTexture(imageBitmap);
 
-        var geometry = new v3d.IcosahedronBufferGeometry(5, 8);
+        var geometry = new v3d.IcosahedronGeometry(5, 8);
         var materials = [
             new v3d.MeshMatcapMaterial({ color: 0xaa24df, matcap: texture }),
             new v3d.MeshMatcapMaterial({ color: 0x605d90, matcap: texture }),

@@ -140,7 +140,7 @@
 
         //
 
-        const geometry = new v3d.PlaneBufferGeometry(100, 100);
+        const geometry = new v3d.PlaneGeometry(100, 100);
 
         const mesh1 = new v3d.Mesh(geometry, material1);
         mesh1.rotation.x = - Math.PI / 2;
@@ -167,7 +167,7 @@
         stats = new Stats();
         container.appendChild(stats.dom);
 
-        document.addEventListener('mousemove', onDocumentMouseMove, false);
+        document.addEventListener('mousemove', onDocumentMouseMove);
 
       }
 

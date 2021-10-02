@@ -99,7 +99,7 @@
 
       scene = new v3d.Scene();
 
-      const circleGeometry = new v3d.CircleBufferGeometry(1, 6);
+      const circleGeometry = new v3d.CircleGeometry(1, 6);
 
       geometry = new v3d.InstancedBufferGeometry();
       geometry.index = circleGeometry.index;
@@ -141,7 +141,7 @@
       stats = new Stats();
       container.appendChild(stats.dom);
 
-      window.addEventListener('resize', onWindowResize, false);
+      window.addEventListener('resize', onWindowResize);
 
       return true;
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Verge3D webgl - glTF loader</title>
+    <title>Verge3D webgl - glTF 2.0 - variants</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link type="text/css" rel="stylesheet" href="main.css">
@@ -12,7 +12,7 @@
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - GLTFLoader + <a href="https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_variants" target="_blank" rel="noopener">KHR_materials_variants</a> extension<br />
       <a href="https://github.com/pushmatrix/glTF-Sample-Models/tree/master/2.0/MaterialsVariantsShoe" target="_blank" rel="noopener">Materials Variants Shoe</a> by
       <a href="https://github.com/Shopify" target="_blank" rel="noopener">Shopify, Inc</a><br />
-      <a href="https://hdrihaven.com/hdri/?h=royal_esplanade" target="_blank" rel="noopener">Royal Esplanade</a> by <a href="https://hdrihaven.com/" target="_blank" rel="noopener">HDRI Haven</a>
+      <a href="https://hdrihaven.com/hdri/?h=quarry_01" target="_blank" rel="noopener">Quarry</a> by <a href="https://hdrihaven.com/" target="_blank" rel="noopener">HDRI Haven</a>
     </div>
 
     <script type="module">
@@ -104,7 +104,7 @@
         controls.target.set(0, 0.5, - 0.2);
         controls.update();
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 
@@ -132,10 +132,11 @@
           if (mapping) {
 
             object.material = await parser.getDependency('material', mapping.material);
+            parser.assignFinalMaterial(object);
 
           } else {
 
-            object.material = object.originalMaterial;
+            object.material = object.userData.originalMaterial;
 
           }
 

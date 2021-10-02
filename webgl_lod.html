@@ -48,11 +48,11 @@
 
         const geometry = [
 
-          [new v3d.IcosahedronBufferGeometry(100, 16), 50],
-          [new v3d.IcosahedronBufferGeometry(100, 8), 300],
-          [new v3d.IcosahedronBufferGeometry(100, 4), 1000],
-          [new v3d.IcosahedronBufferGeometry(100, 2), 2000],
-          [new v3d.IcosahedronBufferGeometry(100, 1), 8000]
+          [new v3d.IcosahedronGeometry(100, 16), 50],
+          [new v3d.IcosahedronGeometry(100, 8), 300],
+          [new v3d.IcosahedronGeometry(100, 4), 1000],
+          [new v3d.IcosahedronGeometry(100, 2), 2000],
+          [new v3d.IcosahedronGeometry(100, 1), 8000]
 
         ];
 
@@ -95,7 +95,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

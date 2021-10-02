@@ -1,5 +1,5 @@
 import { GPULoadOp } from './constants.js';
-import { Color } from '../../../../build/v3d.module.js';
+import { Color } from 'v3d';
 
 let _clearAlpha;
 const _clearColor = new Color();

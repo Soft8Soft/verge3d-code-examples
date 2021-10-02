@@ -77,7 +77,9 @@
       const NUM_SPHERES = 20;
       const SPHERE_RADIUS = 0.2;
 
-      const sphereGeometry = new v3d.SphereBufferGeometry(SPHERE_RADIUS, 32, 32);
+      const STEPS_PER_FRAME = 5;
+
+      const sphereGeometry = new v3d.SphereGeometry(SPHERE_RADIUS, 32, 32);
       const sphereMaterial = new v3d.MeshStandardMaterial({ color: 0x888855, roughness: 0.8, metalness: 0.5 });
 
       const spheres = [];
@@ -110,19 +112,19 @@
 
         keyStates[event.code] = true;
 
-      }, false);
+      });
 
       document.addEventListener('keyup', (event) => {
 
         keyStates[event.code] = false;
 
-      }, false);
+      });
 
       document.addEventListener('mousedown', () => {
 
         document.body.requestPointerLock();
 
-      }, false);
+      });
 
       document.body.addEventListener('mousemove', (event) => {
 
@@ -133,16 +135,18 @@
 
         }
 
-      }, false);
+      });
 
-      window.addEventListener('resize', () => {
+      window.addEventListener('resize', onWindowResize);
+
+      function onWindowResize() {
 
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
 
         renderer.setSize(window.innerWidth, window.innerHeight);
 
-      }, false);
+      }
 
       document.addEventListener('click', () => {
 
@@ -155,7 +159,7 @@
 
         sphereIdx = (sphereIdx + 1) % spheres.length;
 
-      }, false);
+      });
 
       function playerCollitions() {
 
@@ -358,13 +362,20 @@
 
       function animate() {
 
-        const deltaTime = Math.min(0.1, clock.getDelta());
+        const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
 
-        controls(deltaTime);
+        // we look for collisions in substeps to mitigate the risk of
+        // an object traversing another too quickly for detection.
 
-        updatePlayer(deltaTime);
+        for (let i = 0 ; i < STEPS_PER_FRAME ; i++) {
 
-        updateSpheres(deltaTime);
+          controls(deltaTime);
+
+          updatePlayer(deltaTime);
+
+          updateSpheres(deltaTime);
+
+        }
 
         renderer.render(scene, camera);
 

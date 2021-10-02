@@ -62,7 +62,7 @@
 
         //
 
-        const geometry = new v3d.IcosahedronBufferGeometry(400, 15);
+        const geometry = new v3d.IcosahedronGeometry(400, 15);
         sphereMaterial = new v3d.MeshLambertMaterial({ envMap: textureCube });
         sphereMesh = new v3d.Mesh(geometry, sphereMaterial);
         scene.add(sphereMesh);
@@ -125,7 +125,7 @@
         });
         gui.open();
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

@@ -68,7 +68,7 @@
 
         // world
 
-        const geometry = new v3d.BoxBufferGeometry(1, 1, 1);
+        const geometry = new v3d.BoxGeometry(1, 1, 1);
         geometry.translate(0, 0.5, 0);
         const material = new v3d.MeshPhongMaterial({ color: 0xffffff, flatShading: true });
 
@@ -102,7 +102,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
 
         const gui = new GUI();

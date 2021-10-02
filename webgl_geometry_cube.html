@@ -27,7 +27,7 @@
 
         const texture = new v3d.TextureLoader().load('textures/crate.gif');
 
-        const geometry = new v3d.BoxBufferGeometry(200, 200, 200);
+        const geometry = new v3d.BoxGeometry(200, 200, 200);
         const material = new v3d.MeshBasicMaterial({ map: texture });
 
         mesh = new v3d.Mesh(geometry, material);
@@ -40,7 +40,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

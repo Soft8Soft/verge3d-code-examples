@@ -41,11 +41,9 @@
 
           const light = new v3d.PointLight(color, intensity, 20);
           light.castShadow = true;
-          light.shadow.camera.near = 1;
-          light.shadow.camera.far = 60;
           light.shadow.bias = - 0.005; // reduces self-shadowing on double-sided objects
 
-          let geometry = new v3d.SphereBufferGeometry(0.3, 12, 6);
+          let geometry = new v3d.SphereGeometry(0.3, 12, 6);
           let material = new v3d.MeshBasicMaterial({ color: color });
           material.color.multiplyScalar(intensity);
           let sphere = new v3d.Mesh(geometry, material);
@@ -57,7 +55,7 @@
           texture.wrapS = v3d.RepeatWrapping;
           texture.repeat.set(1, 4.5);
 
-          geometry = new v3d.SphereBufferGeometry(2, 32, 8);
+          geometry = new v3d.SphereGeometry(2, 32, 8);
           material = new v3d.MeshPhongMaterial({
             side: v3d.DoubleSide,
             alphaMap: texture,
@@ -87,7 +85,7 @@
         scene.add(pointLight2);
         //
 
-        const geometry = new v3d.BoxBufferGeometry(30, 30, 30);
+        const geometry = new v3d.BoxGeometry(30, 30, 30);
 
         const material = new v3d.MeshPhongMaterial({
           color: 0xa0adaf,
@@ -119,7 +117,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

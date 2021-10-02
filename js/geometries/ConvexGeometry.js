@@ -1,66 +1,48 @@
-// ConvexGeometry
+(function() {
 
-v3d.ConvexGeometry = function(points) {
+    class ConvexGeometry extends v3d.BufferGeometry {
 
-    v3d.Geometry.call(this);
+        constructor(points) {
 
-    this.fromBufferGeometry(new v3d.ConvexBufferGeometry(points));
-    this.mergeVertices();
+            super(); // buffers
 
-};
+            const vertices = [];
+            const normals = [];
 
-v3d.ConvexGeometry.prototype = Object.create(v3d.Geometry.prototype);
-v3d.ConvexGeometry.prototype.constructor = v3d.ConvexGeometry;
+            if (v3d.ConvexHull === undefined) {
 
-// ConvexBufferGeometry
+                console.error('v3d.ConvexBufferGeometry: ConvexBufferGeometry relies on v3d.ConvexHull');
 
-v3d.ConvexBufferGeometry = function(points) {
+            }
 
-    v3d.BufferGeometry.call(this);
+            const convexHull = new v3d.ConvexHull().setFromPoints(points); // generate vertices and normals
 
-    // buffers
+            const faces = convexHull.faces;
 
-    var vertices = [];
-    var normals = [];
+            for (let i = 0; i < faces.length; i++) {
 
-    if (v3d.ConvexHull === undefined) {
+                const face = faces[i];
+                let edge = face.edge; // we move along a doubly-connected edge list to access all face points (see HalfEdge docs)
 
-        console.error('v3d.ConvexBufferGeometry: ConvexBufferGeometry relies on v3d.ConvexHull');
+                do {
 
-    }
+                    const point = edge.head().point;
+                    vertices.push(point.x, point.y, point.z);
+                    normals.push(face.normal.x, face.normal.y, face.normal.z);
+                    edge = edge.next;
 
-    var convexHull = new v3d.ConvexHull().setFromPoints(points);
+                } while (edge !== face.edge);
 
-    // generate vertices and normals
+            } // build geometry
 
-    var faces = convexHull.faces;
 
-    for (var i = 0; i < faces.length; i++) {
+            this.setAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
+            this.setAttribute('normal', new v3d.Float32BufferAttribute(normals, 3));
 
-        var face = faces[i];
-        var edge = face.edge;
-
-        // we move along a doubly-connected edge list to access all face points (see HalfEdge docs)
-
-        do {
-
-            var point = edge.head().point;
-
-            vertices.push(point.x, point.y, point.z);
-            normals.push(face.normal.x, face.normal.y, face.normal.z);
-
-            edge = edge.next;
-
-        } while (edge !== face.edge);
+        }
 
     }
 
-    // build geometry
+    v3d.ConvexGeometry = ConvexGeometry;
 
-    this.setAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
-    this.setAttribute('normal', new v3d.Float32BufferAttribute(normals, 3));
-
-};
-
-v3d.ConvexBufferGeometry.prototype = Object.create(v3d.BufferGeometry.prototype);
-v3d.ConvexBufferGeometry.prototype.constructor = v3d.ConvexBufferGeometry;
+})();

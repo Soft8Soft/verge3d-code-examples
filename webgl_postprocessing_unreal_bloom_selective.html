@@ -122,7 +122,7 @@
 
       const mouse = new v3d.Vector2();
 
-      window.addEventListener('pointerdown', onPointerDown, false);
+      window.addEventListener('pointerdown', onPointerDown);
 
       const gui = new GUI();
 
@@ -180,8 +180,6 @@
 
       function onPointerDown(event) {
 
-        event.preventDefault();
-
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
@@ -219,7 +217,7 @@
         scene.traverse(disposeMaterial);
         scene.children.length = 0;
 
-        const geometry = new v3d.IcosahedronBufferGeometry(1, 15);
+        const geometry = new v3d.IcosahedronGeometry(1, 15);
 
         for (let i = 0; i < 50; i++) {
 

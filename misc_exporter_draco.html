@@ -5,22 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link type="text/css" rel="stylesheet" href="main.css">
-    <style>
-      body {
-        background-color: #a0a0a0;
-        color: #fff;
-      }
-
-      a {
-        color: #0f0;
-      }
-    </style>
   </head>
   <body>
     <div id="info">
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - exporter - draco<br/><br/>
-      <button id="createGeometry">Geometry</button>
-      <button id="createBufferGeometry">BufferGeometry</button> |
       <button id="exportFile">Export DRC</button>
     </div>
 
@@ -37,32 +25,6 @@
 
       init();
       animate();
-
-      function createBufferGeometry() {
-
-        scene.remove(mesh);
-
-        const geometry = new v3d.TorusKnotBufferGeometry(50, 15, 200, 30);
-        const material = new v3d.MeshPhongMaterial({ color: 0x00ff00 });
-        mesh = new v3d.Mesh(geometry, material);
-        mesh.castShadow = true;
-        mesh.position.y = 25;
-        scene.add(mesh);
-
-      }
-
-      function createGeometry() {
-
-        scene.remove(mesh);
-
-        const geometry = new v3d.TorusKnotGeometry(50, 15, 200, 30);
-        const material = new v3d.MeshPhongMaterial({ color: 0x00ff00 });
-        mesh = new v3d.Mesh(geometry, material);
-        mesh.castShadow = true;
-        mesh.position.y = 25;
-        scene.add(mesh);
-
-      }
 
       function init() {
 
@@ -93,7 +55,7 @@
         // ground
 
         const ground = new v3d.Mesh(
-          new v3d.PlaneBufferGeometry(2000, 2000),
+          new v3d.PlaneGeometry(2000, 2000),
           new v3d.MeshPhongMaterial({ color: 0x999999, depthWrite: false })
         );
         ground.rotation.x = - Math.PI / 2;
@@ -109,7 +71,7 @@
 
         // export mesh
 
-        const geometry = new v3d.TorusKnotBufferGeometry(50, 15, 200, 30);
+        const geometry = new v3d.TorusKnotGeometry(50, 15, 200, 30);
         const material = new v3d.MeshPhongMaterial({ color: 0x00ff00 });
         mesh = new v3d.Mesh(geometry, material);
         mesh.castShadow = true;
@@ -132,13 +94,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
-
-        const createGeometryButton = document.getElementById('createGeometry');
-        createGeometryButton.addEventListener('click', createGeometry);
-
-        const createBufferGeometryButton = document.getElementById('createBufferGeometry');
-        createBufferGeometryButton.addEventListener('click', createBufferGeometry);
+        window.addEventListener('resize', onWindowResize);
 
         const exportButton = document.getElementById('exportFile');
         exportButton.addEventListener('click', exportFile);

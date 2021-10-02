@@ -95,7 +95,7 @@
 
         const shape1 = new v3d.Shape(pts1);
 
-        const geometry1 = new v3d.ExtrudeBufferGeometry(shape1, extrudeSettings1);
+        const geometry1 = new v3d.ExtrudeGeometry(shape1, extrudeSettings1);
 
         const material1 = new v3d.MeshLambertMaterial({ color: 0xb00000, wireframe: false });
 
@@ -140,7 +140,7 @@
 
         const shape2 = new v3d.Shape(pts2);
 
-        const geometry2 = new v3d.ExtrudeBufferGeometry(shape2, extrudeSettings2);
+        const geometry2 = new v3d.ExtrudeGeometry(shape2, extrudeSettings2);
 
         const material2 = new v3d.MeshLambertMaterial({ color: 0xff8000, wireframe: false });
 
@@ -162,7 +162,7 @@
           bevelSegments: 1
         };
 
-        const geometry3 = new v3d.ExtrudeBufferGeometry(shape2, extrudeSettings3);
+        const geometry3 = new v3d.ExtrudeGeometry(shape2, extrudeSettings3);
 
         const mesh3 = new v3d.Mesh(geometry3, materials);
 

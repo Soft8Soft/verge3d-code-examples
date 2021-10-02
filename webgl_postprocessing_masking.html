@@ -35,10 +35,10 @@
         const scene1 = new v3d.Scene();
         const scene2 = new v3d.Scene();
 
-        box = new v3d.Mesh(new v3d.BoxBufferGeometry(4, 4, 4));
+        box = new v3d.Mesh(new v3d.BoxGeometry(4, 4, 4));
         scene1.add(box);
 
-        torus = new v3d.Mesh(new v3d.TorusBufferGeometry(3, 1, 16, 32));
+        torus = new v3d.Mesh(new v3d.TorusGeometry(3, 1, 16, 32));
         scene2.add(torus);
 
         renderer = new v3d.WebGLRenderer();
@@ -85,7 +85,7 @@
         composer.addPass(clearMaskPass);
         composer.addPass(outputPass);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

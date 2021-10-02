@@ -284,7 +284,7 @@
         camera.position.z = 4;
         dolly.add(camera);
 
-        geometry = new v3d.PlaneBufferGeometry(2.0, 2.0);
+        geometry = new v3d.PlaneGeometry(2.0, 2.0);
         material = new v3d.RawShaderMaterial({
           uniforms: {
             resolution: { value: new v3d.Vector2(canvas.width, canvas.height) },

@@ -1,66 +1,69 @@
-v3d.MorphAnimMesh = function(geometry, material) {
+(function() {
 
-    v3d.Mesh.call(this, geometry, material);
+    class MorphAnimMesh extends v3d.Mesh {
 
-    this.type = 'MorphAnimMesh';
+        constructor(geometry, material) {
 
-    this.mixer = new v3d.AnimationMixer(this);
-    this.activeAction = null;
+            super(geometry, material);
+            this.type = 'MorphAnimMesh';
+            this.mixer = new v3d.AnimationMixer(this);
+            this.activeAction = null;
 
-};
+        }
 
-v3d.MorphAnimMesh.prototype = Object.create(v3d.Mesh.prototype);
-v3d.MorphAnimMesh.prototype.constructor = v3d.MorphAnimMesh;
+        setDirectionForward() {
 
-v3d.MorphAnimMesh.prototype.setDirectionForward = function() {
+            this.mixer.timeScale = 1.0;
 
-    this.mixer.timeScale = 1.0;
+        }
 
-};
+        setDirectionBackward() {
 
-v3d.MorphAnimMesh.prototype.setDirectionBackward = function() {
+            this.mixer.timeScale = - 1.0;
 
-    this.mixer.timeScale = - 1.0;
+        }
 
-};
+        playAnimation(label, fps) {
 
-v3d.MorphAnimMesh.prototype.playAnimation = function(label, fps) {
+            if (this.activeAction) {
 
-    if (this.activeAction) {
+                this.activeAction.stop();
+                this.activeAction = null;
 
-        this.activeAction.stop();
-        this.activeAction = null;
+            }
+
+            const clip = v3d.AnimationClip.findByName(this, label);
+
+            if (clip) {
+
+                const action = this.mixer.clipAction(clip);
+                action.timeScale = clip.tracks.length * fps / clip.duration;
+                this.activeAction = action.play();
+
+            } else {
+
+                throw new Error('v3d.MorphAnimMesh: animations[' + label + '] undefined in .playAnimation()');
+
+            }
+
+        }
+
+        updateAnimation(delta) {
+
+            this.mixer.update(delta);
+
+        }
+
+        copy(source) {
+
+            super.copy(source);
+            this.mixer = new v3d.AnimationMixer(this);
+            return this;
+
+        }
 
     }
 
-    var clip = v3d.AnimationClip.findByName(this, label);
+    v3d.MorphAnimMesh = MorphAnimMesh;
 
-    if (clip) {
-
-        var action = this.mixer.clipAction(clip);
-        action.timeScale = (clip.tracks.length * fps) / clip.duration;
-        this.activeAction = action.play();
-
-    } else {
-
-        throw new Error('v3d.MorphAnimMesh: animations[' + label + '] undefined in .playAnimation()');
-
-    }
-
-};
-
-v3d.MorphAnimMesh.prototype.updateAnimation = function(delta) {
-
-    this.mixer.update(delta);
-
-};
-
-v3d.MorphAnimMesh.prototype.copy = function(source) {
-
-    v3d.Mesh.prototype.copy.call(this, source);
-
-    this.mixer = new v3d.AnimationMixer(this);
-
-    return this;
-
-};
+})();

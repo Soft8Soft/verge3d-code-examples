@@ -75,7 +75,7 @@
 
       //
 
-      const mesh = new v3d.Mesh(new v3d.PlaneBufferGeometry(50, 50), new v3d.MeshPhongMaterial({ color: 0x999999, depthWrite: false }));
+      const mesh = new v3d.Mesh(new v3d.PlaneGeometry(50, 50), new v3d.MeshPhongMaterial({ color: 0x999999, depthWrite: false }));
       mesh.rotation.x = - Math.PI / 2;
       mesh.receiveShadow = true;
       scene.add(mesh);
@@ -128,7 +128,7 @@
 
       // sound is damped behind this wall
 
-      const wallGeometry = new v3d.BoxBufferGeometry(2, 1, 0.1);
+      const wallGeometry = new v3d.BoxGeometry(2, 1, 0.1);
       const wallMaterial = new v3d.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 });
 
       const wall = new v3d.Mesh(wallGeometry, wallMaterial);
@@ -156,7 +156,7 @@
 
       //
 
-      window.addEventListener('resize', onWindowResize, false);
+      window.addEventListener('resize', onWindowResize);
 
     }
 

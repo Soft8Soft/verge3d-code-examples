@@ -53,7 +53,7 @@
 
         // mesh
 
-        const torusKnotGeometry = new v3d.TorusKnotBufferGeometry(3, 1, 256, 32);
+        const torusKnotGeometry = new v3d.TorusKnotGeometry(3, 1, 256, 32);
         const torusKnotMaterial = new v3d.MeshNormalMaterial();
 
         torusKnot = new v3d.Mesh(torusKnotGeometry, torusKnotMaterial);
@@ -63,7 +63,7 @@
 
         // ground
 
-        const groundGeometry = new v3d.PlaneBufferGeometry(20, 20);
+        const groundGeometry = new v3d.PlaneGeometry(20, 20);
         const groundMaterial = new v3d.MeshStandardMaterial({ roughness: 0.8, metalness: 0.4 });
         const ground = new v3d.Mesh(groundGeometry, groundMaterial);
         ground.rotation.x = Math.PI * - 0.5;
@@ -83,7 +83,7 @@
 
         // water
 
-        const waterGeometry = new v3d.PlaneBufferGeometry(20, 20);
+        const waterGeometry = new v3d.PlaneGeometry(20, 20);
 
         water = new Water(waterGeometry, {
           color: params.color,
@@ -163,11 +163,11 @@
 
         //
 
-        window.addEventListener('resize', onResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 
-      function onResize() {
+      function onWindowResize() {
 
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();

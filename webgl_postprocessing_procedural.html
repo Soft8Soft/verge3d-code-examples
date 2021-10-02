@@ -106,12 +106,12 @@
           fragmentShader: document.querySelector('#noiseRandom3D-frag').textContent.trim()
         });
         postMaterial = noiseRandom3DMaterial;
-        const postPlane = new v3d.PlaneBufferGeometry(2, 2);
+        const postPlane = new v3d.PlaneGeometry(2, 2);
         postQuad = new v3d.Mesh(postPlane, postMaterial);
         postScene = new v3d.Scene();
         postScene.add(postQuad);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

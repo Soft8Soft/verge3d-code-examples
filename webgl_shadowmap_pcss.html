@@ -176,7 +176,7 @@
         group = new v3d.Group();
         scene.add(group);
 
-        const geometry = new v3d.SphereBufferGeometry(0.3, 20, 20);
+        const geometry = new v3d.SphereGeometry(0.3, 20, 20);
 
         for (let i = 0; i < 20; i++) {
 
@@ -198,14 +198,14 @@
 
         const groundMaterial = new v3d.MeshPhongMaterial({ color: 0x404040, specular: 0x111111 });
 
-        const ground = new v3d.Mesh(new v3d.PlaneBufferGeometry(20000, 20000, 8, 8), groundMaterial);
+        const ground = new v3d.Mesh(new v3d.PlaneGeometry(20000, 20000, 8, 8), groundMaterial);
         ground.rotation.x = - Math.PI / 2;
         ground.receiveShadow = true;
         scene.add(ground);
 
         // column
 
-        const column = new v3d.Mesh(new v3d.BoxBufferGeometry(1, 4, 1), groundMaterial);
+        const column = new v3d.Mesh(new v3d.BoxGeometry(1, 4, 1), groundMaterial);
         column.position.y = 2;
         column.castShadow = true;
         column.receiveShadow = true;
@@ -256,7 +256,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

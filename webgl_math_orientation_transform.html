@@ -35,7 +35,7 @@
 
         scene = new v3d.Scene();
 
-        const geometry = new v3d.ConeBufferGeometry(0.1, 0.5, 8);
+        const geometry = new v3d.ConeGeometry(0.1, 0.5, 8);
         geometry.rotateX(Math.PI * 0.5);
         const material = new v3d.MeshNormalMaterial();
 
@@ -44,14 +44,14 @@
 
         //
 
-        const targetGeometry = new v3d.SphereBufferGeometry(0.05);
+        const targetGeometry = new v3d.SphereGeometry(0.05);
         const targetMaterial = new v3d.MeshBasicMaterial({ color: 0xff0000 });
         target = new v3d.Mesh(targetGeometry, targetMaterial);
         scene.add(target);
 
         //
 
-        const sphereGeometry = new v3d.SphereBufferGeometry(2, 32, 32);
+        const sphereGeometry = new v3d.SphereGeometry(2, 32, 32);
         const sphereMaterial = new v3d.MeshBasicMaterial({ color: 0xcccccc, wireframe: true, transparent: true, opacity: 0.3 });
         const sphere = new v3d.Mesh(sphereGeometry, sphereMaterial);
         scene.add(sphere);
@@ -65,7 +65,7 @@
 
         //
 
-        window.addEventListener('resize', onResize, false);
+        window.addEventListener('resize', onWindowResize);
 
         //
 
@@ -73,7 +73,7 @@
 
       }
 
-      function onResize() {
+      function onWindowResize() {
 
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();

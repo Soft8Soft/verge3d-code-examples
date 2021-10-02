@@ -43,7 +43,7 @@
         object = new v3d.Object3D();
         scene.add(object);
 
-        const geometry = new v3d.SphereBufferGeometry(1, 4, 4);
+        const geometry = new v3d.SphereGeometry(1, 4, 4);
         const material = new v3d.MeshPhongMaterial({ color: 0xffffff, flatShading: true });
 
         for (let i = 0; i < 100; i++) {
@@ -78,7 +78,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

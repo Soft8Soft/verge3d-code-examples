@@ -96,7 +96,7 @@
         //  GROUND
 
         const gt = new v3d.TextureLoader().load("textures/terrain/grasslight-big.jpg");
-        const gg = new v3d.PlaneBufferGeometry(2000, 2000);
+        const gg = new v3d.PlaneGeometry(2000, 2000);
         const gm = new v3d.MeshPhongMaterial({ color: 0xffffff, map: gt });
 
         const ground = new v3d.Mesh(gg, gm);
@@ -127,7 +127,7 @@
 
         // EVENTS
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
         // CONTROLS
 

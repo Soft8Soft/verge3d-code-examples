@@ -11,7 +11,7 @@
     <div id="info">
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - <span id="waterSize"></span> webgl gpgpu water<br/>
       Move mouse to disturb water.<br>
-      Press mouse button to orbit around. 'W' key toggles wireframe.
+      'W' key toggles wireframe.
     </div>
 
 
@@ -317,7 +317,7 @@
         container.appendChild(stats.dom);
 
         container.style.touchAction = 'none';
-        container.addEventListener('pointermove', onPointerMove, false);
+        container.addEventListener('pointermove', onPointerMove);
 
         document.addEventListener('keydown', function(event) {
 
@@ -329,9 +329,9 @@
 
           }
 
-        }, false);
+        });
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
 
         const gui = new GUI();
@@ -385,7 +385,7 @@
 
         const materialColor = 0x0040C0;
 
-        const geometry = new v3d.PlaneBufferGeometry(BOUNDS, BOUNDS, WIDTH - 1, WIDTH - 1);
+        const geometry = new v3d.PlaneGeometry(BOUNDS, BOUNDS, WIDTH - 1, WIDTH - 1);
 
         // material: make a v3d.ShaderMaterial clone of v3d.MeshPhongMaterial, with customized vertex shader
         const material = new v3d.ShaderMaterial({
@@ -427,7 +427,7 @@
         scene.add(waterMesh);
 
         // v3d.Mesh just for mouse raycasting
-        const geometryRay = new v3d.PlaneBufferGeometry(BOUNDS, BOUNDS, 1, 1);
+        const geometryRay = new v3d.PlaneGeometry(BOUNDS, BOUNDS, 1, 1);
         meshRay = new v3d.Mesh(geometryRay, new v3d.MeshBasicMaterial({ color: 0xFFFFFF, visible: false }));
         meshRay.rotation.x = - Math.PI / 2;
         meshRay.matrixAutoUpdate = false;
@@ -561,7 +561,7 @@
 
       function createSpheres() {
 
-        const sphereTemplate = new v3d.Mesh(new v3d.SphereBufferGeometry(4, 24, 12), new v3d.MeshPhongMaterial({ color: 0xFFFF00 }));
+        const sphereTemplate = new v3d.Mesh(new v3d.SphereGeometry(4, 24, 12), new v3d.MeshPhongMaterial({ color: 0xFFFF00 }));
 
         for (let i = 0; i < NUM_SPHERES; i++) {
 

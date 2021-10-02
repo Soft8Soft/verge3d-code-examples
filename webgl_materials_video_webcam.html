@@ -36,7 +36,7 @@
 
         const texture = new v3d.VideoTexture(video);
 
-        const geometry = new v3d.PlaneBufferGeometry(16, 9);
+        const geometry = new v3d.PlaneGeometry(16, 9);
         geometry.scale(0.5, 0.5, 0.5);
         const material = new v3d.MeshBasicMaterial({ map: texture });
 
@@ -64,7 +64,7 @@
         controls.enableZoom = false;
         controls.enablePan = false;
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
         //
 

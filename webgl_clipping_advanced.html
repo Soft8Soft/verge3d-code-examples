@@ -202,7 +202,7 @@
 
         object = new v3d.Group();
 
-        const geometry = new v3d.BoxBufferGeometry(0.18, 0.18, 0.18);
+        const geometry = new v3d.BoxGeometry(0.18, 0.18, 0.18);
 
         for (let z = - 2; z <= 2; ++ z)
           for (let y = - 2; y <= 2; ++ y)
@@ -218,7 +218,7 @@
         scene.add(object);
 
 
-        const planeGeometry = new v3d.PlaneBufferGeometry(3, 3, 1, 1),
+        const planeGeometry = new v3d.PlaneGeometry(3, 3, 1, 1),
 
           color = new v3d.Color();
 
@@ -274,7 +274,7 @@
         renderer.shadowMap.enabled = true;
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
         container.appendChild(renderer.domElement);
         // Clipping setup:
         globalClippingPlanes = createPlanes(GlobalClippingPlanes.length);

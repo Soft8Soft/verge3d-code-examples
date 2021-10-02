@@ -18,6 +18,8 @@
 
       import { GUI } from './jsm/libs/dat.gui.module.js';
 
+      import { RGBMLoader } from './jsm/loaders/RGBMLoader.js';
+
       const params = {
         exposure: 2.0
       };
@@ -44,17 +46,13 @@
 
         camera = new v3d.OrthographicCamera(- aspect, aspect, 1, - 1, 0, 1);
 
-        new v3d.TextureLoader().load('textures/memorial.png', function(texture) {
+        new RGBMLoader().load('textures/memorial.png', function(texture) {
 
           texture.encoding = v3d.RGBM16Encoding;
 
-          texture.minFilter = v3d.LinearFilter;
-          texture.magFilter = v3d.LinearFilter;
-          texture.flipY = true;
-
           const material = new v3d.MeshBasicMaterial({ map: texture });
 
-          const quad = new v3d.PlaneBufferGeometry(1, 1.5);
+          const quad = new v3d.PlaneGeometry(1, 1.5);
 
           const mesh = new v3d.Mesh(quad, material);
 
@@ -73,7 +71,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

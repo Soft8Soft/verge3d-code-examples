@@ -1,9 +1,16 @@
-v3d.ReflectorRTT = function(geometry, options) {
+(function() {
 
-    v3d.Reflector.call(this, geometry, options);
+    class ReflectorRTT extends v3d.Reflector {
 
-    this.geometry.setDrawRange(0, 0); // avoid rendering geometry
+        constructor(geometry, options) {
 
-};
+            super(geometry, options);
+            this.geometry.setDrawRange(0, 0); // avoid rendering geometry
 
-v3d.ReflectorRTT.prototype = Object.create(v3d.Reflector.prototype);
+        }
+
+    }
+
+    v3d.ReflectorRTT = ReflectorRTT;
+
+})();

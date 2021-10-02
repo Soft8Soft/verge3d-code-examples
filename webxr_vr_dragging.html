@@ -49,7 +49,7 @@
         controls.target.set(0, 1.6, 0);
         controls.update();
 
-        const floorGeometry = new v3d.PlaneBufferGeometry(4, 4);
+        const floorGeometry = new v3d.PlaneGeometry(4, 4);
         const floorMaterial = new v3d.MeshStandardMaterial({
           color: 0xeeeeee,
           roughness: 1.0,
@@ -76,11 +76,11 @@
         scene.add(group);
 
         const geometries = [
-          new v3d.BoxBufferGeometry(0.2, 0.2, 0.2),
-          new v3d.ConeBufferGeometry(0.2, 0.2, 64),
-          new v3d.CylinderBufferGeometry(0.2, 0.2, 0.2, 64),
-          new v3d.IcosahedronBufferGeometry(0.2, 8),
-          new v3d.TorusBufferGeometry(0.2, 0.04, 64, 32)
+          new v3d.BoxGeometry(0.2, 0.2, 0.2),
+          new v3d.ConeGeometry(0.2, 0.2, 64),
+          new v3d.CylinderGeometry(0.2, 0.2, 0.2, 64),
+          new v3d.IcosahedronGeometry(0.2, 8),
+          new v3d.TorusGeometry(0.2, 0.04, 64, 32)
         ];
 
         for (let i = 0; i < 50; i++) {
@@ -160,7 +160,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

@@ -23,6 +23,8 @@
       import { GUI } from './jsm/libs/dat.gui.module.js';
       import { OrbitControls } from './jsm/controls/OrbitControls.js';
       import { HDRCubeTextureLoader } from './jsm/loaders/HDRCubeTextureLoader.js';
+      import { RGBMLoader } from './jsm/loaders/RGBMLoader.js';
+      import { DebugEnvironment } from './jsm/environments/DebugEnvironment.js';
 
       const params = {
         envMap: 'HDR',
@@ -41,44 +43,6 @@
       init();
       animate();
 
-      function getEnvScene() {
-
-        const envScene = new v3d.Scene();
-
-        const geometry = new v3d.BoxBufferGeometry();
-        geometry.deleteAttribute('uv');
-        const roomMaterial = new v3d.MeshStandardMaterial({ metalness: 0, side: v3d.BackSide });
-        const room = new v3d.Mesh(geometry, roomMaterial);
-        room.scale.setScalar(10);
-        envScene.add(room);
-
-        const mainLight = new v3d.PointLight(0xffffff, 50, 0, 2);
-        envScene.add(mainLight);
-
-        const lightMaterial = new v3d.MeshLambertMaterial({ color: 0x000000, emissive: 0xffffff, emissiveIntensity: 10 });
-
-        const light1 = new v3d.Mesh(geometry, lightMaterial);
-        light1.material.color.setHex(0xff0000);
-        light1.position.set(- 5, 2, 0);
-        light1.scale.set(0.1, 1, 1);
-        envScene.add(light1);
-
-        const light2 = new v3d.Mesh(geometry, lightMaterial.clone());
-        light2.material.color.setHex(0x00ff00);
-        light2.position.set(0, 5, 0);
-        light2.scale.set(1, 0.1, 1);
-        envScene.add(light2);
-
-        const light3 = new v3d.Mesh(geometry, lightMaterial.clone());
-        light3.material.color.setHex(0x0000ff);
-        light3.position.set(2, 1, 5);
-        light3.scale.set(1.5, 2, 0.1);
-        envScene.add(light3);
-
-        return envScene;
-
-      }
-
       function init() {
 
         container = document.createElement('div');
@@ -96,8 +60,8 @@
 
         //
 
-        let geometry = new v3d.TorusKnotBufferGeometry(18, 8, 150, 20);
-        // let geometry = new v3d.SphereBufferGeometry(26, 64, 32);
+        let geometry = new v3d.TorusKnotGeometry(18, 8, 150, 20);
+        // let geometry = new v3d.SphereGeometry(26, 64, 32);
         let material = new v3d.MeshStandardMaterial({
           color: 0xffffff,
           metalness: params.metalness,
@@ -108,7 +72,7 @@
         scene.add(torusMesh);
 
 
-        geometry = new v3d.PlaneBufferGeometry(200, 200);
+        geometry = new v3d.PlaneGeometry(200, 200);
         material = new v3d.MeshBasicMaterial();
 
         planeMesh = new v3d.Mesh(geometry, material);
@@ -148,25 +112,21 @@
 
 
         const rgbmUrls = ['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'];
-        rgbmCubeMap = new v3d.CubeTextureLoader()
+        rgbmCubeMap = new RGBMLoader()
           .setPath('./textures/cube/pisaRGBM16/')
-          .load(rgbmUrls, function() {
+          .loadCubemap(rgbmUrls, function() {
 
             rgbmCubeMap.encoding = v3d.RGBM16Encoding;
-            rgbmCubeMap.format = v3d.RGBAFormat;
 
             rgbmCubeRenderTarget = pmremGenerator.fromCubemap(rgbmCubeMap);
-
-            rgbmCubeMap.magFilter = v3d.LinearFilter;
-            rgbmCubeMap.needsUpdate = true;
 
           });
 
         const pmremGenerator = new v3d.PMREMGenerator(renderer);
         pmremGenerator.compileCubemapShader();
 
-        const envScene = getEnvScene();
-        generatedCubeRenderTarget = pmremGenerator.fromScene(envScene, 0.04);
+        const envScene = new DebugEnvironment();
+        generatedCubeRenderTarget = pmremGenerator.fromScene(envScene);
 
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -182,7 +142,7 @@
         controls.minDistance = 50;
         controls.maxDistance = 300;
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
         const gui = new GUI();
 

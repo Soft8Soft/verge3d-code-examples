@@ -1,63 +1,60 @@
-v3d.BoxLineGeometry = function(width, height, depth, widthSegments, heightSegments, depthSegments) {
+(function() {
 
-    v3d.BufferGeometry.call(this);
+    class BoxLineGeometry extends v3d.BufferGeometry {
 
-    width = width || 1;
-    height = height || 1;
-    depth = depth || 1;
+        constructor(width = 1, height = 1, depth = 1, widthSegments = 1, heightSegments = 1, depthSegments = 1) {
 
-    widthSegments = Math.floor(widthSegments) || 1;
-    heightSegments = Math.floor(heightSegments) || 1;
-    depthSegments = Math.floor(depthSegments) || 1;
+            super();
+            widthSegments = Math.floor(widthSegments);
+            heightSegments = Math.floor(heightSegments);
+            depthSegments = Math.floor(depthSegments);
+            const widthHalf = width / 2;
+            const heightHalf = height / 2;
+            const depthHalf = depth / 2;
+            const segmentWidth = width / widthSegments;
+            const segmentHeight = height / heightSegments;
+            const segmentDepth = depth / depthSegments;
+            const vertices = [];
+            let x = - widthHalf;
+            let y = - heightHalf;
+            let z = - depthHalf;
 
-    var widthHalf = width / 2;
-    var heightHalf = height / 2;
-    var depthHalf = depth / 2;
+            for (let i = 0; i <= widthSegments; i++) {
 
-    var segmentWidth = width / widthSegments;
-    var segmentHeight = height / heightSegments;
-    var segmentDepth = depth / depthSegments;
+                vertices.push(x, - heightHalf, - depthHalf, x, heightHalf, - depthHalf);
+                vertices.push(x, heightHalf, - depthHalf, x, heightHalf, depthHalf);
+                vertices.push(x, heightHalf, depthHalf, x, - heightHalf, depthHalf);
+                vertices.push(x, - heightHalf, depthHalf, x, - heightHalf, - depthHalf);
+                x += segmentWidth;
 
-    var vertices = [];
+            }
 
-    var x = - widthHalf, y = - heightHalf, z = - depthHalf;
+            for (let i = 0; i <= heightSegments; i++) {
 
-    for (var i = 0; i <= widthSegments; i++) {
+                vertices.push(- widthHalf, y, - depthHalf, widthHalf, y, - depthHalf);
+                vertices.push(widthHalf, y, - depthHalf, widthHalf, y, depthHalf);
+                vertices.push(widthHalf, y, depthHalf, - widthHalf, y, depthHalf);
+                vertices.push(- widthHalf, y, depthHalf, - widthHalf, y, - depthHalf);
+                y += segmentHeight;
 
-        vertices.push(x, - heightHalf, - depthHalf, x, heightHalf, - depthHalf);
-        vertices.push(x, heightHalf, - depthHalf, x, heightHalf, depthHalf);
-        vertices.push(x, heightHalf, depthHalf, x, - heightHalf, depthHalf);
-        vertices.push(x, - heightHalf, depthHalf, x, - heightHalf, - depthHalf);
+            }
 
-        x += segmentWidth;
+            for (let i = 0; i <= depthSegments; i++) {
+
+                vertices.push(- widthHalf, - heightHalf, z, - widthHalf, heightHalf, z);
+                vertices.push(- widthHalf, heightHalf, z, widthHalf, heightHalf, z);
+                vertices.push(widthHalf, heightHalf, z, widthHalf, - heightHalf, z);
+                vertices.push(widthHalf, - heightHalf, z, - widthHalf, - heightHalf, z);
+                z += segmentDepth;
+
+            }
+
+            this.setAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
+
+        }
 
     }
 
-    for (var i = 0; i <= heightSegments; i++) {
+    v3d.BoxLineGeometry = BoxLineGeometry;
 
-        vertices.push(- widthHalf, y, - depthHalf, widthHalf, y, - depthHalf);
-        vertices.push(widthHalf, y, - depthHalf, widthHalf, y, depthHalf);
-        vertices.push(widthHalf, y, depthHalf, - widthHalf, y, depthHalf);
-        vertices.push(- widthHalf, y, depthHalf, - widthHalf, y, - depthHalf);
-
-        y += segmentHeight;
-
-    }
-
-    for (var i = 0; i <= depthSegments; i++) {
-
-        vertices.push(- widthHalf, - heightHalf, z, - widthHalf, heightHalf, z);
-        vertices.push(- widthHalf, heightHalf, z, widthHalf, heightHalf, z);
-        vertices.push(widthHalf, heightHalf, z, widthHalf, - heightHalf, z);
-        vertices.push(widthHalf, - heightHalf, z, - widthHalf, - heightHalf, z);
-
-        z += segmentDepth;
-
-    }
-
-    this.setAttribute('position', new v3d.Float32BufferAttribute(vertices, 3));
-
-};
-
-v3d.BoxLineGeometry.prototype = Object.create(v3d.BufferGeometry.prototype);
-v3d.BoxLineGeometry.prototype.constructor = v3d.BoxLineGeometry;
+})();

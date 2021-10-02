@@ -82,7 +82,7 @@
 
         //
 
-        const geometry = new v3d.TorusKnotBufferGeometry(18, 8, 150, 20);
+        const geometry = new v3d.TorusKnotGeometry(18, 8, 150, 20);
 
         nodeMaterial = new StandardNodeMaterial();
         nodeMaterial.color.value = new v3d.Color(0xffffff);
@@ -98,7 +98,7 @@
         torusMesh = new v3d.Mesh(geometry, nodeMaterial);
         scene.add(torusMesh);
 
-        planeMesh = new v3d.Mesh(new v3d.PlaneBufferGeometry(200, 200), new v3d.MeshBasicMaterial());
+        planeMesh = new v3d.Mesh(new v3d.PlaneGeometry(200, 200), new v3d.MeshBasicMaterial());
         planeMesh.position.y = - 50;
         planeMesh.rotation.x = - Math.PI * 0.5;
         scene.add(planeMesh);
@@ -141,7 +141,7 @@
         controls.minDistance = 50;
         controls.maxDistance = 300;
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
         const gui = new GUI();
 

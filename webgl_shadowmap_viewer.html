@@ -36,7 +36,7 @@
         initMisc();
 
         document.body.appendChild(renderer.domElement);
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 
@@ -82,7 +82,7 @@
         scene.add(new v3d.CameraHelper(dirLight.shadow.camera));
 
         // Geometry
-        let geometry = new v3d.TorusKnotBufferGeometry(25, 8, 75, 20);
+        let geometry = new v3d.TorusKnotGeometry(25, 8, 75, 20);
         let material = new v3d.MeshPhongMaterial({
           color: 0xff0000,
           shininess: 150,
@@ -96,14 +96,14 @@
         torusKnot.receiveShadow = true;
         scene.add(torusKnot);
 
-        geometry = new v3d.BoxBufferGeometry(3, 3, 3);
+        geometry = new v3d.BoxGeometry(3, 3, 3);
         cube = new v3d.Mesh(geometry, material);
         cube.position.set(8, 3, 8);
         cube.castShadow = true;
         cube.receiveShadow = true;
         scene.add(cube);
 
-        geometry = new v3d.BoxBufferGeometry(10, 0.15, 10);
+        geometry = new v3d.BoxGeometry(10, 0.15, 10);
         material = new v3d.MeshPhongMaterial({
           color: 0xa0adaf,
           shininess: 150,

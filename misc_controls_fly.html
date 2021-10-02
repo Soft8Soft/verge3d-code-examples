@@ -92,7 +92,7 @@
 
         // planet
 
-        geometry = new v3d.SphereBufferGeometry(radius, 100, 50);
+        geometry = new v3d.SphereGeometry(radius, 100, 50);
 
         meshPlanet = new v3d.Mesh(geometry, materialNormalMap);
         meshPlanet.rotation.y = 0;
@@ -205,7 +205,7 @@
         stats = new Stats();
         document.body.appendChild(stats.dom);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
         // postprocessing
 

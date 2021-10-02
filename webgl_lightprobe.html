@@ -94,8 +94,8 @@
 
           lightProbe.copy(LightProbeGenerator.fromCubeTexture(cubeTexture));
 
-          const geometry = new v3d.SphereBufferGeometry(5, 64, 32);
-          //const geometry = new TorusKnotBufferGeometry(4, 1.5, 256, 32, 2, 3);
+          const geometry = new v3d.SphereGeometry(5, 64, 32);
+          //const geometry = new v3d.TorusKnotGeometry(4, 1.5, 256, 32, 2, 3);
 
           const material = new v3d.MeshStandardMaterial({
             color: 0xffffff,
@@ -150,7 +150,7 @@
         fl.open();
 
         // listener
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

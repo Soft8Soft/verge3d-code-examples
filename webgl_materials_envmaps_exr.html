@@ -52,7 +52,7 @@
 
         //
 
-        let geometry = new v3d.TorusKnotBufferGeometry(18, 8, 150, 20);
+        let geometry = new v3d.TorusKnotGeometry(18, 8, 150, 20);
         let material = new v3d.MeshStandardMaterial({
           metalness: params.roughness,
           roughness: params.metalness,
@@ -62,7 +62,7 @@
         torusMesh = new v3d.Mesh(geometry, material);
         scene.add(torusMesh);
 
-        geometry = new v3d.PlaneBufferGeometry(200, 200);
+        geometry = new v3d.PlaneGeometry(200, 200);
         material = new v3d.MeshBasicMaterial();
 
         planeMesh = new v3d.Mesh(geometry, material);
@@ -117,7 +117,7 @@
         controls.minDistance = 50;
         controls.maxDistance = 300;
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
         const gui = new GUI();
 

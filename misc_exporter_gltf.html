@@ -208,7 +208,7 @@
           map: mapGrid
         });
 
-        object = new v3d.Mesh(new v3d.IcosahedronBufferGeometry(75, 0), material);
+        object = new v3d.Mesh(new v3d.IcosahedronGeometry(75, 0), material);
         object.position.set(- 200, 0, 200);
         object.name = 'Icosahedron';
         scene1.add(object);
@@ -218,7 +218,7 @@
           color: 0x0000ff,
           wireframe: true
         });
-        object = new v3d.Mesh(new v3d.OctahedronBufferGeometry(75, 1), material);
+        object = new v3d.Mesh(new v3d.OctahedronGeometry(75, 1), material);
         object.position.set(0, 0, 200);
         object.name = 'Octahedron';
         scene1.add(object);
@@ -230,7 +230,7 @@
           opacity: 0.5
         });
 
-        object = new v3d.Mesh(new v3d.TetrahedronBufferGeometry(75, 0), material);
+        object = new v3d.Mesh(new v3d.TetrahedronGeometry(75, 0), material);
         object.position.set(200, 0, 200);
         object.name = 'Tetrahedron';
         scene1.add(object);
@@ -246,7 +246,7 @@
           flatShading: true
         });
         material.map = gradientTexture;
-        sphere = new v3d.Mesh(new v3d.SphereBufferGeometry(70, 10, 10), material);
+        sphere = new v3d.Mesh(new v3d.SphereGeometry(70, 10, 10), material);
         sphere.position.set(0, 0, 0);
         sphere.name = "Sphere";
         scene1.add(sphere);
@@ -256,7 +256,7 @@
           color: 0xff00ff,
           flatShading: true
         });
-        object = new v3d.Mesh(new v3d.CylinderBufferGeometry(10, 80, 100), material);
+        object = new v3d.Mesh(new v3d.CylinderGeometry(10, 80, 100), material);
         object.position.set(200, 0, 0);
         object.name = "Cylinder";
         scene1.add(object);
@@ -266,7 +266,7 @@
           color: 0xff0000,
           roughness: 1
         });
-        object = new v3d.Mesh(new v3d.TorusKnotBufferGeometry(50, 15, 40, 10), material);
+        object = new v3d.Mesh(new v3d.TorusKnotGeometry(50, 15, 40, 10), material);
         object.position.set(- 200, 0, 0);
         object.name = "Cylinder";
         scene1.add(object);
@@ -278,12 +278,12 @@
         const mapWood = new v3d.TextureLoader().load('textures/hardwood2_diffuse.jpg');
         material = new v3d.MeshStandardMaterial({ map: mapWood, side: v3d.DoubleSide });
 
-        object = new v3d.Mesh(new v3d.BoxBufferGeometry(40, 100, 100), material);
+        object = new v3d.Mesh(new v3d.BoxGeometry(40, 100, 100), material);
         object.position.set(- 200, 0, 400);
         object.name = "Cube";
         scene1.add(object);
 
-        object2 = new v3d.Mesh(new v3d.BoxBufferGeometry(40, 40, 40, 2, 2, 2), material);
+        object2 = new v3d.Mesh(new v3d.BoxGeometry(40, 40, 40, 2, 2, 2), material);
         object2.position.set(0, 0, 50);
         object2.rotation.set(0, 45, 0);
         object2.name = "SubCube";
@@ -302,7 +302,7 @@
         group2.position.set(0, 50, 0);
         group1.add(group2);
 
-        object2 = new v3d.Mesh(new v3d.BoxBufferGeometry(30, 30, 30), material);
+        object2 = new v3d.Mesh(new v3d.BoxGeometry(30, 30, 30), material);
         object2.name = "Cube in group";
         object2.position.set(0, 0, 400);
         group2.add(object2);
@@ -422,15 +422,15 @@
           side: v3d.DoubleSide
         });
 
-        object = new v3d.Mesh(new v3d.CircleBufferGeometry(50, 20, 0, Math.PI * 2), material);
+        object = new v3d.Mesh(new v3d.CircleGeometry(50, 20, 0, Math.PI * 2), material);
         object.position.set(200, 0, - 400);
         scene1.add(object);
 
-        object = new v3d.Mesh(new v3d.RingBufferGeometry(10, 50, 20, 5, 0, Math.PI * 2), material);
+        object = new v3d.Mesh(new v3d.RingGeometry(10, 50, 20, 5, 0, Math.PI * 2), material);
         object.position.set(0, 0, - 400);
         scene1.add(object);
 
-        object = new v3d.Mesh(new v3d.CylinderBufferGeometry(25, 75, 100, 40, 5), material);
+        object = new v3d.Mesh(new v3d.CylinderGeometry(25, 75, 100, 40, 5), material);
         object.position.set(- 200, 0, - 400);
         scene1.add(object);
 
@@ -443,7 +443,7 @@
 
         }
 
-        object = new v3d.Mesh(new v3d.LatheBufferGeometry(points, 20), material);
+        object = new v3d.Mesh(new v3d.LatheGeometry(points, 20), material);
         object.position.set(200, 0, 400);
         scene1.add(object);
 
@@ -453,7 +453,7 @@
         material = new v3d.MeshBasicMaterial({
           color: 0xff0000
         });
-        object = new v3d.Mesh(new v3d.BoxBufferGeometry(200, 200, 200), material);
+        object = new v3d.Mesh(new v3d.BoxGeometry(200, 200, 200), material);
         object.position.set(0, 0, 0);
         object.name = "CubeHidden";
         object.visible = false;
@@ -477,7 +477,7 @@
         // 2nd v3d.Scene
         // ---------------------------------------------------------------------
         scene2 = new v3d.Scene();
-        object = new v3d.Mesh(new v3d.BoxBufferGeometry(100, 100, 100), material);
+        object = new v3d.Mesh(new v3d.BoxGeometry(100, 100, 100), material);
         object.position.set(0, 0, 0);
         object.name = "Cube2ndScene";
         scene2.name = 'Scene2';
@@ -493,7 +493,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

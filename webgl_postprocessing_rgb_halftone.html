@@ -60,7 +60,7 @@
         scene.background = new v3d.Color(0x444444);
 
         group = new v3d.Group();
-        const floor = new v3d.Mesh(new v3d.BoxBufferGeometry(100, 1, 100), new v3d.MeshPhongMaterial({}));
+        const floor = new v3d.Mesh(new v3d.BoxGeometry(100, 1, 100), new v3d.MeshPhongMaterial({}));
         floor.position.y = - 10;
         const light = new v3d.PointLight(0xffffff, 1.0, 50, 2);
         light.position.y = 2;
@@ -100,7 +100,7 @@
         for (let i = 0; i < 50; ++ i) {
 
           // fill scene with coloured cubes
-          const mesh = new v3d.Mesh(new v3d.BoxBufferGeometry(2, 2, 2), mat);
+          const mesh = new v3d.Mesh(new v3d.BoxGeometry(2, 2, 2), mat);
           mesh.position.set(Math.random() * 16 - 8, Math.random() * 16 - 8, Math.random() * 16 - 8);
           mesh.rotation.set(Math.random() * Math.PI * 2, Math.random() * Math.PI * 2, Math.random() * Math.PI * 2);
           group.add(mesh);

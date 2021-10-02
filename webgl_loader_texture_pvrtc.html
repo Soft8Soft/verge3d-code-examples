@@ -31,7 +31,7 @@
 
         scene = new v3d.Scene();
 
-        const geometry = new v3d.BoxBufferGeometry(200, 200, 200);
+        const geometry = new v3d.BoxGeometry(200, 200, 200);
 
         //
 
@@ -126,7 +126,7 @@
         scene.add(mesh);
         meshes.push(mesh);
 
-        const torus = new v3d.TorusBufferGeometry(100, 50, 32, 24);
+        const torus = new v3d.TorusGeometry(100, 50, 32, 24);
 
         mesh = new v3d.Mesh(torus, material6);
         mesh.position.x = 166;
@@ -147,7 +147,7 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

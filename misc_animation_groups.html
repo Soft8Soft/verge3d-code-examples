@@ -40,7 +40,7 @@
 
         //
 
-        const geometry = new v3d.BoxBufferGeometry(5, 5, 5);
+        const geometry = new v3d.BoxGeometry(5, 5, 5);
         const material = new v3d.MeshBasicMaterial({ transparent: true });
 
         //
@@ -101,7 +101,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

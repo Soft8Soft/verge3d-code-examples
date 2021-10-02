@@ -39,6 +39,7 @@
         camera: 'perspective',
         clearColor: 'black',
         clearAlpha: 1.0,
+        viewOffsetX: 0,
         autoRotate: true
 
       };
@@ -67,6 +68,7 @@
         gui.add(params, 'camera', ['perspective', 'orthographic']);
         gui.add(params, "clearColor", ['black', 'white', 'blue', 'green', 'red']);
         gui.add(params, "clearAlpha", 0, 1);
+        gui.add(params, "viewOffsetX", -100, 100);
         gui.add(params, "autoRotate");
 
         gui.open();
@@ -92,6 +94,7 @@
 
         cameraP = new v3d.PerspectiveCamera(65, aspect, 3, 10);
         cameraP.position.z = 7;
+        cameraP.setViewOffset(width, height, params.viewOffsetX, 0, width, height);
 
         cameraO = new v3d.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 3, 10);
         cameraO.position.z = 7;
@@ -128,7 +131,7 @@
         const light4 = new v3d.AmbientLight(0xffffff, 0.05);
         scene.add(light4);
 
-        const geometry = new v3d.SphereBufferGeometry(3, 48, 24);
+        const geometry = new v3d.SphereGeometry(3, 48, 24);
 
         for (let i = 0; i < 120; i++) {
 
@@ -161,7 +164,7 @@
         copyPass = new ShaderPass(CopyShader);
         composer.addPass(copyPass);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 
@@ -172,6 +175,7 @@
         const aspect = width / height;
 
         cameraP.aspect = aspect;
+        cameraP.setViewOffset(width, height, params.viewOffset, 0, width, height);
         cameraO.updateProjectionMatrix();
 
         cameraO.left = - height * aspect;
@@ -226,6 +230,8 @@
         ssaaRenderPassO.enabled = (params.camera === 'orthographic');
 
         copyPass.enabled = ! params.renderToScreen;
+        
+        cameraP.view.offsetX = params.viewOffsetX;
 
         composer.render();
 

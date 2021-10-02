@@ -1,19 +1,19 @@
-v3d.WireframeGeometry2 = function(geometry) {
+(function() {
 
-    v3d.LineSegmentsGeometry.call(this);
+    class WireframeGeometry2 extends v3d.LineSegmentsGeometry {
 
-    this.type = 'WireframeGeometry2';
+        constructor(geometry) {
 
-    this.fromWireframeGeometry(new v3d.WireframeGeometry(geometry));
+            super();
+            this.type = 'WireframeGeometry2';
+            this.fromWireframeGeometry(new v3d.WireframeGeometry(geometry)); // set colors, maybe
 
-    // set colors, maybe
+        }
 
-};
+    }
 
-v3d.WireframeGeometry2.prototype = Object.assign(Object.create(v3d.LineSegmentsGeometry.prototype), {
+    WireframeGeometry2.prototype.isWireframeGeometry2 = true;
 
-    constructor: v3d.WireframeGeometry2,
+    v3d.WireframeGeometry2 = WireframeGeometry2;
 
-    isWireframeGeometry2: true
-
-});
+})();

@@ -87,7 +87,7 @@
 
       function initMeshes() {
 
-        const geometry = new v3d.IcosahedronBufferGeometry(1, 3);
+        const geometry = new v3d.IcosahedronGeometry(1, 3);
 
         const meshL = new v3d.Mesh(geometry, new v3d.MeshStandardMaterial());
         sceneL.add(meshL);
@@ -107,8 +107,8 @@
 
           controls.enabled = false;
 
-          window.addEventListener('pointermove', onPointerMove, false);
-          window.addEventListener('pointerup', onPointerUp, false);
+          window.addEventListener('pointermove', onPointerMove);
+          window.addEventListener('pointerup', onPointerUp);
 
         }
 
@@ -116,8 +116,8 @@
 
           controls.enabled = true;
 
-          window.removeEventListener('pointermove', onPointerMove, false);
-          window.removeEventListener('pointerup', onPointerUp, false);
+          window.removeEventListener('pointermove', onPointerMove);
+          window.removeEventListener('pointerup', onPointerUp);
 
         }
 

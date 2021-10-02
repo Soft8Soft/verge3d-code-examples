@@ -53,7 +53,7 @@
         });
 
         document.body.appendChild(renderer.domElement);
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 
@@ -106,7 +106,7 @@
 
         // Geometry
 
-        const geometry = new v3d.TorusKnotBufferGeometry(25, 8, 75, 20);
+        const geometry = new v3d.TorusKnotGeometry(25, 8, 75, 20);
         const material = new v3d.MeshPhongMaterial({
           color: 0x999999,
           shininess: 0,
@@ -120,7 +120,7 @@
         torusKnot.receiveShadow = true;
         scene.add(torusKnot);
 
-        const cylinderGeometry = new v3d.CylinderBufferGeometry(0.75, 0.75, 7, 32);
+        const cylinderGeometry = new v3d.CylinderGeometry(0.75, 0.75, 7, 32);
 
         const pillar1 = new v3d.Mesh(cylinderGeometry, material);
         pillar1.position.set(10, 3.5, 10);
@@ -139,7 +139,7 @@
         scene.add(pillar3);
         scene.add(pillar4);
 
-        const planeGeometry = new v3d.PlaneBufferGeometry(200, 200);
+        const planeGeometry = new v3d.PlaneGeometry(200, 200);
         const planeMaterial = new v3d.MeshPhongMaterial({
           color: 0x999999,
           shininess: 0,

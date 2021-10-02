@@ -95,7 +95,7 @@
         group = new v3d.Group();
         scene.add(group);
 
-        const helper = new v3d.BoxHelper(new v3d.Mesh(new v3d.BoxBufferGeometry(r, r, r)));
+        const helper = new v3d.BoxHelper(new v3d.Mesh(new v3d.BoxGeometry(r, r, r)));
         helper.material.color.setHex(0x101010);
         helper.material.blending = v3d.AdditiveBlending;
         helper.material.transparent = true;
@@ -174,7 +174,7 @@
         stats = new Stats();
         container.appendChild(stats.dom);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

@@ -1,53 +1,50 @@
-v3d.FilmPass = function(noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale) {
+(function() {
 
-    v3d.Pass.call(this);
+    class FilmPass extends v3d.Pass {
 
-    if (v3d.FilmShader === undefined)
-        console.error('v3d.FilmPass relies on v3d.FilmShader');
+        constructor(noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale) {
 
-    var shader = v3d.FilmShader;
+            super();
+            if (v3d.FilmShader === undefined) console.error('v3d.FilmPass relies on v3d.FilmShader');
+            const shader = v3d.FilmShader;
+            this.uniforms = v3d.UniformsUtils.clone(shader.uniforms);
+            this.material = new v3d.ShaderMaterial({
+                uniforms: this.uniforms,
+                vertexShader: shader.vertexShader,
+                fragmentShader: shader.fragmentShader
+            });
+            if (grayscale !== undefined) this.uniforms.grayscale.value = grayscale;
+            if (noiseIntensity !== undefined) this.uniforms.nIntensity.value = noiseIntensity;
+            if (scanlinesIntensity !== undefined) this.uniforms.sIntensity.value = scanlinesIntensity;
+            if (scanlinesCount !== undefined) this.uniforms.sCount.value = scanlinesCount;
+            this.fsQuad = new v3d.FullScreenQuad(this.material);
 
-    this.uniforms = v3d.UniformsUtils.clone(shader.uniforms);
+        }
 
-    this.material = new v3d.ShaderMaterial({
+        render(renderer, writeBuffer, readBuffer, deltaTime
+            /*, maskActive */
+        ) {
 
-        uniforms: this.uniforms,
-        vertexShader: shader.vertexShader,
-        fragmentShader: shader.fragmentShader
+            this.uniforms['tDiffuse'].value = readBuffer.texture;
+            this.uniforms['time'].value += deltaTime;
 
-    });
+            if (this.renderToScreen) {
 
-    if (grayscale !== undefined)    this.uniforms.grayscale.value = grayscale;
-    if (noiseIntensity !== undefined) this.uniforms.nIntensity.value = noiseIntensity;
-    if (scanlinesIntensity !== undefined) this.uniforms.sIntensity.value = scanlinesIntensity;
-    if (scanlinesCount !== undefined) this.uniforms.sCount.value = scanlinesCount;
+                renderer.setRenderTarget(null);
+                this.fsQuad.render(renderer);
 
-    this.fsQuad = new v3d.Pass.FullScreenQuad(this.material);
+            } else {
 
-};
+                renderer.setRenderTarget(writeBuffer);
+                if (this.clear) renderer.clear();
+                this.fsQuad.render(renderer);
 
-v3d.FilmPass.prototype = Object.assign(Object.create(v3d.Pass.prototype), {
-
-    constructor: v3d.FilmPass,
-
-    render: function(renderer, writeBuffer, readBuffer, deltaTime /*, maskActive */) {
-
-        this.uniforms['tDiffuse'].value = readBuffer.texture;
-        this.uniforms['time'].value += deltaTime;
-
-        if (this.renderToScreen) {
-
-            renderer.setRenderTarget(null);
-            this.fsQuad.render(renderer);
-
-        } else {
-
-            renderer.setRenderTarget(writeBuffer);
-            if (this.clear) renderer.clear();
-            this.fsQuad.render(renderer);
+            }
 
         }
 
     }
 
-});
+    v3d.FilmPass = FilmPass;
+
+})();

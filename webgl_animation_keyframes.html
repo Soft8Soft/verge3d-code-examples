@@ -34,6 +34,8 @@
       import Stats from './jsm/libs/stats.module.js';
 
       import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { RoomEnvironment } from './jsm/environments/RoomEnvironment.js';
+
       import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
       import { DRACOLoader } from './jsm/loaders/DRACOLoader.js';
 
@@ -51,8 +53,11 @@
       renderer.outputEncoding = v3d.sRGBEncoding;
       container.appendChild(renderer.domElement);
 
+      const pmremGenerator = new v3d.PMREMGenerator(renderer);
+
       const scene = new v3d.Scene();
       scene.background = new v3d.Color(0xbfe3dd);
+      scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
 
       const camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 100);
       camera.position.set(5, 2, 8);
@@ -62,21 +67,6 @@
       controls.update();
       controls.enablePan = false;
       controls.enableDamping = true;
-
-      scene.add(new v3d.HemisphereLight(0xffffff, 0x000000, 0.4));
-
-      const dirLight = new v3d.DirectionalLight(0xffffff, 1);
-      dirLight.position.set(5, 2, 8);
-      scene.add(dirLight);
-
-      // envmap
-      const path = 'textures/cube/Park2/';
-      const format = '.jpg';
-      const envMap = new v3d.CubeTextureLoader().load([
-        path + 'posx' + format, path + 'negx' + format,
-        path + 'posy' + format, path + 'negy' + format,
-        path + 'posz' + format, path + 'negz' + format
-      ]);
 
       const dracoLoader = new DRACOLoader();
       dracoLoader.setDecoderPath('js/libs/draco/gltf/');
@@ -88,12 +78,6 @@
         const model = gltf.scene;
         model.position.set(1, 1, 0);
         model.scale.set(0.01, 0.01, 0.01);
-        model.traverse(function(child) {
-
-          if (child.isMesh) child.material.envMap = envMap;
-
-        });
-
         scene.add(model);
 
         mixer = new v3d.AnimationMixer(model);

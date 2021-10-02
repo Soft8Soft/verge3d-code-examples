@@ -37,8 +37,7 @@
         color: new v3d.Color(255, 0, 127),
         sheenBRDF: true,
         sheen: new v3d.Color(10, 10, 10), // corresponds to .04 reflectance
-        roughness: .9,
-        exposure: 2,
+        roughness: 0.9
       };
 
       // model
@@ -57,7 +56,7 @@
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0xbfd1e5);
 
-        mesh.scale.multiplyScalar(.5);
+        mesh.scale.multiplyScalar(0.5);
         scene.add(mesh);
 
         //
@@ -77,7 +76,7 @@
         //
 
         sphere = new v3d.Mesh(
-          new v3d.SphereBufferGeometry(1, 100, 100),
+          new v3d.SphereGeometry(1, 100, 100),
           material
         );
         scene.add(sphere);
@@ -95,12 +94,12 @@
         controls.target.set(0, 2, 0);
         controls.update();
 
-        directionalLight = new v3d.DirectionalLight(0xffffff, .5);
+        directionalLight = new v3d.DirectionalLight(0xffffff, 0.5);
         directionalLight.position.set(0, 10, 0);
         directionalLight.castShadow = true;
         directionalLight.add(
           new v3d.Mesh(
-            new v3d.SphereBufferGeometry(.5),
+            new v3d.SphereGeometry(0.5),
             new v3d.MeshBasicMaterial({ color: 0xffffff })
           )
         );
@@ -112,7 +111,7 @@
         stats.domElement.style.top = '0px';
         container.appendChild(stats.dom);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
         const gui = new GUI();
 
@@ -141,7 +140,6 @@
         gui.add(params, 'sheenBRDF').onChange(onUpdate);
         gui.addColor(params, 'sheen');
         gui.add(params, 'roughness', 0, 1);
-        gui.add(params, 'exposure', 0, 3);
         gui.open();
 
         onUpdate();
@@ -190,7 +188,6 @@
 
         //
 
-        renderer.toneMappingExposure = params.exposure;
         renderer.render(scene, camera);
 
       }

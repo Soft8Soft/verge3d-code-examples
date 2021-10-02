@@ -124,7 +124,7 @@
         setupPost();
 
         onWindowResize();
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
         //
         const gui = new GUI({ width: 300 });
@@ -169,7 +169,7 @@
             tDepth: { value: null }
           }
         });
-        const postPlane = new v3d.PlaneBufferGeometry(2, 2);
+        const postPlane = new v3d.PlaneGeometry(2, 2);
         const postQuad = new v3d.Mesh(postPlane, postMaterial);
         postScene = new v3d.Scene();
         postScene.add(postQuad);
@@ -180,7 +180,7 @@
 
         scene = new v3d.Scene();
 
-        const geometry = new v3d.TorusKnotBufferGeometry(1, 0.3, 128, 64);
+        const geometry = new v3d.TorusKnotGeometry(1, 0.3, 128, 64);
         const material = new v3d.MeshBasicMaterial({ color: 'blue' });
 
         const count = 50;

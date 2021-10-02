@@ -63,7 +63,7 @@
         const shadowTexture = new v3d.CanvasTexture(canvas);
 
         const shadowMaterial = new v3d.MeshBasicMaterial({ map: shadowTexture });
-        const shadowGeo = new v3d.PlaneBufferGeometry(300, 300, 1, 1);
+        const shadowGeo = new v3d.PlaneGeometry(300, 300, 1, 1);
 
         let shadowMesh;
 
@@ -86,7 +86,7 @@
 
         const radius = 200;
 
-        const geometry1 = new v3d.IcosahedronBufferGeometry(radius, 1);
+        const geometry1 = new v3d.IcosahedronGeometry(radius, 1);
 
         const count = geometry1.attributes.position.count;
         geometry1.setAttribute('color', new v3d.BufferAttribute(new Float32Array(count * 3), 3));

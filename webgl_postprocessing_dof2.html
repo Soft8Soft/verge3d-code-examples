@@ -89,7 +89,7 @@
 
         // plane particles
 
-        const planePiece = new v3d.PlaneBufferGeometry(10, 10, 1, 1);
+        const planePiece = new v3d.PlaneGeometry(10, 10, 1, 1);
 
         const planeMat = new v3d.MeshPhongMaterial({
           color: 0xffffff * 0.4,
@@ -154,7 +154,7 @@
 
         // add balls
 
-        const geometry = new v3d.SphereBufferGeometry(1, 20, 20);
+        const geometry = new v3d.SphereGeometry(1, 20, 20);
 
         for (let i = 0; i < 20; i++) {
 
@@ -192,7 +192,7 @@
         container.appendChild(stats.dom);
 
         container.style.touchAction = 'none';
-        container.addEventListener('pointermove', onPointerMove, false);
+        container.addEventListener('pointermove', onPointerMove);
 
         effectController = {
 
@@ -275,7 +275,7 @@
 
         matChanger();
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 
@@ -342,7 +342,7 @@
 
         });
 
-        postprocessing.quad = new v3d.Mesh(new v3d.PlaneBufferGeometry(window.innerWidth, window.innerHeight), postprocessing.materialBokeh);
+        postprocessing.quad = new v3d.Mesh(new v3d.PlaneGeometry(window.innerWidth, window.innerHeight), postprocessing.materialBokeh);
         postprocessing.quad.position.z = - 500;
         postprocessing.scene.add(postprocessing.quad);
 

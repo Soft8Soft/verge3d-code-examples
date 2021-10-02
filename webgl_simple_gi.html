@@ -18,15 +18,19 @@
 
       import { OrbitControls } from './jsm/controls/OrbitControls.js';
 
-      // HACK:
+      class GIMesh extends v3d.Mesh {
 
-      v3d.Mesh.prototype.clone = function() {
+        copy(source) {
 
-        const newMaterial = (this.material.isMaterial) ? this.material.clone() : this.material.slice();
+          super.copy(source);
 
-        return new this.constructor(this.geometry.clone(), newMaterial).copy(this);
+          this.geometry = source.geometry.clone();
 
-      };
+          return this;
+
+        }
+
+      }
 
       //
 
@@ -41,11 +45,7 @@
         let clone = scene.clone();
         clone.autoUpdate = false;
 
-        const rt = new v3d.WebGLRenderTarget(SIZE, SIZE, {
-          wrapS: v3d.ClampToEdgeWrapping,
-          wrapT: v3d.ClampToEdgeWrapping,
-          depthBuffer: true
-        });
+        const rt = new v3d.WebGLRenderTarget(SIZE, SIZE);
 
         const normalMatrix = new v3d.Matrix3();
 
@@ -62,7 +62,7 @@
 
           if (bounces === 3) return;
 
-          const object = scene.children[0];
+          const object = scene.children[0]; // torusKnot
           const geometry = object.geometry;
 
           const attributes = geometry.attributes;
@@ -157,10 +157,10 @@
 
         // torus knot
 
-        const torusGeometry = new v3d.TorusKnotBufferGeometry(0.75, 0.3, 128, 32, 1);
+        const torusGeometry = new v3d.TorusKnotGeometry(0.75, 0.3, 128, 32, 1);
         const material = new v3d.MeshBasicMaterial({ vertexColors: true });
 
-        const torusKnot = new v3d.Mesh(torusGeometry, material);
+        const torusKnot = new GIMesh(torusGeometry, material);
         scene.add(torusKnot);
 
         // room
@@ -173,7 +173,7 @@
 
         }
 
-        const boxGeometry = new v3d.BoxBufferGeometry(3, 3, 3);
+        const boxGeometry = new v3d.BoxGeometry(3, 3, 3);
 
         const box = new v3d.Mesh(boxGeometry, materials);
         scene.add(box);
@@ -191,7 +191,7 @@
         controls.minDistance = 1;
         controls.maxDistance = 10;
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

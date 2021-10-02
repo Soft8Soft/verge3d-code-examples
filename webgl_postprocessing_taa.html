@@ -100,7 +100,7 @@
 
         scene = new v3d.Scene();
 
-        const geometry = new v3d.BoxBufferGeometry(120, 120, 120);
+        const geometry = new v3d.BoxGeometry(120, 120, 120);
         const material1 = new v3d.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
 
         const mesh1 = new v3d.Mesh(geometry, material1);
@@ -134,7 +134,7 @@
         copyPass = new ShaderPass(CopyShader);
         composer.addPass(copyPass);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

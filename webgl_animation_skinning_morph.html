@@ -78,7 +78,7 @@
 
         // ground
 
-        const mesh = new v3d.Mesh(new v3d.PlaneBufferGeometry(2000, 2000), new v3d.MeshPhongMaterial({ color: 0x999999, depthWrite: false }));
+        const mesh = new v3d.Mesh(new v3d.PlaneGeometry(2000, 2000), new v3d.MeshPhongMaterial({ color: 0x999999, depthWrite: false }));
         mesh.rotation.x = - Math.PI / 2;
         scene.add(mesh);
 
@@ -109,7 +109,7 @@
         renderer.outputEncoding = v3d.sRGBEncoding;
         container.appendChild(renderer.domElement);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
         // stats
         stats = new Stats();

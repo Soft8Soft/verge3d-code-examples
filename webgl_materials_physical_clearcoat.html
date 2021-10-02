@@ -55,7 +55,7 @@
               hdrCubeMap.dispose();
               pmremGenerator.dispose();
 
-              const geometry = new v3d.SphereBufferGeometry(80, 64, 32);
+              const geometry = new v3d.SphereGeometry(80, 64, 32);
 
               const textureLoader = new v3d.TextureLoader();
 
@@ -161,7 +161,7 @@
         // LIGHTS
 
         particleLight = new v3d.Mesh(
-          new v3d.SphereBufferGeometry(4, 8, 8),
+          new v3d.SphereGeometry(4, 8, 8),
           new v3d.MeshBasicMaterial({ color: 0xffffff })
         );
         scene.add(particleLight);
@@ -196,7 +196,7 @@
 
         new OrbitControls(camera, renderer.domElement);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

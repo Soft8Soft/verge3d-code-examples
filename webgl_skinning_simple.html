@@ -9,8 +9,7 @@
   <body>
 
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - simple skinning -
-      <a href="https://github.com/Soft8Soft/verge3d-code-examples/blob/master/models/skinned/simple/simple.blend" target="_blank" rel="noopener">Blender File</a>
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - simple skinning
     </div>
 
     <script type="module">
@@ -43,7 +42,7 @@
 
         // ground
 
-        const geometry = new v3d.PlaneBufferGeometry(500, 500);
+        const geometry = new v3d.PlaneGeometry(500, 500);
         const material = new v3d.MeshPhongMaterial({ color: 0x999999, depthWrite: false });
 
         const ground = new v3d.Mesh(geometry, material);

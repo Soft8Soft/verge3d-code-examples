@@ -127,13 +127,13 @@
 
         });
 
-        const geometry = new v3d.TorusKnotBufferGeometry(0.4, 0.15, 220, 60);
+        const geometry = new v3d.TorusKnotGeometry(0.4, 0.15, 220, 60);
         object = new v3d.Group();
         scene.add(object);
 
         // Set up clip plane rendering
         planeObjects = [];
-        const planeGeom = new v3d.PlaneBufferGeometry(4, 4);
+        const planeGeom = new v3d.PlaneGeometry(4, 4);
 
         for (let i = 0; i < 3; i++) {
 
@@ -193,7 +193,7 @@
 
 
         const ground = new v3d.Mesh(
-          new v3d.PlaneBufferGeometry(9, 9, 1, 1),
+          new v3d.PlaneGeometry(9, 9, 1, 1),
           new v3d.ShadowMaterial({ color: 0, opacity: 0.25, side: v3d.DoubleSide })
         );
 
@@ -212,7 +212,7 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0x263238);
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
         document.body.appendChild(renderer.domElement);
 
         renderer.localClippingEnabled = true;

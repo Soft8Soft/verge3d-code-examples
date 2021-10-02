@@ -1,95 +1,79 @@
-v3d.HDRCubeTextureLoader = function(manager) {
+(function() {
 
-    v3d.Loader.call(this, manager);
+    class HDRCubeTextureLoader extends v3d.Loader {
 
-    this.hdrLoader = new v3d.RGBELoader();
-    this.type = v3d.UnsignedByteType;
+        constructor(manager) {
 
-};
-
-v3d.HDRCubeTextureLoader.prototype = Object.assign(Object.create(v3d.Loader.prototype), {
-
-    constructor: v3d.HDRCubeTextureLoader,
-
-    load: function(urls, onLoad, onProgress, onError) {
-
-        if (!Array.isArray(urls)) {
-
-            console.warn('v3d.HDRCubeTextureLoader signature has changed. Use .setDataType() instead.');
-
-            this.setDataType(urls);
-
-            urls = onLoad;
-            onLoad = onProgress;
-            onProgress = onError;
-            onError = arguments[4];
+            super(manager);
+            this.hdrLoader = new v3d.RGBELoader();
+            this.type = v3d.UnsignedByteType;
 
         }
 
-        var texture = new v3d.CubeTexture();
+        load(urls, onLoad, onProgress, onError) {
 
-        texture.type = this.type;
+            if (!Array.isArray(urls)) {
 
-        switch (texture.type) {
+                console.warn('v3d.HDRCubeTextureLoader signature has changed. Use .setDataType() instead.');
+                this.setDataType(urls);
+                urls = onLoad;
+                onLoad = onProgress;
+                onProgress = onError;
+                onError = arguments[4];
 
-            case v3d.UnsignedByteType:
+            }
 
-                texture.encoding = v3d.RGBEEncoding;
-                texture.format = v3d.RGBAFormat;
-                texture.minFilter = v3d.NearestFilter;
-                texture.magFilter = v3d.NearestFilter;
-                texture.generateMipmaps = false;
-                break;
+            const texture = new v3d.CubeTexture();
+            texture.type = this.type;
 
-            case v3d.FloatType:
+            switch (texture.type) {
 
-                texture.encoding = v3d.LinearEncoding;
-                texture.format = v3d.RGBFormat;
-                texture.minFilter = v3d.LinearFilter;
-                texture.magFilter = v3d.LinearFilter;
-                texture.generateMipmaps = false;
-                break;
+                case v3d.UnsignedByteType:
+                    texture.encoding = v3d.RGBEEncoding;
+                    texture.format = v3d.RGBAFormat;
+                    texture.minFilter = v3d.NearestFilter;
+                    texture.magFilter = v3d.NearestFilter;
+                    texture.generateMipmaps = false;
+                    break;
 
-            case v3d.HalfFloatType:
+                case v3d.FloatType:
+                    texture.encoding = v3d.LinearEncoding;
+                    texture.format = v3d.RGBFormat;
+                    texture.minFilter = v3d.LinearFilter;
+                    texture.magFilter = v3d.LinearFilter;
+                    texture.generateMipmaps = false;
+                    break;
 
-                texture.encoding = v3d.LinearEncoding;
-                texture.format = v3d.RGBFormat;
-                texture.minFilter = v3d.LinearFilter;
-                texture.magFilter = v3d.LinearFilter;
-                texture.generateMipmaps = false;
-                break;
+                case v3d.HalfFloatType:
+                    texture.encoding = v3d.LinearEncoding;
+                    texture.format = v3d.RGBFormat;
+                    texture.minFilter = v3d.LinearFilter;
+                    texture.magFilter = v3d.LinearFilter;
+                    texture.generateMipmaps = false;
+                    break;
 
-        }
+            }
 
-        var scope = this;
+            const scope = this;
+            let loaded = 0;
 
-        var loaded = 0;
+            function loadHDRData(i, onLoad, onProgress, onError) {
 
-        function loadHDRData(i, onLoad, onProgress, onError) {
-
-            new v3d.FileLoader(scope.manager)
-                .setPath(scope.path)
-                .setResponseType('arraybuffer')
-                .setWithCredentials(scope.withCredentials)
-                .load(urls[i], function(buffer) {
+                new v3d.FileLoader(scope.manager).setPath(scope.path).setResponseType('arraybuffer').setWithCredentials(scope.withCredentials).load(urls[i], function(buffer) {
 
                     loaded ++;
-
-                    var texData = scope.hdrLoader.parse(buffer);
-
+                    const texData = scope.hdrLoader.parse(buffer);
                     if (!texData) return;
 
                     if (texData.data !== undefined) {
 
-                        var dataTexture = new v3d.DataTexture(texData.data, texData.width, texData.height);
-
+                        const dataTexture = new v3d.DataTexture(texData.data, texData.width, texData.height);
                         dataTexture.type = texture.type;
                         dataTexture.encoding = texture.encoding;
                         dataTexture.format = texture.format;
                         dataTexture.minFilter = texture.minFilter;
                         dataTexture.magFilter = texture.magFilter;
                         dataTexture.generateMipmaps = texture.generateMipmaps;
-
                         texture.images[i] = dataTexture;
 
                     }
@@ -103,25 +87,28 @@ v3d.HDRCubeTextureLoader.prototype = Object.assign(Object.create(v3d.Loader.prot
 
                 }, onProgress, onError);
 
+            }
+
+            for (let i = 0; i < urls.length; i++) {
+
+                loadHDRData(i, onLoad, onProgress, onError);
+
+            }
+
+            return texture;
+
         }
 
-        for (var i = 0; i < urls.length; i++) {
+        setDataType(value) {
 
-            loadHDRData(i, onLoad, onProgress, onError);
+            this.type = value;
+            this.hdrLoader.setDataType(value);
+            return this;
 
         }
-
-        return texture;
-
-    },
-
-    setDataType: function(value) {
-
-        this.type = value;
-        this.hdrLoader.setDataType(value);
-
-        return this;
 
     }
 
-});
+    v3d.HDRCubeTextureLoader = HDRCubeTextureLoader;
+
+})();

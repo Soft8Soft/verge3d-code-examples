@@ -40,16 +40,6 @@
 
       }
 
-      function resize() {
-
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-
-        pixelPass.uniforms["resolution"].value.set(window.innerWidth, window.innerHeight).multiplyScalar(window.devicePixelRatio);
-
-      }
-
       function init() {
 
         const container = document.getElementById('container');
@@ -83,11 +73,11 @@
         scene.add(dirLight3);
 
         const geometries = [
-          new v3d.SphereBufferGeometry(1, 64, 64),
-          new v3d.BoxBufferGeometry(1, 1, 1),
-          new v3d.ConeBufferGeometry(1, 1, 32),
-          new v3d.TetrahedronBufferGeometry(1),
-          new v3d.TorusKnotBufferGeometry(1, .4)
+          new v3d.SphereGeometry(1, 64, 64),
+          new v3d.BoxGeometry(1, 1, 1),
+          new v3d.ConeGeometry(1, 1, 32),
+          new v3d.TetrahedronGeometry(1),
+          new v3d.TorusKnotGeometry(1, .4)
         ];
 
         group = new v3d.Group();
@@ -122,7 +112,7 @@
         pixelPass.uniforms["resolution"].value.multiplyScalar(window.devicePixelRatio);
         composer.addPass(pixelPass);
 
-        window.addEventListener('resize', resize);
+        window.addEventListener('resize', onWindowResize);
 
         params = {
           pixelSize: 16,
@@ -131,6 +121,16 @@
         gui = new GUI();
         gui.add(params, 'pixelSize').min(2).max(32).step(2);
         gui.add(params, 'postprocessing');
+
+      }
+
+      function onWindowResize() {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        pixelPass.uniforms["resolution"].value.set(window.innerWidth, window.innerHeight).multiplyScalar(window.devicePixelRatio);
 
       }
 

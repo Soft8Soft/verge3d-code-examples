@@ -53,7 +53,7 @@
 
         //
 
-        const earthGeometry = new v3d.SphereBufferGeometry(EARTH_RADIUS, 16, 16);
+        const earthGeometry = new v3d.SphereGeometry(EARTH_RADIUS, 16, 16);
         const earthMaterial = new v3d.MeshPhongMaterial({
           specular: 0x333333,
           shininess: 5,
@@ -65,7 +65,7 @@
         const earth = new v3d.Mesh(earthGeometry, earthMaterial);
         scene.add(earth);
 
-        const moonGeometry = new v3d.SphereBufferGeometry(MOON_RADIUS, 16, 16);
+        const moonGeometry = new v3d.SphereGeometry(MOON_RADIUS, 16, 16);
         const moonMaterial = new v3d.MeshPhongMaterial({
           shininess: 5,
           map: textureLoader.load('textures/planets/moon_1024.jpg')
@@ -110,7 +110,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

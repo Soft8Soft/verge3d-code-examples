@@ -32,7 +32,7 @@
 
         scene = new v3d.Scene();
 
-        const geometry = new v3d.BoxBufferGeometry(200, 200, 200);
+        const geometry = new v3d.BoxGeometry(200, 200, 200);
 
         /*
         This is how compressed textures are supposed to be used:
@@ -100,7 +100,7 @@
         const material7 = new v3d.MeshBasicMaterial({ map: map5 });
         const material8 = new v3d.MeshBasicMaterial({ map: map6 });
 
-        let mesh = new v3d.Mesh(new v3d.TorusBufferGeometry(100, 50, 32, 16), material1);
+        let mesh = new v3d.Mesh(new v3d.TorusGeometry(100, 50, 32, 16), material1);
         mesh.position.x = - 600;
         mesh.position.y = - 200;
         scene.add(mesh);
@@ -153,7 +153,7 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

@@ -1,306 +1,284 @@
-v3d.EffectComposer = function(renderer, renderTarget) {
+(function() {
 
-    this.renderer = renderer;
+    class EffectComposer {
 
-    if (renderTarget === undefined) {
+        constructor(renderer, renderTarget) {
 
-        var parameters = {
-            minFilter: v3d.LinearFilter,
-            magFilter: v3d.LinearFilter,
-            format: v3d.RGBAFormat
-        };
+            this.renderer = renderer;
 
-        var size = renderer.getSize(new v3d.Vector2());
-        this._pixelRatio = renderer.getPixelRatio();
-        this._width = size.width;
-        this._height = size.height;
+            if (renderTarget === undefined) {
 
-        renderTarget = new v3d.WebGLRenderTarget(this._width * this._pixelRatio, this._height * this._pixelRatio, parameters);
-        renderTarget.texture.name = 'EffectComposer.rt1';
+                const parameters = {
+                    minFilter: v3d.LinearFilter,
+                    magFilter: v3d.LinearFilter,
+                    format: v3d.RGBAFormat
+                };
+                const size = renderer.getSize(new v3d.Vector2());
+                this._pixelRatio = renderer.getPixelRatio();
+                this._width = size.width;
+                this._height = size.height;
+                renderTarget = new v3d.WebGLRenderTarget(this._width * this._pixelRatio, this._height * this._pixelRatio, parameters);
+                renderTarget.texture.name = 'EffectComposer.rt1';
 
-    } else {
+            } else {
 
-        this._pixelRatio = 1;
-        this._width = renderTarget.width;
-        this._height = renderTarget.height;
+                this._pixelRatio = 1;
+                this._width = renderTarget.width;
+                this._height = renderTarget.height;
 
-    }
+            }
 
-    this.renderTarget1 = renderTarget;
-    this.renderTarget2 = renderTarget.clone();
-    this.renderTarget2.texture.name = 'EffectComposer.rt2';
+            this.renderTarget1 = renderTarget;
+            this.renderTarget2 = renderTarget.clone();
+            this.renderTarget2.texture.name = 'EffectComposer.rt2';
+            this.writeBuffer = this.renderTarget1;
+            this.readBuffer = this.renderTarget2;
+            this.renderToScreen = true;
+            this.passes = []; // dependencies
 
-    this.writeBuffer = this.renderTarget1;
-    this.readBuffer = this.renderTarget2;
+            if (v3d.CopyShader === undefined) {
 
-    this.renderToScreen = true;
+                console.error('v3d.EffectComposer relies on v3d.CopyShader');
 
-    this.passes = [];
+            }
 
-    // dependencies
+            if (v3d.ShaderPass === undefined) {
 
-    if (v3d.CopyShader === undefined) {
+                console.error('v3d.EffectComposer relies on v3d.ShaderPass');
 
-        console.error('v3d.EffectComposer relies on v3d.CopyShader');
+            }
 
-    }
-
-    if (v3d.ShaderPass === undefined) {
-
-        console.error('v3d.EffectComposer relies on v3d.ShaderPass');
-
-    }
-
-    this.copyPass = new v3d.ShaderPass(v3d.CopyShader);
-
-    this.clock = new v3d.Clock();
-
-};
-
-Object.assign(v3d.EffectComposer.prototype, {
-
-    swapBuffers: function() {
-
-        var tmp = this.readBuffer;
-        this.readBuffer = this.writeBuffer;
-        this.writeBuffer = tmp;
-
-    },
-
-    addPass: function(pass) {
-
-        this.passes.push(pass);
-        pass.setSize(this._width * this._pixelRatio, this._height * this._pixelRatio);
-
-    },
-
-    insertPass: function(pass, index) {
-
-        this.passes.splice(index, 0, pass);
-        pass.setSize(this._width * this._pixelRatio, this._height * this._pixelRatio);
-
-    },
-
-    removePass: function(pass) {
-
-        const index = this.passes.indexOf(pass);
-
-        if (index !== - 1) {
-
-            this.passes.splice(index, 1);
+            this.copyPass = new v3d.ShaderPass(v3d.CopyShader);
+            this.clock = new v3d.Clock();
 
         }
 
-    },
+        swapBuffers() {
 
-    isLastEnabledPass: function(passIndex) {
+            const tmp = this.readBuffer;
+            this.readBuffer = this.writeBuffer;
+            this.writeBuffer = tmp;
 
-        for (var i = passIndex + 1; i < this.passes.length; i++) {
+        }
 
-            if (this.passes[i].enabled) {
+        addPass(pass) {
 
-                return false;
+            this.passes.push(pass);
+            pass.setSize(this._width * this._pixelRatio, this._height * this._pixelRatio);
+
+        }
+
+        insertPass(pass, index) {
+
+            this.passes.splice(index, 0, pass);
+            pass.setSize(this._width * this._pixelRatio, this._height * this._pixelRatio);
+
+        }
+
+        removePass(pass) {
+
+            const index = this.passes.indexOf(pass);
+
+            if (index !== - 1) {
+
+                this.passes.splice(index, 1);
 
             }
 
         }
 
-        return true;
+        isLastEnabledPass(passIndex) {
 
-    },
+            for (let i = passIndex + 1; i < this.passes.length; i++) {
 
-    render: function(deltaTime) {
+                if (this.passes[i].enabled) {
 
-        // deltaTime value is in seconds
-
-        if (deltaTime === undefined) {
-
-            deltaTime = this.clock.getDelta();
-
-        }
-
-        var currentRenderTarget = this.renderer.getRenderTarget();
-
-        var maskActive = false;
-
-        var pass, i, il = this.passes.length;
-
-        for (i = 0; i < il; i++) {
-
-            pass = this.passes[i];
-
-            if (pass.enabled === false) continue;
-
-            pass.renderToScreen = (this.renderToScreen && this.isLastEnabledPass(i));
-            pass.render(this.renderer, this.writeBuffer, this.readBuffer, deltaTime, maskActive);
-
-            if (pass.needsSwap) {
-
-                if (maskActive) {
-
-                    var context = this.renderer.getContext();
-                    var stencil = this.renderer.state.buffers.stencil;
-
-                    //context.stencilFunc(context.NOTEQUAL, 1, 0xffffffff);
-                    stencil.setFunc(context.NOTEQUAL, 1, 0xffffffff);
-
-                    this.copyPass.render(this.renderer, this.writeBuffer, this.readBuffer, deltaTime);
-
-                    //context.stencilFunc(context.EQUAL, 1, 0xffffffff);
-                    stencil.setFunc(context.EQUAL, 1, 0xffffffff);
-
-                }
-
-                this.swapBuffers();
-
-            }
-
-            if (v3d.MaskPass !== undefined) {
-
-                if (pass instanceof v3d.MaskPass) {
-
-                    maskActive = true;
-
-                } else if (pass instanceof v3d.ClearMaskPass) {
-
-                    maskActive = false;
+                    return false;
 
                 }
 
             }
 
-        }
-
-        this.renderer.setRenderTarget(currentRenderTarget);
-
-    },
-
-    reset: function(renderTarget) {
-
-        if (renderTarget === undefined) {
-
-            var size = this.renderer.getSize(new v3d.Vector2());
-            this._pixelRatio = this.renderer.getPixelRatio();
-            this._width = size.width;
-            this._height = size.height;
-
-            renderTarget = this.renderTarget1.clone();
-            renderTarget.setSize(this._width * this._pixelRatio, this._height * this._pixelRatio);
+            return true;
 
         }
 
-        this.renderTarget1.dispose();
-        this.renderTarget2.dispose();
-        this.renderTarget1 = renderTarget;
-        this.renderTarget2 = renderTarget.clone();
+        render(deltaTime) {
 
-        this.writeBuffer = this.renderTarget1;
-        this.readBuffer = this.renderTarget2;
+            // deltaTime value is in seconds
+            if (deltaTime === undefined) {
 
-    },
+                deltaTime = this.clock.getDelta();
 
-    setSize: function(width, height) {
+            }
 
-        this._width = width;
-        this._height = height;
+            const currentRenderTarget = this.renderer.getRenderTarget();
+            let maskActive = false;
 
-        var effectiveWidth = this._width * this._pixelRatio;
-        var effectiveHeight = this._height * this._pixelRatio;
+            for (let i = 0, il = this.passes.length; i < il; i++) {
 
-        this.renderTarget1.setSize(effectiveWidth, effectiveHeight);
-        this.renderTarget2.setSize(effectiveWidth, effectiveHeight);
+                const pass = this.passes[i];
+                if (pass.enabled === false) continue;
+                pass.renderToScreen = this.renderToScreen && this.isLastEnabledPass(i);
+                pass.render(this.renderer, this.writeBuffer, this.readBuffer, deltaTime, maskActive);
 
-        for (var i = 0; i < this.passes.length; i++) {
+                if (pass.needsSwap) {
 
-            this.passes[i].setSize(effectiveWidth, effectiveHeight);
+                    if (maskActive) {
+
+                        const context = this.renderer.getContext();
+                        const stencil = this.renderer.state.buffers.stencil; //context.stencilFunc(context.NOTEQUAL, 1, 0xffffffff);
+
+                        stencil.setFunc(context.NOTEQUAL, 1, 0xffffffff);
+                        this.copyPass.render(this.renderer, this.writeBuffer, this.readBuffer, deltaTime); //context.stencilFunc(context.EQUAL, 1, 0xffffffff);
+
+                        stencil.setFunc(context.EQUAL, 1, 0xffffffff);
+
+                    }
+
+                    this.swapBuffers();
+
+                }
+
+                if (v3d.MaskPass !== undefined) {
+
+                    if (pass instanceof v3d.MaskPass) {
+
+                        maskActive = true;
+
+                    } else if (pass instanceof v3d.ClearMaskPass) {
+
+                        maskActive = false;
+
+                    }
+
+                }
+
+            }
+
+            this.renderer.setRenderTarget(currentRenderTarget);
 
         }
 
-    },
+        reset(renderTarget) {
 
-    setPixelRatio: function(pixelRatio) {
+            if (renderTarget === undefined) {
 
-        this._pixelRatio = pixelRatio;
+                const size = this.renderer.getSize(new v3d.Vector2());
+                this._pixelRatio = this.renderer.getPixelRatio();
+                this._width = size.width;
+                this._height = size.height;
+                renderTarget = this.renderTarget1.clone();
+                renderTarget.setSize(this._width * this._pixelRatio, this._height * this._pixelRatio);
 
-        this.setSize(this._width, this._height);
+            }
+
+            this.renderTarget1.dispose();
+            this.renderTarget2.dispose();
+            this.renderTarget1 = renderTarget;
+            this.renderTarget2 = renderTarget.clone();
+            this.writeBuffer = this.renderTarget1;
+            this.readBuffer = this.renderTarget2;
+
+        }
+
+        setSize(width, height) {
+
+            this._width = width;
+            this._height = height;
+            const effectiveWidth = this._width * this._pixelRatio;
+            const effectiveHeight = this._height * this._pixelRatio;
+            this.renderTarget1.setSize(effectiveWidth, effectiveHeight);
+            this.renderTarget2.setSize(effectiveWidth, effectiveHeight);
+
+            for (let i = 0; i < this.passes.length; i++) {
+
+                this.passes[i].setSize(effectiveWidth, effectiveHeight);
+
+            }
+
+        }
+
+        setPixelRatio(pixelRatio) {
+
+            this._pixelRatio = pixelRatio;
+            this.setSize(this._width, this._height);
+
+        }
 
     }
 
-});
+    class Pass {
+
+        constructor() {
+
+            // if set to true, the pass is processed by the composer
+            this.enabled = true; // if set to true, the pass indicates to swap read and write buffer after rendering
+
+            this.needsSwap = true; // if set to true, the pass clears its buffer before rendering
+
+            this.clear = false; // if set to true, the result of the pass is rendered to screen. This is set automatically by EffectComposer.
+
+            this.renderToScreen = false;
+
+        }
+
+        setSize() {}
+
+        render() {
+
+            console.error('v3d.Pass: .render() must be implemented in derived pass.');
+
+        }
+
+    } // Helper for passes that need to fill the viewport with a single quad.
 
 
-v3d.Pass = function() {
+    const _camera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1); // https://github.com/mrdoob/three.js/pull/21358
 
-    // if set to true, the pass is processed by the composer
-    this.enabled = true;
 
-    // if set to true, the pass indicates to swap read and write buffer after rendering
-    this.needsSwap = true;
+    const _geometry = new v3d.BufferGeometry();
 
-    // if set to true, the pass clears its buffer before rendering
-    this.clear = false;
+    _geometry.setAttribute('position', new v3d.Float32BufferAttribute([- 1, 3, 0, - 1, - 1, 0, 3, - 1, 0], 3));
 
-    // if set to true, the result of the pass is rendered to screen. This is set automatically by EffectComposer.
-    this.renderToScreen = false;
+    _geometry.setAttribute('uv', new v3d.Float32BufferAttribute([0, 2, 0, 0, 2, 0], 2));
 
-};
+    class FullScreenQuad {
 
-Object.assign(v3d.Pass.prototype, {
+        constructor(material) {
 
-    setSize: function(/* width, height */) {},
+            this._mesh = new v3d.Mesh(_geometry, material);
 
-    render: function(/* renderer, writeBuffer, readBuffer, deltaTime, maskActive */) {
+        }
 
-        console.error('v3d.Pass: .render() must be implemented in derived pass.');
+        dispose() {
 
-    }
+            this._mesh.geometry.dispose();
 
-});
+        }
 
-// Helper for passes that need to fill the viewport with a single quad.
-v3d.Pass.FullScreenQuad = (function() {
+        render(renderer) {
 
-    var camera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
-    var geometry = new v3d.PlaneBufferGeometry(2, 2);
+            renderer.render(this._mesh, _camera);
 
-    var FullScreenQuad = function(material) {
+        }
 
-        this._mesh = new v3d.Mesh(geometry, material);
-
-    };
-
-    Object.defineProperty(FullScreenQuad.prototype, 'material', {
-
-        get: function() {
+        get material() {
 
             return this._mesh.material;
 
-        },
+        }
 
-        set: function(value) {
+        set material(value) {
 
             this._mesh.material = value;
 
         }
 
-    });
+    }
 
-    Object.assign(FullScreenQuad.prototype, {
-
-        dispose: function() {
-
-            this._mesh.geometry.dispose();
-
-        },
-
-        render: function(renderer) {
-
-            renderer.render(this._mesh, camera);
-
-        }
-
-    });
-
-    return FullScreenQuad;
+    v3d.EffectComposer = EffectComposer;
+    v3d.FullScreenQuad = FullScreenQuad;
+    v3d.Pass = Pass;
 
 })();

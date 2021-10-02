@@ -127,7 +127,7 @@
 
         });
 
-        mesh = new v3d.Mesh(new v3d.TorusBufferGeometry(size, 0.3, 30, 30), material);
+        mesh = new v3d.Mesh(new v3d.TorusGeometry(size, 0.3, 30, 30), material);
         mesh.rotation.x = 0.3;
         scene.add(mesh);
 
@@ -155,7 +155,7 @@
 
         onWindowResize();
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

@@ -197,7 +197,7 @@
 
         //
 
-        const geometry = new v3d.SphereBufferGeometry(3, 48, 24);
+        const geometry = new v3d.SphereGeometry(3, 48, 24);
 
         for (let i = 0; i < 20; i++) {
 
@@ -217,14 +217,14 @@
 
         const floorMaterial = new v3d.MeshLambertMaterial({ side: v3d.DoubleSide });
 
-        const floorGeometry = new v3d.PlaneBufferGeometry(12, 12);
+        const floorGeometry = new v3d.PlaneGeometry(12, 12);
         const floorMesh = new v3d.Mesh(floorGeometry, floorMaterial);
         floorMesh.rotation.x -= Math.PI * 0.5;
         floorMesh.position.y -= 1.5;
         group.add(floorMesh);
         floorMesh.receiveShadow = true;
 
-        const torusGeometry = new v3d.TorusBufferGeometry(1, 0.3, 16, 100);
+        const torusGeometry = new v3d.TorusGeometry(1, 0.3, 16, 100);
         const torusMaterial = new v3d.MeshPhongMaterial({ color: 0xffaaff });
         const torus = new v3d.Mesh(torusGeometry, torusMaterial);
         torus.position.z = - 4;
@@ -260,10 +260,10 @@
         effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
         composer.addPass(effectFXAA);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
         renderer.domElement.style.touchAction = 'none';
-        renderer.domElement.addEventListener('pointermove', onPointerMove, false);
+        renderer.domElement.addEventListener('pointermove', onPointerMove);
 
         function onPointerMove(event) {
 

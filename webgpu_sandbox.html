@@ -1,23 +1,42 @@
 <html lang="en">
   <head>
-    <title>WebGPU Sandbox</title>
+    <title>Verge3D - WebGPU - Sandbox</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link type="text/css" rel="stylesheet" href="main.css">
   </head>
   <body>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> WebGPU - sandbox<br/>(Chrome Canary with flag: --enable-unsafe-webgpu)
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> WebGPU - Sandbox<br/>(Chrome Canary with flag: --enable-unsafe-webgpu)
     </div>
 
+    <script type="importmap">
+    {
+      "imports": {
+        "v3d": "../build/v3d.module.js"
+      }
+    }
+    </script>
     <script type="module">
 
-      import * as v3d from '../build/v3d.module.js';
+      import * as v3d from 'v3d';
 
       import { DDSLoader } from './jsm/loaders/DDSLoader.js';
 
       import WebGPURenderer from './jsm/renderers/webgpu/WebGPURenderer.js';
       import WebGPU from './jsm/renderers/webgpu/WebGPU.js';
+
+      import AttributeNode from './jsm/renderers/nodes/core/AttributeNode.js';
+      import FloatNode from './jsm/renderers/nodes/inputs/FloatNode.js';
+      import Vector2Node from './jsm/renderers/nodes/inputs/Vector2Node.js';
+      import ColorNode from './jsm/renderers/nodes/inputs/ColorNode.js';
+      import TextureNode from './jsm/renderers/nodes/inputs/TextureNode.js';
+      import UVNode from './jsm/renderers/nodes/accessors/UVNode.js';
+      import PositionNode from './jsm/renderers/nodes/accessors/PositionNode.js';
+      import NormalNode from './jsm/renderers/nodes/accessors/NormalNode.js';
+      import OperatorNode from './jsm/renderers/nodes/math/OperatorNode.js';
+      import SwitchNode from './jsm/renderers/nodes/utils/SwitchNode.js';
+      import TimerNode from './jsm/renderers/nodes/utils/TimerNode.js';
 
       let camera, scene, renderer;
 
@@ -41,22 +60,68 @@
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0x222222);
 
-        // textured mesh
+        // textures
 
         const textureLoader = new v3d.TextureLoader();
         const texture = textureLoader.load('./textures/uv_grid_opengl.jpg');
+        texture.wrapS = v3d.RepeatWrapping;
+        texture.wrapT = v3d.RepeatWrapping;
+        texture.name = 'uv_grid';
 
-        const geometryBox = new v3d.BoxBufferGeometry();
-        const materialBox = new v3d.MeshBasicMaterial({ map: texture });
+        const textureDisplace = textureLoader.load('./textures/transition/transition1.png');
+        textureDisplace.wrapS = v3d.RepeatWrapping;
+        textureDisplace.wrapT = v3d.RepeatWrapping;
+
+        // compressed texture
+
+        const ddsLoader = new DDSLoader();
+        const dxt5Texture = ddsLoader.load('./textures/compressed/explosion_dxt5_mip.dds');
+
+        // box mesh
+
+        const geometryBox = new v3d.BoxGeometry();
+        const materialBox = new v3d.MeshBasicMaterial();
+
+        const timerNode = new TimerNode();
+
+        // birection speed
+        const timerScaleNode = new OperatorNode('*', timerNode, new Vector2Node(new v3d.Vector2(- 0.5, 0.1)).setConst(true));
+        const animateUV = new OperatorNode('+', new UVNode(), timerScaleNode);
+
+        materialBox.colorNode = new TextureNode(texture, animateUV);
+
+        // test uv 2
+        //geometryBox.setAttribute('uv2', geometryBox.getAttribute('uv'));
+        //materialBox.colorNode = new TextureNode(texture, new UVNode(1));
 
         box = new v3d.Mesh(geometryBox, materialBox);
         box.position.set(0, 1, 0);
         scene.add(box);
 
+        // displace example
+
+        const geometrySphere = new v3d.SphereGeometry(.5, 64, 64);
+        const materialSphere = new v3d.MeshBasicMaterial();
+
+        const displaceAnimated = new SwitchNode(new TextureNode(textureDisplace), 'x');
+        const displaceY = new OperatorNode('*', displaceAnimated, new FloatNode(.25).setConst(true));
+
+        const displace = new OperatorNode('*', new NormalNode(NormalNode.LOCAL), displaceY);
+
+        materialSphere.colorNode = displaceY;
+        materialSphere.positionNode = new OperatorNode('+', new PositionNode(PositionNode.LOCAL), displace);
+
+        const sphere = new v3d.Mesh(geometrySphere, materialSphere);
+        sphere.position.set(- 2, - 1, 0);
+        scene.add(sphere);
+
         // data texture
 
-        const geometryPlane = new v3d.PlaneBufferGeometry();
-        const materialPlane = new v3d.MeshBasicMaterial({ map: createDataTexture(), transparent: true, opacity: 0.5 });
+        const geometryPlane = new v3d.PlaneGeometry();
+        const materialPlane = new v3d.MeshBasicMaterial();
+        materialPlane.colorNode = new OperatorNode('+', new TextureNode(createDataTexture()), new ColorNode(new v3d.Color(0x0000FF)));
+        materialPlane.opacityNode = new SwitchNode(new TextureNode(dxt5Texture), 'a');
+        materialPlane.transparent = true;
 
         const plane = new v3d.Mesh(geometryPlane, materialPlane);
         plane.position.set(0, - 1, 0);
@@ -64,10 +129,9 @@
 
         // compressed texture
 
-        const ddsLoader = new DDSLoader();
-        const dxt5Texture = ddsLoader.load('./textures/compressed/explosion_dxt5_mip.dds');
-
-        const materialCompressed = new v3d.MeshBasicMaterial({ map: dxt5Texture, transparent: true });
+        const materialCompressed = new v3d.MeshBasicMaterial();
+        materialCompressed.colorNode = new TextureNode(dxt5Texture);
+        materialCompressed.transparent = true;
 
         const boxCompressed = new v3d.Mesh(geometryBox, materialCompressed);
         boxCompressed.position.set(- 2, 1, 0);
@@ -87,6 +151,8 @@
         const geometryPoints = new v3d.BufferGeometry().setFromPoints(points);
         const materialPoints = new v3d.PointsMaterial();
 
+        materialPoints.colorNode = new OperatorNode('*', new PositionNode(), new FloatNode(3).setConst(true));
+
         const pointCloud = new v3d.Points(geometryPoints, materialPoints);
         pointCloud.position.set(2, - 1, 0);
         scene.add(pointCloud);
@@ -99,19 +165,24 @@
           new v3d.Vector3(0.5, 0.5, 0),
           new v3d.Vector3(- 0.5, 0.5, 0)
         ]);
+
+        geometryLine.setAttribute('color', geometryLine.getAttribute('position'));
+
         const materialLine = new v3d.LineBasicMaterial();
+        materialLine.colorNode = new AttributeNode('color', 'vec3');
+
         const line = new v3d.Line(geometryLine, materialLine);
         line.position.set(2, 1, 0);
         scene.add(line);
 
         //
 
-        renderer = new WebGPURenderer({ extensions: ['texture-compression-bc'] });
+        renderer = new WebGPURenderer({ requiredFeatures: ['texture-compression-bc'] });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
         return renderer.init();
 

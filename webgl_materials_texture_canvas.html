@@ -45,7 +45,7 @@
 
         material = new v3d.MeshBasicMaterial();
 
-        mesh = new v3d.Mesh(new v3d.BoxBufferGeometry(200, 200, 200), material);
+        mesh = new v3d.Mesh(new v3d.BoxGeometry(200, 200, 200), material);
         scene.add(mesh);
 
         renderer = new v3d.WebGLRenderer({ antialias: true });
@@ -53,7 +53,7 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

@@ -63,7 +63,7 @@
 
             const material = new v3d.MeshBasicMaterial({ map: texture });
 
-            const quad = new v3d.PlaneBufferGeometry(1.5 * textureData.width / textureData.height, 1.5);
+            const quad = new v3d.PlaneGeometry(1.5 * textureData.width / textureData.height, 1.5);
 
             const mesh = new v3d.Mesh(quad, material);
 
@@ -82,7 +82,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

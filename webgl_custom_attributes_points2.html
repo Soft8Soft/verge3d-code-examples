@@ -55,6 +55,8 @@
 
       import Stats from './jsm/libs/stats.module.js';
 
+      import { BufferGeometryUtils } from './jsm/utils/BufferGeometryUtils.js';
+
       let renderer, scene, camera, stats;
       let sphere, length1;
 
@@ -73,23 +75,34 @@
 
         const radius = 100, segments = 68, rings = 38;
 
-        const vertices1 = new v3d.SphereGeometry(radius, segments, rings).vertices;
-        const vertices2 = new v3d.BoxGeometry(0.8 * radius, 0.8 * radius, 0.8 * radius, 10, 10, 10).vertices;
+        let sphereGeometry = new v3d.SphereGeometry(radius, segments, rings);
+        let boxGeometry = new v3d.BoxGeometry(0.8 * radius, 0.8 * radius, 0.8 * radius, 10, 10, 10);
 
-        length1 = vertices1.length;
+        // if normal and uv attributes are not removed, mergeVertices() can't consolidate indentical vertices with different normal/uv data
 
-        const vertices = vertices1.concat(vertices2);
+        sphereGeometry.deleteAttribute('normal');
+        sphereGeometry.deleteAttribute('uv');
 
-        const positions = new Float32Array(vertices.length * 3);
-        const colors = new Float32Array(vertices.length * 3);
-        const sizes = new Float32Array(vertices.length);
+        boxGeometry.deleteAttribute('normal');
+        boxGeometry.deleteAttribute('uv');
+
+        sphereGeometry = BufferGeometryUtils.mergeVertices(sphereGeometry);
+        boxGeometry = BufferGeometryUtils.mergeVertices(boxGeometry);
+
+        const combinedGeometry = BufferGeometryUtils.mergeBufferGeometries([sphereGeometry, boxGeometry]);
+        const positionAttribute = combinedGeometry.getAttribute('position');
+
+        const colors = [];
+        const sizes = [];
 
         const color = new v3d.Color();
+        const vertex = new v3d.Vector3();
 
-        for (let i = 0, l = vertices.length; i < l; i++) {
+        length1 = sphereGeometry.getAttribute('position').count;
 
-          const vertex = vertices[i];
-          vertex.toArray(positions, i * 3);
+        for (let i = 0, l = positionAttribute.count; i < l; i++) {
+
+          vertex.fromBufferAttribute(positionAttribute, i);
 
           if (i < length1) {
 
@@ -108,13 +121,13 @@
         }
 
         const geometry = new v3d.BufferGeometry();
-        geometry.setAttribute('position', new v3d.BufferAttribute(positions, 3));
-        geometry.setAttribute('size', new v3d.BufferAttribute(sizes, 1));
-        geometry.setAttribute('ca', new v3d.BufferAttribute(colors, 3));
+        geometry.setAttribute('position', positionAttribute);
+        geometry.setAttribute('size', new v3d.Float32BufferAttribute(sizes, 1));
+        geometry.setAttribute('ca', new v3d.Float32BufferAttribute(colors, 3));
 
         //
 
-        const texture = new v3d.TextureLoader().load("textures/sprites/disc.png");
+        const texture = new v3d.TextureLoader().load('textures/sprites/disc.png');
         texture.wrapS = v3d.RepeatWrapping;
         texture.wrapT = v3d.RepeatWrapping;
 
@@ -149,7 +162,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

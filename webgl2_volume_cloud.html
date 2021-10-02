@@ -61,7 +61,7 @@
         context.fillRect(0, 0, 1, 32);
 
         const sky = new v3d.Mesh(
-          new v3d.SphereBufferGeometry(10),
+          new v3d.SphereGeometry(10),
           new v3d.MeshBasicMaterial({ map: new v3d.CanvasTexture(canvas), side: v3d.BackSide })
         );
         scene.add(sky);
@@ -230,7 +230,7 @@
           }
         `;
 
-        const geometry = new v3d.BoxBufferGeometry(1, 1, 1);
+        const geometry = new v3d.BoxGeometry(1, 1, 1);
         const material = new v3d.RawShaderMaterial({
           glslVersion: v3d.GLSL3,
           uniforms: {
@@ -276,7 +276,7 @@
         gui.add(parameters, 'range', 0, 1, 0.01).onChange(update);
         gui.add(parameters, 'steps', 0, 200, 1).onChange(update);
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

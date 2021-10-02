@@ -59,7 +59,7 @@
         light.shadow.camera.zoom = 4; // tighter shadow map
         scene.add(light);
 
-        const geometryBackground = new v3d.PlaneBufferGeometry(100, 100);
+        const geometryBackground = new v3d.PlaneGeometry(100, 100);
         const materialBackground = new v3d.MeshPhongMaterial({ color: 0x000066 });
 
         const background = new v3d.Mesh(geometryBackground, materialBackground);
@@ -67,7 +67,7 @@
         background.position.set(0, 0, - 1);
         scene.add(background);
 
-        const geometryCylinder = new v3d.CylinderBufferGeometry(0.5, 0.5, 1, 32);
+        const geometryCylinder = new v3d.CylinderGeometry(0.5, 0.5, 1, 32);
         const materialCylinder = new v3d.MeshPhongMaterial({ color: 0xff0000 });
 
         mesh = new v3d.Mesh(geometryCylinder, materialCylinder);
@@ -83,7 +83,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

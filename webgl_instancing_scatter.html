@@ -43,8 +43,8 @@
       const _normal = new v3d.Vector3();
       const _scale = new v3d.Vector3();
 
-      // let surfaceGeometry = new v3d.BoxBufferGeometry(10, 10, 10).toNonIndexed();
-      const surfaceGeometry = new v3d.TorusKnotBufferGeometry(10, 3, 100, 16).toNonIndexed();
+      // let surfaceGeometry = new v3d.BoxGeometry(10, 10, 10).toNonIndexed();
+      const surfaceGeometry = new v3d.TorusKnotGeometry(10, 3, 100, 16).toNonIndexed();
       const surfaceMaterial = new v3d.MeshLambertMaterial({ color: api.surfaceColor, wireframe: false });
       const surface = new v3d.Mesh(surfaceGeometry, surfaceMaterial);
 
@@ -70,11 +70,8 @@
         const _stemMesh = gltf.scene.getObjectByName('Stem');
         const _blossomMesh = gltf.scene.getObjectByName('Blossom');
 
-        stemGeometry = new v3d.InstancedBufferGeometry();
-        blossomGeometry = new v3d.InstancedBufferGeometry();
-
-        v3d.BufferGeometry.prototype.copy.call(stemGeometry, _stemMesh.geometry);
-        v3d.BufferGeometry.prototype.copy.call(blossomGeometry, _blossomMesh.geometry);
+        stemGeometry = _stemMesh.geometry.clone();
+        blossomGeometry = _blossomMesh.geometry.clone();
 
         const defaultTransform = new v3d.Matrix4()
           .makeRotationX(Math.PI)
@@ -86,23 +83,19 @@
         stemMaterial = _stemMesh.material;
         blossomMaterial = _blossomMesh.material;
 
+        stemMesh = new v3d.InstancedMesh(stemGeometry, stemMaterial, count);
+        blossomMesh = new v3d.InstancedMesh(blossomGeometry, blossomMaterial, count);
+
         // Assign random colors to the blossoms.
-        const _color = new v3d.Color();
-        const color = new Float32Array(count * 3);
+        const color = new v3d.Color();
         const blossomPalette = [0xF20587, 0xF2D479, 0xF2C879, 0xF2B077, 0xF24405];
 
         for (let i = 0; i < count; i++) {
 
-          _color.setHex(blossomPalette[Math.floor(Math.random() * blossomPalette.length)]);
-          _color.toArray(color, i * 3);
+          color.setHex(blossomPalette[Math.floor(Math.random() * blossomPalette.length)]);
+          blossomMesh.setColorAt(i, color);
 
         }
-
-        blossomGeometry.setAttribute('color', new v3d.InstancedBufferAttribute(color, 3));
-        blossomMaterial.vertexColors = true;
-
-        stemMesh = new v3d.InstancedMesh(stemGeometry, stemMaterial, count);
-        blossomMesh = new v3d.InstancedMesh(blossomGeometry, blossomMaterial, count);
 
         // Instance matrices will be updated every frame.
         stemMesh.instanceMatrix.setUsage(v3d.DynamicDrawUsage);
@@ -178,7 +171,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
       }
 

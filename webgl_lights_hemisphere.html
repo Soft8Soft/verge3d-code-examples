@@ -125,7 +125,7 @@
 
         // GROUND
 
-        const groundGeo = new v3d.PlaneBufferGeometry(10000, 10000);
+        const groundGeo = new v3d.PlaneGeometry(10000, 10000);
         const groundMat = new v3d.MeshLambertMaterial({ color: 0xffffff });
         groundMat.color.setHSL(0.095, 1, 0.75);
 
@@ -149,7 +149,7 @@
 
         scene.fog.color.copy(uniforms["bottomColor"].value);
 
-        const skyGeo = new v3d.SphereBufferGeometry(4000, 32, 15);
+        const skyGeo = new v3d.SphereGeometry(4000, 32, 15);
         const skyMat = new v3d.ShaderMaterial({
           uniforms: uniforms,
           vertexShader: vertexShader,
@@ -200,7 +200,7 @@
 
         //
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize);
 
         const hemisphereButton = document.getElementById('hemisphereButton');
         hemisphereButton.addEventListener('click', function() {

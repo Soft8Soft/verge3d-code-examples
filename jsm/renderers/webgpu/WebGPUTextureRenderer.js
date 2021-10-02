@@ -1,4 +1,4 @@
-import { WebGLRenderTarget } from '../../../../build/v3d.module.js';
+import { WebGLRenderTarget } from 'v3d';
 
 class WebGPUTextureRenderer {
 

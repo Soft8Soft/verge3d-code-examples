@@ -1,61 +1,60 @@
-v3d.Gyroscope = function() {
+(function() {
 
-    v3d.Object3D.call(this);
+    const _translationObject = new v3d.Vector3();
 
-};
+    const _quaternionObject = new v3d.Quaternion();
 
-v3d.Gyroscope.prototype = Object.create(v3d.Object3D.prototype);
-v3d.Gyroscope.prototype.constructor = v3d.Gyroscope;
+    const _scaleObject = new v3d.Vector3();
 
-v3d.Gyroscope.prototype.updateMatrixWorld = (function() {
+    const _translationWorld = new v3d.Vector3();
 
-    var translationObject = new v3d.Vector3();
-    var quaternionObject = new v3d.Quaternion();
-    var scaleObject = new v3d.Vector3();
+    const _quaternionWorld = new v3d.Quaternion();
 
-    var translationWorld = new v3d.Vector3();
-    var quaternionWorld = new v3d.Quaternion();
-    var scaleWorld = new v3d.Vector3();
+    const _scaleWorld = new v3d.Vector3();
 
-    return function updateMatrixWorld(force) {
+    class Gyroscope extends v3d.Object3D {
 
-        this.matrixAutoUpdate && this.updateMatrix();
+        constructor() {
 
-        // update matrixWorld
+            super();
 
-        if (this.matrixWorldNeedsUpdate || force) {
+        }
 
-            if (this.parent !== null) {
+        updateMatrixWorld(force) {
 
-                this.matrixWorld.multiplyMatrices(this.parent.matrixWorld, this.matrix);
+            this.matrixAutoUpdate && this.updateMatrix(); // update matrixWorld
 
-                this.matrixWorld.decompose(translationWorld, quaternionWorld, scaleWorld);
-                this.matrix.decompose(translationObject, quaternionObject, scaleObject);
+            if (this.matrixWorldNeedsUpdate || force) {
 
-                this.matrixWorld.compose(translationWorld, quaternionObject, scaleWorld);
+                if (this.parent !== null) {
+
+                    this.matrixWorld.multiplyMatrices(this.parent.matrixWorld, this.matrix);
+                    this.matrixWorld.decompose(_translationWorld, _quaternionWorld, _scaleWorld);
+                    this.matrix.decompose(_translationObject, _quaternionObject, _scaleObject);
+                    this.matrixWorld.compose(_translationWorld, _quaternionObject, _scaleWorld);
+
+                } else {
+
+                    this.matrixWorld.copy(this.matrix);
+
+                }
+
+                this.matrixWorldNeedsUpdate = false;
+                force = true;
+
+            } // update children
 
 
-            } else {
+            for (let i = 0, l = this.children.length; i < l; i++) {
 
-                this.matrixWorld.copy(this.matrix);
+                this.children[i].updateMatrixWorld(force);
 
             }
 
-
-            this.matrixWorldNeedsUpdate = false;
-
-            force = true;
-
         }
 
-        // update children
+    }
 
-        for (var i = 0, l = this.children.length; i < l; i++) {
+    v3d.Gyroscope = Gyroscope;
 
-            this.children[i].updateMatrixWorld(force);
-
-        }
-
-    };
-
-}());
+})();
