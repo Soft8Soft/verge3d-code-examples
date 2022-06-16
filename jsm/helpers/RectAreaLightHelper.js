@@ -6,7 +6,7 @@ import {
     LineBasicMaterial,
     Mesh,
     MeshBasicMaterial
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  *  This helper must be added as a child of the light

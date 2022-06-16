@@ -2,7 +2,7 @@ import {
     Mesh,
     ShaderMaterial,
     SphereGeometry
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class LightProbeHelper extends Mesh {
 

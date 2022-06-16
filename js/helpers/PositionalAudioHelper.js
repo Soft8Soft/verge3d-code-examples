@@ -65,8 +65,8 @@
             } //
 
 
-            generateSegment(- halfConeOuterAngle, - halfConeInnerAngle, divisionsOuterAngle, 0);
-            generateSegment(- halfConeInnerAngle, halfConeInnerAngle, divisionsInnerAngle, 1);
+            generateSegment(-halfConeOuterAngle, - halfConeInnerAngle, divisionsOuterAngle, 0);
+            generateSegment(-halfConeInnerAngle, halfConeInnerAngle, divisionsInnerAngle, 1);
             generateSegment(halfConeInnerAngle, halfConeOuterAngle, divisionsOuterAngle, 0); //
 
             positionAttribute.needsUpdate = true;

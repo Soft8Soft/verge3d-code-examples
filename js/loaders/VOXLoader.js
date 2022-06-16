@@ -236,6 +236,7 @@
             this.minFilter = v3d.NearestFilter;
             this.magFilter = v3d.LinearFilter;
             this.unpackAlignment = 1;
+            this.needsUpdate = true;
 
         }
 

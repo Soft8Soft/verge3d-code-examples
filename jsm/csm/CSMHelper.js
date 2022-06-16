@@ -10,7 +10,7 @@ import {
     MeshBasicMaterial,
     BufferAttribute,
     DoubleSide
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class CSMHelper extends Group {
 

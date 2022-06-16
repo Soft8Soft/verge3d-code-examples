@@ -10,7 +10,7 @@ import {
      MeshStandardMaterial,
      PointLight,
      Scene,
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class RoomEnvironment extends Scene {
 

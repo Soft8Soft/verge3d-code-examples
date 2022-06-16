@@ -1,7 +1,7 @@
 import {
     BoxGeometry,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 const _tempNormal = new Vector3();
 

@@ -1,6 +1,6 @@
 import {
     Object3D
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 import {
     XRHandPrimitiveModel

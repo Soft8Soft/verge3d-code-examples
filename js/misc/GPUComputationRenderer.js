@@ -310,7 +310,9 @@
             this.createTexture = function() {
 
                 const data = new Float32Array(sizeX * sizeY * 4);
-                return new v3d.DataTexture(data, sizeX, sizeY, v3d.RGBAFormat, v3d.FloatType);
+                const texture = new v3d.DataTexture(data, sizeX, sizeY, v3d.RGBAFormat, v3d.FloatType);
+                texture.needsUpdate = true;
+                return texture;
 
             };
 

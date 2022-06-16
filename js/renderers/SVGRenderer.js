@@ -103,7 +103,7 @@
 
                 _svg.setAttribute('height', _svgHeight);
 
-                _clipBox.min.set(- _svgWidthHalf, - _svgHeightHalf);
+                _clipBox.min.set(-_svgWidthHalf, - _svgHeightHalf);
 
                 _clipBox.max.set(_svgWidthHalf, _svgHeightHalf);
 
@@ -201,7 +201,7 @@
 
                         _v1 = element;
                         _v1.x *= _svgWidthHalf;
-                        _v1.y *= - _svgHeightHalf;
+                        _v1.y *= -_svgHeightHalf;
                         renderSprite(_v1, element, material);
 
                     } else if (element instanceof v3d.RenderableLine) {
@@ -209,9 +209,9 @@
                         _v1 = element.v1;
                         _v2 = element.v2;
                         _v1.positionScreen.x *= _svgWidthHalf;
-                        _v1.positionScreen.y *= - _svgHeightHalf;
+                        _v1.positionScreen.y *= -_svgHeightHalf;
                         _v2.positionScreen.x *= _svgWidthHalf;
-                        _v2.positionScreen.y *= - _svgHeightHalf;
+                        _v2.positionScreen.y *= -_svgHeightHalf;
 
                         _elemBox.setFromPoints([_v1.positionScreen, _v2.positionScreen]);
 
@@ -230,11 +230,11 @@
                         if (_v2.positionScreen.z < - 1 || _v2.positionScreen.z > 1) continue;
                         if (_v3.positionScreen.z < - 1 || _v3.positionScreen.z > 1) continue;
                         _v1.positionScreen.x *= _svgWidthHalf;
-                        _v1.positionScreen.y *= - _svgHeightHalf;
+                        _v1.positionScreen.y *= -_svgHeightHalf;
                         _v2.positionScreen.x *= _svgWidthHalf;
-                        _v2.positionScreen.y *= - _svgHeightHalf;
+                        _v2.positionScreen.y *= -_svgHeightHalf;
                         _v3.positionScreen.x *= _svgWidthHalf;
-                        _v3.positionScreen.y *= - _svgHeightHalf;
+                        _v3.positionScreen.y *= -_svgHeightHalf;
 
                         if (this.overdraw > 0) {
 
@@ -268,7 +268,7 @@
 
                         if (_vector3.z < - 1 || _vector3.z > 1) return;
                         const x = _vector3.x * _svgWidthHalf;
-                        const y = - _vector3.y * _svgHeightHalf;
+                        const y = -_vector3.y * _svgHeightHalf;
                         const node = object.node;
                         node.setAttribute('transform', 'translate(' + x + ',' + y + ')');
 
@@ -366,7 +366,7 @@
 
                 }
 
-                const path = 'M' + convert(v1.x - scaleX * 0.5) + ',' + convert(v1.y - scaleY * 0.5) + 'h' + convert(scaleX) + 'v' + convert(scaleY) + 'h' + convert(- scaleX) + 'z';
+                const path = 'M' + convert(v1.x - scaleX * 0.5) + ',' + convert(v1.y - scaleY * 0.5) + 'h' + convert(scaleX) + 'v' + convert(scaleY) + 'h' + convert(-scaleX) + 'z';
                 let style = '';
 
                 if (material.isSpriteMaterial || material.isPointsMaterial) {

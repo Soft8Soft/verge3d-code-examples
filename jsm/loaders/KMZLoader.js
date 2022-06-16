@@ -3,7 +3,7 @@ import {
     Group,
     Loader,
     LoadingManager
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 import { ColladaLoader } from '../loaders/ColladaLoader.js';
 import * as fflate from '../libs/fflate.module.js';
 

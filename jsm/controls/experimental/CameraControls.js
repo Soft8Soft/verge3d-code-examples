@@ -6,7 +6,7 @@ import {
     TOUCH,
     Vector2,
     Vector3
-} from '../../../../build/v3d.module.js';
+} from 'v3d';
 
 var CameraControls = function(object, domElement) {
 
@@ -40,7 +40,7 @@ var CameraControls = function(object, domElement) {
 
     // How far you can orbit horizontally, upper and lower limits.
     // If set, must be a sub-interval of the interval [- Math.PI, Math.PI].
-    this.minAzimuthAngle = - Infinity; // radians
+    this.minAzimuthAngle = -Infinity; // radians
     this.maxAzimuthAngle = Infinity; // radians
 
     // Set to true to enable damping (inertia)
@@ -385,7 +385,7 @@ var CameraControls = function(object, domElement) {
         return function panLeft(distance, objectMatrix) {
 
             v.setFromMatrixColumn(objectMatrix, 0); // get X column of objectMatrix
-            v.multiplyScalar(- distance);
+            v.multiplyScalar(-distance);
 
             panOffset.add(v);
 
@@ -621,7 +621,7 @@ var CameraControls = function(object, domElement) {
                 break;
 
             case scope.keys.RIGHT:
-                pan(- scope.keyPanSpeed, 0);
+                pan(-scope.keyPanSpeed, 0);
                 needsUpdate = true;
                 break;
 

@@ -3,7 +3,7 @@ import {
     BufferGeometry,
     FileLoader,
     Loader
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * See https://github.com/kchapelier/PRWM for more informations about this file format

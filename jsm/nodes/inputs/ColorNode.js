@@ -1,4 +1,4 @@
-import { Color } from '../../../../build/v3d.module.js';
+import { Color } from 'v3d';
 
 import { InputNode } from '../core/InputNode.js';
 import { NodeUtils } from '../core/NodeUtils.js';

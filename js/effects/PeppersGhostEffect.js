@@ -74,7 +74,7 @@
 
                 _cameraB.quaternion.copy(_quaternion);
 
-                _cameraB.translateZ(- scope.cameraDistance);
+                _cameraB.translateZ(-scope.cameraDistance);
 
                 _cameraB.lookAt(scene.position);
 
@@ -84,7 +84,7 @@
 
                 _cameraL.quaternion.copy(_quaternion);
 
-                _cameraL.translateX(- scope.cameraDistance);
+                _cameraL.translateX(-scope.cameraDistance);
 
                 _cameraL.lookAt(scene.position);
 

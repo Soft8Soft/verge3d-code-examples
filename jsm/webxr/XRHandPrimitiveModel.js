@@ -6,7 +6,7 @@ import {
     InstancedMesh,
     Matrix4,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 const _matrix = new Matrix4();
 const _vector = new Vector3();

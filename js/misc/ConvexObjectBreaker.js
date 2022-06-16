@@ -474,7 +474,7 @@
             const referencePoint = ConvexObjectBreaker.transformTiedVectorInverse(plane.coplanarPoint(_v1), m);
             ConvexObjectBreaker.transformFreeVectorInverse(resultPlane.normal, m); // recalculate constant (like in setFromNormalAndCoplanarPoint)
 
-            resultPlane.constant = - referencePoint.dot(resultPlane.normal);
+            resultPlane.constant = -referencePoint.dot(resultPlane.normal);
 
         }
 

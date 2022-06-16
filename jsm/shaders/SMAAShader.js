@@ -1,6 +1,6 @@
 import {
     Vector2
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * WebGL port of Subpixel Morphological Antialiasing (SMAA) v2.8

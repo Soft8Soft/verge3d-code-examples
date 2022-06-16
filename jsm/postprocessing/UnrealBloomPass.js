@@ -9,8 +9,8 @@ import {
     Vector2,
     Vector3,
     WebGLRenderTarget
-} from '../../../build/v3d.module.js';
-import { Pass, FullScreenQuad } from '../postprocessing/Pass.js';
+} from 'v3d';
+import { Pass, FullScreenQuad } from './Pass.js';
 import { CopyShader } from '../shaders/CopyShader.js';
 import { LuminosityHighPassShader } from '../shaders/LuminosityHighPassShader.js';
 

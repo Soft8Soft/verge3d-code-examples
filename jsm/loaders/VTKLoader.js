@@ -5,7 +5,7 @@ import {
     Float32BufferAttribute,
     Loader,
     LoaderUtils
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 import * as fflate from '../libs/fflate.module.js';
 
 class VTKLoader extends Loader {

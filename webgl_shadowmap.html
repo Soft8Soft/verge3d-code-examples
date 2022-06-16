@@ -15,14 +15,28 @@
     t: toggle HUD
     </div>
 
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js"
+        }
+      }
+    </script>
+
     <script type="module">
 
-      import * as v3d from '../build/v3d.module.js';
+      import * as v3d from 'v3d';
 
       import Stats from './jsm/libs/stats.module.js';
 
       import { FirstPersonControls } from './jsm/controls/FirstPersonControls.js';
       import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+      import { FontLoader } from './jsm/loaders/FontLoader.js';
+      import { TextGeometry } from './jsm/geometries/TextGeometry.js';
       import { ShadowMapViewer } from './jsm/utils/ShadowMapViewer.js';
 
       const SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 1024;
@@ -184,10 +198,10 @@
 
         // TEXT
 
-        const loader = new v3d.FontLoader();
+        const loader = new FontLoader();
         loader.load('fonts/helvetiker_bold.typeface.json', function(font) {
 
-          const textGeo = new v3d.TextGeometry("v3d.JS", {
+          const textGeo = new TextGeometry('v3d.JS', {
 
             font: font,
 
@@ -259,7 +273,7 @@
           mixer.clipAction(clip, mesh).
             setDuration(duration).
           // to shift the playback out of phase:
-            startAt(- duration * Math.random()).
+            startAt(-duration * Math.random()).
             play();
 
           mesh.position.set(x, y, z);
@@ -276,7 +290,7 @@
 
         const gltfloader = new GLTFLoader();
 
-        gltfloader.load("models/gltf/Horse.glb", function(gltf) {
+        gltfloader.load('models/gltf/Horse.glb', function(gltf) {
 
           const mesh = gltf.scene.children[0];
 
@@ -292,7 +306,7 @@
 
         });
 
-        gltfloader.load("models/gltf/Flamingo.glb", function(gltf) {
+        gltfloader.load('models/gltf/Flamingo.glb', function(gltf) {
 
           const mesh = gltf.scene.children[0];
           const clip = gltf.animations[0];
@@ -301,7 +315,7 @@
 
         });
 
-        gltfloader.load("models/gltf/Stork.glb", function(gltf) {
+        gltfloader.load('models/gltf/Stork.glb', function(gltf) {
 
           const mesh = gltf.scene.children[0];
           const clip = gltf.animations[0];
@@ -310,7 +324,7 @@
 
         });
 
-        gltfloader.load("models/gltf/Parrot.glb", function(gltf) {
+        gltfloader.load('models/gltf/Parrot.glb', function(gltf) {
 
           const mesh = gltf.scene.children[0];
           const clip = gltf.animations[0];

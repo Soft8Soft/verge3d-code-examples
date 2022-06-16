@@ -5,7 +5,7 @@ import {
     Matrix3,
     Ray,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 // module scope helper variables
 

@@ -1,6 +1,6 @@
 import {
     BackSide
-} from '../../../../build/v3d.module.js';
+} from 'v3d';
 
 import { TempNode } from '../core/TempNode.js';
 import { Vector2Node } from '../inputs/Vector2Node.js';

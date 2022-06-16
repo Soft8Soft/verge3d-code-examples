@@ -1,7 +1,7 @@
 import {
     FileLoader,
     Loader
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 import { opentype } from '../libs/opentype.module.min.js';
 
 /**

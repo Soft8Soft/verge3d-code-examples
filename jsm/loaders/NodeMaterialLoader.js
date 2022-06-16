@@ -1,7 +1,7 @@
 import {
     Loader,
     FileLoader
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 import * as Nodes from '../nodes/Nodes.js';
 

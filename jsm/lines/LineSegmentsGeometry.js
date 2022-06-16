@@ -7,7 +7,7 @@ import {
     Sphere,
     Vector3,
     WireframeGeometry
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 const _box = new Box3();
 const _vector = new Vector3();

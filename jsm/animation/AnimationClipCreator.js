@@ -5,7 +5,7 @@ import {
     NumberKeyframeTrack,
     Vector3,
     VectorKeyframeTrack
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class AnimationClipCreator {
 

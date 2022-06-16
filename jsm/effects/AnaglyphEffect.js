@@ -10,7 +10,7 @@ import {
     ShaderMaterial,
     StereoCamera,
     WebGLRenderTarget
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class AnaglyphEffect {
 

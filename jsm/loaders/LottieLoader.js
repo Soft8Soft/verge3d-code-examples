@@ -3,7 +3,7 @@ import {
     Loader,
     CanvasTexture,
     NearestFilter
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class LottieLoader extends Loader {
 

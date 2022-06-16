@@ -2,7 +2,7 @@ import {
     Euler,
     EventDispatcher,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 const _euler = new Euler(0, 0, 0, 'YXZ');
 const _vector = new Vector3();

@@ -9,11 +9,10 @@
  *  Morph normals / blend shape normals
  *
  * FBX format references:
- *     https://wiki.blender.org/index.php/User:Mont29/Foundation/FBX_File_Structure
- *     http://help.autodesk.com/view/FBX/2017/ENU/?guid=__cpp_ref_index_html (C++ SDK reference)
+ *     https://help.autodesk.com/view/FBX/2017/ENU/?guid=__cpp_ref_index_html (C++ SDK reference)
  *
- *     Binary format specification:
- *        https://code.blender.org/2013/08/fbx-binary-file-format-specification/
+ * Binary format specification:
+ *    https://code.blender.org/2013/08/fbx-binary-file-format-specification/
  */
 
     let fbxTree;
@@ -549,7 +548,13 @@
                     case 'DiffuseColor':
                     case 'Maya|TEX_color_map':
                         parameters.map = scope.getTexture(textureMap, child.ID);
-                        parameters.map.encoding = v3d.sRGBEncoding;
+
+                        if (parameters.map !== undefined) {
+
+                            parameters.map.encoding = v3d.sRGBEncoding;
+
+                        }
+
                         break;
 
                     case 'DisplacementColor':
@@ -558,7 +563,13 @@
 
                     case 'EmissiveColor':
                         parameters.emissiveMap = scope.getTexture(textureMap, child.ID);
-                        parameters.emissiveMap.encoding = v3d.sRGBEncoding;
+
+                        if (parameters.emissiveMap !== undefined) {
+
+                            parameters.emissiveMap.encoding = v3d.sRGBEncoding;
+
+                        }
+
                         break;
 
                     case 'NormalMap':
@@ -568,13 +579,25 @@
 
                     case 'ReflectionColor':
                         parameters.envMap = scope.getTexture(textureMap, child.ID);
-                        parameters.envMap.mapping = v3d.EquirectangularReflectionMapping;
-                        parameters.envMap.encoding = v3d.sRGBEncoding;
+
+                        if (parameters.envMap !== undefined) {
+
+                            parameters.envMap.mapping = v3d.EquirectangularReflectionMapping;
+                            parameters.envMap.encoding = v3d.sRGBEncoding;
+
+                        }
+
                         break;
 
                     case 'SpecularColor':
                         parameters.specularMap = scope.getTexture(textureMap, child.ID);
-                        parameters.specularMap.encoding = v3d.sRGBEncoding;
+
+                        if (parameters.specularMap !== undefined) {
+
+                            parameters.specularMap.encoding = v3d.sRGBEncoding;
+
+                        }
+
                         break;
 
                     case 'TransparentColor':
@@ -757,7 +780,6 @@
             });
             this.bindSkeleton(deformers.skeletons, geometryMap, modelMap);
             this.createAmbientLight();
-            this.setupMorphMaterials();
             sceneGraph.traverse(function(node) {
 
                 if (node.userData.transformData) {
@@ -964,7 +986,7 @@
 
                     case 1:
                         // Orthographic
-                        model = new v3d.OrthographicCamera(- width / 2, width / 2, height / 2, - height / 2, nearClippingPlane, farClippingPlane);
+                        model = new v3d.OrthographicCamera(-width / 2, width / 2, height / 2, - height / 2, nearClippingPlane, farClippingPlane);
                         break;
 
                     default:
@@ -1287,7 +1309,7 @@
 
                 for (const nodeID in BindPoseNode) {
 
-                    if (BindPoseNode[nodeID].attrType === 'BindPose') {
+                    if (BindPoseNode[nodeID].attrType === 'BindPose' && BindPoseNode[nodeID].NbPoseNodes > 0) {
 
                         const poseNodes = BindPoseNode[nodeID].PoseNode;
 
@@ -1333,71 +1355,6 @@
                 }
 
             }
-
-        }
-
-        setupMorphMaterials() {
-
-            const scope = this;
-            sceneGraph.traverse(function(child) {
-
-                if (child.isMesh) {
-
-                    if (child.geometry.morphAttributes.position && child.geometry.morphAttributes.position.length) {
-
-                        if (Array.isArray(child.material)) {
-
-                            child.material.forEach(function(material, i) {
-
-                                scope.setupMorphMaterial(child, material, i);
-
-                            });
-
-                        } else {
-
-                            scope.setupMorphMaterial(child, child.material);
-
-                        }
-
-                    }
-
-                }
-
-            });
-
-        }
-
-        setupMorphMaterial(child, material, index) {
-
-            const uuid = child.uuid;
-            const matUuid = material.uuid; // if a geometry has morph targets, it cannot share the material with other geometries
-
-            let sharedMat = false;
-            sceneGraph.traverse(function(node) {
-
-                if (node.isMesh) {
-
-                    if (Array.isArray(node.material)) {
-
-                        node.material.forEach(function(mat) {
-
-                            if (mat.uuid === matUuid && node.uuid !== uuid) sharedMat = true;
-
-                        });
-
-                    } else if (node.material.uuid === matUuid && node.uuid !== uuid) sharedMat = true;
-
-                }
-
-            });
-
-            if (sharedMat === true) {
-
-                const clonedMat = material.clone();
-                clonedMat.morphTargets = true;
-                if (index === undefined) child.material = clonedMat; else child.material[index] = clonedMat;
-
-            } else material.morphTargets = true;
 
         }
 
@@ -2151,16 +2108,8 @@
             }
 
             const curve = new v3d.NURBSCurve(degree, knots, controlPoints, startKnot, endKnot);
-            const vertices = curve.getPoints(controlPoints.length * 7);
-            const positions = new Float32Array(vertices.length * 3);
-            vertices.forEach(function(vertex, i) {
-
-                vertex.toArray(positions, i * 3);
-
-            });
-            const geometry = new v3d.BufferGeometry();
-            geometry.setAttribute('position', new v3d.BufferAttribute(positions, 3));
-            return geometry;
+            const points = curve.getPoints(controlPoints.length * 12);
+            return new v3d.BufferGeometry().setFromPoints(points);
 
         }
 
@@ -3745,16 +3694,15 @@
 
         }
 
-        const lLRM = new v3d.Matrix4().copy(lPreRotationM).multiply(lRotationM).multiply(lPostRotationM); // Global Rotation
+        const lLRM = lPreRotationM.clone().multiply(lRotationM).multiply(lPostRotationM); // Global Rotation
 
         const lParentGRM = new v3d.Matrix4();
         lParentGRM.extractRotation(lParentGX); // Global Shear*Scaling
 
         const lParentTM = new v3d.Matrix4();
         lParentTM.copyPosition(lParentGX);
-        const lParentGSM = new v3d.Matrix4();
-        const lParentGRSM = new v3d.Matrix4().copy(lParentTM).invert().multiply(lParentGX);
-        lParentGSM.copy(lParentGRM).invert().multiply(lParentGRSM);
+        const lParentGRSM = lParentTM.clone().invert().multiply(lParentGX);
+        const lParentGSM = lParentGRM.clone().invert().multiply(lParentGRSM);
         const lLSM = lScalingM;
         const lGlobalRS = new v3d.Matrix4();
 
@@ -3769,23 +3717,20 @@
         } else {
 
             const lParentLSM = new v3d.Matrix4().scale(new v3d.Vector3().setFromMatrixScale(lParentLX));
-            const lParentLSM_inv = new v3d.Matrix4().copy(lParentLSM).invert();
-            const lParentGSM_noLocal = new v3d.Matrix4().copy(lParentGSM).multiply(lParentLSM_inv);
+            const lParentLSM_inv = lParentLSM.clone().invert();
+            const lParentGSM_noLocal = lParentGSM.clone().multiply(lParentLSM_inv);
             lGlobalRS.copy(lParentGRM).multiply(lLRM).multiply(lParentGSM_noLocal).multiply(lLSM);
 
         }
 
-        const lRotationPivotM_inv = new v3d.Matrix4();
-        lRotationPivotM_inv.copy(lRotationPivotM).invert();
-        const lScalingPivotM_inv = new v3d.Matrix4();
-        lScalingPivotM_inv.copy(lScalingPivotM).invert(); // Calculate the local transform matrix
+        const lRotationPivotM_inv = lRotationPivotM.clone().invert();
+        const lScalingPivotM_inv = lScalingPivotM.clone().invert(); // Calculate the local transform matrix
 
-        let lTransform = new v3d.Matrix4();
-        lTransform.copy(lTranslationM).multiply(lRotationOffsetM).multiply(lRotationPivotM).multiply(lPreRotationM).multiply(lRotationM).multiply(lPostRotationM).multiply(lRotationPivotM_inv).multiply(lScalingOffsetM).multiply(lScalingPivotM).multiply(lScalingM).multiply(lScalingPivotM_inv);
+        let lTransform = lTranslationM.clone().multiply(lRotationOffsetM).multiply(lRotationPivotM).multiply(lPreRotationM).multiply(lRotationM).multiply(lPostRotationM).multiply(lRotationPivotM_inv).multiply(lScalingOffsetM).multiply(lScalingPivotM).multiply(lScalingM).multiply(lScalingPivotM_inv);
         const lLocalTWithAllPivotAndOffsetInfo = new v3d.Matrix4().copyPosition(lTransform);
-        const lGlobalTranslation = new v3d.Matrix4().copy(lParentGX).multiply(lLocalTWithAllPivotAndOffsetInfo);
+        const lGlobalTranslation = lParentGX.clone().multiply(lLocalTWithAllPivotAndOffsetInfo);
         lGlobalT.copyPosition(lGlobalTranslation);
-        lTransform = new v3d.Matrix4().copy(lGlobalT).multiply(lGlobalRS); // from global to local
+        lTransform = lGlobalT.clone().multiply(lGlobalRS); // from global to local
 
         lTransform.premultiply(lParentGX.invert());
         return lTransform;

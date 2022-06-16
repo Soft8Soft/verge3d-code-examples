@@ -12,11 +12,25 @@
       <br/>type to enter new text, drag to spin the text
     </div>
 
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js"
+        }
+      }
+    </script>
+
     <script type="module">
 
-      import * as v3d from '../build/v3d.module.js';
+      import * as v3d from 'v3d';
 
       import { TTFLoader } from './jsm/loaders/TTFLoader.js';
+      import { Font } from './jsm/loaders/FontLoader.js';
+      import { TextGeometry } from './jsm/geometries/TextGeometry.js';
 
       let container;
       let camera, cameraTarget, scene, renderer;
@@ -85,7 +99,7 @@
 
         loader.load('fonts/ttf/kenpixel.ttf', function(json) {
 
-          font = new v3d.Font(json);
+          font = new Font(json);
           createText();
 
         });
@@ -177,7 +191,7 @@
 
       function createText() {
 
-        textGeo = new v3d.TextGeometry(text, {
+        textGeo = new TextGeometry(text, {
 
           font: font,
 
@@ -212,7 +226,7 @@
           textMesh2 = new v3d.Mesh(textGeo, material);
 
           textMesh2.position.x = centerOffset;
-          textMesh2.position.y = - hover;
+          textMesh2.position.y = -hover;
           textMesh2.position.z = height;
 
           textMesh2.rotation.x = Math.PI;

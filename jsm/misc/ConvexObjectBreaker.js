@@ -3,7 +3,7 @@ import {
     Mesh,
     Plane,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 import { ConvexGeometry } from '../geometries/ConvexGeometry.js';
 
 /**
@@ -516,7 +516,7 @@ class ConvexObjectBreaker {
         ConvexObjectBreaker.transformFreeVectorInverse(resultPlane.normal, m);
 
         // recalculate constant (like in setFromNormalAndCoplanarPoint)
-        resultPlane.constant = - referencePoint.dot(resultPlane.normal);
+        resultPlane.constant = -referencePoint.dot(resultPlane.normal);
 
     }
 

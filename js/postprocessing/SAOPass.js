@@ -6,15 +6,15 @@
 
     class SAOPass extends v3d.Pass {
 
-        constructor(scene, camera, depthTexture, useNormals, resolution) {
+        constructor(scene, camera, useDepthTexture = false, useNormals = false, resolution = new v3d.Vector2(256, 256)) {
 
             super();
             this.scene = scene;
             this.camera = camera;
             this.clear = true;
             this.needsSwap = false;
-            this.supportsDepthTextureExtension = depthTexture !== undefined ? depthTexture : false;
-            this.supportsNormalTexture = useNormals !== undefined ? useNormals : false;
+            this.supportsDepthTextureExtension = useDepthTexture;
+            this.supportsNormalTexture = useNormals;
             this.originalClearColor = new v3d.Color();
             this._oldClearColor = new v3d.Color();
             this.oldClearAlpha = 1;
@@ -30,7 +30,7 @@
                 saoBlurStdDev: 4,
                 saoBlurDepthCutoff: 0.01
             };
-            this.resolution = resolution !== undefined ? new v3d.Vector2(resolution.x, resolution.y) : new v3d.Vector2(256, 256);
+            this.resolution = new v3d.Vector2(resolution.x, resolution.y);
             this.saoRenderTarget = new v3d.WebGLRenderTarget(this.resolution.x, this.resolution.y, {
                 minFilter: v3d.LinearFilter,
                 magFilter: v3d.LinearFilter,
@@ -44,10 +44,11 @@
                 format: v3d.RGBAFormat
             });
             this.depthRenderTarget = this.normalRenderTarget.clone();
+            let depthTexture;
 
             if (this.supportsDepthTextureExtension) {
 
-                const depthTexture = new v3d.DepthTexture();
+                depthTexture = new v3d.DepthTexture();
                 depthTexture.type = v3d.UnsignedShortType;
                 this.beautyRenderTarget.depthTexture = depthTexture;
                 this.beautyRenderTarget.depthBuffer = true;

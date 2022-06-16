@@ -3,7 +3,7 @@ import {
     Matrix3,
     Vector2,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class OBJExporter {
 

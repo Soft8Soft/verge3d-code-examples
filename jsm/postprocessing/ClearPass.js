@@ -1,7 +1,7 @@
 import {
     Color
-} from '../../../build/v3d.module.js';
-import { Pass } from '../postprocessing/Pass.js';
+} from 'v3d';
+import { Pass } from './Pass.js';
 
 class ClearPass extends Pass {
 

@@ -608,7 +608,7 @@
 
             // Create an equilateral triangle (only vertices)
             this.side.crossVectors(up, forwards).multiplyScalar(radius * LightningStrike.COS30DEG);
-            this.down.copy(up).multiplyScalar(- radius * LightningStrike.SIN30DEG);
+            this.down.copy(up).multiplyScalar(-radius * LightningStrike.SIN30DEG);
             const p = this.vPos;
             const v = this.vertices;
             p.copy(pos).sub(this.side).add(this.down);
@@ -631,7 +631,7 @@
 
             // Create an equilateral triangle (only vertices)
             this.side.crossVectors(up, forwards).multiplyScalar(radius * LightningStrike.COS30DEG);
-            this.down.copy(up).multiplyScalar(- radius * LightningStrike.SIN30DEG);
+            this.down.copy(up).multiplyScalar(-radius * LightningStrike.SIN30DEG);
             const p = this.vPos;
             const v = this.vertices;
             const uv = this.uvs;

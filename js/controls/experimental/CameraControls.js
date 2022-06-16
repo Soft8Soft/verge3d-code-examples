@@ -26,7 +26,7 @@
         // How far you can orbit horizontally, upper and lower limits.
         // If set, must be a sub-interval of the interval [- Math.PI, Math.PI].
 
-        this.minAzimuthAngle = - Infinity; // radians
+        this.minAzimuthAngle = -Infinity; // radians
 
         this.maxAzimuthAngle = Infinity; // radians
         // Set to true to enable damping (inertia)
@@ -336,7 +336,7 @@
 
                 v.setFromMatrixColumn(objectMatrix, 0); // get X column of objectMatrix
 
-                v.multiplyScalar(- distance);
+                v.multiplyScalar(-distance);
                 panOffset.add(v);
 
             };
@@ -510,7 +510,9 @@
 
         }
 
-        function handleMouseUp() { // no-op
+        function
+        /*event*/
+        handleMouseUp() { // no-op
         }
 
         function handleMouseWheel(event) {
@@ -551,7 +553,7 @@
                     break;
 
                 case scope.keys.RIGHT:
-                    pan(- scope.keyPanSpeed, 0);
+                    pan(-scope.keyPanSpeed, 0);
                     needsUpdate = true;
                     break;
 
@@ -691,7 +693,9 @@
 
         }
 
-        function handleTouchEnd() { // no-op
+        function
+        /*event*/
+        handleTouchEnd() { // no-op
         } //
         // event handlers - FSM: listen for events and reset state
         //

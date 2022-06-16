@@ -4,7 +4,7 @@ import {
     PlaneGeometry,
     Scene,
     WebGLRenderTarget
-} from '../../../../build/v3d.module.js';
+} from 'v3d';
 
 import { NodeBuilder } from '../core/NodeBuilder.js';
 import { NodeMaterial } from '../materials/NodeMaterial.js';

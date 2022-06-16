@@ -42,7 +42,6 @@
  *
  * Code converted from my ancient SPD software, http://tog.acm.org/resources/SPD/
  * Created for the Udacity course "Interactive Rendering", http://bit.ly/ericity
- * Lesson: https://www.udacity.com/course/viewer#!/c-cs291/l-68866048/m-106482448
  * YouTube video on teapot history: https://www.youtube.com/watch?v=DxMfblPzFNc
  *
  * See https://en.wikipedia.org/wiki/Utah_teapot for the history of the teapot
@@ -268,7 +267,7 @@
 
                             vertices[vertCount ++] = trueSize * vert[0];
                             vertices[vertCount ++] = trueSize * (vert[2] - maxHeight2);
-                            vertices[vertCount ++] = - trueSize * vert[1];
+                            vertices[vertCount ++] = -trueSize * vert[1];
                             normals[normCount ++] = normOut.x;
                             normals[normCount ++] = normOut.y;
                             normals[normCount ++] = normOut.z;

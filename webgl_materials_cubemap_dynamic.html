@@ -15,11 +15,25 @@
 
     <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D webgl</a> - materials - dynamic cube reflection<br/>Photo by <a href="http://www.flickr.com/photos/jonragnarsson/2294472375/" target="_blank" rel="noopener">J&oacute;n Ragnarsson</a>.</div>
 
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js"
+        }
+      }
+    </script>
+
     <script type="module">
 
-      import * as v3d from '../build/v3d.module.js';
+      import * as v3d from 'v3d';
 
-      let camera, scene, renderer;
+      import Stats from './jsm/libs/stats.module.js';
+
+      let camera, scene, renderer, stats;
       let cube, sphere, torus, material;
 
       let count = 0, cubeCamera1, cubeCamera2, cubeRenderTarget1, cubeRenderTarget2;
@@ -49,6 +63,9 @@
         renderer.outputEncoding = v3d.sRGBEncoding;
         document.body.appendChild(renderer.domElement);
 
+        stats = new Stats();
+        document.body.appendChild(stats.dom);
+
         scene = new v3d.Scene();
         scene.background = texture;
 
@@ -56,30 +73,20 @@
 
         //
 
-        cubeRenderTarget1 = new v3d.WebGLCubeRenderTarget(256, {
-          format: v3d.RGBFormat,
-          generateMipmaps: true,
-          minFilter: v3d.LinearMipmapLinearFilter,
-          encoding: v3d.sRGBEncoding // temporary -- to prevent the material's shader from recompiling every frame
-        });
+        cubeRenderTarget1 = new v3d.WebGLCubeRenderTarget(256);
 
         cubeCamera1 = new v3d.CubeCamera(1, 1000, cubeRenderTarget1);
 
-        cubeRenderTarget2 = new v3d.WebGLCubeRenderTarget(256, {
-          format: v3d.RGBFormat,
-          generateMipmaps: true,
-          minFilter: v3d.LinearMipmapLinearFilter,
-          encoding: v3d.sRGBEncoding
-        });
+        cubeRenderTarget2 = new v3d.WebGLCubeRenderTarget(256);
 
         cubeCamera2 = new v3d.CubeCamera(1, 1000, cubeRenderTarget2);
 
         //
 
-        material = new v3d.MeshBasicMaterial({
+        material = new v3d.MeshStandardMaterial({
           envMap: cubeRenderTarget2.texture,
-          combine: v3d.MultiplyOperation,
-          reflectivity: 1
+          roughness: 0.2,
+          metalness: 1
         });
 
         sphere = new v3d.Mesh(new v3d.IcosahedronGeometry(20, 8), material);
@@ -151,11 +158,6 @@
       function animate() {
 
         requestAnimationFrame(animate);
-        render();
-
-      }
-
-      function render() {
 
         const time = Date.now();
 
@@ -200,6 +202,14 @@
         }
 
         count ++;
+
+        render();
+
+        stats.update();
+
+      }
+
+      function render() {
 
         renderer.render(scene, camera);
 

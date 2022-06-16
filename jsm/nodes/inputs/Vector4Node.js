@@ -1,4 +1,4 @@
-import { Vector4 } from '../../../../build/v3d.module.js';
+import { Vector4 } from 'v3d';
 
 import { InputNode } from '../core/InputNode.js';
 import { NodeUtils } from '../core/NodeUtils.js';

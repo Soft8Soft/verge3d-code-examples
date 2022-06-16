@@ -3,7 +3,7 @@ import {
     MeshBasicMaterial,
     Object3D,
     SphereGeometry,
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 import { GLTFLoader } from '../loaders/GLTFLoader.js';
 

@@ -166,12 +166,6 @@
 
             if (geometry.index == null) {
 
-                if (v3d.BufferGeometryUtils === undefined) {
-
-                    throw 'v3d.EdgeSplitModifier relies on v3d.BufferGeometryUtils';
-
-                }
-
                 geometry = v3d.BufferGeometryUtils.mergeVertices(geometry);
 
             }

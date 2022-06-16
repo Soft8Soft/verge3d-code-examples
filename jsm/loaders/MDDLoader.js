@@ -16,7 +16,7 @@ import {
     FileLoader,
     Loader,
     NumberKeyframeTrack
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class MDDLoader extends Loader {
 

@@ -1,6 +1,6 @@
 import {
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 const _v1 = new Vector3();
 const _v2 = new Vector3();

@@ -28,6 +28,8 @@
             const ltc_float_2 = new Float32Array(LTC_MAT_2);
             v3d.UniformsLib.LTC_FLOAT_1 = new v3d.DataTexture(ltc_float_1, 64, 64, v3d.RGBAFormat, v3d.FloatType, v3d.UVMapping, v3d.ClampToEdgeWrapping, v3d.ClampToEdgeWrapping, v3d.LinearFilter, v3d.NearestFilter, 1);
             v3d.UniformsLib.LTC_FLOAT_2 = new v3d.DataTexture(ltc_float_2, 64, 64, v3d.RGBAFormat, v3d.FloatType, v3d.UVMapping, v3d.ClampToEdgeWrapping, v3d.ClampToEdgeWrapping, v3d.LinearFilter, v3d.NearestFilter, 1);
+            v3d.UniformsLib.LTC_FLOAT_1.needsUpdate = true;
+            v3d.UniformsLib.LTC_FLOAT_2.needsUpdate = true;
             const ltc_half_1 = new Uint16Array(LTC_MAT_1.length);
             LTC_MAT_1.forEach(function(x, index) {
 
@@ -42,6 +44,8 @@
             });
             v3d.UniformsLib.LTC_HALF_1 = new v3d.DataTexture(ltc_half_1, 64, 64, v3d.RGBAFormat, v3d.HalfFloatType, v3d.UVMapping, v3d.ClampToEdgeWrapping, v3d.ClampToEdgeWrapping, v3d.LinearFilter, v3d.NearestFilter, 1);
             v3d.UniformsLib.LTC_HALF_2 = new v3d.DataTexture(ltc_half_2, 64, 64, v3d.RGBAFormat, v3d.HalfFloatType, v3d.UVMapping, v3d.ClampToEdgeWrapping, v3d.ClampToEdgeWrapping, v3d.LinearFilter, v3d.NearestFilter, 1);
+            v3d.UniformsLib.LTC_HALF_1.needsUpdate = true;
+            v3d.UniformsLib.LTC_HALF_2.needsUpdate = true;
 
         }
 

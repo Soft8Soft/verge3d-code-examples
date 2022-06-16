@@ -3,7 +3,7 @@ import {
     Float32BufferAttribute,
     OrthographicCamera,
     Mesh
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class Pass {
 

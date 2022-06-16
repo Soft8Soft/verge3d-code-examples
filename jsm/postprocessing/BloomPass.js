@@ -6,8 +6,8 @@ import {
     UniformsUtils,
     Vector2,
     WebGLRenderTarget
-} from '../../../build/v3d.module.js';
-import { Pass, FullScreenQuad } from '../postprocessing/Pass.js';
+} from 'v3d';
+import { Pass, FullScreenQuad } from './Pass.js';
 import { CopyShader } from '../shaders/CopyShader.js';
 import { ConvolutionShader } from '../shaders/ConvolutionShader.js';
 

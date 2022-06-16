@@ -25,6 +25,7 @@
             /*, deltaTime, maskActive */
         ) {
 
+            if (renderer.capabilities.isWebGL2 === false) this.uniforms['tDisp'].value.format = v3d.LuminanceFormat;
             this.uniforms['tDiffuse'].value = readBuffer.texture;
             this.uniforms['seed'].value = Math.random(); //default seeding
 
@@ -81,19 +82,19 @@
 
         generateHeightmap(dt_size) {
 
-            const data_arr = new Float32Array(dt_size * dt_size * 3);
+            const data_arr = new Float32Array(dt_size * dt_size);
             const length = dt_size * dt_size;
 
             for (let i = 0; i < length; i++) {
 
                 const val = v3d.MathUtils.randFloat(0, 1);
-                data_arr[i * 3 + 0] = val;
-                data_arr[i * 3 + 1] = val;
-                data_arr[i * 3 + 2] = val;
+                data_arr[i] = val;
 
             }
 
-            return new v3d.DataTexture(data_arr, dt_size, dt_size, v3d.RGBFormat, v3d.FloatType);
+            const texture = new v3d.DataTexture(data_arr, dt_size, dt_size, v3d.RedFormat, v3d.FloatType);
+            texture.needsUpdate = true;
+            return texture;
 
         }
 

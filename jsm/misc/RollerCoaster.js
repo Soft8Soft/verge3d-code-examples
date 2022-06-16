@@ -4,7 +4,7 @@ import {
     Quaternion,
     Raycaster,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class RollerCoasterGeometry extends BufferGeometry {
 

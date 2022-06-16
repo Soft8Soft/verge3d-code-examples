@@ -32,7 +32,7 @@
  *
  **/
 
-import { LoaderUtils } from '../../../../build/v3d.module.js';
+import { LoaderUtils } from 'v3d';
 import { LWO2Parser } from './LWO2Parser.js';
 import { LWO3Parser } from './LWO3Parser.js';
 

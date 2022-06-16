@@ -4,7 +4,7 @@ import {
     ShaderMaterial,
     UniformsLib,
     UniformsUtils
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * Reference: https://en.wikipedia.org/wiki/Cel_shading
@@ -135,7 +135,7 @@ class OutlineEffect {
             '    #include <displacementmap_vertex>',
             '    #include <project_vertex>',
 
-            '    vec3 outlineNormal = - objectNormal;', // the outline material is always rendered with BackSide
+            '    vec3 outlineNormal = -objectNormal;', // the outline material is always rendered with BackSide
 
             '    gl_Position = calculateOutline(gl_Position, outlineNormal, vec4(transformed, 1.0));',
 
@@ -333,8 +333,6 @@ class OutlineEffect {
 
             const outlineParameters = originalMaterial.userData.outlineParameters;
 
-            material.morphTargets = originalMaterial.morphTargets;
-            material.morphNormals = originalMaterial.morphNormals;
             material.fog = originalMaterial.fog;
             material.toneMapped = originalMaterial.toneMapped;
             material.premultipliedAlpha = originalMaterial.premultipliedAlpha;

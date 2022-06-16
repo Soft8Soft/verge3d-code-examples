@@ -6,7 +6,7 @@ import {
     MeshStandardMaterial,
     PointLight,
     Scene,
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class DebugEnvironment extends Scene {
 

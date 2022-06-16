@@ -95,7 +95,7 @@
                 path.getPointAt(u, position);
                 const normal = normals[i];
                 const binormal = binormals[i];
-                const cx = - radius * Math.cos(v); // TODO: Hack: Negating it so it faces outside.
+                const cx = -radius * Math.cos(v); // TODO: Hack: Negating it so it faces outside.
 
                 const cy = radius * Math.sin(v);
                 position.x += cx * normal.x + cy * binormal.x;

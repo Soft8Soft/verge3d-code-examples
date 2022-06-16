@@ -1,4 +1,4 @@
-import { MathUtils } from '../../../../build/v3d.module.js';
+import { MathUtils } from 'v3d';
 
 import { ShaderPass } from '../../postprocessing/ShaderPass.js';
 import { NodeMaterial } from '../materials/NodeMaterial.js';

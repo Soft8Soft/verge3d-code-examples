@@ -4,7 +4,7 @@ import {
     LineBasicMaterial,
     Line,
     MathUtils
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class PositionalAudioHelper extends Line {
 
@@ -83,8 +83,8 @@ class PositionalAudioHelper extends Line {
 
         //
 
-        generateSegment(- halfConeOuterAngle, - halfConeInnerAngle, divisionsOuterAngle, 0);
-        generateSegment(- halfConeInnerAngle, halfConeInnerAngle, divisionsInnerAngle, 1);
+        generateSegment(-halfConeOuterAngle, - halfConeInnerAngle, divisionsOuterAngle, 0);
+        generateSegment(-halfConeInnerAngle, halfConeInnerAngle, divisionsInnerAngle, 1);
         generateSegment(halfConeInnerAngle, halfConeOuterAngle, divisionsOuterAngle, 0);
 
         //

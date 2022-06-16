@@ -8,9 +8,7 @@
             camera,
             width,
             height,
-            selects,
-            encoding,
-            morphTargets = false
+            selects
         }) {
 
             super();
@@ -25,7 +23,6 @@
             this.ior = v3d.SSRrShader.uniforms.ior.value;
             this.maxDistance = v3d.SSRrShader.uniforms.maxDistance.value;
             this.surfDist = v3d.SSRrShader.uniforms.surfDist.value;
-            this.encoding = encoding;
             this.tempColor = new v3d.Color();
             this.selects = selects;
             this._specular = v3d.SSRrShader.defines.SPECULAR;
@@ -154,9 +151,7 @@
             this.ssrrMaterial.uniforms['cameraProjectionMatrix'].value.copy(this.camera.projectionMatrix);
             this.ssrrMaterial.uniforms['cameraInverseProjectionMatrix'].value.copy(this.camera.projectionMatrixInverse); // normal material
 
-            this.normalMaterial = new v3d.MeshNormalMaterial({
-                morphTargets
-            });
+            this.normalMaterial = new v3d.MeshNormalMaterial();
             this.normalMaterial.blending = v3d.NoBlending; // refractiveOn material
 
             this.refractiveOnMaterial = new v3d.MeshBasicMaterial({
@@ -228,7 +223,6 @@
         ) {
 
             // render beauty and depth
-            if (this.encoding) this.beautyRenderTarget.texture.encoding = this.encoding;
             renderer.setRenderTarget(this.beautyRenderTarget);
             renderer.clear();
             this.scene.children.forEach(child => {

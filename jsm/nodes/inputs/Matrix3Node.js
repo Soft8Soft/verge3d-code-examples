@@ -1,4 +1,4 @@
-import { Matrix3 } from '../../../../build/v3d.module.js';
+import { Matrix3 } from 'v3d';
 
 import { InputNode } from '../core/InputNode.js';
 

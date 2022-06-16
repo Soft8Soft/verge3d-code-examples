@@ -1,6 +1,6 @@
 import {
     WireframeGeometry
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 import { LineSegmentsGeometry } from '../lines/LineSegmentsGeometry.js';
 
 class WireframeGeometry2 extends LineSegmentsGeometry {

@@ -4,7 +4,7 @@ import {
     NoColors,
     NormalBlending,
     ShaderMaterial
-} from '../../../../build/v3d.module.js';
+} from 'v3d';
 
 import { NodeBuilder } from '../core/NodeBuilder.js';
 import { ColorNode } from '../inputs/ColorNode.js';
@@ -189,8 +189,6 @@ class NodeMaterial extends ShaderMaterial {
 
             if (this.alphaTest > 0) data.alphaTest = this.alphaTest;
             if (this.premultipliedAlpha === true) data.premultipliedAlpha = this.premultipliedAlpha;
-
-            if (this.morphTargets === true) data.morphTargets = true;
 
             if (this.visible === false) data.visible = false;
             if (JSON.stringify(this.userData) !== '{}') data.userData = this.userData;

@@ -1,6 +1,6 @@
 import {
     Vector2
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * Depth-of-field shader with bokeh
@@ -367,7 +367,7 @@ const BokehDepthShader = {
             #include <begin_vertex>
             #include <project_vertex>
 
-            vViewZDepth = - mvPosition.z;
+            vViewZDepth = -mvPosition.z;
 
         }`,
 

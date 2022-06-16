@@ -12,9 +12,21 @@
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> vr - ball shooter
     </div>
 
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js"
+        }
+      }
+    </script>
+
     <script type="module">
 
-      import * as v3d from '../build/v3d.module.js';
+      import * as v3d from 'v3d';
 
       import { BoxLineGeometry } from './jsm/geometries/BoxLineGeometry.js';
       import { VRButton } from './jsm/webxr/VRButton.js';
@@ -239,7 +251,7 @@
           if (object.position.x < - range || object.position.x > range) {
 
             object.position.x = v3d.MathUtils.clamp(object.position.x, - range, range);
-            object.userData.velocity.x = - object.userData.velocity.x;
+            object.userData.velocity.x = -object.userData.velocity.x;
 
           }
 
@@ -248,7 +260,7 @@
             object.position.y = Math.max(object.position.y, radius);
 
             object.userData.velocity.x *= 0.98;
-            object.userData.velocity.y = - object.userData.velocity.y * 0.8;
+            object.userData.velocity.y = -object.userData.velocity.y * 0.8;
             object.userData.velocity.z *= 0.98;
 
           }
@@ -256,7 +268,7 @@
           if (object.position.z < - range || object.position.z > range) {
 
             object.position.z = v3d.MathUtils.clamp(object.position.z, - range, range);
-            object.userData.velocity.z = - object.userData.velocity.z;
+            object.userData.velocity.z = -object.userData.velocity.z;
 
           }
 

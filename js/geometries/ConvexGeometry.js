@@ -2,7 +2,7 @@
 
     class ConvexGeometry extends v3d.BufferGeometry {
 
-        constructor(points) {
+        constructor(points = []) {
 
             super(); // buffers
 

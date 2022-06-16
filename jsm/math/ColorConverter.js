@@ -1,6 +1,6 @@
 import {
     MathUtils
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 const _hsl = {};
 

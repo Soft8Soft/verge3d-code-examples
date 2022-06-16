@@ -1,7 +1,7 @@
 import {
     BufferGeometry,
     Float32BufferAttribute
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class BoxLineGeometry extends BufferGeometry {
 
@@ -23,9 +23,9 @@ class BoxLineGeometry extends BufferGeometry {
 
         const vertices = [];
 
-        let x = - widthHalf;
-        let y = - heightHalf;
-        let z = - depthHalf;
+        let x = -widthHalf;
+        let y = -heightHalf;
+        let z = -depthHalf;
 
         for (let i = 0; i <= widthSegments; i++) {
 
@@ -40,10 +40,10 @@ class BoxLineGeometry extends BufferGeometry {
 
         for (let i = 0; i <= heightSegments; i++) {
 
-            vertices.push(- widthHalf, y, - depthHalf, widthHalf, y, - depthHalf);
+            vertices.push(-widthHalf, y, - depthHalf, widthHalf, y, - depthHalf);
             vertices.push(widthHalf, y, - depthHalf, widthHalf, y, depthHalf);
             vertices.push(widthHalf, y, depthHalf, - widthHalf, y, depthHalf);
-            vertices.push(- widthHalf, y, depthHalf, - widthHalf, y, - depthHalf);
+            vertices.push(-widthHalf, y, depthHalf, - widthHalf, y, - depthHalf);
 
             y += segmentHeight;
 
@@ -51,8 +51,8 @@ class BoxLineGeometry extends BufferGeometry {
 
         for (let i = 0; i <= depthSegments; i++) {
 
-            vertices.push(- widthHalf, - heightHalf, z, - widthHalf, heightHalf, z);
-            vertices.push(- widthHalf, heightHalf, z, widthHalf, heightHalf, z);
+            vertices.push(-widthHalf, - heightHalf, z, - widthHalf, heightHalf, z);
+            vertices.push(-widthHalf, heightHalf, z, widthHalf, heightHalf, z);
             vertices.push(widthHalf, heightHalf, z, widthHalf, - heightHalf, z);
             vertices.push(widthHalf, - heightHalf, z, - widthHalf, - heightHalf, z);
 

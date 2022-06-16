@@ -2,7 +2,7 @@
 
     const _cameraToLightMatrix = new v3d.Matrix4();
 
-    const _lightSpaceFrustum = new v3d.Frustum();
+    const _lightSpaceFrustum = new v3d.CSMFrustum();
 
     const _center = new v3d.Vector3();
 
@@ -29,7 +29,7 @@
             this.lightMargin = data.lightMargin || 200;
             this.customSplitsCallback = data.customSplitsCallback;
             this.fade = false;
-            this.mainFrustum = new v3d.Frustum();
+            this.mainFrustum = new v3d.CSMFrustum();
             this.frustums = [];
             this.breaks = [];
             this.lights = [];
@@ -108,10 +108,10 @@
 
                 }
 
-                shadowCam.left = - squaredBBWidth / 2;
+                shadowCam.left = -squaredBBWidth / 2;
                 shadowCam.right = squaredBBWidth / 2;
                 shadowCam.top = squaredBBWidth / 2;
-                shadowCam.bottom = - squaredBBWidth / 2;
+                shadowCam.bottom = -squaredBBWidth / 2;
                 shadowCam.updateProjectionMatrix();
 
             }

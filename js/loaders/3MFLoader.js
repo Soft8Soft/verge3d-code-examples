@@ -968,7 +968,7 @@
                 geometry.setIndex(new v3d.BufferAttribute(meshData['triangles'], 1));
                 geometry.setAttribute('position', new v3d.BufferAttribute(meshData['vertices'], 3));
                 const material = new v3d.MeshPhongMaterial({
-                    color: 0xaaaaff,
+                    color: 0xffffff,
                     flatShading: true
                 });
                 const mesh = new v3d.Mesh(geometry, material);
@@ -1299,7 +1299,7 @@
                 for (let i = 0; i < buildData.length; i++) {
 
                     const buildItem = buildData[i];
-                    const object3D = objects[buildItem['objectId']]; // apply transform
+                    const object3D = objects[buildItem['objectId']].clone(); // apply transform
 
                     const transform = buildItem['transform'];
 

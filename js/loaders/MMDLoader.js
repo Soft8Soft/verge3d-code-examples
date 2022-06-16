@@ -287,7 +287,6 @@
     /*
      * base64 encoded defalut toon textures toon00.bmp - toon10.bmp.
      * We don't need to request external toon image files.
-     * This idea is from http://www20.atpages.jp/katwat/three.js_r58/examples/mytest37/mmd.three.js
      */
 
 
@@ -582,10 +581,10 @@
                             const rotationMax = ik.links[j].upperLimitationAngle; // Convert Left to Right coordinate by myself because
                             // MMDParser doesn't convert. It's a MMDParser's bug
 
-                            const tmp1 = - rotationMax[0];
-                            const tmp2 = - rotationMax[1];
-                            rotationMax[0] = - rotationMin[0];
-                            rotationMax[1] = - rotationMin[1];
+                            const tmp1 = -rotationMax[0];
+                            const tmp2 = -rotationMax[1];
+                            rotationMax[0] = -rotationMin[0];
+                            rotationMax[1] = -rotationMin[1];
                             rotationMin[0] = tmp1;
                             rotationMin[1] = tmp2;
                             link.rotationMin = new v3d.Vector3().fromArray(rotationMin);
@@ -960,7 +959,6 @@
                 params.emissive = new v3d.Color().fromArray(material.ambient);
                 params.transparent = params.opacity !== 1.0; //
 
-                params.morphTargets = geometry.morphTargets.length > 0 ? true : false;
                 params.fog = true; // blend
 
                 params.blending = v3d.CustomBlending;
@@ -1241,7 +1239,7 @@
             context.translate(width / 2.0, height / 2.0);
             context.rotate(0.5 * Math.PI); // 90.0 * Math.PI / 180.0
 
-            context.translate(- width / 2.0, - height / 2.0);
+            context.translate(-width / 2.0, - height / 2.0);
             context.drawImage(image, 0, 0);
             return context.getImageData(0, 0, width, height);
 

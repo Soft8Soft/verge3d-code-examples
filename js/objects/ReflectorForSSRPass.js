@@ -79,19 +79,9 @@
             }
 
             const parameters = {
-                minFilter: v3d.LinearFilter,
-                magFilter: v3d.LinearFilter,
-                format: v3d.RGBFormat,
                 depthTexture: useDepthTexture ? depthTexture : null
             };
             const renderTarget = new v3d.WebGLRenderTarget(textureWidth, textureHeight, parameters);
-
-            if (!v3d.MathUtils.isPowerOfTwo(textureWidth) || ! v3d.MathUtils.isPowerOfTwo(textureHeight)) {
-
-                renderTarget.texture.generateMipmaps = false;
-
-            }
-
             const material = new v3d.ShaderMaterial({
                 transparent: useDepthTexture,
                 defines: Object.assign({}, ReflectorForSSRPass.ReflectorShader.defines, {

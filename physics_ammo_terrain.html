@@ -17,9 +17,21 @@
 
     <script src="js/libs/ammo.wasm.js"></script>
 
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js"
+        }
+      }
+    </script>
+
     <script type="module">
 
-      import * as v3d from '../build/v3d.module.js';
+      import * as v3d from 'v3d';
 
       import Stats from './jsm/libs/stats.module.js';
 
@@ -127,7 +139,7 @@
         scene.add(terrainMesh);
 
         const textureLoader = new v3d.TextureLoader();
-        textureLoader.load("textures/grid.png", function(texture) {
+        textureLoader.load('textures/grid.png', function(texture) {
 
           texture.wrapS = v3d.RepeatWrapping;
           texture.wrapT = v3d.RepeatWrapping;
@@ -142,10 +154,10 @@
         light.castShadow = true;
         const dLight = 200;
         const sLight = dLight * 0.25;
-        light.shadow.camera.left = - sLight;
+        light.shadow.camera.left = -sLight;
         light.shadow.camera.right = sLight;
         light.shadow.camera.top = sLight;
-        light.shadow.camera.bottom = - sLight;
+        light.shadow.camera.bottom = -sLight;
 
         light.shadow.camera.near = dLight / 30;
         light.shadow.camera.far = dLight;
@@ -242,7 +254,7 @@
         const upAxis = 1;
 
         // hdt, height data type. "PHY_FLOAT" is used. Possible values are "PHY_FLOAT", "PHY_UCHAR", "PHY_SHORT"
-        const hdt = "PHY_FLOAT";
+        const hdt = 'PHY_FLOAT';
 
         // Set this to your needs (inverts the triangles)
         const flipQuadEdges = false;

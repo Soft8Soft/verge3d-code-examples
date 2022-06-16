@@ -1,11 +1,10 @@
 import {
     Vector2
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * Convolution shader
  * ported from o3d sample to WebGL / GLSL
- * http://o3d.googlecode.com/svn/trunk/samples/convolution.html
  */
 
 const ConvolutionShader = {

@@ -2,7 +2,7 @@ import {
     EventDispatcher,
     Quaternion,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 const _changeEvent = { type: 'change' };
 
@@ -213,7 +213,7 @@ class FlyControls extends EventDispatcher {
 
             this.moveVector.x = (- this.moveState.left + this.moveState.right);
             this.moveVector.y = (- this.moveState.down + this.moveState.up);
-            this.moveVector.z = (- forward + this.moveState.back);
+            this.moveVector.z = (-forward + this.moveState.back);
 
             //console.log('move:', [this.moveVector.x, this.moveVector.y, this.moveVector.z]);
 

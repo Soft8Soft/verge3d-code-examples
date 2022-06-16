@@ -25,19 +25,7 @@
             const q = new v3d.Vector4();
             const textureMatrix = new v3d.Matrix4();
             const virtualCamera = new v3d.PerspectiveCamera();
-            const parameters = {
-                minFilter: v3d.LinearFilter,
-                magFilter: v3d.LinearFilter,
-                format: v3d.RGBFormat
-            };
-            const renderTarget = new v3d.WebGLRenderTarget(textureWidth, textureHeight, parameters);
-
-            if (!v3d.MathUtils.isPowerOfTwo(textureWidth) || ! v3d.MathUtils.isPowerOfTwo(textureHeight)) {
-
-                renderTarget.texture.generateMipmaps = false;
-
-            }
-
+            const renderTarget = new v3d.WebGLRenderTarget(textureWidth, textureHeight);
             const material = new v3d.ShaderMaterial({
                 uniforms: v3d.UniformsUtils.clone(shader.uniforms),
                 fragmentShader: shader.fragmentShader,
@@ -132,6 +120,13 @@
             this.getRenderTarget = function() {
 
                 return renderTarget;
+
+            };
+
+            this.dispose = function() {
+
+                renderTarget.dispose();
+                scope.material.dispose();
 
             };
 

@@ -15,16 +15,8 @@
             const positionScreen = new v3d.Vector3();
             const positionView = new v3d.Vector3(); // textures
 
-            const tempMap = new v3d.DataTexture(new Uint8Array(16 * 16 * 3), 16, 16, v3d.RGBFormat);
-            tempMap.minFilter = v3d.NearestFilter;
-            tempMap.magFilter = v3d.NearestFilter;
-            tempMap.wrapS = v3d.ClampToEdgeWrapping;
-            tempMap.wrapT = v3d.ClampToEdgeWrapping;
-            const occlusionMap = new v3d.DataTexture(new Uint8Array(16 * 16 * 3), 16, 16, v3d.RGBFormat);
-            occlusionMap.minFilter = v3d.NearestFilter;
-            occlusionMap.magFilter = v3d.NearestFilter;
-            occlusionMap.wrapS = v3d.ClampToEdgeWrapping;
-            occlusionMap.wrapT = v3d.ClampToEdgeWrapping; // material
+            const tempMap = new v3d.FramebufferTexture(16, 16, v3d.RGBAFormat);
+            const occlusionMap = new v3d.FramebufferTexture(16, 16, v3d.RGBAFormat); // material
 
             const geometry = Lensflare.Geometry;
             const material1a = new v3d.RawShaderMaterial({
@@ -199,8 +191,8 @@
                     uniforms['screenPosition'].value = positionScreen;
                     renderer.renderBufferDirect(camera, null, geometry, material1b, mesh1, null); // render elements
 
-                    const vecX = - positionScreen.x * 2;
-                    const vecY = - positionScreen.y * 2;
+                    const vecX = -positionScreen.x * 2;
+                    const vecY = -positionScreen.y * 2;
 
                     for (let i = 0, l = elements.length; i < l; i++) {
 

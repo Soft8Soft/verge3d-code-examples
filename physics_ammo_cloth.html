@@ -16,9 +16,21 @@
 
     <script src="js/libs/ammo.wasm.js"></script>
 
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js"
+        }
+      }
+    </script>
+
     <script type="module">
 
-      import * as v3d from '../build/v3d.module.js';
+      import * as v3d from 'v3d';
 
       import Stats from './jsm/libs/stats.module.js';
 
@@ -144,7 +156,7 @@
         const ground = createParalellepiped(40, 1, 40, 0, pos, quat, new v3d.MeshPhongMaterial({ color: 0xFFFFFF }));
         ground.castShadow = true;
         ground.receiveShadow = true;
-        textureLoader.load("textures/grid.png", function(texture) {
+        textureLoader.load('textures/grid.png', function(texture) {
 
           texture.wrapS = v3d.RepeatWrapping;
           texture.wrapT = v3d.RepeatWrapping;
@@ -161,7 +173,7 @@
         const brickHeight = brickLength * 0.5;
         const numBricksLength = 6;
         const numBricksHeight = 8;
-        const z0 = - numBricksLength * brickLength * 0.5;
+        const z0 = -numBricksLength * brickLength * 0.5;
         pos.set(0, brickHeight * 0.5, z0);
         quat.set(0, 0, 0, 1);
         for (let j = 0; j < numBricksHeight; j ++) {
@@ -205,6 +217,7 @@
             }
 
           }
+
           pos.y += brickHeight;
 
         }
@@ -226,7 +239,7 @@
         cloth.castShadow = true;
         cloth.receiveShadow = true;
         scene.add(cloth);
-        textureLoader.load("textures/grid.png", function(texture) {
+        textureLoader.load('textures/grid.png', function(texture) {
 
           texture.wrapS = v3d.RepeatWrapping;
           texture.wrapT = v3d.RepeatWrapping;

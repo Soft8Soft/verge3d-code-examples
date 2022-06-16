@@ -15,9 +15,9 @@
             const segmentHeight = height / heightSegments;
             const segmentDepth = depth / depthSegments;
             const vertices = [];
-            let x = - widthHalf;
-            let y = - heightHalf;
-            let z = - depthHalf;
+            let x = -widthHalf;
+            let y = -heightHalf;
+            let z = -depthHalf;
 
             for (let i = 0; i <= widthSegments; i++) {
 
@@ -31,18 +31,18 @@
 
             for (let i = 0; i <= heightSegments; i++) {
 
-                vertices.push(- widthHalf, y, - depthHalf, widthHalf, y, - depthHalf);
+                vertices.push(-widthHalf, y, - depthHalf, widthHalf, y, - depthHalf);
                 vertices.push(widthHalf, y, - depthHalf, widthHalf, y, depthHalf);
                 vertices.push(widthHalf, y, depthHalf, - widthHalf, y, depthHalf);
-                vertices.push(- widthHalf, y, depthHalf, - widthHalf, y, - depthHalf);
+                vertices.push(-widthHalf, y, depthHalf, - widthHalf, y, - depthHalf);
                 y += segmentHeight;
 
             }
 
             for (let i = 0; i <= depthSegments; i++) {
 
-                vertices.push(- widthHalf, - heightHalf, z, - widthHalf, heightHalf, z);
-                vertices.push(- widthHalf, heightHalf, z, widthHalf, heightHalf, z);
+                vertices.push(-widthHalf, - heightHalf, z, - widthHalf, heightHalf, z);
+                vertices.push(-widthHalf, heightHalf, z, widthHalf, heightHalf, z);
                 vertices.push(widthHalf, heightHalf, z, widthHalf, - heightHalf, z);
                 vertices.push(widthHalf, - heightHalf, z, - widthHalf, - heightHalf, z);
                 z += segmentDepth;

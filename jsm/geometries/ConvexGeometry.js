@@ -1,12 +1,12 @@
 import {
     BufferGeometry,
     Float32BufferAttribute
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 import { ConvexHull } from '../math/ConvexHull.js';
 
 class ConvexGeometry extends BufferGeometry {
 
-    constructor(points) {
+    constructor(points = []) {
 
         super();
 

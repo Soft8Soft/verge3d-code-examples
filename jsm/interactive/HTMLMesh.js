@@ -5,7 +5,7 @@ import {
     MeshBasicMaterial,
     PlaneGeometry,
     sRGBEncoding
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class HTMLMesh extends Mesh {
 
@@ -20,7 +20,7 @@ class HTMLMesh extends Mesh {
 
         function onEvent(event) {
 
-            material.map.dispatchEvent(event);
+            material.map.dispatchDOMEvent(event);
 
         }
 
@@ -28,6 +28,20 @@ class HTMLMesh extends Mesh {
         this.addEventListener('mousemove', onEvent);
         this.addEventListener('mouseup', onEvent);
         this.addEventListener('click', onEvent);
+
+        this.dispose = function() {
+
+            geometry.dispose();
+            material.dispose();
+
+            material.map.dispose();
+
+            this.removeEventListener('mousedown', onEvent);
+            this.removeEventListener('mousemove', onEvent);
+            this.removeEventListener('mouseup', onEvent);
+            this.removeEventListener('click', onEvent);
+
+        };
 
     }
 
@@ -48,7 +62,7 @@ class HTMLTexture extends CanvasTexture {
 
     }
 
-    dispatchEvent(event) {
+    dispatchDOMEvent(event) {
 
         htmlevent(this.dom, event.type, event.data.x, event.data.y);
 
@@ -66,6 +80,8 @@ class HTMLTexture extends CanvasTexture {
 }
 
 //
+
+const canvases = new WeakMap();
 
 function html2canvas(element) {
 
@@ -87,7 +103,7 @@ function html2canvas(element) {
 
             if (clips.length === 0) return;
 
-            var minX = - Infinity, minY = - Infinity;
+            var minX = -Infinity, minY = -Infinity;
             var maxX = Infinity, maxY = Infinity;
 
             for (var i = 0; i < clips.length; i++) {
@@ -245,15 +261,25 @@ function html2canvas(element) {
 
     }
 
-    var offset = element.getBoundingClientRect();
+    const offset = element.getBoundingClientRect();
 
-    var canvas = document.createElement('canvas');
-    canvas.width = offset.width;
-    canvas.height = offset.height;
+    let canvas;
 
-    var context = canvas.getContext('2d'/*, { alpha: false }*/);
+    if (canvases.has(element)) {
 
-    var clipper = new Clipper(context);
+        canvas = canvases.get(element);
+
+    } else {
+
+        canvas = document.createElement('canvas');
+        canvas.width = offset.width;
+        canvas.height = offset.height;
+
+    }
+
+    const context = canvas.getContext('2d'/*, { alpha: false }*/);
+
+    const clipper = new Clipper(context);
 
     // console.time('drawElement');
 

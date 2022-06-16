@@ -1,7 +1,7 @@
 import {
     Matrix3,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * https://github.com/gkjohnson/ply-exporter-js

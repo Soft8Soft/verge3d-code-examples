@@ -1,7 +1,7 @@
 import {
     Triangle,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * Utility class for sampling weighted random points on the surface of a mesh.

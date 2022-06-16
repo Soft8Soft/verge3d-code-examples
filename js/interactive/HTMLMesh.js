@@ -14,7 +14,7 @@
 
             function onEvent(event) {
 
-                material.map.dispatchEvent(event);
+                material.map.dispatchDOMEvent(event);
 
             }
 
@@ -22,6 +22,18 @@
             this.addEventListener('mousemove', onEvent);
             this.addEventListener('mouseup', onEvent);
             this.addEventListener('click', onEvent);
+
+            this.dispose = function() {
+
+                geometry.dispose();
+                material.dispose();
+                material.map.dispose();
+                this.removeEventListener('mousedown', onEvent);
+                this.removeEventListener('mousemove', onEvent);
+                this.removeEventListener('mouseup', onEvent);
+                this.removeEventListener('click', onEvent);
+
+            };
 
         }
 
@@ -40,7 +52,7 @@
 
         }
 
-        dispatchEvent(event) {
+        dispatchDOMEvent(event) {
 
             htmlevent(this.dom, event.type, event.data.x, event.data.y);
             this.update();
@@ -56,6 +68,8 @@
 
     } //
 
+
+    const canvases = new WeakMap();
 
     function html2canvas(element) {
 
@@ -76,8 +90,8 @@
                 }
 
                 if (clips.length === 0) return;
-                var minX = - Infinity,
-                    minY = - Infinity;
+                var minX = -Infinity,
+                    minY = -Infinity;
                 var maxX = Infinity,
                     maxY = Infinity;
 
@@ -233,14 +247,25 @@
 
         }
 
-        var offset = element.getBoundingClientRect();
-        var canvas = document.createElement('canvas');
-        canvas.width = offset.width;
-        canvas.height = offset.height;
-        var context = canvas.getContext('2d'
+        const offset = element.getBoundingClientRect();
+        let canvas;
+
+        if (canvases.has(element)) {
+
+            canvas = canvases.get(element);
+
+        } else {
+
+            canvas = document.createElement('canvas');
+            canvas.width = offset.width;
+            canvas.height = offset.height;
+
+        }
+
+        const context = canvas.getContext('2d'
             /*, { alpha: false }*/
         );
-        var clipper = new Clipper(context); // console.time('drawElement');
+        const clipper = new Clipper(context); // console.time('drawElement');
 
         drawElement(element); // console.timeEnd('drawElement');
 

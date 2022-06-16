@@ -1,21 +1,30 @@
 import {
     Matrix4,
-    Object3D
-} from '../../../build/v3d.module.js';
+    Object3D,
+    Quaternion,
+    Vector3
+} from 'v3d';
 
 /**
  * Based on http://www.emagix.net/academic/mscs-project/item/camera-sync-with-css3-and-webgl-threejs
  */
 
+const _position = new Vector3();
+const _quaternion = new Quaternion();
+const _scale = new Vector3();
+
 class CSS3DObject extends Object3D {
 
-    constructor(element) {
+    constructor(element = document.createElement('div')) {
 
         super();
 
-        this.element = element || document.createElement('div');
+        this.element = element;
         this.element.style.position = 'absolute';
         this.element.style.pointerEvents = 'auto';
+        this.element.style.userSelect = 'none';
+
+        this.element.setAttribute('draggable', false);
 
         this.addEventListener('removed', function() {
 
@@ -78,7 +87,7 @@ const _matrix2 = new Matrix4();
 
 class CSS3DRenderer {
 
-    constructor() {
+    constructor(parameters = {}) {
 
         const _this = this;
 
@@ -90,7 +99,8 @@ class CSS3DRenderer {
             objects: new WeakMap()
         };
 
-        const domElement = document.createElement('div');
+        const domElement = parameters.element !== undefined ? parameters.element : document.createElement('div');
+
         domElement.style.overflow = 'hidden';
 
         this.domElement = domElement;
@@ -180,19 +190,19 @@ class CSS3DRenderer {
 
             return 'matrix3d(' +
                 epsilon(elements[0]) + ',' +
-                epsilon(- elements[1]) + ',' +
+                epsilon(-elements[1]) + ',' +
                 epsilon(elements[2]) + ',' +
                 epsilon(elements[3]) + ',' +
                 epsilon(elements[4]) + ',' +
-                epsilon(- elements[5]) + ',' +
+                epsilon(-elements[5]) + ',' +
                 epsilon(elements[6]) + ',' +
                 epsilon(elements[7]) + ',' +
                 epsilon(elements[8]) + ',' +
-                epsilon(- elements[9]) + ',' +
+                epsilon(-elements[9]) + ',' +
                 epsilon(elements[10]) + ',' +
                 epsilon(elements[11]) + ',' +
                 epsilon(elements[12]) + ',' +
-                epsilon(- elements[13]) + ',' +
+                epsilon(-elements[13]) + ',' +
                 epsilon(elements[14]) + ',' +
                 epsilon(elements[15]) +
             ')';
@@ -207,10 +217,10 @@ class CSS3DRenderer {
                 epsilon(elements[1]) + ',' +
                 epsilon(elements[2]) + ',' +
                 epsilon(elements[3]) + ',' +
-                epsilon(- elements[4]) + ',' +
-                epsilon(- elements[5]) + ',' +
-                epsilon(- elements[6]) + ',' +
-                epsilon(- elements[7]) + ',' +
+                epsilon(-elements[4]) + ',' +
+                epsilon(-elements[5]) + ',' +
+                epsilon(-elements[6]) + ',' +
+                epsilon(-elements[7]) + ',' +
                 epsilon(elements[8]) + ',' +
                 epsilon(elements[9]) + ',' +
                 epsilon(elements[10]) + ',' +
@@ -229,56 +239,63 @@ class CSS3DRenderer {
 
             if (object.isCSS3DObject) {
 
-                object.onBeforeRender(_this, scene, camera);
+                const visible = object.visible && object.layers.test(camera.layers);
+                object.element.style.display = visible ? '' : 'none';
 
-                let style;
+                // only getObjectCSSMatrix when object.visible
+                if (visible) {
 
-                if (object.isCSS3DSprite) {
+                    object.onBeforeRender(_this, scene, camera);
 
-                    // http://swiftcoder.wordpress.com/2008/11/25/constructing-a-billboard-matrix/
+                    let style;
 
-                    _matrix.copy(camera.matrixWorldInverse);
-                    _matrix.transpose();
+                    if (object.isCSS3DSprite) {
 
-                    if (object.rotation2D !== 0) _matrix.multiply(_matrix2.makeRotationZ(object.rotation2D));
+                        // http://swiftcoder.wordpress.com/2008/11/25/constructing-a-billboard-matrix/
 
-                    _matrix.copyPosition(object.matrixWorld);
-                    _matrix.scale(object.scale);
+                        _matrix.copy(camera.matrixWorldInverse);
+                        _matrix.transpose();
 
-                    _matrix.elements[3] = 0;
-                    _matrix.elements[7] = 0;
-                    _matrix.elements[11] = 0;
-                    _matrix.elements[15] = 1;
+                        if (object.rotation2D !== 0) _matrix.multiply(_matrix2.makeRotationZ(object.rotation2D));
 
-                    style = getObjectCSSMatrix(_matrix);
+                        object.matrixWorld.decompose(_position, _quaternion, _scale);
+                        _matrix.setPosition(_position);
+                        _matrix.scale(_scale);
 
-                } else {
+                        _matrix.elements[3] = 0;
+                        _matrix.elements[7] = 0;
+                        _matrix.elements[11] = 0;
+                        _matrix.elements[15] = 1;
 
-                    style = getObjectCSSMatrix(object.matrixWorld);
+                        style = getObjectCSSMatrix(_matrix);
+
+                    } else {
+
+                        style = getObjectCSSMatrix(object.matrixWorld);
+
+                    }
+
+                    const element = object.element;
+                    const cachedObject = cache.objects.get(object);
+
+                    if (cachedObject === undefined || cachedObject.style !== style) {
+
+                        element.style.transform = style;
+
+                        const objectData = { style: style };
+                        cache.objects.set(object, objectData);
+
+                    }
+
+                    if (element.parentNode !== cameraElement) {
+
+                        cameraElement.appendChild(element);
+
+                    }
+
+                    object.onAfterRender(_this, scene, camera);
 
                 }
-
-                const element = object.element;
-                const cachedObject = cache.objects.get(object);
-
-                if (cachedObject === undefined || cachedObject.style !== style) {
-
-                    element.style.transform = style;
-
-                    const objectData = { style: style };
-                    cache.objects.set(object, objectData);
-
-                }
-
-                element.style.display = object.visible ? '' : 'none';
-
-                if (element.parentNode !== cameraElement) {
-
-                    cameraElement.appendChild(element);
-
-                }
-
-                object.onAfterRender(_this, scene, camera);
 
             }
 

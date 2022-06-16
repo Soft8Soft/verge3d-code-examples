@@ -7,7 +7,7 @@ import {
     LineBasicMaterial,
     LineSegments,
     Loader
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * GCodeLoader is used to load gcode files usually used for 3D printing or CNC applications.
@@ -153,7 +153,7 @@ class GCodeLoader extends Loader {
                 //Layer change detection is or made by watching Z, it's made by watching when we extrude at a new Z position
                 if (delta(state.e, line.e) > 0) {
 
-                    line.extruding = delta(state.e, line.e) > 0;
+                    state.extruding = delta(state.e, line.e) > 0;
 
                     if (currentLayer == undefined || line.z != currentLayer.z) {
 

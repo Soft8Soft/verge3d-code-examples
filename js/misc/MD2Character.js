@@ -29,16 +29,12 @@
 
                 const materialWireframe = new v3d.MeshLambertMaterial({
                     color: 0xffaa00,
-                    wireframe: true,
-                    morphTargets: true,
-                    morphNormals: true
+                    wireframe: true
                 });
                 const materialTexture = new v3d.MeshLambertMaterial({
                     color: 0xffffff,
                     wireframe: false,
-                    map: skinMap,
-                    morphTargets: true,
-                    morphNormals: true
+                    map: skinMap
                 }); //
 
                 const mesh = new v3d.Mesh(geometry, materialTexture);
@@ -91,7 +87,7 @@
 
                 const boundingBox = new v3d.Box3();
                 boundingBox.setFromBufferAttribute(geo.attributes.position);
-                scope.root.position.y = - scope.scale * boundingBox.min.y;
+                scope.root.position.y = -scope.scale * boundingBox.min.y;
                 const mesh = createPart(geo, scope.skinsBody[0]);
                 mesh.scale.set(scope.scale, scope.scale, scope.scale);
                 scope.root.add(mesh);

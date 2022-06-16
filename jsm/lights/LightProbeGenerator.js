@@ -5,7 +5,7 @@ import {
     SphericalHarmonics3,
     Vector3,
     sRGBEncoding
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class LightProbeGenerator {
 

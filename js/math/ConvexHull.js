@@ -44,27 +44,21 @@
 
         setFromPoints(points) {
 
-            if (Array.isArray(points) !== true) {
+            // The algorithm needs at least four points.
+            if (points.length >= 4) {
 
-                console.error('v3d.ConvexHull: Points parameter is not an array.');
+                this.makeEmpty();
 
-            }
+                for (let i = 0, l = points.length; i < l; i++) {
 
-            if (points.length < 4) {
+                    this.vertices.push(new VertexNode(points[i]));
 
-                console.error('v3d.ConvexHull: The algorithm needs at least four points.');
+                }
 
-            }
-
-            this.makeEmpty();
-
-            for (let i = 0, l = points.length; i < l; i++) {
-
-                this.vertices.push(new VertexNode(points[i]));
+                this.compute();
 
             }
 
-            this.compute();
             return this;
 
         }
@@ -129,7 +123,7 @@
 
             // based on "Fast Ray-Convex Polyhedron Intersection"  by Eric Haines, GRAPHICS GEMS II
             const faces = this.faces;
-            let tNear = - Infinity;
+            let tNear = -Infinity;
             let tFar = Infinity;
 
             for (let i = 0, l = faces.length; i < l; i++) {
@@ -170,7 +164,7 @@
             // always try tNear first since its the closer intersection point
 
 
-            if (tNear !== - Infinity) {
+            if (tNear !== -Infinity) {
 
                 ray.at(tNear, target);
 

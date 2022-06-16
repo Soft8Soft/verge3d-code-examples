@@ -1,7 +1,7 @@
 import {
     Color,
     Vector2
-} from '../../../../../build/v3d.module.js';
+} from 'v3d';
 
 import { StandardNode } from './StandardNode.js';
 import { PropertyNode } from '../../inputs/PropertyNode.js';

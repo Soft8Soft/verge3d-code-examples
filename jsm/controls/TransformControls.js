@@ -18,7 +18,7 @@ import {
     SphereGeometry,
     TorusGeometry,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 const _raycaster = new Raycaster();
 
@@ -172,7 +172,7 @@ class TransformControls extends Object3D {
 
         this.domElement.addEventListener('pointerdown', this._onPointerDown);
         this.domElement.addEventListener('pointermove', this._onPointerHover);
-        this.domElement.ownerDocument.addEventListener('pointerup', this._onPointerUp);
+        this.domElement.addEventListener('pointerup', this._onPointerUp);
 
     }
 
@@ -240,28 +240,6 @@ class TransformControls extends Object3D {
             const planeIntersect = intersectObjectWithRay(this._plane, _raycaster, true);
 
             if (planeIntersect) {
-
-                let space = this.space;
-
-                if (this.mode === 'scale') {
-
-                    space = 'local';
-
-                } else if (this.axis === 'E' || this.axis === 'XYZE' || this.axis === 'XYZ') {
-
-                    space = 'world';
-
-                }
-
-                if (space === 'local' && this.mode === 'rotate') {
-
-                    const snap = this.rotationSnap;
-
-                    if (this.axis === 'X' && snap) this.object.rotation.x = Math.round(this.object.rotation.x / snap) * snap;
-                    if (this.axis === 'Y' && snap) this.object.rotation.y = Math.round(this.object.rotation.y / snap) * snap;
-                    if (this.axis === 'Z' && snap) this.object.rotation.z = Math.round(this.object.rotation.z / snap) * snap;
-
-                }
 
                 this.object.updateMatrixWorld();
                 this.object.parent.updateMatrixWorld();
@@ -553,8 +531,8 @@ class TransformControls extends Object3D {
 
         this.domElement.removeEventListener('pointerdown', this._onPointerDown);
         this.domElement.removeEventListener('pointermove', this._onPointerHover);
-        this.domElement.ownerDocument.removeEventListener('pointermove', this._onPointerMove);
-        this.domElement.ownerDocument.removeEventListener('pointerup', this._onPointerUp);
+        this.domElement.removeEventListener('pointermove', this._onPointerMove);
+        this.domElement.removeEventListener('pointerup', this._onPointerUp);
 
         this.traverse(function(child) {
 
@@ -583,6 +561,31 @@ class TransformControls extends Object3D {
         this.axis = null;
 
         return this;
+
+    }
+
+    reset() {
+
+        if (!this.enabled) return;
+
+        if (this.dragging) {
+
+            this.object.position.copy(this._positionStart);
+            this.object.quaternion.copy(this._quaternionStart);
+            this.object.scale.copy(this._scaleStart);
+
+            this.dispatchEvent(_changeEvent);
+            this.dispatchEvent(_objectChangeEvent);
+
+            this.pointStart.copy(this.pointEnd);
+
+        }
+
+    }
+
+    getRaycaster() {
+
+        return _raycaster;
 
     }
 
@@ -685,7 +688,13 @@ function onPointerDown(event) {
 
     if (!this.enabled) return;
 
-    this.domElement.ownerDocument.addEventListener('pointermove', this._onPointerMove);
+    if (!document.pointerLockElement) {
+
+        this.domElement.setPointerCapture(event.pointerId);
+
+    }
+
+    this.domElement.addEventListener('pointermove', this._onPointerMove);
 
     this.pointerHover(this._getPointer(event));
     this.pointerDown(this._getPointer(event));
@@ -704,7 +713,9 @@ function onPointerUp(event) {
 
     if (!this.enabled) return;
 
-    this.domElement.ownerDocument.removeEventListener('pointermove', this._onPointerMove);
+    this.domElement.releasePointerCapture(event.pointerId);
+
+    this.domElement.removeEventListener('pointermove', this._onPointerMove);
 
     this.pointerUp(this._getPointer(event));
 
@@ -1379,7 +1390,7 @@ class TransformControlsGizmo extends Object3D {
 
                 if (handle.name === 'X') {
 
-                    _tempQuaternion.setFromAxisAngle(_unitX, Math.atan2(- _alignVector.y, _alignVector.z));
+                    _tempQuaternion.setFromAxisAngle(_unitX, Math.atan2(-_alignVector.y, _alignVector.z));
                     _tempQuaternion.multiplyQuaternions(_tempQuaternion2, _tempQuaternion);
                     handle.quaternion.copy(_tempQuaternion);
 

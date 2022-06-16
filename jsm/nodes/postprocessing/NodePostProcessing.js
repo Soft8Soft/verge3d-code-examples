@@ -7,7 +7,7 @@ import {
     Scene,
     Vector2,
     WebGLRenderTarget
-} from '../../../../build/v3d.module.js';
+} from 'v3d';
 
 import { NodeMaterial } from '../materials/NodeMaterial.js';
 import { ScreenNode } from '../inputs/ScreenNode.js';

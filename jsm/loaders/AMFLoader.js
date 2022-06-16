@@ -8,14 +8,12 @@ import {
     LoaderUtils,
     Mesh,
     MeshPhongMaterial
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 import * as fflate from '../libs/fflate.module.js';
 
 /**
  * Description: Early release of an AMF Loader following the pattern of the
  * example loaders in the three.js project.
- *
- * More information about the AMF format: http://amf.wikispaces.com
  *
  * Usage:
  *    const loader = new AMFLoader();

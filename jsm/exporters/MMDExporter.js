@@ -2,7 +2,7 @@ import {
     Matrix4,
     Quaternion,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 import { MMDParser } from '../libs/mmdparser.module.js';
 
 /**
@@ -128,9 +128,9 @@ class MMDExporter {
             const qArray = quaternion2.copy(bone2.quaternion).conjugate().multiply(quaternion).toArray();
 
             // right to left
-            pArray[2] = - pArray[2];
-            qArray[0] = - qArray[0];
-            qArray[1] = - qArray[1];
+            pArray[2] = -pArray[2];
+            qArray[0] = -qArray[0];
+            qArray[1] = -qArray[1];
 
             array.push('Bone' + i + '{' + bone.name);
             array.push('  ' + toStringsFromArray(pArray) + ';');
@@ -186,7 +186,7 @@ function unicodeToShiftjis(str) {
 
         if (value === undefined) {
 
-            throw 'cannot convert charcode 0x' + code.toString(16);
+            throw new Error('cannot convert charcode 0x' + code.toString(16));
 
         } else if (value > 0xff) {
 

@@ -1,4 +1,4 @@
-import * as v3d from '../../../build/v3d.module.js';
+import * as v3d from 'v3d';
 import { potpack } from '../libs/potpack.module.js';
 
 /**

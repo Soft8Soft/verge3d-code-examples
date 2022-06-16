@@ -1,4 +1,4 @@
-import { MathUtils } from '../../../../build/v3d.module.js';
+import { MathUtils } from 'v3d';
 
 class Node {
 

@@ -47,9 +47,24 @@
 
     </script>
 
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js"
+        }
+      }
+    </script>
+
     <script type="module">
 
-      import * as v3d from '../build/v3d.module.js';
+      import * as v3d from 'v3d';
+
+      import { FontLoader } from './jsm/loaders/FontLoader.js';
+      import { TextGeometry } from './jsm/geometries/TextGeometry.js';
 
       import Stats from './jsm/libs/stats.module.js';
 
@@ -57,7 +72,7 @@
 
       let line, uniforms;
 
-      const loader = new v3d.FontLoader();
+      const loader = new FontLoader();
       loader.load('fonts/helvetiker_bold.typeface.json', function(font) {
 
         init(font);
@@ -93,7 +108,7 @@
         });
 
 
-        const geometry = new v3d.TextGeometry('Verge3D', {
+        const geometry = new TextGeometry('Verge3D', {
 
           font: font,
 

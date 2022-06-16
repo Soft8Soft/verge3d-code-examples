@@ -3,7 +3,7 @@ import {
     InterleavedBufferAttribute,
     Mesh,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 import { LineSegmentsGeometry } from '../lines/LineSegmentsGeometry.js';
 import { LineMaterial } from '../lines/LineMaterial.js';
 

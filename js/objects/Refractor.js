@@ -20,19 +20,7 @@
             const refractorPlane = new v3d.Plane();
             const textureMatrix = new v3d.Matrix4(); // render target
 
-            const parameters = {
-                minFilter: v3d.LinearFilter,
-                magFilter: v3d.LinearFilter,
-                format: v3d.RGBFormat
-            };
-            const renderTarget = new v3d.WebGLRenderTarget(textureWidth, textureHeight, parameters);
-
-            if (!v3d.MathUtils.isPowerOfTwo(textureWidth) || ! v3d.MathUtils.isPowerOfTwo(textureHeight)) {
-
-                renderTarget.texture.generateMipmaps = false;
-
-            } // material
-
+            const renderTarget = new v3d.WebGLRenderTarget(textureWidth, textureHeight); // material
 
             this.material = new v3d.ShaderMaterial({
                 uniforms: v3d.UniformsUtils.clone(shader.uniforms),
@@ -186,6 +174,13 @@
             this.getRenderTarget = function() {
 
                 return renderTarget;
+
+            };
+
+            this.dispose = function() {
+
+                renderTarget.dispose();
+                scope.material.dispose();
 
             };
 

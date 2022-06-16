@@ -57,7 +57,7 @@
                     const name = chunks[1];
                     if (!frameRanges[name]) frameRanges[name] = {
                         start: Infinity,
-                        end: - Infinity
+                        end: -Infinity
                     };
                     const range = frameRanges[name];
                     if (i < range.start) range.start = i;

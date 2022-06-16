@@ -18,11 +18,7 @@
 
             if (this.renderTarget === undefined) {
 
-                this.renderTarget = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
-                    minFilter: v3d.LinearFilter,
-                    magFilter: v3d.LinearFilter,
-                    format: v3d.RGBFormat
-                });
+                this.renderTarget = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight);
                 this.renderTarget.texture.name = 'SavePass.rt';
 
             }

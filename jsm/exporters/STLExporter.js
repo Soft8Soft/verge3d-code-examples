@@ -1,6 +1,6 @@
 import {
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * Usage:

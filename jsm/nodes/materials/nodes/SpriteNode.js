@@ -1,7 +1,7 @@
 import {
     UniformsLib,
     UniformsUtils
-} from '../../../../../build/v3d.module.js';
+} from 'v3d';
 
 import { Node } from '../../core/Node.js';
 import { ColorNode } from '../../inputs/ColorNode.js';

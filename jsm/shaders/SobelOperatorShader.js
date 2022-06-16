@@ -1,6 +1,6 @@
 import {
     Vector2
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * Sobel Edge Detection (see https://youtu.be/uihBwtPIBxM)

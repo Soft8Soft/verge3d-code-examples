@@ -49,7 +49,7 @@
 
         float depth = gl_FragCoord.z / gl_FragCoord.w;
         const float LOG2 = 1.442695;
-        float fogFactor = exp2(- fogDensity * fogDensity * depth * depth * LOG2);
+        float fogFactor = exp2(-fogDensity * fogDensity * depth * depth * LOG2);
         fogFactor = 1.0 - clamp(fogFactor, 0.0, 1.0);
 
         gl_FragColor = mix(gl_FragColor, vec4(fogColor, gl_FragColor.w), fogFactor);
@@ -74,9 +74,21 @@
 
     </script>
 
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js"
+        }
+      }
+    </script>
+
     <script type="module">
 
-      import * as v3d from '../build/v3d.module.js';
+      import * as v3d from 'v3d';
 
       import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
       import { RenderPass } from './jsm/postprocessing/RenderPass.js';
@@ -105,17 +117,17 @@
 
         uniforms = {
 
-          "fogDensity": { value: 0.45 },
-          "fogColor": { value: new v3d.Vector3(0, 0, 0) },
-          "time": { value: 1.0 },
-          "uvScale": { value: new v3d.Vector2(3.0, 1.0) },
-          "texture1": { value: textureLoader.load('textures/lava/cloud.png') },
-          "texture2": { value: textureLoader.load('textures/lava/lavatile.jpg') }
+          'fogDensity': { value: 0.45 },
+          'fogColor': { value: new v3d.Vector3(0, 0, 0) },
+          'time': { value: 1.0 },
+          'uvScale': { value: new v3d.Vector2(3.0, 1.0) },
+          'texture1': { value: textureLoader.load('textures/lava/cloud.png') },
+          'texture2': { value: textureLoader.load('textures/lava/lavatile.jpg') }
 
         };
 
-        uniforms["texture1"].value.wrapS = uniforms["texture1"].value.wrapT = v3d.RepeatWrapping;
-        uniforms["texture2"].value.wrapS = uniforms["texture2"].value.wrapT = v3d.RepeatWrapping;
+        uniforms['texture1'].value.wrapS = uniforms['texture1'].value.wrapT = v3d.RepeatWrapping;
+        uniforms['texture2'].value.wrapS = uniforms['texture2'].value.wrapT = v3d.RepeatWrapping;
 
         const size = 0.65;
 

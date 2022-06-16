@@ -12,9 +12,21 @@
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - sprites
     </div>
 
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js"
+        }
+      }
+    </script>
+
     <script type="module">
 
-      import * as v3d from '../build/v3d.module.js';
+      import * as v3d from 'v3d';
 
       let camera, scene, renderer;
       let cameraOrtho, sceneOrtho;
@@ -36,7 +48,7 @@
         camera = new v3d.PerspectiveCamera(60, width / height, 1, 2100);
         camera.position.z = 1500;
 
-        cameraOrtho = new v3d.OrthographicCamera(- width / 2, width / 2, height / 2, - height / 2, 1, 10);
+        cameraOrtho = new v3d.OrthographicCamera(-width / 2, width / 2, height / 2, - height / 2, 1, 10);
         cameraOrtho.position.z = 10;
 
         scene = new v3d.Scene();
@@ -51,9 +63,9 @@
 
         const textureLoader = new v3d.TextureLoader();
 
-        textureLoader.load("textures/sprite0.png", createHUDSprites);
-        const mapB = textureLoader.load("textures/sprite1.png");
-        mapC = textureLoader.load("textures/sprite2.png");
+        textureLoader.load('textures/sprite0.png', createHUDSprites);
+        const mapB = textureLoader.load('textures/sprite1.png');
+        mapC = textureLoader.load('textures/sprite2.png');
 
         group = new v3d.Group();
 
@@ -149,9 +161,9 @@
         const width = window.innerWidth / 2;
         const height = window.innerHeight / 2;
 
-        spriteTL.position.set(- width, height, 1); // top left
+        spriteTL.position.set(-width, height, 1); // top left
         spriteTR.position.set(width, height, 1); // top right
-        spriteBL.position.set(- width, - height, 1); // bottom left
+        spriteBL.position.set(-width, - height, 1); // bottom left
         spriteBR.position.set(width, - height, 1); // bottom right
         spriteC.position.set(0, 0, 1); // center
 
@@ -165,10 +177,10 @@
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
 
-        cameraOrtho.left = - width / 2;
+        cameraOrtho.left = -width / 2;
         cameraOrtho.right = width / 2;
         cameraOrtho.top = height / 2;
-        cameraOrtho.bottom = - height / 2;
+        cameraOrtho.bottom = -height / 2;
         cameraOrtho.updateProjectionMatrix();
 
         updateHUDSprites();

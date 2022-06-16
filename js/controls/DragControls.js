@@ -65,6 +65,12 @@
 
             }
 
+            function getRaycaster() {
+
+                return _raycaster;
+
+            }
+
             function onPointerMove(event) {
 
                 if (scope.enabled === false) return;
@@ -144,7 +150,7 @@
 
             }
 
-            function onPointerDown() {
+            function onPointerDown(event) {
 
                 if (scope.enabled === false) return;
                 updatePointer(event);
@@ -213,6 +219,7 @@
             this.deactivate = deactivate;
             this.dispose = dispose;
             this.getObjects = getObjects;
+            this.getRaycaster = getRaycaster;
 
         }
 

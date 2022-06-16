@@ -23,25 +23,17 @@
             this.generateRandomKernelRotations(); // beauty render target
 
             const depthTexture = new v3d.DepthTexture();
-            depthTexture.type = v3d.UnsignedShortType;
-            this.beautyRenderTarget = new v3d.WebGLRenderTarget(this.width, this.height, {
-                minFilter: v3d.LinearFilter,
-                magFilter: v3d.LinearFilter,
-                format: v3d.RGBAFormat
-            }); // normal render target with depth buffer
+            depthTexture.format = v3d.DepthStencilFormat;
+            depthTexture.type = v3d.UnsignedInt248Type;
+            this.beautyRenderTarget = new v3d.WebGLRenderTarget(this.width, this.height); // normal render target with depth buffer
 
             this.normalRenderTarget = new v3d.WebGLRenderTarget(this.width, this.height, {
                 minFilter: v3d.NearestFilter,
                 magFilter: v3d.NearestFilter,
-                format: v3d.RGBAFormat,
                 depthTexture: depthTexture
             }); // ssao render target
 
-            this.ssaoRenderTarget = new v3d.WebGLRenderTarget(this.width, this.height, {
-                minFilter: v3d.LinearFilter,
-                magFilter: v3d.LinearFilter,
-                format: v3d.RGBAFormat
-            });
+            this.ssaoRenderTarget = new v3d.WebGLRenderTarget(this.width, this.height);
             this.blurRenderTarget = this.ssaoRenderTarget.clone(); // ssao material
 
             if (v3d.SSAOShader === undefined) {
@@ -131,7 +123,8 @@
             /*, readBuffer, deltaTime, maskActive */
         ) {
 
-            // render beauty
+            if (renderer.capabilities.isWebGL2 === false) this.noiseTexture.format = v3d.LuminanceFormat; // render beauty
+
             renderer.setRenderTarget(this.beautyRenderTarget);
             renderer.clear();
             renderer.render(this.scene, this.camera); // render normals and depth (honor only meshes, points and lines do not contribute to SSAO)
@@ -297,25 +290,21 @@
 
             const simplex = new v3d.SimplexNoise();
             const size = width * height;
-            const data = new Float32Array(size * 4);
+            const data = new Float32Array(size);
 
             for (let i = 0; i < size; i++) {
 
-                const stride = i * 4;
                 const x = Math.random() * 2 - 1;
                 const y = Math.random() * 2 - 1;
                 const z = 0;
-                const noise = simplex.noise3d(x, y, z);
-                data[stride] = noise;
-                data[stride + 1] = noise;
-                data[stride + 2] = noise;
-                data[stride + 3] = 1;
+                data[i] = simplex.noise3d(x, y, z);
 
             }
 
-            this.noiseTexture = new v3d.DataTexture(data, width, height, v3d.RGBAFormat, v3d.FloatType);
+            this.noiseTexture = new v3d.DataTexture(data, width, height, v3d.RedFormat, v3d.FloatType);
             this.noiseTexture.wrapS = v3d.RepeatWrapping;
             this.noiseTexture.wrapT = v3d.RepeatWrapping;
+            this.noiseTexture.needsUpdate = true;
 
         }
 

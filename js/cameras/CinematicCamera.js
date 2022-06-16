@@ -91,13 +91,8 @@
                 this.postprocessing.scene = new v3d.Scene();
                 this.postprocessing.camera = new v3d.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, - 10000, 10000);
                 this.postprocessing.scene.add(this.postprocessing.camera);
-                const pars = {
-                    minFilter: v3d.LinearFilter,
-                    magFilter: v3d.LinearFilter,
-                    format: v3d.RGBFormat
-                };
-                this.postprocessing.rtTextureDepth = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight, pars);
-                this.postprocessing.rtTextureColor = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight, pars);
+                this.postprocessing.rtTextureDepth = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight);
+                this.postprocessing.rtTextureColor = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight);
                 const bokeh_shader = v3d.BokehShader;
                 this.postprocessing.bokeh_uniforms = v3d.UniformsUtils.clone(bokeh_shader.uniforms);
                 this.postprocessing.bokeh_uniforms['tColor'].value = this.postprocessing.rtTextureColor.texture;

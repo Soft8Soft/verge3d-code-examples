@@ -1,4 +1,4 @@
-import { Vector2 } from '../../../../build/v3d.module.js';
+import { Vector2 } from 'v3d';
 
 import { TempNode } from '../core/TempNode.js';
 import { FunctionNode } from '../core/FunctionNode.js';

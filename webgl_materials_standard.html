@@ -13,13 +13,25 @@
       <a href="http://www.polycount.com/forum/showthread.php?t=130641" target="_blank" rel="noopener">Cerberus(FFVII Gun) model</a> by Andrew Maximov.
     </div>
 
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js"
+        }
+      }
+    </script>
+
     <script type="module">
 
-      import * as v3d from '../build/v3d.module.js';
+      import * as v3d from 'v3d';
 
       import Stats from './jsm/libs/stats.module.js';
 
-      import { GUI } from './jsm/libs/dat.gui.module.js';
+      import { GUI } from './jsm/libs/lil-gui.module.min.js';
       import { TrackballControls } from './jsm/controls/TrackballControls.js';
       import { OBJLoader } from './jsm/loaders/OBJLoader.js';
       import { RGBELoader } from './jsm/loaders/RGBELoader.js';
@@ -121,18 +133,16 @@
 
           const filename = environments[name].filename;
           new RGBELoader()
-          .setDataType(v3d.UnsignedByteType)
-          .setPath('textures/equirectangular/')
-          .load(filename, function(hdrEquirect) {
+            .setPath('textures/equirectangular/')
+            .load(filename, function(hdrEquirect) {
 
-            const hdrCubeRenderTarget = pmremGenerator.fromEquirectangular(hdrEquirect);
-            hdrEquirect.dispose();
+              hdrEquirect.mapping = v3d.EquirectangularReflectionMapping;
 
-            scene.background = hdrCubeRenderTarget.texture;
-            scene.environment = hdrCubeRenderTarget.texture;
-            environments[name].texture = hdrCubeRenderTarget.texture;
+              scene.background = hdrEquirect;
+              scene.environment = hdrEquirect;
+              environments[name].texture = hdrEquirect;
 
-          });
+            });
 
         }
 
@@ -150,9 +160,6 @@
 
         });
         gui.open();
-
-        const pmremGenerator = new v3d.PMREMGenerator(renderer);
-        pmremGenerator.compileEquirectangularShader();
 
         //
 

@@ -6,7 +6,7 @@ import {
     LoaderUtils,
     Points,
     PointsMaterial
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class PCDLoader extends Loader {
 
@@ -303,9 +303,9 @@ class PCDLoader extends Loader {
 
                 if (offset.rgb !== undefined) {
 
-                    color.push(dataview.getUint8((PCDheader.points * offset.rgb) + PCDheader.size[3] * i + 0) / 255.0);
-                    color.push(dataview.getUint8((PCDheader.points * offset.rgb) + PCDheader.size[3] * i + 1) / 255.0);
                     color.push(dataview.getUint8((PCDheader.points * offset.rgb) + PCDheader.size[3] * i + 2) / 255.0);
+                    color.push(dataview.getUint8((PCDheader.points * offset.rgb) + PCDheader.size[3] * i + 1) / 255.0);
+                    color.push(dataview.getUint8((PCDheader.points * offset.rgb) + PCDheader.size[3] * i + 0) / 255.0);
 
                 }
 

@@ -5,7 +5,7 @@ import {
     MathUtils,
     Uint32BufferAttribute,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 import { SimplexNoise } from '../math/SimplexNoise.js';
 
 /**
@@ -707,7 +707,7 @@ class LightningStrike extends BufferGeometry {
         // Create an equilateral triangle (only vertices)
 
         this.side.crossVectors(up, forwards).multiplyScalar(radius * LightningStrike.COS30DEG);
-        this.down.copy(up).multiplyScalar(- radius * LightningStrike.SIN30DEG);
+        this.down.copy(up).multiplyScalar(-radius * LightningStrike.SIN30DEG);
 
         const p = this.vPos;
         const v = this.vertices;
@@ -739,7 +739,7 @@ class LightningStrike extends BufferGeometry {
         // Create an equilateral triangle (only vertices)
 
         this.side.crossVectors(up, forwards).multiplyScalar(radius * LightningStrike.COS30DEG);
-        this.down.copy(up).multiplyScalar(- radius * LightningStrike.SIN30DEG);
+        this.down.copy(up).multiplyScalar(-radius * LightningStrike.SIN30DEG);
 
         const p = this.vPos;
         const v = this.vertices;

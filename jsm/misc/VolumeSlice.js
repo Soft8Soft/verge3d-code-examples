@@ -6,7 +6,7 @@ import {
     MeshBasicMaterial,
     PlaneGeometry,
     Texture
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * This class has been made to hold a slice of a volume data

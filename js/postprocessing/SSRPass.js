@@ -9,9 +9,7 @@
             width,
             height,
             selects,
-            encoding,
             bouncing = false,
-            morphTargets = false,
             groundReflector
         }) {
 
@@ -27,7 +25,6 @@
             this.output = 0;
             this.maxDistance = v3d.SSRShader.uniforms.maxDistance.value;
             this.thickness = v3d.SSRShader.uniforms.thickness.value;
-            this.encoding = encoding;
             this.tempColor = new v3d.Color();
             this._selects = selects;
             this.selective = Array.isArray(this._selects);
@@ -210,9 +207,7 @@
             this.ssrMaterial.uniforms['cameraProjectionMatrix'].value.copy(this.camera.projectionMatrix);
             this.ssrMaterial.uniforms['cameraInverseProjectionMatrix'].value.copy(this.camera.projectionMatrixInverse); // normal material
 
-            this.normalMaterial = new v3d.MeshNormalMaterial({
-                morphTargets
-            });
+            this.normalMaterial = new v3d.MeshNormalMaterial();
             this.normalMaterial.blending = v3d.NoBlending; // metalnessOn material
 
             this.metalnessOnMaterial = new v3d.MeshBasicMaterial({
@@ -310,7 +305,6 @@
         ) {
 
             // render beauty and depth
-            if (this.encoding) this.beautyRenderTarget.texture.encoding = this.encoding;
             renderer.setRenderTarget(this.beautyRenderTarget);
             renderer.clear();
 

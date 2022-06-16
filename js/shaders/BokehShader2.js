@@ -402,7 +402,7 @@
             #include <begin_vertex>
             #include <project_vertex>
 
-            vViewZDepth = - mvPosition.z;
+            vViewZDepth = -mvPosition.z;
 
         }`,
         fragmentShader:

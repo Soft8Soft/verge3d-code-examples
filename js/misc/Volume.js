@@ -104,7 +104,7 @@
                 case 'unsigned long long int':
                 case 'uint64':
                 case 'uint64_t':
-                    throw 'Error in Volume constructor : this type is not supported in JavaScript';
+                    throw new Error('Error in Volume constructor : this type is not supported in JavaScript');
                     break;
 
                 case 'Float32':
@@ -126,7 +126,7 @@
 
             if (this.data.length !== this.xLength * this.yLength * this.zLength) {
 
-                throw 'Error in Volume constructor, lengths are not matching arrayBuffer size';
+                throw new Error('Error in Volume constructor, lengths are not matching arrayBuffer size');
 
             }
 
@@ -157,7 +157,7 @@
    *                      If changed, geometryNeedsUpdate is automatically set to true on all the slices associated to this volume
    */
 
-        var lowerThreshold = - Infinity;
+        var lowerThreshold = -Infinity;
         Object.defineProperty(this, 'lowerThreshold', {
             get: function() {
 
@@ -438,7 +438,7 @@
         computeMinMax: function() {
 
             var min = Infinity;
-            var max = - Infinity; // buffer the length
+            var max = -Infinity; // buffer the length
 
             var datasize = this.data.length;
             var i = 0;

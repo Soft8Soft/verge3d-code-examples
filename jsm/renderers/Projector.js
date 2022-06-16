@@ -8,7 +8,7 @@ import {
     Vector2,
     Vector3,
     Vector4
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class RenderableObject {
 
@@ -492,9 +492,10 @@ class Projector {
                             let y = positions[i + 1];
                             let z = positions[i + 2];
 
-                            if (material.morphTargets === true) {
+                            const morphTargets = geometry.morphAttributes.position;
 
-                                const morphTargets = geometry.morphAttributes.position;
+                            if (morphTargets !== undefined) {
+
                                 const morphTargetsRelative = geometry.morphTargetsRelative;
                                 const morphInfluences = object.morphTargetInfluences;
 

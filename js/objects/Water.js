@@ -2,8 +2,8 @@
 
     /**
  * Work based on :
- * http://slayvin.net : Flat mirror for three.js
- * http://www.adelphi.edu/~stemkoski : An implementation of water shader based on the flat mirror
+ * https://github.com/Slayvin: Flat mirror for three.js
+ * https://home.adelphi.edu/~stemkoski/ : An implementation of water shader based on the flat mirror
  * http://29a.ch/ && http://29a.ch/slides/2012/webglwater/ : Water shader explanations in WebGL
  */
 
@@ -39,19 +39,7 @@
             const q = new v3d.Vector4();
             const textureMatrix = new v3d.Matrix4();
             const mirrorCamera = new v3d.PerspectiveCamera();
-            const parameters = {
-                minFilter: v3d.LinearFilter,
-                magFilter: v3d.LinearFilter,
-                format: v3d.RGBFormat
-            };
-            const renderTarget = new v3d.WebGLRenderTarget(textureWidth, textureHeight, parameters);
-
-            if (!v3d.MathUtils.isPowerOfTwo(textureWidth) || ! v3d.MathUtils.isPowerOfTwo(textureHeight)) {
-
-                renderTarget.texture.generateMipmaps = false;
-
-            }
-
+            const renderTarget = new v3d.WebGLRenderTarget(textureWidth, textureHeight);
             const mirrorShader = {
                 uniforms: v3d.UniformsUtils.merge([v3d.UniformsLib['fog'], v3d.UniformsLib['lights'], {
                     'normalSampler': {

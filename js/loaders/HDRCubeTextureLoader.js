@@ -6,7 +6,7 @@
 
             super(manager);
             this.hdrLoader = new v3d.RGBELoader();
-            this.type = v3d.UnsignedByteType;
+            this.type = v3d.HalfFloatType;
 
         }
 
@@ -28,17 +28,8 @@
 
             switch (texture.type) {
 
-                case v3d.UnsignedByteType:
-                    texture.encoding = v3d.RGBEEncoding;
-                    texture.format = v3d.RGBAFormat;
-                    texture.minFilter = v3d.NearestFilter;
-                    texture.magFilter = v3d.NearestFilter;
-                    texture.generateMipmaps = false;
-                    break;
-
                 case v3d.FloatType:
                     texture.encoding = v3d.LinearEncoding;
-                    texture.format = v3d.RGBFormat;
                     texture.minFilter = v3d.LinearFilter;
                     texture.magFilter = v3d.LinearFilter;
                     texture.generateMipmaps = false;
@@ -46,7 +37,6 @@
 
                 case v3d.HalfFloatType:
                     texture.encoding = v3d.LinearEncoding;
-                    texture.format = v3d.RGBFormat;
                     texture.minFilter = v3d.LinearFilter;
                     texture.magFilter = v3d.LinearFilter;
                     texture.generateMipmaps = false;

@@ -1,4 +1,4 @@
-import { Object3D, Sphere, Box3 } from '../../../build/v3d.module.js';
+import { Object3D, Sphere, Box3 } from 'v3d';
 import { XRHandMeshModel } from './XRHandMeshModel.js';
 
 const TOUCH_RADIUS = 0.01;

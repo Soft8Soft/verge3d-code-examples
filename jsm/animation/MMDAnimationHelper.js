@@ -3,7 +3,7 @@ import {
     Object3D,
     Quaternion,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 import { CCDIKSolver } from '../animation/CCDIKSolver.js';
 import { MMDPhysics } from '../animation/MMDPhysics.js';
 

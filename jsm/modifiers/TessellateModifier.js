@@ -4,7 +4,7 @@ import {
     Float32BufferAttribute,
     Vector2,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * Break faces with edges longer than maxEdgeLength

@@ -1,8 +1,8 @@
 import {
     ShaderMaterial,
     UniformsUtils
-} from '../../../build/v3d.module.js';
-import { Pass, FullScreenQuad } from '../postprocessing/Pass.js';
+} from 'v3d';
+import { Pass, FullScreenQuad } from './Pass.js';
 import { CopyShader } from '../shaders/CopyShader.js';
 
 class TexturePass extends Pass {

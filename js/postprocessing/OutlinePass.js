@@ -25,10 +25,6 @@
             };
             const resx = Math.round(this.resolution.x / this.downSampleRatio);
             const resy = Math.round(this.resolution.y / this.downSampleRatio);
-            this.maskBufferMaterial = new v3d.MeshBasicMaterial({
-                color: 0xffffff
-            });
-            this.maskBufferMaterial.side = v3d.DoubleSide;
             this.renderTargetMaskBuffer = new v3d.WebGLRenderTarget(this.resolution.x, this.resolution.y, pars);
             this.renderTargetMaskBuffer.texture.name = 'OutlinePass.mask';
             this.renderTargetMaskBuffer.texture.generateMipmaps = false;
@@ -93,7 +89,7 @@
 
             function replaceDepthToViewZ(string, camera) {
 
-                var type = camera.isPerspectiveCamera ? 'perspective' : 'orthographic';
+                const type = camera.isPerspectiveCamera ? 'perspective' : 'orthographic';
                 return string.replace(/DEPTH_TO_VIEW_Z/g, type + 'DepthToViewZ');
 
             }
@@ -408,7 +404,7 @@
                 void main() {
 
                     float depth = unpackRGBAToDepth(texture2DProj(depthTexture, projTexCoord));
-                    float viewZ = - DEPTH_TO_VIEW_Z(depth, cameraNearFar.x, cameraNearFar.y);
+                    float viewZ = -DEPTH_TO_VIEW_Z(depth, cameraNearFar.x, cameraNearFar.y);
                     float depthTest = (-vPosition.z > viewZ) ? 1.0 : 0.0;
                     gl_FragColor = vec4(0.0, depthTest, 1.0, 1.0);
 

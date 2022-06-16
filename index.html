@@ -17,25 +17,10 @@
 <link rel="manifest" href="files/icons/manifest.json">
 <link rel="mask-icon" href="files/icons/safari-pinned-tab.svg" color="#5bbad5 ">
 
-
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript" >
-   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-   ym(46001298, "init", {
-        id:46001298,
-        clickmap:true,
-        trackLinks:true,
-        accurateTrackBounce:true
-   });
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/46001298" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
-
+<!-- Yandex.Metrika counter --> <script type="text/javascript" > (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)}; m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(46001298, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true, ecommerce:"dataLayer" }); ym(46001298, 'addFileExtension', 'xz');</script> <noscript><div><img src="https://mc.yandex.ru/watch/46001298" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter -->
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <link rel="shortcut icon" href="files/favicon.ico" />
+    <link rel="shortcut icon" href="files/favicon_white.ico" media="(prefers-color-scheme: dark)"/>
+    <link rel="shortcut icon" href="files/favicon.ico" media="(prefers-color-scheme: light)" />
     <link rel="stylesheet" type="text/css" href="files/main.css">
   </head>
   <body>
@@ -83,8 +68,10 @@
     const expandButton = document.getElementById('expandButton');
     const viewSrcButton = document.getElementById('button');
     const panelScrim = document.getElementById('panelScrim');
-
     const previewsToggler = document.getElementById('previewsToggler');
+
+    const sectionLink = document.querySelector('#sections > a');
+    const sectionDefaultHref = sectionLink.href;
 
     const links = {};
     const validRedirects = new Map();
@@ -142,6 +129,13 @@
 
       }
 
+      if (viewer.src === '') {
+
+        viewer.srcdoc = document.getElementById('PlaceholderHTML').innerHTML;
+        viewer.style.display = 'unset';
+
+      }
+
       filterInput.value = extractQuery();
 
       if (filterInput.value !== '') {
@@ -149,6 +143,10 @@
         panel.classList.add('searchFocused');
 
         updateFilter(files, tags);
+
+      } else {
+
+        updateLink('');
 
       }
 
@@ -297,6 +295,25 @@
 
       layoutList(files);
 
+      updateLink(v);
+
+    }
+
+    function updateLink(search) {
+
+      // update docs link
+
+      if (search) {
+
+        const link = sectionLink.href.split(/[?#]/)[0];
+        sectionLink.href = `${link}?q=${search}`;
+
+      } else {
+
+        sectionLink.href = sectionDefaultHref;
+
+      }
+
     }
 
     function filterExample(file, exp, tags) {
@@ -396,6 +413,46 @@
     }
 
     </script>
+    <template id="PlaceholderHTML">
+      <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>Verge3D Code Examples</title>
 
+<meta name="description" content="300+ WebGL examples demonstrating the features of the Verge3D framework. Source code included." />
+
+<meta content="Verge3D Code Examples - Soft8Soft" property="og:title">
+<meta content="300+ WebGL examples demonstrating the features of the Verge3D framework. Source code included." property="og:description">
+<meta content="https://cdn.soft8soft.com/images/code_examples.jpeg" property="og:image">
+
+<!-- favicons from realfavicongenerator.net -->
+<link rel="apple-touch-icon" sizes="180x180" href="files/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="files/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="files/icons/favicon-16x16.png">
+<link rel="manifest" href="files/icons/manifest.json">
+<link rel="mask-icon" href="files/icons/safari-pinned-tab.svg" color="#5bbad5 ">
+
+<!-- Yandex.Metrika counter --> <script type="text/javascript" > (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)}; m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(46001298, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true, ecommerce:"dataLayer" }); ym(46001298, 'addFileExtension', 'xz');</script> <noscript><div><img src="https://mc.yandex.ru/watch/46001298" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter -->
+            <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+            <link rel="stylesheet" type="text/css" href="files/main.css">
+            <style>
+            html, body {
+              height: 100%;
+            }
+            body {
+              height: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              user-select: none;
+            }
+            </style>
+          </head>
+          <body>
+            Select an example from the sidebar
+          </body>
+        </html>
+    </template>
   </body>
 </html>

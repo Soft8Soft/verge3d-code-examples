@@ -1,7 +1,7 @@
 import {
     Matrix4,
     Vector2
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * TODO

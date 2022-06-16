@@ -3,7 +3,7 @@ import {
     FileLoader,
     Float32BufferAttribute,
     Loader
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class PDBLoader extends Loader {
 

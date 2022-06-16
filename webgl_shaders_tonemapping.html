@@ -45,11 +45,23 @@
       </div>
     </div>
 
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js"
+        }
+      }
+    </script>
+
     <script type="module">
 
-      import * as v3d from '../build/v3d.module.js';
+      import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/dat.gui.module.js';
+      import { GUI } from './jsm/libs/lil-gui.module.min.js';
       import { OrbitControls } from './jsm/controls/OrbitControls.js';
       import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
       import { RenderPass } from './jsm/postprocessing/RenderPass.js';
@@ -103,7 +115,7 @@
         camera.position.z = 800;
         cameraCube = new v3d.PerspectiveCamera(70, windowThirdX / window.innerHeight, 1, 100000);
 
-        cameraBG = new v3d.OrthographicCamera(- windowHalfX, windowHalfX, windowHalfY, - windowHalfY, - 10000, 10000);
+        cameraBG = new v3d.OrthographicCamera(-windowHalfX, windowHalfX, windowHalfY, - windowHalfY, - 10000, 10000);
         cameraBG.position.z = 100;
 
         orbitControls = new OrbitControls(camera, container);
@@ -156,6 +168,7 @@
             v3d.ShaderChunk["common"],
             v3d.ShaderChunk["bsdfs"],
             v3d.ShaderChunk["lights_pars_begin"],
+            v3d.ShaderChunk["normal_pars_fragment"],
             v3d.ShaderChunk["lights_phong_pars_fragment"],
 
             "void main() {",
@@ -306,13 +319,13 @@
 
         let quadBG = new v3d.Mesh(new v3d.PlaneGeometry(0.1, 0.1), currentLuminanceMat);
         quadBG.position.z = - 500;
-        quadBG.position.x = - window.innerWidth * 0.5 + window.innerWidth * 0.05;
+        quadBG.position.x = -window.innerWidth * 0.5 + window.innerWidth * 0.05;
         quadBG.scale.set(window.innerWidth, window.innerHeight, 1);
         debugScene.add(quadBG);
 
         quadBG = new v3d.Mesh(new v3d.PlaneGeometry(0.1, 0.1), adaptiveLuminanceMat);
         quadBG.position.z = - 500;
-        quadBG.position.x = - window.innerWidth * 0.5 + window.innerWidth * 0.15;
+        quadBG.position.x = -window.innerWidth * 0.5 + window.innerWidth * 0.15;
         quadBG.scale.set(window.innerWidth, window.innerHeight, 1);
         debugScene.add(quadBG);
 

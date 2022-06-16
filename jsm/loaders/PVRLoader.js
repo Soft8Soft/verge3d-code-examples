@@ -4,7 +4,7 @@ import {
     RGBA_PVRTC_4BPPV1_Format,
     RGB_PVRTC_2BPPV1_Format,
     RGB_PVRTC_4BPPV1_Format
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /*
  *     PVR v2 (legacy) parser

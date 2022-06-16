@@ -1,7 +1,7 @@
 import {
     MathUtils,
     Mesh
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class MorphBlendMesh extends Mesh {
 
@@ -78,7 +78,7 @@ class MorphBlendMesh extends Mesh {
 
                 const name = chunks[1];
 
-                if (!frameRanges[name]) frameRanges[name] = { start: Infinity, end: - Infinity };
+                if (!frameRanges[name]) frameRanges[name] = { start: Infinity, end: -Infinity };
 
                 const range = frameRanges[name];
 

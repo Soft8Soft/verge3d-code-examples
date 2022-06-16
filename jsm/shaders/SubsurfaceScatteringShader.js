@@ -3,7 +3,7 @@ import {
     ShaderChunk,
     ShaderLib,
     UniformsUtils
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * ------------------------------------------------------------------------------------------

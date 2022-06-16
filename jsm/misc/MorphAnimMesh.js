@@ -2,7 +2,7 @@ import {
     AnimationClip,
     AnimationMixer,
     Mesh
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class MorphAnimMesh extends Mesh {
 

@@ -13,16 +13,6 @@
 
     class SimplifyModifier {
 
-        constructor() {
-
-            if (v3d.BufferGeometryUtils === undefined) {
-
-                throw 'v3d.SimplifyModifier relies on v3d.BufferGeometryUtils';
-
-            }
-
-        }
-
         modify(geometry, count) {
 
             if (geometry.isGeometry === true) {

@@ -1,6 +1,6 @@
 import {
     Color
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * Luminosity

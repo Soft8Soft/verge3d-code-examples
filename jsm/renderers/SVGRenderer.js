@@ -6,7 +6,7 @@ import {
     Matrix4,
     Object3D,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 import { Projector } from '../renderers/Projector.js';
 import { RenderableFace } from '../renderers/Projector.js';
 import { RenderableLine } from '../renderers/Projector.js';
@@ -110,11 +110,11 @@ class SVGRenderer {
             _svgWidth = width; _svgHeight = height;
             _svgWidthHalf = _svgWidth / 2; _svgHeightHalf = _svgHeight / 2;
 
-            _svg.setAttribute('viewBox', (- _svgWidthHalf) + ' ' + (- _svgHeightHalf) + ' ' + _svgWidth + ' ' + _svgHeight);
+            _svg.setAttribute('viewBox', (-_svgWidthHalf) + ' ' + (-_svgHeightHalf) + ' ' + _svgWidth + ' ' + _svgHeight);
             _svg.setAttribute('width', _svgWidth);
             _svg.setAttribute('height', _svgHeight);
 
-            _clipBox.min.set(- _svgWidthHalf, - _svgHeightHalf);
+            _clipBox.min.set(-_svgWidthHalf, - _svgHeightHalf);
             _clipBox.max.set(_svgWidthHalf, _svgHeightHalf);
 
         };
@@ -212,7 +212,7 @@ class SVGRenderer {
                 if (element instanceof RenderableSprite) {
 
                     _v1 = element;
-                    _v1.x *= _svgWidthHalf; _v1.y *= - _svgHeightHalf;
+                    _v1.x *= _svgWidthHalf; _v1.y *= -_svgHeightHalf;
 
                     renderSprite(_v1, element, material);
 
@@ -220,8 +220,8 @@ class SVGRenderer {
 
                     _v1 = element.v1; _v2 = element.v2;
 
-                    _v1.positionScreen.x *= _svgWidthHalf; _v1.positionScreen.y *= - _svgHeightHalf;
-                    _v2.positionScreen.x *= _svgWidthHalf; _v2.positionScreen.y *= - _svgHeightHalf;
+                    _v1.positionScreen.x *= _svgWidthHalf; _v1.positionScreen.y *= -_svgHeightHalf;
+                    _v2.positionScreen.x *= _svgWidthHalf; _v2.positionScreen.y *= -_svgHeightHalf;
 
                     _elemBox.setFromPoints([_v1.positionScreen, _v2.positionScreen]);
 
@@ -239,9 +239,9 @@ class SVGRenderer {
                     if (_v2.positionScreen.z < - 1 || _v2.positionScreen.z > 1) continue;
                     if (_v3.positionScreen.z < - 1 || _v3.positionScreen.z > 1) continue;
 
-                    _v1.positionScreen.x *= _svgWidthHalf; _v1.positionScreen.y *= - _svgHeightHalf;
-                    _v2.positionScreen.x *= _svgWidthHalf; _v2.positionScreen.y *= - _svgHeightHalf;
-                    _v3.positionScreen.x *= _svgWidthHalf; _v3.positionScreen.y *= - _svgHeightHalf;
+                    _v1.positionScreen.x *= _svgWidthHalf; _v1.positionScreen.y *= -_svgHeightHalf;
+                    _v2.positionScreen.x *= _svgWidthHalf; _v2.positionScreen.y *= -_svgHeightHalf;
+                    _v3.positionScreen.x *= _svgWidthHalf; _v3.positionScreen.y *= -_svgHeightHalf;
 
                     if (this.overdraw > 0) {
 
@@ -279,7 +279,7 @@ class SVGRenderer {
                     if (_vector3.z < - 1 || _vector3.z > 1) return;
 
                     const x = _vector3.x * _svgWidthHalf;
-                    const y = - _vector3.y * _svgHeightHalf;
+                    const y = -_vector3.y * _svgHeightHalf;
 
                     const node = object.node;
                     node.setAttribute('transform', 'translate(' + x + ',' + y + ')');
@@ -384,7 +384,7 @@ class SVGRenderer {
 
             }
 
-            const path = 'M' + convert(v1.x - scaleX * 0.5) + ',' + convert(v1.y - scaleY * 0.5) + 'h' + convert(scaleX) + 'v' + convert(scaleY) + 'h' + convert(- scaleX) + 'z';
+            const path = 'M' + convert(v1.x - scaleX * 0.5) + ',' + convert(v1.y - scaleY * 0.5) + 'h' + convert(scaleX) + 'v' + convert(scaleY) + 'h' + convert(-scaleX) + 'z';
             let style = '';
 
             if (material.isSpriteMaterial || material.isPointsMaterial) {

@@ -8,7 +8,7 @@ import {
     Skeleton,
     Vector3,
     VectorKeyframeTrack
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * Description: reads BVH files and outputs a single Skeleton and an AnimationClip

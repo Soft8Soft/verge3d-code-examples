@@ -3,7 +3,7 @@ import {
     Plane,
     Triangle,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 /**
  * Ported from: https://github.com/maurizzzio/quickhull3d/ by Mauricio Poppe (https://github.com/maurizzzio)
@@ -46,27 +46,21 @@ class ConvexHull {
 
     setFromPoints(points) {
 
-        if (Array.isArray(points) !== true) {
+        // The algorithm needs at least four points.
 
-            console.error('v3d.ConvexHull: Points parameter is not an array.');
+        if (points.length >= 4) {
 
-        }
+            this.makeEmpty();
 
-        if (points.length < 4) {
+            for (let i = 0, l = points.length; i < l; i++) {
 
-            console.error('v3d.ConvexHull: The algorithm needs at least four points.');
+                this.vertices.push(new VertexNode(points[i]));
 
-        }
+            }
 
-        this.makeEmpty();
-
-        for (let i = 0, l = points.length; i < l; i++) {
-
-            this.vertices.push(new VertexNode(points[i]));
+            this.compute();
 
         }
-
-        this.compute();
 
         return this;
 
@@ -141,7 +135,7 @@ class ConvexHull {
 
         const faces = this.faces;
 
-        let tNear = - Infinity;
+        let tNear = -Infinity;
         let tFar = Infinity;
 
         for (let i = 0, l = faces.length; i < l; i++) {
@@ -197,7 +191,7 @@ class ConvexHull {
 
         // always try tNear first since its the closer intersection point
 
-        if (tNear !== - Infinity) {
+        if (tNear !== -Infinity) {
 
             ray.at(tNear, target);
 

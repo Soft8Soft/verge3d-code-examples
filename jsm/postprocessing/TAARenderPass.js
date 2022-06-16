@@ -1,7 +1,7 @@
 import {
     WebGLRenderTarget
-} from '../../../build/v3d.module.js';
-import { SSAARenderPass } from '../postprocessing/SSAARenderPass.js';
+} from 'v3d';
+import { SSAARenderPass } from './SSAARenderPass.js';
 
 /**
  *

@@ -2,7 +2,7 @@ import {
     Object3D,
     Quaternion,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 const _translationObject = new Vector3();
 const _quaternionObject = new Quaternion();

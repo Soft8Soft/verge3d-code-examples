@@ -11,7 +11,7 @@ import {
     ShapeUtils,
     Vector2,
     Vector3
-} from '../../../build/v3d.module.js';
+} from 'v3d';
 
 class SVGLoader extends Loader {
 
@@ -129,7 +129,9 @@ class SVGLoader extends Loader {
 
                 case 'use':
                     style = parseStyle(node, style);
-                    const usedNodeId = node.href.baseVal.substring(1);
+
+                    const href = node.getAttributeNS('http://www.w3.org/1999/xlink', 'href') || '';
+                    const usedNodeId = href.substring(1);
                     const usedNode = node.viewportElement.getElementById(usedNodeId);
                     if (usedNode) {
 
@@ -248,7 +250,7 @@ class SVGLoader extends Loader {
 
                             }
 
-                            if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
+                            if (j === 0) firstPoint.copy(point);
 
                         }
 
@@ -440,7 +442,7 @@ class SVGLoader extends Loader {
 
                             }
 
-                            if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point);
+                            if (j === 0) firstPoint.copy(point);
 
                         }
 
@@ -659,9 +661,14 @@ class SVGLoader extends Loader {
 
                 for (let j = 0; j < selectorList.length; j ++) {
 
+                    // Remove empty rules
+                    const definitions = Object.fromEntries(
+                        Object.entries(stylesheet.style).filter(([, v]) => v !== '')
+                    );
+
                     stylesheets[selectorList[j]] = Object.assign(
                         stylesheets[selectorList[j]] || {},
-                        stylesheet.style
+                        definitions
                     );
 
                 }
@@ -758,30 +765,70 @@ class SVGLoader extends Loader {
 
             const x = parseFloatWithUnits(node.getAttribute('x') || 0);
             const y = parseFloatWithUnits(node.getAttribute('y') || 0);
-            const rx = parseFloatWithUnits(node.getAttribute('rx') || 0);
-            const ry = parseFloatWithUnits(node.getAttribute('ry') || 0);
+            const rx = parseFloatWithUnits(node.getAttribute('rx') || node.getAttribute('ry') || 0);
+            const ry = parseFloatWithUnits(node.getAttribute('ry') || node.getAttribute('rx') || 0);
             const w = parseFloatWithUnits(node.getAttribute('width'));
             const h = parseFloatWithUnits(node.getAttribute('height'));
 
-            const path = new ShapePath();
-            path.moveTo(x + 2 * rx, y);
-            path.lineTo(x + w - 2 * rx, y);
-            if (rx !== 0 || ry !== 0) path.bezierCurveTo(x + w, y, x + w, y, x + w, y + 2 * ry);
-            path.lineTo(x + w, y + h - 2 * ry);
-            if (rx !== 0 || ry !== 0) path.bezierCurveTo(x + w, y + h, x + w, y + h, x + w - 2 * rx, y + h);
-            path.lineTo(x + 2 * rx, y + h);
+            // Ellipse arc to Bezier approximation Coefficient (Inversed). See:
+            // https://spencermortensen.com/articles/bezier-circle/
+            const bci = 1 - 0.551915024494;
 
+            const path = new ShapePath();
+
+            // top left
+            path.moveTo(x + rx, y);
+
+            // top right
+            path.lineTo(x + w - rx, y);
             if (rx !== 0 || ry !== 0) {
 
-                path.bezierCurveTo(x, y + h, x, y + h, x, y + h - 2 * ry);
+                path.bezierCurveTo(
+                    x + w - rx * bci,
+                    y,
+                    x + w,
+                    y + ry * bci,
+                    x + w,
+                    y + ry
+                );
 
             }
 
-            path.lineTo(x, y + 2 * ry);
-
+            // bottom right
+            path.lineTo(x + w, y + h - ry);
             if (rx !== 0 || ry !== 0) {
 
-                path.bezierCurveTo(x, y, x, y, x + 2 * rx, y);
+                path.bezierCurveTo(
+                    x + w,
+                    y + h - ry * bci,
+                    x + w - rx * bci,
+                    y + h,
+                    x + w - rx,
+                    y + h
+                );
+
+            }
+
+            // bottom left
+            path.lineTo(x + rx, y + h);
+            if (rx !== 0 || ry !== 0) {
+
+                path.bezierCurveTo(
+                    x + rx * bci,
+                    y + h,
+                    x,
+                    y + h - ry * bci,
+                    x,
+                    y + h - ry
+                );
+
+            }
+
+            // back to top left
+            path.lineTo(x, y + ry);
+            if (rx !== 0 || ry !== 0) {
+
+                path.bezierCurveTo(x, y + ry * bci, x + rx * bci, y, x + rx, y);
 
             }
 
@@ -967,6 +1014,7 @@ class SVGLoader extends Loader {
 
             addStyle('fill', 'fill');
             addStyle('fill-opacity', 'fillOpacity', clamp);
+            addStyle('fill-rule', 'fillRule');
             addStyle('opacity', 'opacity', clamp);
             addStyle('stroke', 'stroke');
             addStyle('stroke-opacity', 'strokeOpacity', clamp);
@@ -1425,7 +1473,7 @@ class SVGLoader extends Loader {
                                     let cy = 0;
 
                                     // Angle
-                                    angle = - array[0] * Math.PI / 180;
+                                    angle = -array[0] * Math.PI / 180;
 
                                     if (array.length >= 3) {
 
@@ -1988,14 +2036,14 @@ class SVGLoader extends Loader {
         let identifier = 0;
 
         let scanlineMinX = BIGNUMBER;
-        let scanlineMaxX = - BIGNUMBER;
+        let scanlineMaxX = -BIGNUMBER;
 
         let simplePaths = shapePath.subPaths.map(p => {
 
             const points = p.getPoints();
-            let maxY = - BIGNUMBER;
+            let maxY = -BIGNUMBER;
             let minY = BIGNUMBER;
-            let maxX = - BIGNUMBER;
+            let maxX = -BIGNUMBER;
             let minX = BIGNUMBER;
 
               //points.forEach(p => p.y *= -1);
@@ -2043,7 +2091,7 @@ class SVGLoader extends Loader {
 
             }
 
-            return { points: points, isCW: ShapeUtils.isClockWise(points), identifier: identifier ++, boundingBox: new Box2(new Vector2(minX, minY), new Vector2(maxX, maxY)) };
+            return { curves: p.curves, points: points, isCW: ShapeUtils.isClockWise(points), identifier: identifier ++, boundingBox: new Box2(new Vector2(minX, minY), new Vector2(maxX, maxY)) };
 
         });
 
@@ -2060,12 +2108,15 @@ class SVGLoader extends Loader {
 
             if (!amIAHole.isHole) {
 
-                const shape = new Shape(p.points);
+                const shape = new Shape();
+                shape.curves = p.curves;
                 const holes = isAHole.filter(h => h.isHole && h.for === p.identifier);
                 holes.forEach(h => {
 
-                    const path = simplePaths[h.identifier];
-                    shape.holes.push(new Path(path.points));
+                    const hole = simplePaths[h.identifier];
+                    const path = new Path();
+                    path.curves = hole.curves;
+                    shape.holes.push(path);
 
                 });
                 shapesToReturn.push(shape);
@@ -2257,7 +2308,7 @@ class SVGLoader extends Loader {
 
                     // Compute inner and outer segment intersections
                     const miterSide = strokeWidth2 / dot;
-                    tempV2_3.multiplyScalar(- miterSide);
+                    tempV2_3.multiplyScalar(-miterSide);
                     tempV2_4.subVectors(currentPoint, previousPoint);
                     tempV2_5.copy(tempV2_4).setLength(miterSide).add(tempV2_3);
                     innerPoint.copy(tempV2_5).negate();
@@ -2564,7 +2615,7 @@ class SVGLoader extends Loader {
         function getNormal(p1, p2, result) {
 
             result.subVectors(p2, p1);
-            return result.set(- result.y, result.x).normalize();
+            return result.set(-result.y, result.x).normalize();
 
         }
 
