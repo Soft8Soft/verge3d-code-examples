@@ -23,7 +23,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -32,14 +33,14 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
-      import { TAARenderPass } from './jsm/postprocessing/TAARenderPass.js';
-      import { CopyShader } from './jsm/shaders/CopyShader.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { ShaderPass } from 'v3d/addons/postprocessing/ShaderPass.js';
+      import { TAARenderPass } from 'v3d/addons/postprocessing/TAARenderPass.js';
+      import { CopyShader } from 'v3d/addons/shaders/CopyShader.js';
 
       let camera, scene, renderer, composer, copyPass, taaRenderPass, renderPass;
       let gui, stats;
@@ -116,7 +117,7 @@
         const material1 = new v3d.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
 
         const mesh1 = new v3d.Mesh(geometry, material1);
-        mesh1.position.x = - 100;
+        mesh1.position.x = -100;
         scene.add(mesh1);
 
         const texture = new v3d.TextureLoader().load('textures/brick_diffuse.jpg');

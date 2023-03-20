@@ -83,12 +83,6 @@ class SSAOPass extends Pass {
 
         // ssao material
 
-        if (SSAOShader === undefined) {
-
-            console.error('v3d.SSAOPass: The pass relies on SSAOShader.');
-
-        }
-
         this.ssaoMaterial = new ShaderMaterial({
             defines: Object.assign({}, SSAOShader.defines),
             uniforms: UniformsUtils.clone(SSAOShader.uniforms),
@@ -357,8 +351,8 @@ class SSAOPass extends Pass {
         for (let i = 0; i < kernelSize; i++) {
 
             const sample = new Vector3();
-            sample.x = (Math.random() * 2) - 1;
-            sample.y = (Math.random() * 2) - 1;
+            sample.x = (Math.random() * 2) -1;
+            sample.y = (Math.random() * 2) -1;
             sample.z = Math.random();
 
             sample.normalize();
@@ -377,12 +371,6 @@ class SSAOPass extends Pass {
 
         const width = 4, height = 4;
 
-        if (SimplexNoise === undefined) {
-
-            console.error('v3d.SSAOPass: The pass relies on SimplexNoise.');
-
-        }
-
         const simplex = new SimplexNoise();
 
         const size = width * height;
@@ -390,8 +378,8 @@ class SSAOPass extends Pass {
 
         for (let i = 0; i < size; i++) {
 
-            const x = (Math.random() * 2) - 1;
-            const y = (Math.random() * 2) - 1;
+            const x = (Math.random() * 2) -1;
+            const y = (Math.random() * 2) -1;
             const z = 0;
 
             data[i] = simplex.noise3d(x, y, z);

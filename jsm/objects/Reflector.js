@@ -8,7 +8,10 @@ import {
     UniformsUtils,
     Vector3,
     Vector4,
-    WebGLRenderTarget
+    WebGLRenderTarget,
+    HalfFloatType,
+    NoToneMapping,
+    LinearEncoding
 } from 'v3d';
 
 class Reflector extends Mesh {
@@ -17,7 +20,10 @@ class Reflector extends Mesh {
 
         super(geometry);
 
+        this.isReflector = true;
+
         this.type = 'Reflector';
+        this.camera = new PerspectiveCamera();
 
         const scope = this;
 
@@ -26,6 +32,7 @@ class Reflector extends Mesh {
         const textureHeight = options.textureHeight || 512;
         const clipBias = options.clipBias || 0;
         const shader = options.shader || Reflector.ReflectorShader;
+        const multisample = (options.multisample !== undefined) ? options.multisample : 4;
 
         //
 
@@ -34,7 +41,7 @@ class Reflector extends Mesh {
         const reflectorWorldPosition = new Vector3();
         const cameraWorldPosition = new Vector3();
         const rotationMatrix = new Matrix4();
-        const lookAtPosition = new Vector3(0, 0, - 1);
+        const lookAtPosition = new Vector3(0, 0, -1);
         const clipPlane = new Vector4();
 
         const view = new Vector3();
@@ -42,9 +49,9 @@ class Reflector extends Mesh {
         const q = new Vector4();
 
         const textureMatrix = new Matrix4();
-        const virtualCamera = new PerspectiveCamera();
+        const virtualCamera = this.camera;
 
-        const renderTarget = new WebGLRenderTarget(textureWidth, textureHeight);
+        const renderTarget = new WebGLRenderTarget(textureWidth, textureHeight, { samples: multisample, type: HalfFloatType });
 
         const material = new ShaderMaterial({
             uniforms: UniformsUtils.clone(shader.uniforms),
@@ -79,7 +86,7 @@ class Reflector extends Mesh {
 
             rotationMatrix.extractRotation(camera.matrixWorld);
 
-            lookAtPosition.set(0, 0, - 1);
+            lookAtPosition.set(0, 0, -1);
             lookAtPosition.applyMatrix4(rotationMatrix);
             lookAtPosition.add(cameraWorldPosition);
 
@@ -120,7 +127,7 @@ class Reflector extends Mesh {
 
             q.x = (Math.sign(clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0];
             q.y = (Math.sign(clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5];
-            q.z = - 1.0;
+            q.z = -1.0;
             q.w = (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
 
             // Calculate the scaled plane vector
@@ -133,18 +140,19 @@ class Reflector extends Mesh {
             projectionMatrix.elements[14] = clipPlane.w;
 
             // Render
-
-            renderTarget.texture.encoding = renderer.outputEncoding;
-
             scope.visible = false;
 
             const currentRenderTarget = renderer.getRenderTarget();
 
             const currentXrEnabled = renderer.xr.enabled;
             const currentShadowAutoUpdate = renderer.shadowMap.autoUpdate;
+            const currentOutputEncoding = renderer.outputEncoding;
+            const currentToneMapping = renderer.toneMapping;
 
             renderer.xr.enabled = false; // Avoid camera modification
             renderer.shadowMap.autoUpdate = false; // Avoid re-computing shadows
+            renderer.outputEncoding = LinearEncoding;
+            renderer.toneMapping = NoToneMapping;
 
             renderer.setRenderTarget(renderTarget);
 
@@ -155,6 +163,8 @@ class Reflector extends Mesh {
 
             renderer.xr.enabled = currentXrEnabled;
             renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
+            renderer.outputEncoding = currentOutputEncoding;
+            renderer.toneMapping = currentToneMapping;
 
             renderer.setRenderTarget(currentRenderTarget);
 
@@ -188,8 +198,6 @@ class Reflector extends Mesh {
     }
 
 }
-
-Reflector.prototype.isReflector = true;
 
 Reflector.ReflectorShader = {
 
@@ -251,6 +259,9 @@ Reflector.ReflectorShader = {
 
             vec4 base = texture2DProj(tDiffuse, vUv);
             gl_FragColor = vec4(blendOverlay(base.rgb, color), 1.0);
+
+            #include <tonemapping_fragment>
+            #include <encodings_fragment>
 
         }`
 };

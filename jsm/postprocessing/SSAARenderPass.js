@@ -1,8 +1,9 @@
 import {
-    AdditiveBlending,
+    CustomBlending,
+    OneFactor,
+    AddEquation,
+    SrcAlphaFactor,
     Color,
-    LinearFilter,
-    RGBAFormat,
     ShaderMaterial,
     UniformsUtils,
     WebGLRenderTarget
@@ -37,8 +38,6 @@ class SSAARenderPass extends Pass {
         this.clearAlpha = (clearAlpha !== undefined) ? clearAlpha : 0;
         this._oldClearColor = new Color();
 
-        if (CopyShader === undefined) console.error('v3d.SSAARenderPass relies on CopyShader');
-
         const copyShader = CopyShader;
         this.copyUniforms = UniformsUtils.clone(copyShader.uniforms);
 
@@ -46,11 +45,17 @@ class SSAARenderPass extends Pass {
             uniforms: this.copyUniforms,
             vertexShader: copyShader.vertexShader,
             fragmentShader: copyShader.fragmentShader,
-            premultipliedAlpha: true,
             transparent: true,
-            blending: AdditiveBlending,
             depthTest: false,
-            depthWrite: false
+            depthWrite: false,
+
+            // do not use AdditiveBlending because it mixes the alpha channel instead of adding
+            blending: CustomBlending,
+            blendEquation: AddEquation,
+            blendDst: OneFactor,
+            blendDstAlpha: OneFactor,
+            blendSrc: SrcAlphaFactor,
+            blendSrcAlpha: OneFactor
         });
 
         this.fsQuad = new FullScreenQuad(this.copyMaterial);
@@ -66,6 +71,10 @@ class SSAARenderPass extends Pass {
 
         }
 
+        this.copyMaterial.dispose();
+
+        this.fsQuad.dispose();
+
     }
 
     setSize(width, height) {
@@ -78,7 +87,7 @@ class SSAARenderPass extends Pass {
 
         if (!this.sampleRenderTarget) {
 
-            this.sampleRenderTarget = new WebGLRenderTarget(readBuffer.width, readBuffer.height, { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBAFormat });
+            this.sampleRenderTarget = new WebGLRenderTarget(readBuffer.width, readBuffer.height);
             this.sampleRenderTarget.texture.name = 'SSAARenderPass.sample';
 
         }
@@ -197,28 +206,28 @@ const _JitterVectors = [
         [0, 0]
     ],
     [
-        [4, 4], [- 4, - 4]
+        [4, 4], [- 4, -4]
     ],
     [
-        [- 2, - 6], [6, - 2], [- 6, 2], [2, 6]
+        [- 2, -6], [6, -2], [- 6, 2], [2, 6]
     ],
     [
-        [1, - 3], [- 1, 3], [5, 1], [- 3, - 5],
-        [- 5, 5], [- 7, - 1], [3, 7], [7, - 7]
+        [1, -3], [- 1, 3], [5, 1], [- 3, -5],
+        [- 5, 5], [- 7, -1], [3, 7], [7, -7]
     ],
     [
-        [1, 1], [- 1, - 3], [- 3, 2], [4, - 1],
-        [- 5, - 2], [2, 5], [5, 3], [3, - 5],
-        [- 2, 6], [0, - 7], [- 4, - 6], [- 6, 4],
-        [- 8, 0], [7, - 4], [6, 7], [- 7, - 8]
+        [1, 1], [- 1, -3], [- 3, 2], [4, -1],
+        [- 5, -2], [2, 5], [5, 3], [3, -5],
+        [- 2, 6], [0, -7], [- 4, -6], [- 6, 4],
+        [- 8, 0], [7, -4], [6, 7], [- 7, -8]
     ],
     [
-        [- 4, - 7], [- 7, - 5], [- 3, - 5], [- 5, - 4],
-        [- 1, - 4], [- 2, - 2], [- 6, - 1], [- 4, 0],
+        [- 4, -7], [- 7, -5], [- 3, -5], [- 5, -4],
+        [- 1, -4], [- 2, -2], [- 6, -1], [- 4, 0],
         [- 7, 1], [- 1, 2], [- 6, 3], [- 3, 3],
         [- 7, 6], [- 3, 6], [- 5, 7], [- 1, 7],
-        [5, - 7], [1, - 6], [6, - 5], [4, - 4],
-        [2, - 3], [7, - 2], [1, - 1], [4, - 1],
+        [5, -7], [1, -6], [6, -5], [4, -4],
+        [2, -3], [7, -2], [1, -1], [4, -1],
         [2, 1], [6, 2], [0, 4], [4, 4],
         [2, 5], [7, 5], [5, 6], [3, 7]
     ]

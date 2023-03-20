@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,9 +30,9 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { RGBELoader } from './jsm/loaders/RGBELoader.js';
+      import { RGBELoader } from 'v3d/addons/loaders/RGBELoader.js';
 
       const params = {
         exposure: 2.0
@@ -57,7 +58,7 @@
 
         const aspect = window.innerWidth / window.innerHeight;
 
-        camera = new v3d.OrthographicCamera(-aspect, aspect, 1, - 1, 0, 1);
+        camera = new v3d.OrthographicCamera(-aspect, aspect, 1, -1, 0, 1);
 
         new RGBELoader()
           .load('textures/memorial.hdr', function(texture, textureData) {

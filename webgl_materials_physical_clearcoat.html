@@ -18,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,12 +28,12 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { HDRCubeTextureLoader } from './jsm/loaders/HDRCubeTextureLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { HDRCubeTextureLoader } from 'v3d/addons/loaders/HDRCubeTextureLoader.js';
 
-      import { FlakesTexture } from './jsm/textures/FlakesTexture.js';
+      import { FlakesTexture } from 'v3d/addons/textures/FlakesTexture.js';
 
       let container, stats;
 
@@ -88,7 +89,7 @@
 
               const normalMap4 = textureLoader.load('textures/golfball.jpg');
 
-              const clearcoatNormaMap = textureLoader.load('textures/pbr/Scratched_gold/Scratched_gold_01_1K_Normal.png');
+              const clearcoatNormalMap = textureLoader.load('textures/pbr/Scratched_gold/Scratched_gold_01_1K_Normal.png');
 
               // car paint
 
@@ -103,7 +104,7 @@
               });
 
               let mesh = new v3d.Mesh(geometry, material);
-              mesh.position.x = - 100;
+              mesh.position.x = -100;
               mesh.position.y = 100;
               group.add(mesh);
 
@@ -128,14 +129,14 @@
                 roughness: 0.1,
                 clearcoat: 1.0,
                 normalMap: normalMap4,
-                clearcoatNormalMap: clearcoatNormaMap,
+                clearcoatNormalMap: clearcoatNormalMap,
 
                 // y scale is negated to compensate for normal map handedness.
-                clearcoatNormalScale: new v3d.Vector2(2.0, - 2.0)
+                clearcoatNormalScale: new v3d.Vector2(2.0, -2.0)
               });
               mesh = new v3d.Mesh(geometry, material);
-              mesh.position.x = - 100;
-              mesh.position.y = - 100;
+              mesh.position.x = -100;
+              mesh.position.y = -100;
               group.add(mesh);
 
               // clearcoat + normalmap
@@ -146,14 +147,14 @@
                 color: 0xff0000,
                 normalMap: normalMap2,
                 normalScale: new v3d.Vector2(0.15, 0.15),
-                clearcoatNormalMap: clearcoatNormaMap,
+                clearcoatNormalMap: clearcoatNormalMap,
 
                 // y scale is negated to compensate for normal map handedness.
-                clearcoatNormalScale: new v3d.Vector2(2.0, - 2.0)
+                clearcoatNormalScale: new v3d.Vector2(2.0, -2.0)
               });
               mesh = new v3d.Mesh(geometry, material);
               mesh.position.x = 100;
-              mesh.position.y = - 100;
+              mesh.position.y = -100;
               group.add(mesh);
 
               //

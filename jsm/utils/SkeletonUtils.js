@@ -87,7 +87,7 @@ function retarget(target, source, options = {}) {
             bone = bones[i];
             name = options.names[bone.name] || bone.name;
 
-            if (options.offsets && options.offsets[name]) {
+            if (options.offsets[name]) {
 
                 bone.matrix.multiply(options.offsets[name]);
 
@@ -323,7 +323,7 @@ function retargetClip(target, source, clip, options = {}) {
 
     mixer.uncacheAction(clip);
 
-    return new AnimationClip(clip.name, - 1, convertedTracks);
+    return new AnimationClip(clip.name, -1, convertedTracks);
 
 }
 
@@ -464,7 +464,7 @@ function getNearestBone(bone, names) {
 
     while (bone.isBone) {
 
-        if (names.indexOf(bone.name) !== - 1) {
+        if (names.indexOf(bone.name) !== -1) {
 
             return bone;
 

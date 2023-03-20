@@ -18,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,7 +28,7 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
       let stats;
 
@@ -50,7 +51,7 @@
           updateCamera: function(camera, scene, mouseX) {
 
             camera.position.x += mouseX * 0.05;
-            camera.position.x = Math.max(Math.min(camera.position.x, 2000), - 2000);
+            camera.position.x = Math.max(Math.min(camera.position.x, 2000), -2000);
             camera.lookAt(scene.position);
 
           }
@@ -67,7 +68,7 @@
           updateCamera: function(camera, scene, mouseX) {
 
             camera.position.x -= mouseX * 0.05;
-            camera.position.x = Math.max(Math.min(camera.position.x, 2000), - 2000);
+            camera.position.x = Math.max(Math.min(camera.position.x, 2000), -2000);
             camera.lookAt(camera.position.clone().setY(0));
 
           }
@@ -84,7 +85,7 @@
           updateCamera: function(camera, scene, mouseX) {
 
             camera.position.y -= mouseX * 0.05;
-            camera.position.y = Math.max(Math.min(camera.position.y, 1600), - 1600);
+            camera.position.y = Math.max(Math.min(camera.position.y, 1600), -1600);
             camera.lookAt(scene.position);
 
           }
@@ -136,19 +137,19 @@
         let shadowMesh;
 
         shadowMesh = new v3d.Mesh(shadowGeo, shadowMaterial);
-        shadowMesh.position.y = - 250;
+        shadowMesh.position.y = -250;
         shadowMesh.rotation.x = - Math.PI / 2;
         scene.add(shadowMesh);
 
         shadowMesh = new v3d.Mesh(shadowGeo, shadowMaterial);
-        shadowMesh.position.x = - 400;
-        shadowMesh.position.y = - 250;
+        shadowMesh.position.x = -400;
+        shadowMesh.position.y = -250;
         shadowMesh.rotation.x = - Math.PI / 2;
         scene.add(shadowMesh);
 
         shadowMesh = new v3d.Mesh(shadowGeo, shadowMaterial);
         shadowMesh.position.x = 400;
-        shadowMesh.position.y = - 250;
+        shadowMesh.position.y = -250;
         shadowMesh.rotation.x = - Math.PI / 2;
         scene.add(shadowMesh);
 
@@ -195,8 +196,8 @@
         let mesh = new v3d.Mesh(geometry1, material);
         let wireframe = new v3d.Mesh(geometry1, wireframeMaterial);
         mesh.add(wireframe);
-        mesh.position.x = - 400;
-        mesh.rotation.x = - 1.87;
+        mesh.position.x = -400;
+        mesh.rotation.x = -1.87;
         scene.add(mesh);
 
         mesh = new v3d.Mesh(geometry2, material);

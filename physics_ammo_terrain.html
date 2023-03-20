@@ -15,7 +15,7 @@
     <div id="container"></div>
     <div id="info">Ammo.js physics terrain heightfield demo</div>
 
-    <script src="js/libs/ammo.wasm.js"></script>
+    <script src="jsm/libs/ammo.wasm.js"></script>
 
     <!-- Import maps polyfill -->
     <!-- Remove this when import maps will be widely supported -->
@@ -24,7 +24,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -33,9 +34,9 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       // Heightfield parameters
       const terrainWidthExtents = 100;
@@ -45,7 +46,7 @@
       const terrainHalfWidth = terrainWidth / 2;
       const terrainHalfDepth = terrainDepth / 2;
       const terrainMaxHeight = 8;
-      const terrainMinHeight = - 2;
+      const terrainMinHeight = -2;
 
       // Graphics variables
       let container, stats;
@@ -190,7 +191,7 @@
         broadphase = new Ammo.btDbvtBroadphase();
         solver = new Ammo.btSequentialImpulseConstraintSolver();
         physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-        physicsWorld.setGravity(new Ammo.btVector3(0, - 6, 0));
+        physicsWorld.setGravity(new Ammo.btVector3(0, -6, 0));
 
         // Create the terrain body
 
@@ -355,7 +356,7 @@
 
         }
 
-        threeObject.position.set((Math.random() - 0.5) * terrainWidth * 0.6, terrainMaxHeight + objectSize + 2, (Math.random() - 0.5) * terrainDepth * 0.6);
+        threeObject.position.set((Math.random() -0.5) * terrainWidth * 0.6, terrainMaxHeight + objectSize + 2, (Math.random() -0.5) * terrainDepth * 0.6);
 
         const mass = objectSize * 5;
         const localInertia = new Ammo.btVector3(0, 0, 0);

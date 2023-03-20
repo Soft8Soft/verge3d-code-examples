@@ -123,7 +123,7 @@ class RoundedBoxGeometry extends BoxGeometry {
                 case 3: // bottom
 
                     // generate UVs along X then Z
-                    faceDirVector.set(0, - 1, 0);
+                    faceDirVector.set(0, -1, 0);
                     uvs[j + 0] = 1.0 - getUv(faceDirVector, normal, 'x', 'z', radius, width);
                     uvs[j + 1] = 1.0 - getUv(faceDirVector, normal, 'z', 'x', radius, depth);
                     break;
@@ -139,7 +139,7 @@ class RoundedBoxGeometry extends BoxGeometry {
                 case 5: // back
 
                     // generate UVs along X then Y
-                    faceDirVector.set(0, 0, - 1);
+                    faceDirVector.set(0, 0, -1);
                     uvs[j + 0] = getUv(faceDirVector, normal, 'x', 'y', radius, width);
                     uvs[j + 1] = 1.0 - getUv(faceDirVector, normal, 'y', 'x', radius, height);
                     break;

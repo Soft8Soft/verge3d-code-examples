@@ -14,7 +14,7 @@
   <div id="info">Ammo.js physics soft body rope demo<br>Press Q or A to move the arm.</div>
   <div id="container"></div>
 
-  <script src="js/libs/ammo.wasm.js"></script>
+  <script src="jsm/libs/ammo.wasm.js"></script>
 
   <!-- Import maps polyfill -->
   <!-- Remove this when import maps will be widely supported -->
@@ -23,7 +23,8 @@
   <script type="importmap">
     {
       "imports": {
-        "v3d": "../build/v3d.module.js"
+        "v3d": "../build/v3d.module.js",
+        "v3d/addons/": "./jsm/"
       }
     }
   </script>
@@ -31,9 +32,9 @@
   <script type="module">
     import * as v3d from 'v3d';
 
-    import Stats from './jsm/libs/stats.module.js';
+    import Stats from 'v3d/addons/libs/stats.module.js';
 
-    import { OrbitControls } from './jsm/controls/OrbitControls.js';
+    import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
     // Graphics variables
     let container, stats;
@@ -42,7 +43,7 @@
     const clock = new v3d.Clock();
 
     // Physics variables
-    const gravityConstant = - 9.8;
+    const gravityConstant = -9.8;
     let collisionConfiguration;
     let dispatcher;
     let broadphase;
@@ -155,7 +156,7 @@
       const quat = new v3d.Quaternion();
 
       // Ground
-      pos.set(0, - 0.5, 0);
+      pos.set(0, -0.5, 0);
       quat.set(0, 0, 0, 1);
       const ground = createParalellepiped(40, 1, 40, 0, pos, quat, new v3d.MeshPhongMaterial({ color: 0xFFFFFF }));
       ground.castShadow = true;
@@ -285,7 +286,7 @@
       sbConfig.set_piterations(10);
       ropeSoftBody.setTotalMass(ropeMass, false);
       Ammo.castObject(ropeSoftBody, Ammo.btCollisionObject).getCollisionShape().setMargin(margin * 3);
-      physicsWorld.addSoftBody(ropeSoftBody, 1, - 1);
+      physicsWorld.addSoftBody(ropeSoftBody, 1, -1);
       rope.userData.physicsBody = ropeSoftBody;
       // Disable deactivation
       ropeSoftBody.setActivationState(4);
@@ -316,7 +317,7 @@
 
       // Hinge constraint to move the arm
       const pivotA = new Ammo.btVector3(0, pylonHeight * 0.5, 0);
-      const pivotB = new Ammo.btVector3(0, - 0.2, - armLength * 0.5);
+      const pivotB = new Ammo.btVector3(0, -0.2, - armLength * 0.5);
       const axis = new Ammo.btVector3(0, 1, 0);
       hinge = new Ammo.btHingeConstraint(pylon.userData.physicsBody, arm.userData.physicsBody, pivotA, pivotB, axis, axis, true);
       physicsWorld.addConstraint(hinge, true);
@@ -395,7 +396,7 @@
 
           // A
           case 65:
-            armMovement = - 1;
+            armMovement = -1;
             break;
 
         }

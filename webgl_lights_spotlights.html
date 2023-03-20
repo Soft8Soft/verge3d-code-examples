@@ -20,21 +20,20 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
 
     <script type="module">
-
       import * as v3d from 'v3d';
+      import { TWEEN } from 'v3d/addons/libs/tween.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
-      import { TWEEN } from './jsm/libs/tween.module.min.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-
-
-      const renderer = new v3d.WebGLRenderer();
+      const renderer = new v3d.WebGLRenderer({ antialias: true });
       renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
 
       const camera = new v3d.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 2000);
 
@@ -42,7 +41,7 @@
 
       const scene = new v3d.Scene();
 
-      const matFloor = new v3d.MeshPhongMaterial();
+      const matFloor = new v3d.MeshPhongMaterial({ color: 0x808080 });
       const matBox = new v3d.MeshPhongMaterial({ color: 0xaaaaaa });
 
       const geoFloor = new v3d.PlaneGeometry(2000, 2000);
@@ -66,7 +65,7 @@
         renderer.shadowMap.type = v3d.PCFSoftShadowMap;
         renderer.outputEncoding = v3d.sRGBEncoding;
 
-        camera.position.set(46, 22, - 21);
+        camera.position.set(46, 22, -21);
 
         spotLight1.position.set(15, 40, 45);
         spotLight2.position.set(0, 40, 35);
@@ -76,10 +75,8 @@
         lightHelper2 = new v3d.SpotLightHelper(spotLight2);
         lightHelper3 = new v3d.SpotLightHelper(spotLight3);
 
-        matFloor.color.set(0x808080);
-
         mshFloor.receiveShadow = true;
-        mshFloor.position.set(0, - 0.05, 0);
+        mshFloor.position.set(0, -0.05, 0);
 
         mshBox.castShadow = true;
         mshBox.receiveShadow = true;
@@ -92,7 +89,6 @@
         scene.add(lightHelper1, lightHelper2, lightHelper3);
 
         document.body.appendChild(renderer.domElement);
-        onWindowResize();
         window.addEventListener('resize', onWindowResize);
 
         controls.target.set(0, 7, 0);
@@ -132,9 +128,9 @@
           .easing(TWEEN.Easing.Quadratic.Out).start();
 
         new TWEEN.Tween(light.position).to({
-          x: (Math.random() * 30) - 15,
+          x: (Math.random() * 30) -15,
           y: (Math.random() * 10) + 15,
-          z: (Math.random() * 30) - 15
+          z: (Math.random() * 30) -15
         }, Math.random() * 3000 + 2000)
           .easing(TWEEN.Easing.Quadratic.Out).start();
 

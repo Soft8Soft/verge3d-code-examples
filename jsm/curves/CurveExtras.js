@@ -23,9 +23,9 @@ class GrannyKnot extends Curve {
 
         t = 2 * Math.PI * t;
 
-        const x = - 0.22 * Math.cos(t) - 1.28 * Math.sin(t) - 0.44 * Math.cos(3 * t) - 0.78 * Math.sin(3 * t);
-        const y = - 0.1 * Math.cos(2 * t) - 0.27 * Math.sin(2 * t) + 0.38 * Math.cos(4 * t) + 0.46 * Math.sin(4 * t);
-        const z = 0.7 * Math.cos(3 * t) - 0.4 * Math.sin(3 * t);
+        const x = -0.22 * Math.cos(t) -1.28 * Math.sin(t) -0.44 * Math.cos(3 * t) -0.78 * Math.sin(3 * t);
+        const y = -0.1 * Math.cos(2 * t) -0.27 * Math.sin(2 * t) + 0.38 * Math.cos(4 * t) + 0.46 * Math.sin(4 * t);
+        const z = 0.7 * Math.cos(3 * t) -0.4 * Math.sin(3 * t);
 
         return point.set(x, y, z).multiplyScalar(20);
 
@@ -52,7 +52,7 @@ class HeartCurve extends Curve {
         t *= 2 * Math.PI;
 
         const x = 16 * Math.pow(Math.sin(t), 3);
-        const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+        const y = 13 * Math.cos(t) -5 * Math.cos(2 * t) -2 * Math.cos(3 * t) - Math.cos(4 * t);
         const z = 0;
 
         return point.set(x, y, z).multiplyScalar(this.scale);
@@ -246,9 +246,9 @@ class TrefoilPolynomialKnot extends Curve {
 
         t = t * 4 - 2;
 
-        const x = Math.pow(t, 3) - 3 * t;
-        const y = Math.pow(t, 4) - 4 * t * t;
-        const z = 1 / 5 * Math.pow(t, 5) - 2 * t;
+        const x = Math.pow(t, 3) -3 * t;
+        const y = Math.pow(t, 4) -4 * t * t;
+        const z = 1 / 5 * Math.pow(t, 5) -2 * t;
 
         return point.set(x, y, z).multiplyScalar(this.scale);
 
@@ -282,7 +282,7 @@ class FigureEightPolynomialKnot extends Curve {
         t = scaleTo(- 4, 4, t);
 
         const x = 2 / 5 * t * (t * t - 7) * (t * t - 10);
-        const y = Math.pow(t, 4) - 13 * t * t;
+        const y = Math.pow(t, 4) -13 * t * t;
         const z = 1 / 10 * t * (t * t - 4) * (t * t - 9) * (t * t - 12);
 
         return point.set(x, y, z).multiplyScalar(this.scale);
@@ -404,21 +404,19 @@ class DecoratedTorusKnot5c extends Curve {
 
 }
 
-const Curves = {
-    GrannyKnot: GrannyKnot,
-    HeartCurve: HeartCurve,
-    VivianiCurve: VivianiCurve,
-    KnotCurve: KnotCurve,
-    HelixCurve: HelixCurve,
-    TrefoilKnot: TrefoilKnot,
-    TorusKnot: TorusKnot,
-    CinquefoilKnot: CinquefoilKnot,
-    TrefoilPolynomialKnot: TrefoilPolynomialKnot,
-    FigureEightPolynomialKnot: FigureEightPolynomialKnot,
-    DecoratedTorusKnot4a: DecoratedTorusKnot4a,
-    DecoratedTorusKnot4b: DecoratedTorusKnot4b,
-    DecoratedTorusKnot5a: DecoratedTorusKnot5a,
-    DecoratedTorusKnot5c: DecoratedTorusKnot5c
+export {
+    GrannyKnot,
+    HeartCurve,
+    VivianiCurve,
+    KnotCurve,
+    HelixCurve,
+    TrefoilKnot,
+    TorusKnot,
+    CinquefoilKnot,
+    TrefoilPolynomialKnot,
+    FigureEightPolynomialKnot,
+    DecoratedTorusKnot4a,
+    DecoratedTorusKnot4b,
+    DecoratedTorusKnot5a,
+    DecoratedTorusKnot5c
 };
-
-export { Curves };

@@ -25,7 +25,7 @@
     <a href="http://www.nicovideo.jp/watch/sm13147122" target="_blank" rel="noopener">Dance Data</a>
     </div>
 
-    <script src="js/libs/ammo.wasm.js"></script>
+    <script src="jsm/libs/ammo.wasm.js"></script>
 
     <!-- Import maps polyfill -->
     <!-- Remove this when import maps will be widely supported -->
@@ -34,7 +34,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -43,13 +44,13 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { OutlineEffect } from './jsm/effects/OutlineEffect.js';
-      import { MMDLoader } from './jsm/loaders/MMDLoader.js';
-      import { MMDAnimationHelper } from './jsm/animation/MMDAnimationHelper.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { OutlineEffect } from 'v3d/addons/effects/OutlineEffect.js';
+      import { MMDLoader } from 'v3d/addons/loaders/MMDLoader.js';
+      import { MMDAnimationHelper } from 'v3d/addons/animation/MMDAnimationHelper.js';
 
       let stats;
 
@@ -81,8 +82,8 @@
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0xffffff);
 
-        const gridHelper = new v3d.PolarGridHelper(30, 10);
-        gridHelper.position.y = - 10;
+        const gridHelper = new v3d.PolarGridHelper(30, 0);
+        gridHelper.position.y = -10;
         scene.add(gridHelper);
 
         const ambient = new v3d.AmbientLight(0x666666);
@@ -132,7 +133,7 @@
         loader.loadWithAnimation(modelFile, vmdFiles, function(mmd) {
 
           mesh = mmd.mesh;
-          mesh.position.y = - 10;
+          mesh.position.y = -10;
           scene.add(mesh);
 
           helper.add(mesh, {

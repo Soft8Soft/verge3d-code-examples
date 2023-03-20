@@ -70,7 +70,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -79,7 +80,7 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       let canvas, renderer;
 
@@ -90,7 +91,7 @@
 
       function init() {
 
-        canvas = document.getElementById("c");
+        canvas = document.getElementById('c');
 
         const geometries = [
           new v3d.BoxGeometry(1, 1, 1),

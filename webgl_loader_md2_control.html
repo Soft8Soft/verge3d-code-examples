@@ -29,7 +29,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -38,11 +39,11 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { MD2CharacterComplex } from './jsm/misc/MD2CharacterComplex.js';
-      import { Gyroscope } from './jsm/misc/Gyroscope.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { MD2CharacterComplex } from 'v3d/addons/misc/MD2CharacterComplex.js';
+      import { Gyroscope } from 'v3d/addons/misc/Gyroscope.js';
 
       let SCREEN_WIDTH = window.innerWidth;
       let SCREEN_HEIGHT = window.innerHeight;
@@ -102,10 +103,10 @@
         light.shadow.camera.near = 100;
         light.shadow.camera.far = 1200;
 
-        light.shadow.camera.left = - 1000;
+        light.shadow.camera.left = -1000;
         light.shadow.camera.right = 1000;
         light.shadow.camera.top = 350;
-        light.shadow.camera.bottom = - 350;
+        light.shadow.camera.bottom = -350;
 
         scene.add(light);
         // scene.add(new v3d.CameraHelper(light.shadow.camera));

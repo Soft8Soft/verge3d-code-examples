@@ -19,18 +19,19 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
 
     <script type="module">
       import * as v3d from 'v3d';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { ImprovedNoise } from './jsm/math/ImprovedNoise.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { ImprovedNoise } from 'v3d/addons/math/ImprovedNoise.js';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import WebGL from './jsm/capabilities/WebGL.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import WebGL from 'v3d/addons/capabilities/WebGL.js';
 
       if (WebGL.isWebGL2Available() === false) {
 
@@ -75,7 +76,7 @@
 
         }
 
-        return new v3d.DataTexture3D(data, size, size, size);
+        return new v3d.Data3DTexture(data, size, size, size);
 
       }
 
@@ -115,7 +116,7 @@
 
         // Texture
 
-        const texture = new v3d.DataTexture3D(
+        const texture = new v3d.Data3DTexture(
           new Uint8Array(INITIAL_CLOUD_SIZE * INITIAL_CLOUD_SIZE * INITIAL_CLOUD_SIZE).fill(0),
           INITIAL_CLOUD_SIZE,
           INITIAL_CLOUD_SIZE,

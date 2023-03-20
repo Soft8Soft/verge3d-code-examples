@@ -15,7 +15,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -24,9 +25,9 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       let camera, scene, renderer;
 
@@ -38,8 +39,8 @@
 
       const clipPlanes = [
         new v3d.Plane(new v3d.Vector3(1, 0, 0), 0),
-        new v3d.Plane(new v3d.Vector3(0, - 1, 0), 0),
-        new v3d.Plane(new v3d.Vector3(0, 0, - 1), 0)
+        new v3d.Plane(new v3d.Vector3(0, -1, 0), 0),
+        new v3d.Plane(new v3d.Vector3(0, 0, -1), 0)
       ];
 
       init();
@@ -122,7 +123,7 @@
 
         });
 
-        gui.add(params, 'planeConstant', - 1, 1).step(0.01).name('plane constant').onChange(function(value) {
+        gui.add(params, 'planeConstant', -1, 1).step(0.01).name('plane constant').onChange(function(value) {
 
           for (let j = 0; j < clipPlanes.length; j ++) {
 

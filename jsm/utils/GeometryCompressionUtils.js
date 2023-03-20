@@ -267,7 +267,7 @@ function compressUvs(mesh) {
 
     let result;
 
-    if (range.min >= - 1.0 && range.max <= 1.0) {
+    if (range.min >= -1.0 && range.max <= 1.0) {
 
         // use default encoding method
         result = new Uint16Array(array.length);
@@ -407,8 +407,8 @@ function octEncodeBest(x, y, z, bytes) {
 
         if (z < 0) {
 
-            const tempx = (1 - Math.abs(y)) * (x >= 0 ? 1 : - 1);
-            const tempy = (1 - Math.abs(x)) * (y >= 0 ? 1 : - 1);
+            const tempx = (1 - Math.abs(y)) * (x >= 0 ? 1 : -1);
+            const tempy = (1 - Math.abs(x)) * (y >= 0 ? 1 : -1);
 
             x = tempx;
             y = tempy;
@@ -468,8 +468,8 @@ function octEncodeBest(x, y, z, bytes) {
         if (z < 0) {
 
             const tmpx = x;
-            x = (1 - Math.abs(y)) * (x >= 0 ? 1 : - 1);
-            y = (1 - Math.abs(tmpx)) * (y >= 0 ? 1 : - 1);
+            x = (1 - Math.abs(y)) * (x >= 0 ? 1 : -1);
+            y = (1 - Math.abs(tmpx)) * (y >= 0 ? 1 : -1);
 
         }
 

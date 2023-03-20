@@ -26,7 +26,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -35,9 +36,9 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { ThreeMFLoader } from './jsm/loaders/3MFLoader.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { ThreeMFLoader } from 'v3d/addons/loaders/3MFLoader.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       let camera, scene, renderer, object, loader, controls;
 
@@ -71,7 +72,7 @@
         // Z is up for objects intended to be 3D printed.
 
         camera.up.set(0, 0, 1);
-        camera.position.set(- 100, - 250, 100);
+        camera.position.set(- 100, -250, 100);
         scene.add(camera);
 
         controls = new OrbitControls(camera, renderer.domElement);

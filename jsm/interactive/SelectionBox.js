@@ -132,10 +132,10 @@ class SelectionBox {
             const right = Math.max(startPoint.x, endPoint.x);
             const down = Math.min(startPoint.y, endPoint.y);
 
-            _vecTopLeft.set(left, top, - 1);
-            _vecTopRight.set(right, top, - 1);
-            _vecDownRight.set(right, down, - 1);
-            _vecDownLeft.set(left, down, - 1);
+            _vecTopLeft.set(left, top, -1);
+            _vecTopRight.set(right, top, -1);
+            _vecDownRight.set(right, down, -1);
+            _vecDownLeft.set(left, down, -1);
 
             _vecFarTopLeft.set(left, top, 1);
             _vecFarTopRight.set(right, top, 1);

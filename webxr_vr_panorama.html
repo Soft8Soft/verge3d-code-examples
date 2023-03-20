@@ -14,7 +14,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -22,7 +23,7 @@
     <script type="module">
 
       import * as v3d from 'v3d';
-      import { VRButton } from './jsm/webxr/VRButton.js';
+      import { VRButton } from 'v3d/addons/webxr/VRButton.js';
 
       let camera;
       let renderer;
@@ -50,7 +51,7 @@
         camera.layers.enable(1);
 
         const geometry = new v3d.BoxGeometry(100, 100, 100);
-        geometry.scale(1, 1, - 1);
+        geometry.scale(1, 1, -1);
 
         const textures = getTexturesFromAtlasFile('textures/cube/sun_temple_stripe_stereo.jpg', 12);
 

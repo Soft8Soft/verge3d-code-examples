@@ -27,8 +27,10 @@ class InteractiveGroup extends Group {
 
             event.stopPropagation();
 
-            _pointer.x = (event.clientX / element.clientWidth) * 2 - 1;
-            _pointer.y = - (event.clientY / element.clientHeight) * 2 + 1;
+            const rect = renderer.domElement.getBoundingClientRect();
+
+            _pointer.x = (event.clientX - rect.left) / rect.width * 2 - 1;
+            _pointer.y = - (event.clientY - rect.top) / rect.height * 2 + 1;
 
             raycaster.setFromCamera(_pointer, camera);
 
@@ -75,7 +77,7 @@ class InteractiveGroup extends Group {
             tempMatrix.identity().extractRotation(controller.matrixWorld);
 
             raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-            raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
+            raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
 
             const intersections = raycaster.intersectObjects(scope.children, false);
 

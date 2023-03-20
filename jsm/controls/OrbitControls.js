@@ -25,9 +25,6 @@ class OrbitControls extends EventDispatcher {
 
         super();
 
-        if (domElement === undefined) console.warn('v3d.OrbitControls: The second parameter "domElement" is now mandatory.');
-        if (domElement === document) console.error('v3d.OrbitControls: "document" should not be used as the target "domElement". Please use "renderer.domElement" instead.');
-
         this.object = object;
         this.domElement = domElement;
         this.domElement.style.touchAction = 'none'; // disable touch scroll
@@ -321,7 +318,7 @@ class OrbitControls extends EventDispatcher {
         const scope = this;
 
         const STATE = {
-            NONE: - 1,
+            NONE: -1,
             ROTATE: 0,
             DOLLY: 1,
             PAN: 2,
@@ -604,22 +601,62 @@ class OrbitControls extends EventDispatcher {
             switch (event.code) {
 
                 case scope.keys.UP:
-                    pan(0, scope.keyPanSpeed);
+
+                    if (event.ctrlKey || event.metaKey || event.shiftKey) {
+
+                        rotateUp(2 * Math.PI * scope.rotateSpeed / scope.domElement.clientHeight);
+
+                    } else {
+
+                        pan(0, scope.keyPanSpeed);
+
+                    }
+
                     needsUpdate = true;
                     break;
 
                 case scope.keys.BOTTOM:
-                    pan(0, - scope.keyPanSpeed);
+
+                    if (event.ctrlKey || event.metaKey || event.shiftKey) {
+
+                        rotateUp(- 2 * Math.PI * scope.rotateSpeed / scope.domElement.clientHeight);
+
+                    } else {
+
+                        pan(0, - scope.keyPanSpeed);
+
+                    }
+
                     needsUpdate = true;
                     break;
 
                 case scope.keys.LEFT:
-                    pan(scope.keyPanSpeed, 0);
+
+                    if (event.ctrlKey || event.metaKey || event.shiftKey) {
+
+                        rotateLeft(2 * Math.PI * scope.rotateSpeed / scope.domElement.clientHeight);
+
+                    } else {
+
+                        pan(scope.keyPanSpeed, 0);
+
+                    }
+
                     needsUpdate = true;
                     break;
 
                 case scope.keys.RIGHT:
-                    pan(-scope.keyPanSpeed, 0);
+
+                    if (event.ctrlKey || event.metaKey || event.shiftKey) {
+
+                        rotateLeft(- 2 * Math.PI * scope.rotateSpeed / scope.domElement.clientHeight);
+
+                    } else {
+
+                        pan(-scope.keyPanSpeed, 0);
+
+                    }
+
                     needsUpdate = true;
                     break;
 
@@ -884,7 +921,7 @@ class OrbitControls extends EventDispatcher {
 
                 default:
 
-                    mouseAction = - 1;
+                    mouseAction = -1;
 
             }
 
@@ -959,8 +996,6 @@ class OrbitControls extends EventDispatcher {
         }
 
         function onMouseMove(event) {
-
-            if (scope.enabled === false) return;
 
             switch (state) {
 

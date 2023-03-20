@@ -123,7 +123,7 @@ class MorphBlendMesh extends Mesh {
 
         if (animation) {
 
-            animation.direction = - 1;
+            animation.direction = -1;
             animation.directionBackwards = true;
 
         }
@@ -198,7 +198,7 @@ class MorphBlendMesh extends Mesh {
 
     getAnimationDuration(name) {
 
-        let duration = - 1;
+        let duration = -1;
 
         const animation = this.animationsMap[name];
 
@@ -257,7 +257,7 @@ class MorphBlendMesh extends Mesh {
 
                 if (animation.time > animation.duration || animation.time < 0) {
 
-                    animation.direction *= - 1;
+                    animation.direction *= -1;
 
                     if (animation.time > animation.duration) {
 

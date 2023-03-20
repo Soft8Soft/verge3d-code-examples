@@ -140,7 +140,7 @@ const BokehShader = {
 
         float penta(vec2 coords) {
             //pentagonal shape
-            float scale = float(rings) - 1.3;
+            float scale = float(rings) -1.3;
             vec4  HS0 = vec4(1.0,         0.0,         0.0,  1.0);
             vec4  HS1 = vec4(0.309016994, 0.951056516, 0.0,  1.0);
             vec4  HS2 = vec4(-0.809016994, 0.587785252, 0.0,  1.0);

@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,9 +30,9 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { STLLoader } from './jsm/loaders/STLLoader.js';
+      import { STLLoader } from 'v3d/addons/loaders/STLLoader.js';
 
       let container, stats;
 
@@ -48,7 +49,7 @@
         camera = new v3d.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
         camera.position.set(3, 0.15, 3);
 
-        cameraTarget = new v3d.Vector3(0, - 0.25, 0);
+        cameraTarget = new v3d.Vector3(0, -0.25, 0);
 
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0x72645b);
@@ -61,7 +62,7 @@
           new v3d.MeshPhongMaterial({ color: 0x999999, specular: 0x101010 })
         );
         plane.rotation.x = - Math.PI / 2;
-        plane.position.y = - 0.5;
+        plane.position.y = -0.5;
         scene.add(plane);
 
         plane.receiveShadow = true;
@@ -75,7 +76,7 @@
           const material = new v3d.MeshPhongMaterial({ color: 0xff5533, specular: 0x111111, shininess: 200 });
           const mesh = new v3d.Mesh(geometry, material);
 
-          mesh.position.set(0, - 0.25, 0.6);
+          mesh.position.set(0, -0.25, 0.6);
           mesh.rotation.set(0, - Math.PI / 2, 0);
           mesh.scale.set(0.5, 0.5, 0.5);
 
@@ -95,7 +96,7 @@
 
           const mesh = new v3d.Mesh(geometry, material);
 
-          mesh.position.set(0, - 0.37, - 0.6);
+          mesh.position.set(0, -0.37, -0.6);
           mesh.rotation.set(- Math.PI / 2, 0, 0);
           mesh.scale.set(2, 2, 2);
 
@@ -110,7 +111,7 @@
 
           const mesh = new v3d.Mesh(geometry, material);
 
-          mesh.position.set(0.136, - 0.37, - 0.6);
+          mesh.position.set(0.136, -0.37, -0.6);
           mesh.rotation.set(- Math.PI / 2, 0.3, 0);
           mesh.scale.set(2, 2, 2);
 
@@ -151,7 +152,7 @@
         scene.add(new v3d.HemisphereLight(0x443333, 0x111122));
 
         addShadowedLight(1, 1, 1, 0xffffff, 1.35);
-        addShadowedLight(0.5, 1, - 1, 0xffaa00, 1);
+        addShadowedLight(0.5, 1, -1, 0xffaa00, 1);
         // renderer
 
         renderer = new v3d.WebGLRenderer({ antialias: true });
@@ -191,7 +192,7 @@
         directionalLight.shadow.camera.near = 1;
         directionalLight.shadow.camera.far = 4;
 
-        directionalLight.shadow.bias = - 0.002;
+        directionalLight.shadow.bias = -0.002;
 
       }
 

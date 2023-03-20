@@ -29,7 +29,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -38,10 +39,10 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { TransformControls } from './jsm/controls/TransformControls.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { TransformControls } from 'v3d/addons/controls/TransformControls.js';
 
       let container;
       let camera, scene, renderer;
@@ -92,7 +93,7 @@
         light.castShadow = true;
         light.shadow.camera.near = 200;
         light.shadow.camera.far = 2000;
-        light.shadow.bias = - 0.000222;
+        light.shadow.bias = -0.000222;
         light.shadow.mapSize.width = 1024;
         light.shadow.mapSize.height = 1024;
         scene.add(light);
@@ -102,12 +103,12 @@
         const planeMaterial = new v3d.ShadowMaterial({ color: 0x000000, opacity: 0.2 });
 
         const plane = new v3d.Mesh(planeGeometry, planeMaterial);
-        plane.position.y = - 200;
+        plane.position.y = -200;
         plane.receiveShadow = true;
         scene.add(plane);
 
         const helper = new v3d.GridHelper(2000, 100);
-        helper.position.y = - 199;
+        helper.position.y = -199;
         helper.material.opacity = 0.25;
         helper.material.transparent = true;
         scene.add(helper);
@@ -216,8 +217,8 @@
         }
 
         load([new v3d.Vector3(289.76843686945404, 452.51481137238443, 56.10018915737797),
-          new v3d.Vector3(- 53.56300074753207, 171.49711742836848, - 14.495472686253045),
-          new v3d.Vector3(- 91.40118730204415, 176.4306956436485, - 6.958271935582161),
+          new v3d.Vector3(- 53.56300074753207, 171.49711742836848, -14.495472686253045),
+          new v3d.Vector3(- 91.40118730204415, 176.4306956436485, -6.958271935582161),
           new v3d.Vector3(- 383.785318791128, 491.1365363371675, 47.869296953772746)]);
 
         render();
@@ -362,7 +363,7 @@
 
       }
 
-      function onPointerUp() {
+      function onPointerUp(event) {
 
         onUpPosition.x = event.clientX;
         onUpPosition.y = event.clientY;

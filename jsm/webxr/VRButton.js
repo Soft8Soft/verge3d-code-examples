@@ -1,12 +1,6 @@
 class VRButton {
 
-    static createButton(renderer, options) {
-
-        if (options) {
-
-            console.error('v3d.VRButton: The "options" parameter has been removed. Please set the reference space type via renderer.xr.setReferenceSpaceType() instead.');
-
-        }
+    static createButton(renderer) {
 
         const button = document.createElement('button');
 
@@ -40,7 +34,7 @@ class VRButton {
             button.style.display = '';
 
             button.style.cursor = 'pointer';
-            button.style.left = 'calc(50% - 50px)';
+            button.style.left = 'calc(50% -50px)';
             button.style.width = '100px';
 
             button.textContent = 'ENTER VR';
@@ -86,7 +80,7 @@ class VRButton {
             button.style.display = '';
 
             button.style.cursor = 'auto';
-            button.style.left = 'calc(50% - 75px)';
+            button.style.left = 'calc(50% -75px)';
             button.style.width = '150px';
 
             button.onmouseenter = null;
@@ -101,6 +95,16 @@ class VRButton {
             disableButton();
 
             button.textContent = 'VR NOT SUPPORTED';
+
+        }
+
+        function showVRNotAllowed(exception) {
+
+            disableButton();
+
+            console.warn('Exception when trying to call xr.isSessionSupported', exception);
+
+            button.textContent = 'VR NOT ALLOWED';
 
         }
 
@@ -138,7 +142,7 @@ class VRButton {
 
                 }
 
-            });
+            }).catch(showVRNotAllowed);
 
             return button;
 
@@ -158,7 +162,7 @@ class VRButton {
 
             }
 
-            message.style.left = 'calc(50% - 90px)';
+            message.style.left = 'calc(50% -90px)';
             message.style.width = '180px';
             message.style.textDecoration = 'none';
 
@@ -175,6 +179,10 @@ class VRButton {
     static registerSessionGrantedListener() {
 
         if ('xr' in navigator) {
+
+            // WebXRViewer (based on Firefox) has a bug where addEventListener
+            // throws a silent exception and aborts execution entirely.
+            if (/WebXRViewer\//i.test(navigator.userAgent)) return;
 
             navigator.xr.addEventListener('sessiongranted', () => {
 

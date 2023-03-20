@@ -8,8 +8,7 @@
   </head>
   <body>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - exporter - collada<br /><br />
-      <button id="export">Export COLLADA</button>
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - exporter - collada
     </div>
 
     <!-- Import maps polyfill -->
@@ -19,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,11 +28,11 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { ColladaExporter } from './jsm/exporters/ColladaExporter.js';
-      import { TeapotGeometry } from './jsm/geometries/TeapotGeometry.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { ColladaExporter } from 'v3d/addons/exporters/ColladaExporter.js';
+      import { TeapotGeometry } from 'v3d/addons/geometries/TeapotGeometry.js';
 
       ////////////////////////////////////////////////////////////////////////////////
       // Utah/Newell Teapot demo
@@ -45,13 +45,14 @@
       const teapotSize = 100; // vertical height of the teapot is about 2x this, we scale it to millimeters.
       let ambientLight, light;
 
-      let tess = - 1;  // force initialization
+      let tess = -1;  // force initialization
       let bBottom;
       let bLid;
       let bBody;
       let bFitLid;
       let bNonBlinn;
       let shading;
+      let vertexColors;
       let wireMaterial, flatMaterial, gouraudMaterial, phongMaterial, texturedMaterial, normalMaterial, reflectiveMaterial;
 
       let teapot, textureCube;
@@ -182,6 +183,7 @@
           lhue:  0.04,
           lsaturation: 0.01,  // non-zero so that fractions will be shown
           llightness: 1.0,
+          vertexColors: false,
 
           // bizarrely, if you initialize these with negative numbers, the sliders
           // will not show any decimal places.
@@ -194,7 +196,9 @@
           body: true,
           fitLid: false,
           nonblinn: false,
-          newShading: 'glossy'
+          newShading: 'glossy',
+
+          export: exportCollada
         };
 
         let h;
@@ -217,6 +221,7 @@
         h.add(effectController, 'hue', 0.0, 1.0, 0.025).name('hue').onChange(render);
         h.add(effectController, 'saturation', 0.0, 1.0, 0.025).name('saturation').onChange(render);
         h.add(effectController, 'lightness', 0.0, 1.0, 0.025).name('lightness').onChange(render);
+        h.add(effectController, 'vertexColors').onChange(render);
 
         // light (point)
 
@@ -231,9 +236,9 @@
 
         h = gui.addFolder('Light direction');
 
-        h.add(effectController, 'lx', - 1.0, 1.0, 0.025).name('x').onChange(render);
-        h.add(effectController, 'ly', - 1.0, 1.0, 0.025).name('y').onChange(render);
-        h.add(effectController, 'lz', - 1.0, 1.0, 0.025).name('z').onChange(render);
+        h.add(effectController, 'lx', -1.0, 1.0, 0.025).name('x').onChange(render);
+        h.add(effectController, 'ly', -1.0, 1.0, 0.025).name('y').onChange(render);
+        h.add(effectController, 'lz', -1.0, 1.0, 0.025).name('z').onChange(render);
 
         h = gui.addFolder('Tessellation control');
         h.add(effectController, 'newTess', [2, 3, 4, 5, 6, 8, 10, 15, 20, 30, 40, 50]).name('Tessellation Level').onChange(render);
@@ -247,8 +252,8 @@
 
         gui.add(effectController, 'newShading', ['wireframe', 'flat', 'smooth', 'glossy', 'textured', 'normal', 'reflective']).name('Shading').onChange(render);
 
-        const exportButton = document.getElementById('export');
-        exportButton.addEventListener('click', exportCollada);
+        h = gui.addFolder('Export');
+        h.add(effectController, 'export').name('Export Collada');
 
       }
 
@@ -263,7 +268,8 @@
           effectController.body !== bBody ||
           effectController.fitLid !== bFitLid ||
           effectController.nonblinn !== bNonBlinn ||
-          effectController.newShading !== shading) {
+          effectController.newShading !== shading ||
+          effectController.vertexColors !== vertexColors) {
 
           tess = effectController.newTess;
           bBottom = effectController.bottom;
@@ -272,6 +278,7 @@
           bFitLid = effectController.fitLid;
           bNonBlinn = effectController.nonblinn;
           shading = effectController.newShading;
+          vertexColors = effectController.vertexColors;
 
           createNewTeapot();
 
@@ -355,6 +362,38 @@
                 shading === 'glossy' ? phongMaterial : (
                   shading === 'textured' ? texturedMaterial : (
                     shading === 'normal' ? normalMaterial : reflectiveMaterial))))));  // if no match, pick Phong
+
+
+        if (effectController.vertexColors) {
+
+          teapot.geometry.computeBoundingBox();
+          const minY = teapot.geometry.boundingBox.min.y;
+          const maxY = teapot.geometry.boundingBox.max.y;
+          const sizeY = maxY - minY;
+
+          const colors = [];
+          const position = teapot.geometry.getAttribute('position');
+          for (let i = 0, l = position.count; i < l; i++) {
+
+            const y = position.getY(i);
+            const r = (y - minY) / sizeY;
+            const b = 1.0 - r;
+
+            colors.push(r * 128, 0, b * 128);
+
+          }
+
+          teapot.geometry.setAttribute('color', new v3d.Uint8BufferAttribute(colors, 3, true));
+          teapot.material.vertexColors = true;
+          teapot.material.needsUpdate = true;
+
+        } else {
+
+          teapot.geometry.deleteAttribute('color');
+          teapot.material.vertexColors = false;
+          teapot.material.needsUpdate = true;
+
+        }
 
         scene.add(teapot);
 

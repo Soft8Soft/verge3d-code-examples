@@ -72,7 +72,7 @@ export class WorkerPool {
 
             const workerId = this._getIdleWorker();
 
-            if (workerId !== - 1) {
+            if (workerId !== -1) {
 
                 this._initWorker(workerId);
                 this.workerStatus |= 1 << workerId;

@@ -62,7 +62,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -71,7 +72,7 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
       let container, stats;
 
@@ -96,7 +97,7 @@
         camera = new v3d.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = 100;
 
-        cameraRTT = new v3d.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, - 10000, 10000);
+        cameraRTT = new v3d.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -10000, 10000);
         cameraRTT.position.z = 100;
 
         //
@@ -110,7 +111,7 @@
         sceneRTT.add(light);
 
         light = new v3d.DirectionalLight(0xffaaaa, 1.5);
-        light.position.set(0, 0, - 1).normalize();
+        light.position.set(0, 0, -1).normalize();
         sceneRTT.add(light);
 
         rtTexture = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight);
@@ -136,7 +137,7 @@
         const plane = new v3d.PlaneGeometry(window.innerWidth, window.innerHeight);
 
         quad = new v3d.Mesh(plane, material);
-        quad.position.z = - 100;
+        quad.position.z = -100;
         sceneRTT.add(quad);
 
         const torusGeometry = new v3d.TorusGeometry(100, 25, 15, 30);
@@ -155,7 +156,7 @@
         sceneRTT.add(zmesh2);
 
         quad = new v3d.Mesh(plane, materialScreen);
-        quad.position.z = - 100;
+        quad.position.z = -100;
         sceneScreen.add(quad);
 
         const n = 5,
@@ -230,7 +231,7 @@
 
         if (material.uniforms['time'].value > 1 || material.uniforms['time'].value < 0) {
 
-          delta *= - 1;
+          delta *= -1;
 
         }
 

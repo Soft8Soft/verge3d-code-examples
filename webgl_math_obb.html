@@ -28,7 +28,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -37,10 +38,10 @@
 
       import * as v3d from 'v3d';
 
-      import { OBB } from './jsm/math/OBB.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OBB } from 'v3d/addons/math/OBB.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
       let camera, scene, renderer, clock, controls, stats, raycaster, hitbox;
 

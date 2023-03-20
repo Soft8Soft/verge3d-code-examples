@@ -30,7 +30,7 @@ export class CSM {
         this.mode = data.mode || 'practical';
         this.shadowMapSize = data.shadowMapSize || 2048;
         this.shadowBias = data.shadowBias || 0.000001;
-        this.lightDirection = data.lightDirection || new Vector3(1, - 1, 1).normalize();
+        this.lightDirection = data.lightDirection || new Vector3(1, -1, 1).normalize();
         this.lightIntensity = data.lightIntensity || 1;
         this.lightNear = data.lightNear || 1;
         this.lightFar = data.lightFar || 2000;
@@ -343,6 +343,7 @@ export class CSM {
 
         for (let i = 0; i < this.lights.length; i++) {
 
+            this.parent.remove(this.lights[i].target);
             this.parent.remove(this.lights[i]);
 
         }

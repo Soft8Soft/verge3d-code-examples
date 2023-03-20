@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,7 +30,7 @@
 
       import * as v3d from 'v3d';
 
-      import { DDSLoader } from './jsm/loaders/DDSLoader.js';
+      import { DDSLoader } from 'v3d/addons/loaders/DDSLoader.js';
 
       let camera, scene, renderer;
       const meshes = [];
@@ -113,25 +114,25 @@
         const material8 = new v3d.MeshBasicMaterial({ map: map6 });
 
         let mesh = new v3d.Mesh(new v3d.TorusGeometry(100, 50, 32, 16), material1);
-        mesh.position.x = - 600;
-        mesh.position.y = - 200;
+        mesh.position.x = -600;
+        mesh.position.y = -200;
         scene.add(mesh);
         meshes.push(mesh);
 
         mesh = new v3d.Mesh(geometry, material2);
-        mesh.position.x = - 200;
-        mesh.position.y = - 200;
+        mesh.position.x = -200;
+        mesh.position.y = -200;
         scene.add(mesh);
         meshes.push(mesh);
 
         mesh = new v3d.Mesh(geometry, material3);
-        mesh.position.x = - 200;
+        mesh.position.x = -200;
         mesh.position.y = 200;
         scene.add(mesh);
         meshes.push(mesh);
 
         mesh = new v3d.Mesh(geometry, material4);
-        mesh.position.x = - 600;
+        mesh.position.x = -600;
         mesh.position.y = 200;
         scene.add(mesh);
         meshes.push(mesh);
@@ -144,13 +145,13 @@
 
         mesh = new v3d.Mesh(geometry, material6);
         mesh.position.x = 200;
-        mesh.position.y = - 200;
+        mesh.position.y = -200;
         scene.add(mesh);
         meshes.push(mesh);
 
         mesh = new v3d.Mesh(geometry, material7);
         mesh.position.x = 600;
-        mesh.position.y = - 200;
+        mesh.position.y = -200;
         scene.add(mesh);
         meshes.push(mesh);
 

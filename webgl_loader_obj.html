@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,7 +29,7 @@
 
       import * as v3d from 'v3d';
 
-      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
+      import { OBJLoader } from 'v3d/addons/loaders/OBJLoader.js';
 
       let container;
 
@@ -74,18 +75,12 @@
 
           });
 
-          object.position.y = - 95;
+          object.position.y = -95;
           scene.add(object);
 
         }
 
         const manager = new v3d.LoadingManager(loadModel);
-
-        manager.onProgress = function(item, loaded, total) {
-
-          console.log(item, loaded, total);
-
-        };
 
         // texture
 

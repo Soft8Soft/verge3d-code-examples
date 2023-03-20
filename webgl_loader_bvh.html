@@ -28,7 +28,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -37,8 +38,8 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { BVHLoader } from './jsm/loaders/BVHLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { BVHLoader } from 'v3d/addons/loaders/BVHLoader.js';
 
       const clock = new v3d.Clock();
 
@@ -49,7 +50,7 @@
       animate();
 
       const loader = new BVHLoader();
-      loader.load("models/bvh/pirouette.bvh", function(result) {
+      loader.load('models/bvh/pirouette.bvh', function(result) {
 
         skeletonHelper = new v3d.SkeletonHelper(result.skeleton.bones[0]);
         skeletonHelper.skeleton = result.skeleton; // allow animation mixer to bind to v3d.SkeletonHelper directly

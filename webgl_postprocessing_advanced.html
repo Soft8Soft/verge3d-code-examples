@@ -22,7 +22,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -31,26 +32,26 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
-      import { BloomPass } from './jsm/postprocessing/BloomPass.js';
-      import { FilmPass } from './jsm/postprocessing/FilmPass.js';
-      import { DotScreenPass } from './jsm/postprocessing/DotScreenPass.js';
-      import { MaskPass, ClearMaskPass } from './jsm/postprocessing/MaskPass.js';
-      import { TexturePass } from './jsm/postprocessing/TexturePass.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { ShaderPass } from 'v3d/addons/postprocessing/ShaderPass.js';
+      import { BloomPass } from 'v3d/addons/postprocessing/BloomPass.js';
+      import { FilmPass } from 'v3d/addons/postprocessing/FilmPass.js';
+      import { DotScreenPass } from 'v3d/addons/postprocessing/DotScreenPass.js';
+      import { MaskPass, ClearMaskPass } from 'v3d/addons/postprocessing/MaskPass.js';
+      import { TexturePass } from 'v3d/addons/postprocessing/TexturePass.js';
 
-      import { BleachBypassShader } from './jsm/shaders/BleachBypassShader.js';
-      import { ColorifyShader } from './jsm/shaders/ColorifyShader.js';
-      import { HorizontalBlurShader } from './jsm/shaders/HorizontalBlurShader.js';
-      import { VerticalBlurShader } from './jsm/shaders/VerticalBlurShader.js';
-      import { SepiaShader } from './jsm/shaders/SepiaShader.js';
-      import { VignetteShader } from './jsm/shaders/VignetteShader.js';
-      import { GammaCorrectionShader } from './jsm/shaders/GammaCorrectionShader.js';
+      import { BleachBypassShader } from 'v3d/addons/shaders/BleachBypassShader.js';
+      import { ColorifyShader } from 'v3d/addons/shaders/ColorifyShader.js';
+      import { HorizontalBlurShader } from 'v3d/addons/shaders/HorizontalBlurShader.js';
+      import { VerticalBlurShader } from 'v3d/addons/shaders/VerticalBlurShader.js';
+      import { SepiaShader } from 'v3d/addons/shaders/SepiaShader.js';
+      import { VignetteShader } from 'v3d/addons/shaders/VignetteShader.js';
+      import { GammaCorrectionShader } from 'v3d/addons/shaders/GammaCorrectionShader.js';
 
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
 
       let container, stats;
 
@@ -77,7 +78,7 @@
 
         //
 
-        cameraOrtho = new v3d.OrthographicCamera(-halfWidth, halfWidth, halfHeight, - halfHeight, - 10000, 10000);
+        cameraOrtho = new v3d.OrthographicCamera(-halfWidth, halfWidth, halfHeight, - halfHeight, -10000, 10000);
         cameraOrtho.position.z = 100;
 
         cameraPerspective = new v3d.PerspectiveCamera(50, width / height, 1, 10000);
@@ -91,7 +92,7 @@
         //
 
         directionalLight = new v3d.DirectionalLight(0xffffff);
-        directionalLight.position.set(0, - 0.1, 1).normalize();
+        directionalLight.position.set(0, -0.1, 1).normalize();
         sceneModel.add(directionalLight);
 
         const loader = new GLTFLoader();
@@ -112,7 +113,7 @@
         });
 
         quadBG = new v3d.Mesh(new v3d.PlaneGeometry(1, 1), materialColor);
-        quadBG.position.z = - 500;
+        quadBG.position.z = -500;
         quadBG.scale.set(width, height, 1);
         sceneBG.add(quadBG);
 
@@ -121,7 +122,7 @@
         const sceneMask = new v3d.Scene();
 
         quadMask = new v3d.Mesh(new v3d.PlaneGeometry(1, 1), new v3d.MeshBasicMaterial({ color: 0xffaa00 }));
-        quadMask.position.z = - 300;
+        quadMask.position.z = -300;
         quadMask.scale.set(width / 2, height / 2, 1);
         sceneMask.add(quadMask);
 
@@ -308,7 +309,7 @@
         });
 
         mesh = new v3d.Mesh(geometry, mat2);
-        mesh.position.set(0, - 50, 0);
+        mesh.position.set(0, -50, 0);
         mesh.scale.set(scale, scale, scale);
 
         scene.add(mesh);

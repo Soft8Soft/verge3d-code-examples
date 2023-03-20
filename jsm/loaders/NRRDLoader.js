@@ -173,8 +173,7 @@ class NRRDLoader extends Loader {
 
                     headerObject.isNrrd = true;
 
-                } else if (l.match(/^#/)) {
-                } else if (m = l.match(/(.*):(.*)/)) {
+                } else if (!l.match(/^#/) && (m = l.match(/(.*):(.*)/))) {
 
                     field = m[1].trim();
                     data = m[2].trim();
@@ -328,7 +327,7 @@ class NRRDLoader extends Loader {
 
             // we need to decompress the datastream
             // here we start the unzipping and get a typed Uint8Array back
-            _data = fflate.gunzipSync(new Uint8Array(_data));// eslint-disable-line no-undef
+            _data = fflate.gunzipSync(new Uint8Array(_data));
 
         } else if (headerObject.encoding === 'ascii' || headerObject.encoding === 'text' || headerObject.encoding === 'txt' || headerObject.encoding === 'hex') {
 
@@ -406,8 +405,8 @@ class NRRDLoader extends Loader {
         if (headerObject.space === 'left-posterior-superior') {
 
             transitionMatrix.set(
-                - 1, 0, 0, 0,
-                0, - 1, 0, 0,
+                -1, 0, 0, 0,
+                0, -1, 0, 0,
                 0, 0, 1, 0,
                 0, 0, 0, 1
             );
@@ -417,7 +416,7 @@ class NRRDLoader extends Loader {
             transitionMatrix.set(
                 1, 0, 0, 0,
                 0, 1, 0, 0,
-                0, 0, - 1, 0,
+                0, 0, -1, 0,
                 0, 0, 0, 1
             );
 
@@ -624,7 +623,7 @@ const _fieldFunctions = {
                 v = parts[_i];
                 _results.push((function() {
 
-                    const _ref = v.slice(1, - 1).split(/,/);
+                    const _ref = v.slice(1, -1).split(/,/);
                     const _results2 = [];
 
                     for (let _j = 0, _len2 = _ref.length; _j < _len2; _j ++) {

@@ -29,7 +29,8 @@
   <script type="importmap">
     {
       "imports": {
-        "v3d": "../build/v3d.module.js"
+        "v3d": "../build/v3d.module.js",
+        "v3d/addons/": "./jsm/"
       }
     }
   </script>
@@ -37,9 +38,9 @@
   <script type="module">
     import * as v3d from 'v3d';
 
-    import { OrbitControls } from './jsm/controls/OrbitControls.js';
-    import { PositionalAudioHelper } from './jsm/helpers/PositionalAudioHelper.js';
-    import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+    import { PositionalAudioHelper } from 'v3d/addons/helpers/PositionalAudioHelper.js';
+    import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
 
     let scene, camera, renderer;
 
@@ -76,8 +77,8 @@
       dirLight.position.set(5, 5, 0);
       dirLight.castShadow = true;
       dirLight.shadow.camera.top = 1;
-      dirLight.shadow.camera.bottom = - 1;
-      dirLight.shadow.camera.left = - 1;
+      dirLight.shadow.camera.bottom = -1;
+      dirLight.shadow.camera.left = -1;
       dirLight.shadow.camera.right = 1;
       dirLight.shadow.camera.near = 0.1;
       dirLight.shadow.camera.far = 20;
@@ -144,7 +145,7 @@
       const wallMaterial = new v3d.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 });
 
       const wall = new v3d.Mesh(wallGeometry, wallMaterial);
-      wall.position.set(0, 0.5, - 0.5);
+      wall.position.set(0, 0.5, -0.5);
       scene.add(wall);
 
 

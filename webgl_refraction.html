@@ -28,7 +28,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -37,9 +38,9 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { Refractor } from './jsm/objects/Refractor.js';
-      import { WaterRefractionShader } from './jsm/shaders/WaterRefractionShader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { Refractor } from 'v3d/addons/objects/Refractor.js';
+      import { WaterRefractionShader } from 'v3d/addons/shaders/WaterRefractionShader.js';
 
       let camera, scene, renderer, clock;
 
@@ -118,7 +119,7 @@
         scene.add(planeBottom);
 
         const planeBack = new v3d.Mesh(planeGeo, new v3d.MeshPhongMaterial({ color: 0x7f7fff }));
-        planeBack.position.z = - 50;
+        planeBack.position.z = -50;
         planeBack.position.y = 50;
         scene.add(planeBack);
 
@@ -129,7 +130,7 @@
         scene.add(planeRight);
 
         const planeLeft = new v3d.Mesh(planeGeo, new v3d.MeshPhongMaterial({ color: 0xff0000 }));
-        planeLeft.position.x = - 50;
+        planeLeft.position.x = -50;
         planeLeft.position.y = 50;
         planeLeft.rotateY(Math.PI / 2);
         scene.add(planeLeft);

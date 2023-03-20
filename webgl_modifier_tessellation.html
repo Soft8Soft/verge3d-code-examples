@@ -60,7 +60,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -69,12 +70,12 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { TrackballControls } from './jsm/controls/TrackballControls.js';
-      import { TessellateModifier } from './jsm/modifiers/TessellateModifier.js';
-      import { FontLoader } from './jsm/loaders/FontLoader.js';
-      import { TextGeometry } from './jsm/geometries/TextGeometry.js';
+      import { TrackballControls } from 'v3d/addons/controls/TrackballControls.js';
+      import { TessellateModifier } from 'v3d/addons/modifiers/TessellateModifier.js';
+      import { FontLoader } from 'v3d/addons/loaders/FontLoader.js';
+      import { TextGeometry } from 'v3d/addons/geometries/TextGeometry.js';
 
       let renderer, scene, camera, stats;
 

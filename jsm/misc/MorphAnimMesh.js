@@ -25,7 +25,7 @@ class MorphAnimMesh extends Mesh {
 
     setDirectionBackward() {
 
-        this.mixer.timeScale = - 1.0;
+        this.mixer.timeScale = -1.0;
 
     }
 
@@ -60,9 +60,9 @@ class MorphAnimMesh extends Mesh {
 
     }
 
-    copy(source) {
+    copy(source, recursive) {
 
-        super.copy(source);
+        super.copy(source, recursive);
 
         this.mixer = new AnimationMixer(this);
 

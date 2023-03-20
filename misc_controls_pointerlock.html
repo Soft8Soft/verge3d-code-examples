@@ -49,7 +49,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -58,7 +59,7 @@
 
       import * as v3d from 'v3d';
 
-      import { PointerLockControls } from './jsm/controls/PointerLockControls.js';
+      import { PointerLockControls } from 'v3d/addons/controls/PointerLockControls.js';
 
       let camera, scene, renderer, controls;
 
@@ -185,7 +186,7 @@
         document.addEventListener('keydown', onKeyDown);
         document.addEventListener('keyup', onKeyUp);
 
-        raycaster = new v3d.Raycaster(new v3d.Vector3(), new v3d.Vector3(0, - 1, 0), 0, 10);
+        raycaster = new v3d.Raycaster(new v3d.Vector3(), new v3d.Vector3(0, -1, 0), 0, 10);
 
         // floor
 

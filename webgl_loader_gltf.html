@@ -22,7 +22,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -31,9 +32,9 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { RGBELoader } from './jsm/loaders/RGBELoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { RGBELoader } from 'v3d/addons/loaders/RGBELoader.js';
 
       let camera, scene, renderer;
 
@@ -86,7 +87,7 @@
         controls.addEventListener('change', render); // use if there is no animation loop
         controls.minDistance = 2;
         controls.maxDistance = 10;
-        controls.target.set(0, 0, - 0.2);
+        controls.target.set(0, 0, -0.2);
         controls.update();
 
         window.addEventListener('resize', onWindowResize);

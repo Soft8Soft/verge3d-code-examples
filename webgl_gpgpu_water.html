@@ -127,7 +127,7 @@
         val = abs(val);
         float exponent = floor(log2(val));
         float biased_exponent = exponent + 127.0;
-        float fraction = ((val / exp2(exponent)) - 1.0) * 8388608.0;
+        float fraction = ((val / exp2(exponent)) -1.0) * 8388608.0;
         float t = biased_exponent / 2.0;
         float last_bit_of_biased_exponent = fract(t) * 2.0;
         float remaining_bits_of_biased_exponent = floor(t);
@@ -253,7 +253,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -262,11 +263,11 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { GPUComputationRenderer } from './jsm/misc/GPUComputationRenderer.js';
-      import { SimplexNoise } from './jsm/math/SimplexNoise.js';
+      import { GPUComputationRenderer } from 'v3d/addons/misc/GPUComputationRenderer.js';
+      import { SimplexNoise } from 'v3d/addons/math/SimplexNoise.js';
 
       // Texture width for simulation
       const WIDTH = 128;
@@ -317,7 +318,7 @@
         scene.add(sun);
 
         const sun2 = new v3d.DirectionalLight(0x40A040, 0.6);
-        sun2.position.set(- 100, 350, - 200);
+        sun2.position.set(- 100, 350, -200);
         scene.add(sun2);
 
         renderer = new v3d.WebGLRenderer();
@@ -578,8 +579,8 @@
 
           }
 
-          sphere.position.x = (Math.random() - 0.5) * BOUNDS * 0.7;
-          sphere.position.z = (Math.random() - 0.5) * BOUNDS * 0.7;
+          sphere.position.x = (Math.random() -0.5) * BOUNDS * 0.7;
+          sphere.position.z = (Math.random() -0.5) * BOUNDS * 0.7;
 
           sphere.userData.velocity = new v3d.Vector3();
 
@@ -629,24 +630,24 @@
             if (pos.x < - BOUNDS_HALF) {
 
               pos.x = -BOUNDS_HALF + 0.001;
-              sphere.userData.velocity.x *= - 0.3;
+              sphere.userData.velocity.x *= -0.3;
 
             } else if (pos.x > BOUNDS_HALF) {
 
               pos.x = BOUNDS_HALF - 0.001;
-              sphere.userData.velocity.x *= - 0.3;
+              sphere.userData.velocity.x *= -0.3;
 
             }
 
             if (pos.z < - BOUNDS_HALF) {
 
               pos.z = -BOUNDS_HALF + 0.001;
-              sphere.userData.velocity.z *= - 0.3;
+              sphere.userData.velocity.z *= -0.3;
 
             } else if (pos.z > BOUNDS_HALF) {
 
               pos.z = BOUNDS_HALF - 0.001;
-              sphere.userData.velocity.z *= - 0.3;
+              sphere.userData.velocity.z *= -0.3;
 
             }
 

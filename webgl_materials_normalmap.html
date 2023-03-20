@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,16 +30,16 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
-      import { BleachBypassShader } from './jsm/shaders/BleachBypassShader.js';
-      import { ColorCorrectionShader } from './jsm/shaders/ColorCorrectionShader.js';
-      import { FXAAShader } from './jsm/shaders/FXAAShader.js';
-      import { GammaCorrectionShader } from './jsm/shaders/GammaCorrectionShader.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { ShaderPass } from 'v3d/addons/postprocessing/ShaderPass.js';
+      import { BleachBypassShader } from 'v3d/addons/shaders/BleachBypassShader.js';
+      import { ColorCorrectionShader } from 'v3d/addons/shaders/ColorCorrectionShader.js';
+      import { FXAAShader } from 'v3d/addons/shaders/FXAAShader.js';
+      import { GammaCorrectionShader } from 'v3d/addons/shaders/GammaCorrectionShader.js';
 
       let container, stats, loader;
 
@@ -78,13 +79,13 @@
         ambientLight = new v3d.AmbientLight(0x444444);
         scene.add(ambientLight);
 
-        pointLight = new v3d.PointLight(0xffffff, 1.25, 1000);
+        pointLight = new v3d.PointLight(0xffffff, 2, 1000);
         pointLight.position.set(0, 0, 600);
 
         scene.add(pointLight);
 
         directionalLight = new v3d.DirectionalLight(0xffffff);
-        directionalLight.position.set(1, - 0.5, - 1);
+        directionalLight.position.set(1, -0.5, -1);
         scene.add(directionalLight);
 
         const textureLoader = new v3d.TextureLoader();
@@ -142,7 +143,9 @@
         effectColor.uniforms['powRGB'].value.set(1.4, 1.45, 1.45);
         effectColor.uniforms['mulRGB'].value.set(1.1, 1.1, 1.1);
 
-        composer = new EffectComposer(renderer);
+        const renderTarget = new v3d.WebGLRenderTarget(window.innerWidth, window.innerHeight, { type: v3d.HalfFloatType, depthTexture: new v3d.DepthTexture() });
+
+        composer = new EffectComposer(renderer, renderTarget);
 
         composer.addPass(renderModel);
         composer.addPass(effectFXAA);
@@ -161,7 +164,7 @@
 
         mesh = new v3d.Mesh(geometry, material);
 
-        mesh.position.y = - 50;
+        mesh.position.y = -50;
         mesh.scale.x = mesh.scale.y = mesh.scale.z = scale;
 
         scene.add(mesh);

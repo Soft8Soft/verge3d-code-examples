@@ -58,6 +58,8 @@ class LightningStorm extends Object3D {
 
         super();
 
+        this.isLightningStorm = true;
+
         // Parameters
 
         this.stormParams = stormParams;
@@ -89,11 +91,11 @@ class LightningStorm extends Object3D {
 
             this.onRayPosition = function(source, dest) {
 
-                dest.set((Math.random() - 0.5) * stormParams.size, 0, (Math.random() - 0.5) * stormParams.size);
+                dest.set((Math.random() -0.5) * stormParams.size, 0, (Math.random() -0.5) * stormParams.size);
 
                 const height = MathUtils.lerp(stormParams.minHeight, stormParams.maxHeight, Math.random());
 
-                source.set(stormParams.maxSlope * (2 * Math.random() - 1), 1, stormParams.maxSlope * (2 * Math.random() - 1)).multiplyScalar(height).add(dest);
+                source.set(stormParams.maxSlope * (2 * Math.random() -1), 1, stormParams.maxSlope * (2 * Math.random() -1)).multiplyScalar(height).add(dest);
 
             };
 
@@ -205,9 +207,9 @@ class LightningStorm extends Object3D {
 
     }
 
-    copy(source) {
+    copy(source, recursive) {
 
-        super.copy(source);
+        super.copy(source, recursive);
 
         this.stormParams.size = source.stormParams.size;
         this.stormParams.minHeight = source.stormParams.minHeight;
@@ -239,7 +241,5 @@ class LightningStorm extends Object3D {
     }
 
 }
-
-LightningStorm.prototype.isLightningStorm = true;
 
 export { LightningStorm };

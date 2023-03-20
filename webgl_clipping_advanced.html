@@ -15,7 +15,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -24,10 +25,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       function planesFromMesh(vertices, indices) {
 
@@ -141,7 +142,7 @@
           new v3d.Vector3(+ 1, 0, + Math.SQRT1_2),
           new v3d.Vector3(- 1, 0, + Math.SQRT1_2),
           new v3d.Vector3(0, + 1, - Math.SQRT1_2),
-          new v3d.Vector3(0, - 1, - Math.SQRT1_2)
+          new v3d.Vector3(0, -1, - Math.SQRT1_2)
         ],
 
         Indices = [
@@ -193,9 +194,9 @@
         dirLight.shadow.camera.far = 10;
 
         dirLight.shadow.camera.right = 1;
-        dirLight.shadow.camera.left = - 1;
+        dirLight.shadow.camera.left = -1;
         dirLight.shadow.camera.top  = 1;
-        dirLight.shadow.camera.bottom = - 1;
+        dirLight.shadow.camera.bottom = -1;
 
         dirLight.shadow.mapSize.width = 1024;
         dirLight.shadow.mapSize.height = 1024;
@@ -216,9 +217,9 @@
 
         const geometry = new v3d.BoxGeometry(0.18, 0.18, 0.18);
 
-        for (let z = - 2; z <= 2; ++ z)
-          for (let y = - 2; y <= 2; ++ y)
-            for (let x = - 2; x <= 2; ++ x) {
+        for (let z = -2; z <= 2; ++ z)
+          for (let y = -2; y <= 2; ++ y)
+            for (let x = -2; x <= 2; ++ x) {
 
               const mesh = new v3d.Mesh(geometry, clipMaterial);
               mesh.position.set(x / 5, y / 5, z / 5);

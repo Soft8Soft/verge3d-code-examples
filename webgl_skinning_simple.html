@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,10 +29,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
 
       let stats, mixer, camera, scene, renderer, clock;
 
@@ -58,13 +59,13 @@
         const material = new v3d.MeshPhongMaterial({ color: 0x999999, depthWrite: false });
 
         const ground = new v3d.Mesh(geometry, material);
-        ground.position.set(0, - 5, 0);
+        ground.position.set(0, -5, 0);
         ground.rotation.x = - Math.PI / 2;
         ground.receiveShadow = true;
         scene.add(ground);
 
         const grid = new v3d.GridHelper(500, 100, 0x000000, 0x000000);
-        grid.position.y = - 5;
+        grid.position.y = -5;
         grid.material.opacity = 0.2;
         grid.material.transparent = true;
         scene.add(grid);
@@ -79,8 +80,8 @@
         dirLight.position.set(0, 20, 10);
         dirLight.castShadow = true;
         dirLight.shadow.camera.top = 18;
-        dirLight.shadow.camera.bottom = - 10;
-        dirLight.shadow.camera.left = - 12;
+        dirLight.shadow.camera.bottom = -10;
+        dirLight.shadow.camera.left = -12;
         dirLight.shadow.camera.right = 12;
         scene.add(dirLight);
 

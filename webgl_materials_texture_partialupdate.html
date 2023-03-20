@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -97,8 +98,8 @@
 
           last = elapsedTime;
 
-          position.x = (32 * v3d.MathUtils.randInt(1, 16)) - 32;
-          position.y = (32 * v3d.MathUtils.randInt(1, 16)) - 32;
+          position.x = (32 * v3d.MathUtils.randInt(1, 16)) -32;
+          position.y = (32 * v3d.MathUtils.randInt(1, 16)) -32;
 
           // generate new color data
 

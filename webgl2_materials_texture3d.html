@@ -20,7 +20,8 @@
   <script type="importmap">
     {
       "imports": {
-        "v3d": "../build/v3d.module.js"
+        "v3d": "../build/v3d.module.js",
+        "v3d/addons/": "./jsm/"
       }
     }
   </script>
@@ -28,11 +29,11 @@
   <script type="module">
     import * as v3d from 'v3d';
 
-    import { GUI } from './jsm/libs/lil-gui.module.min.js';
-    import { OrbitControls } from './jsm/controls/OrbitControls.js';
-    import { NRRDLoader } from './jsm/loaders/NRRDLoader.js';
-    import { VolumeRenderShader1 } from './jsm/shaders/VolumeShader.js';
-    import WebGL from './jsm/capabilities/WebGL.js';
+    import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+    import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+    import { NRRDLoader } from 'v3d/addons/loaders/NRRDLoader.js';
+    import { VolumeRenderShader1 } from 'v3d/addons/shaders/VolumeShader.js';
+    import WebGL from 'v3d/addons/capabilities/WebGL.js';
 
     if (WebGL.isWebGL2Available() === false) {
 
@@ -64,7 +65,7 @@
       const h = 512; // frustum height
       const aspect = window.innerWidth / window.innerHeight;
       camera = new v3d.OrthographicCamera(- h * aspect / 2, h * aspect / 2, h / 2, - h / 2, 1, 1000);
-      camera.position.set(- 64, - 64, 128);
+      camera.position.set(- 64, -64, 128);
       camera.up.set(0, 0, 1); // In our data, z is up
 
       // Create controls
@@ -97,7 +98,7 @@
         // v3dJS will select R32F (33326) based on the v3d.RedFormat and v3d.FloatType.
         // Also see https://www.khronos.org/registry/webgl/specs/latest/2.0/#TEXTURE_TYPES_FORMATS_FROM_DOM_ELEMENTS_TABLE
         // TODO: look the dtype up in the volume metadata
-        const texture = new v3d.DataTexture3D(volume.data, volume.xLength, volume.yLength, volume.zLength);
+        const texture = new v3d.Data3DTexture(volume.data, volume.xLength, volume.yLength, volume.zLength);
         texture.format = v3d.RedFormat;
         texture.type = v3d.FloatType;
         texture.minFilter = texture.magFilter = v3d.LinearFilter;

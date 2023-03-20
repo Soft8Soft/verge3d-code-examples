@@ -20,18 +20,19 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
 
     <script type="module">
       import * as v3d from 'v3d';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { TransformControls } from './jsm/controls/TransformControls.js';
-      import { ProgressiveLightMap } from './jsm/misc/ProgressiveLightMap.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { TransformControls } from 'v3d/addons/controls/TransformControls.js';
+      import { ProgressiveLightMap } from 'v3d/addons/misc/ProgressiveLightMap.js';
 
       // ShadowMap + LightMap Res and Number of Directional Lights
       const shadowMapRes = 512, lightMapRes = 1024, lightCount = 8;
@@ -91,9 +92,9 @@
           dirLight.shadow.camera.near = 100;
           dirLight.shadow.camera.far = 5000;
           dirLight.shadow.camera.right = 150;
-          dirLight.shadow.camera.left = - 150;
+          dirLight.shadow.camera.left = -150;
           dirLight.shadow.camera.top = 150;
-          dirLight.shadow.camera.bottom = - 150;
+          dirLight.shadow.camera.bottom = -150;
           dirLight.shadow.mapSize.width = shadowMapRes;
           dirLight.shadow.mapSize.height = shadowMapRes;
           lightmapObjects.push(dirLight);
@@ -103,10 +104,10 @@
 
         // ground
         const groundMesh = new v3d.Mesh(
-          new v3d.PlaneBufferGeometry(600, 600),
+          new v3d.PlaneGeometry(600, 600),
           new v3d.MeshPhongMaterial({ color: 0xffffff, depthWrite: true })
         );
-        groundMesh.position.y = - 0.1;
+        groundMesh.position.y = -0.1;
         groundMesh.rotation.x = - Math.PI / 2;
         groundMesh.name = 'Ground Mesh';
         lightmapObjects.push(groundMesh);
@@ -137,7 +138,7 @@
           });
           scene.add(object);
           object.scale.set(2, 2, 2);
-          object.position.set(0, - 16, 0);
+          object.position.set(0, -16, 0);
           control2 = new TransformControls(camera, renderer.domElement);
           control2.addEventListener('dragging-changed', (event) => {
 
@@ -242,7 +243,7 @@
           } else {
 
             // Uniform Hemispherical Surface Distribution for Ambient Occlusion
-            const lambda = Math.acos(2 * Math.random() - 1) - (3.14159 / 2.0);
+            const lambda = Math.acos(2 * Math.random() -1) - (3.14159 / 2.0);
             const phi = 2 * 3.14159 * Math.random();
             dirLights[l].position.set(
                       ((Math.cos(lambda) * Math.cos(phi)) * 300) + object.position.x,

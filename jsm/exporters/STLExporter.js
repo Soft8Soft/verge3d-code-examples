@@ -1,6 +1,4 @@
-import {
-    Vector3
-} from 'v3d';
+import { Vector3 } from 'v3d';
 
 /**
  * Usage:
@@ -15,7 +13,11 @@ class STLExporter {
 
     parse(scene, options = {}) {
 
-        const binary = options.binary !== undefined ? options.binary : false;
+        options = Object.assign({
+            binary: false
+        }, options);
+
+        const binary = options.binary;
 
         //
 
@@ -27,12 +29,6 @@ class STLExporter {
             if (object.isMesh) {
 
                 const geometry = object.geometry;
-
-                if (geometry.isBufferGeometry !== true) {
-
-                    throw new Error('v3d.STLExporter: Geometry is not of type v3d.BufferGeometry.');
-
-                }
 
                 const index = geometry.index;
                 const positionAttribute = geometry.getAttribute('position');

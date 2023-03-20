@@ -33,7 +33,7 @@
 
       void main()  {
 
-        vec2 p = - 1.0 + 2.0 * vUv;
+        vec2 p = -1.0 + 2.0 * vUv;
         float a = time * 40.0;
         float d, e, f, g = 1.0 / 40.0 ,h ,i ,r ,q;
 
@@ -70,7 +70,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -90,7 +91,7 @@
 
         const container = document.getElementById('container');
 
-        camera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
+        camera = new v3d.OrthographicCamera(- 1, 1, 1, -1, 0, 1);
 
         scene = new v3d.Scene();
 

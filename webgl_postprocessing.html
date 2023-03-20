@@ -15,7 +15,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -24,12 +25,12 @@
 
       import * as v3d from 'v3d';
 
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { ShaderPass } from 'v3d/addons/postprocessing/ShaderPass.js';
 
-      import { RGBShiftShader } from './jsm/shaders/RGBShiftShader.js';
-      import { DotScreenShader } from './jsm/shaders/DotScreenShader.js';
+      import { RGBShiftShader } from 'v3d/addons/shaders/RGBShiftShader.js';
+      import { DotScreenShader } from 'v3d/addons/shaders/DotScreenShader.js';
 
       let camera, renderer, composer;
       let object;
@@ -61,7 +62,7 @@
         for (let i = 0; i < 100; i++) {
 
           const mesh = new v3d.Mesh(geometry, material);
-          mesh.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+          mesh.position.set(Math.random() -0.5, Math.random() -0.5, Math.random() -0.5).normalize();
           mesh.position.multiplyScalar(Math.random() * 400);
           mesh.rotation.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
           mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 50;

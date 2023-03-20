@@ -9,7 +9,7 @@
 
   <body>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - 3D LUTs<br />
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> -3D LUTs<br />
       Battle Damaged Sci-fi Helmet by
       <a href="https://sketchfab.com/theblueturtle_" target="_blank" rel="noopener">theblueturtle_</a><br />
       <a href="https://hdrihaven.com/hdri/?h=royal_esplanade" target="_blank" rel="noopener">Royal Esplanade</a> by <a href="https://hdrihaven.com/" target="_blank" rel="noopener">HDRI Haven</a><br />
@@ -23,7 +23,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -31,17 +32,17 @@
     <script type="module">
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { RGBELoader } from './jsm/loaders/RGBELoader.js';
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
-      import { LUTPass } from './jsm/postprocessing/LUTPass.js';
-      import { LUTCubeLoader } from './jsm/loaders/LUTCubeLoader.js';
-      import { LUT3dlLoader } from './jsm/loaders/LUT3dlLoader.js';
-      import { GammaCorrectionShader } from './jsm/shaders/GammaCorrectionShader.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { RGBELoader } from 'v3d/addons/loaders/RGBELoader.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { ShaderPass } from 'v3d/addons/postprocessing/ShaderPass.js';
+      import { LUTPass } from 'v3d/addons/postprocessing/LUTPass.js';
+      import { LUTCubeLoader } from 'v3d/addons/loaders/LUTCubeLoader.js';
+      import { LUT3dlLoader } from 'v3d/addons/loaders/LUT3dlLoader.js';
+      import { GammaCorrectionShader } from 'v3d/addons/shaders/GammaCorrectionShader.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       const params = {
         enabled: true,
@@ -146,7 +147,7 @@
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.minDistance = 2;
         controls.maxDistance = 10;
-        controls.target.set(0, 0, - 0.2);
+        controls.target.set(0, 0, -0.2);
         controls.update();
 
         gui = new GUI();

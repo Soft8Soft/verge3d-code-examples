@@ -44,7 +44,7 @@
   </script>
   <body>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - 2D Texture array<br />
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> -2D Texture array<br />
       Scanned head data by
       <a href="https://www.codeproject.com/Articles/352270/Getting-started-with-Volume-Rendering" target="_blank" rel="noopener">Divine Augustine</a><br />
       licensed under
@@ -58,7 +58,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -67,10 +68,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { unzipSync } from './jsm/libs/fflate.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { unzipSync } from 'v3d/addons/libs/fflate.module.js';
 
-      import WebGL from './jsm/capabilities/WebGL.js';
+      import WebGL from 'v3d/addons/capabilities/WebGL.js';
 
       if (WebGL.isWebGL2Available() === false) {
 
@@ -107,7 +108,7 @@
             const zip = unzipSync(new Uint8Array(data));
             const array = new Uint8Array(zip['head256x256x109'].buffer);
 
-            const texture = new v3d.DataTexture2DArray(array, 256, 256, 109);
+            const texture = new v3d.DataArrayTexture(array, 256, 256, 109);
             texture.format = v3d.RedFormat;
             texture.needsUpdate = true;
 
@@ -159,7 +160,7 @@
 
         if (mesh) {
 
-          let value = mesh.material.uniforms["depth"].value;
+          let value = mesh.material.uniforms['depth'].value;
 
           value += depthStep;
 
@@ -172,7 +173,7 @@
 
           }
 
-          mesh.material.uniforms["depth"].value = value;
+          mesh.material.uniforms['depth'].value = value;
 
         }
 

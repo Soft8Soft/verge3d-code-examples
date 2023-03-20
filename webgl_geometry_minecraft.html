@@ -27,7 +27,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -36,11 +37,11 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { FirstPersonControls } from './jsm/controls/FirstPersonControls.js';
-      import { ImprovedNoise } from './jsm/math/ImprovedNoise.js';
-      import * as BufferGeometryUtils from './jsm/utils/BufferGeometryUtils.js';
+      import { FirstPersonControls } from 'v3d/addons/controls/FirstPersonControls.js';
+      import { ImprovedNoise } from 'v3d/addons/math/ImprovedNoise.js';
+      import * as BufferGeometryUtils from 'v3d/addons/utils/BufferGeometryUtils.js';
 
       let container, stats;
 
@@ -97,7 +98,7 @@
         nzGeometry.attributes.uv.array[1] = 0.5;
         nzGeometry.attributes.uv.array[3] = 0.5;
         nzGeometry.rotateY(Math.PI);
-        nzGeometry.translate(0, 0, - 50);
+        nzGeometry.translate(0, 0, -50);
 
         //
 

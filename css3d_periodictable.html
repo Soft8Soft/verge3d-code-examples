@@ -98,7 +98,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -107,9 +108,9 @@
 
       import * as v3d from 'v3d';
 
-      import { TWEEN } from './jsm/libs/tween.module.min.js';
-      import { TrackballControls } from './jsm/controls/TrackballControls.js';
-      import { CSS3DRenderer, CSS3DObject } from './jsm/renderers/CSS3DRenderer.js';
+      import { TWEEN } from 'v3d/addons/libs/tween.module.min.js';
+      import { TrackballControls } from 'v3d/addons/controls/TrackballControls.js';
+      import { CSS3DRenderer, CSS3DObject } from 'v3d/addons/renderers/CSS3DRenderer.js';
 
       const table = [
         'H', 'Hydrogen', '1.00794', 1, 1,
@@ -282,7 +283,7 @@
           //
 
           const object = new v3d.Object3D();
-          object.position.x = (table[i + 3] * 140) - 1330;
+          object.position.x = (table[i + 3] * 140) -1330;
           object.position.y = - (table[i + 4] * 180) + 990;
 
           targets.table.push(object);
@@ -337,7 +338,7 @@
 
           const object = new v3d.Object3D();
 
-          object.position.x = ((i % 5) * 400) - 800;
+          object.position.x = ((i % 5) * 400) -800;
           object.position.y = (- (Math.floor(i / 5) % 5) * 400) + 800;
           object.position.z = (Math.floor(i / 25)) * 1000 - 2000;
 

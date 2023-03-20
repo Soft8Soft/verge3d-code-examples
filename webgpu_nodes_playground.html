@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Verge3D - WebGPU - Selective Lights</title>
+    <title>Verge3D - webgpu - node playground</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link type="text/css" rel="stylesheet" href="main.css">
     <link rel="stylesheet" href="fonts/open-sans/open-sans.css" type="text/css"/>
     <link rel="stylesheet" href="fonts/tabler-icons/tabler-icons.min.css" type="text/css"/>
-    <!-- WebGPU (For Chrome 94-101), expires 09/01/2022 -->
-    <meta http-equiv="origin-trial" content="AoS1pSJwCV3KRe73TO0YgJkK9FZ/qhmvKeafztp0ofiE8uoGrnKzfxGVKKICvoBfL8dgE0zpkp2g/oEJNS0fDgkAAABeeyJvcmlnaW4iOiJodHRwczovL3RocmVlanMub3JnOjQ0MyIsImZlYXR1cmUiOiJXZWJHUFUiLCJleHBpcnkiOjE2NTI4MzE5OTksImlzU3ViZG9tYWluIjp0cnVlfQ==">
     <style>
       body {
         overflow: hidden;
@@ -19,62 +17,65 @@
         position: absolute;
         top: 0;
         left: 0;
-        height: 50%;
+        height: 100%;
         width: 100%;
       }
       flow {
         position: absolute;
-        top: 50%;
+        top: 0;
         left: 0;
-        height: 50%;
+        height: 100%;
         width: 100%;
-        background: #222;
         box-shadow: inset 0 0 20px 0px #000000;
+        pointer-events: none;
+      }
+      flow f-canvas {
+        pointer-events: auto;
+      }
+      flow f-canvas:not(.focusing) {
+        background: #191919ed;
       }
     </style>
   </head>
   <body>
 
-    <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - WebGPU - Node Editor (Playground version)<br />
-    </div>
-
     <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
 
     <script type="importmap">
-    {
-      "imports": {
-        "v3d": "../build/v3d.module.js"
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/",
+          "three/nodes": "./jsm/nodes/Nodes.js"
+        }
       }
-    }
     </script>
 
     <script type="module">
 
       import * as v3d from 'v3d';
+      import * as Nodes from 'three/nodes';
 
-      import WebGPU from './jsm/capabilities/WebGPU.js';
-      import WebGPURenderer from './jsm/renderers/webgpu/WebGPURenderer.js';
+      import WebGPU from 'v3d/addons/capabilities/WebGPU.js';
+      import WebGPURenderer from 'v3d/addons/renderers/webgpu/WebGPURenderer.js';
 
-      import { NodeEditor } from './jsm/node-editor/NodeEditor.js';
-      import { StandardMaterialEditor } from './jsm/node-editor/materials/StandardMaterialEditor.js';
-      import { MeshEditor } from './jsm/node-editor/scene/MeshEditor.js';
+      import { NodeEditor } from 'v3d/addons/node-editor/NodeEditor.js';
+      import { MeshEditor } from 'v3d/addons/node-editor/scene/MeshEditor.js';
+      import { StandardMaterialEditor } from 'v3d/addons/node-editor/materials/StandardMaterialEditor.js';
 
-      import * as Nodes from './jsm/renderers/nodes/Nodes.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { FBXLoader } from 'v3d/addons/loaders/FBXLoader.js';
 
-      import Stats from './jsm/libs/stats.module.js';
+      // Use PreviewEditor in WebGL for now
+      import { nodeFrame } from 'v3d/addons/renderers/webgl/nodes/WebGLNodes.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { FBXLoader } from './jsm/loaders/FBXLoader.js';
-
-      let stats;
       let camera, scene, renderer;
       let model;
-      let nodeLights;
+      let nodeEditor;
 
-      init().then(animate).catch(error => console.error(error));
+      init();
 
-      async function init() {
+      function init() {
 
         if (WebGPU.isAvailable() === false) {
 
@@ -84,77 +85,71 @@
 
         }
 
-        camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);
-        camera.position.set(0.0, 300, 400 * 3);
+        camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.01, 100);
+        camera.position.set(0.0, 3, 4 * 3);
 
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0x333333);
 
         // Lights
 
-        const topLight = new v3d.PointLight(0xF4F6F0, 1);
-        topLight.position.set(0, 100000, 100000);
+        const topLight = new v3d.PointLight(0xF4F6F0, 1, 100);
+        topLight.power = 4500;
+        topLight.position.set(0, 10, 10);
         scene.add(topLight);
 
-        const backLight = new v3d.PointLight(0x0c1445, 1.4);
-        backLight.position.set(- 100, 20, - 260);
+        const backLight = new v3d.PointLight(0x0c1445, 1, 100);
+        backLight.power = 1000;
+        backLight.position.set(- 1, .2, -2.6);
         scene.add(backLight);
-
-        nodeLights = Nodes.LightsNode.fromLights([topLight, backLight]);
 
         renderer = new WebGPURenderer();
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+        renderer.setAnimationLoop(render);
         renderer.outputEncoding = v3d.sRGBEncoding;
+        renderer.toneMappingNode = new Nodes.ToneMappingNode(v3d.LinearToneMapping, 1);
+        document.body.appendChild(renderer.domElement);
 
         renderer.domElement.className = 'renderer';
 
         //
 
-        stats = new Stats();
-        document.body.appendChild(stats.dom);
-
         const controls = new OrbitControls(camera, renderer.domElement);
-        controls.minDistance = 500;
-        controls.maxDistance = 3000;
+        controls.minDistance = 5;
+        controls.maxDistance = 30;
 
         window.addEventListener('resize', onWindowResize);
 
-        onWindowResize();
-
         initEditor();
 
-        return renderer.init();
+        onWindowResize();
 
       }
 
       function initEditor() {
 
-        const nodeEditor = new NodeEditor(scene);
+        nodeEditor = new NodeEditor(scene);
 
-        nodeEditor.addEventListener('new', () => {
+        const reset = () => {
 
-          const materialEditor = new MeshEditor(model);
+          const meshEditor = new MeshEditor(model);
+          const materialEditor = new StandardMaterialEditor();
 
+          nodeEditor.add(meshEditor);
           nodeEditor.add(materialEditor);
-          nodeEditor.centralizeNode(materialEditor);
+          nodeEditor.centralizeNode(meshEditor);
 
-        });
+          const { x, y } = meshEditor.getPosition();
 
-        nodeEditor.addEventListener('add', (e) => {
+          meshEditor.setPosition(x + 250, y);
+          materialEditor.setPosition(x - 250, y);
 
-          const node = e.node;
+          meshEditor.material.connect(materialEditor);
 
-          if (node.value !== null && node.value.isMaterial === true) {
+        };
 
-            const material = node.value;
-
-            material.lightNode = nodeLights;
-
-          }
-
-        });
+        nodeEditor.addEventListener('new', reset);
 
         document.body.appendChild(nodeEditor.domElement);
 
@@ -162,36 +157,33 @@
         loaderFBX.load('models/fbx/stanford-bunny.fbx', (object) => {
 
           const defaultMaterial = new Nodes.MeshBasicNodeMaterial();
-          defaultMaterial.colorNode = new Nodes.FloatNode(0);
+          defaultMaterial.colorNode = new Nodes.UniformNode(0);
 
-          const sphere = new v3d.Mesh(new v3d.SphereGeometry(200, 32, 16), defaultMaterial  ) ;
+          const sphere = new v3d.Mesh(new v3d.SphereGeometry(2, 32, 16), defaultMaterial);
           sphere.name = 'Sphere';
-          sphere.position.set(500, 0, -500);
+          sphere.position.set(5, 0, -5);
           scene.add(sphere);
 
-          const box = new v3d.Mesh(new v3d.BoxGeometry(200, 200, 200), defaultMaterial  ) ;
+          const box = new v3d.Mesh(new v3d.BoxGeometry(2, 2, 2), defaultMaterial);
           box.name = 'Box';
-          box.position.set(-500, 0, -500);
+          box.position.set(- 5, 0, -5);
           scene.add(box);
 
           const defaultPointsMaterial = new Nodes.PointsNodeMaterial();
-          defaultPointsMaterial.colorNode = new Nodes.FloatNode(0);
+          defaultPointsMaterial.colorNode = new Nodes.UniformNode(0);
 
-          const torusKnot = new v3d.Points(new v3d.TorusKnotGeometry(100, 30, 100, 16), defaultPointsMaterial) ;
+          const torusKnot = new v3d.Points(new v3d.TorusKnotGeometry(1, .3, 100, 16), defaultPointsMaterial);
           torusKnot.name = 'Torus Knot (Points)';
-          torusKnot.position.set(0, 0, -500);
+          torusKnot.position.set(0, 0, -5);
           scene.add(torusKnot);
 
           model = object.children[0];
-          model.position.set(0, 0, 10);
-          model.scale.setScalar(1);
+          model.position.set(0, 0, .1);
+          model.scale.setScalar(.01);
           model.material = defaultMaterial;
           scene.add(model);
 
-          const materialEditor = new MeshEditor(model);
-
-          nodeEditor.add(materialEditor);
-          nodeEditor.centralizeNode(materialEditor);
+          reset();
 
         });
 
@@ -200,30 +192,24 @@
       function onWindowResize() {
 
         const width = window.innerWidth;
-        const height = window.innerHeight / 2;
+        const height = window.innerHeight;
 
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
 
         renderer.setSize(width, height);
 
+        nodeEditor.setSize(width, height);
+
       }
 
       //
 
-      function animate() {
-
-        requestAnimationFrame(animate);
-
-        render();
-
-        stats.update();
-
-      }
-
       function render() {
 
         //if (model) model.rotation.y = performance.now() / 5000;
+
+        nodeFrame.update();
 
         renderer.render(scene, camera);
 

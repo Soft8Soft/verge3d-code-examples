@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,12 +30,12 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { BokehPass } from './jsm/postprocessing/BokehPass.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { BokehPass } from 'v3d/addons/postprocessing/BokehPass.js';
 
       let camera, scene, renderer, stats,
         singleMaterial, zmaterial,
@@ -206,10 +207,7 @@
         const bokehPass = new BokehPass(scene, camera, {
           focus: 1.0,
           aperture: 0.025,
-          maxblur: 0.01,
-
-          width: width,
-          height: height
+          maxblur: 0.01
         });
 
         const composer = new EffectComposer(renderer);

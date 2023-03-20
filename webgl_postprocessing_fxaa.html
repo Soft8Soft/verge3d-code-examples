@@ -40,7 +40,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -49,11 +50,11 @@
 
       import * as v3d from 'v3d';
 
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
-      import { CopyShader } from './jsm/shaders/CopyShader.js';
-      import { FXAAShader } from './jsm/shaders/FXAAShader.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { ShaderPass } from 'v3d/addons/postprocessing/ShaderPass.js';
+      import { CopyShader } from 'v3d/addons/shaders/CopyShader.js';
+      import { FXAAShader } from 'v3d/addons/shaders/FXAAShader.js';
 
       let camera, scene, renderer, clock, group, container;
 
@@ -70,8 +71,6 @@
         camera.position.z = 500;
 
         scene = new v3d.Scene();
-        scene.background = new v3d.Color(0xffffff);
-        scene.fog = new v3d.Fog(0xcccccc, 100, 1500);
 
         clock = new v3d.Clock();
 
@@ -82,7 +81,7 @@
         scene.add(hemiLight);
 
         const dirLight = new v3d.DirectionalLight(0xffffff, 0.8);
-        dirLight.position.set(- 3000, 1000, - 1000);
+        dirLight.position.set(- 3000, 1000, -1000);
         scene.add(dirLight);
 
         //
@@ -123,10 +122,13 @@
         //
 
         const renderPass = new RenderPass(scene, camera);
+        renderPass.clearColor = new v3d.Color(0, 0, 0);
+        renderPass.clearAlpha = 0;
 
         //
 
         fxaaPass = new ShaderPass(FXAAShader);
+
         const copyPass = new ShaderPass(CopyShader);
 
         composer1 = new EffectComposer(renderer);

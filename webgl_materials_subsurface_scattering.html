@@ -21,7 +21,8 @@
   <script type="importmap">
     {
       "imports": {
-        "v3d": "../build/v3d.module.js"
+        "v3d": "../build/v3d.module.js",
+        "v3d/addons/": "./jsm/"
       }
     }
   </script>
@@ -29,12 +30,12 @@
   <script type="module">
     import * as v3d from 'v3d';
 
-    import Stats from './jsm/libs/stats.module.js';
+    import Stats from 'v3d/addons/libs/stats.module.js';
 
-    import { GUI } from './jsm/libs/lil-gui.module.min.js';
-    import { OrbitControls } from './jsm/controls/OrbitControls.js';
-    import { SubsurfaceScatteringShader } from './jsm/shaders/SubsurfaceScatteringShader.js';
-    import { FBXLoader } from './jsm/loaders/FBXLoader.js';
+    import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+    import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+    import { SubsurfaceScatteringShader } from 'v3d/addons/shaders/SubsurfaceScatteringShader.js';
+    import { FBXLoader } from 'v3d/addons/loaders/FBXLoader.js';
 
     let container, stats;
     let camera, scene, renderer;
@@ -65,15 +66,15 @@
       pointLight1.add(new v3d.PointLight(0x888888, 7.0, 300));
       scene.add(pointLight1);
       pointLight1.position.x = 0;
-      pointLight1.position.y = - 50;
+      pointLight1.position.y = -50;
       pointLight1.position.z = 350;
 
       const pointLight2 = new v3d.Mesh(new v3d.SphereGeometry(4, 8, 8), new v3d.MeshBasicMaterial({ color: 0x888800 }));
       pointLight2.add(new v3d.PointLight(0x888800, 1.0, 500));
       scene.add(pointLight2);
-      pointLight2.position.x = - 100;
+      pointLight2.position.x = -100;
       pointLight2.position.y = 20;
-      pointLight2.position.z = - 260;
+      pointLight2.position.z = -260;
 
       renderer = new v3d.WebGLRenderer({ antialias: true });
       renderer.setPixelRatio(window.devicePixelRatio);

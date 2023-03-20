@@ -28,32 +28,32 @@ class TAARenderPass extends SSAARenderPass {
 
     render(renderer, writeBuffer, readBuffer, deltaTime) {
 
-        if (!this.accumulate) {
+        if (this.accumulate === false) {
 
             super.render(renderer, writeBuffer, readBuffer, deltaTime);
 
-            this.accumulateIndex = - 1;
+            this.accumulateIndex = -1;
             return;
 
         }
 
         const jitterOffsets = _JitterVectors[5];
 
-        if (!this.sampleRenderTarget) {
+        if (this.sampleRenderTarget === undefined) {
 
             this.sampleRenderTarget = new WebGLRenderTarget(readBuffer.width, readBuffer.height, this.params);
             this.sampleRenderTarget.texture.name = 'TAARenderPass.sample';
 
         }
 
-        if (!this.holdRenderTarget) {
+        if (this.holdRenderTarget === undefined) {
 
             this.holdRenderTarget = new WebGLRenderTarget(readBuffer.width, readBuffer.height, this.params);
             this.holdRenderTarget.texture.name = 'TAARenderPass.hold';
 
         }
 
-        if (this.accumulate && this.accumulateIndex === - 1) {
+        if (this.accumulateIndex === -1) {
 
             super.render(renderer, this.holdRenderTarget, readBuffer, deltaTime);
 
@@ -130,6 +130,15 @@ class TAARenderPass extends SSAARenderPass {
 
     }
 
+    dispose() {
+
+        super.dispose();
+
+        if (this.sampleRenderTarget !== undefined) this.sampleRenderTarget.dispose();
+        if (this.holdRenderTarget !== undefined) this.holdRenderTarget.dispose();
+
+    }
+
 }
 
 const _JitterVectors = [
@@ -137,28 +146,28 @@ const _JitterVectors = [
         [0, 0]
     ],
     [
-        [4, 4], [- 4, - 4]
+        [4, 4], [- 4, -4]
     ],
     [
-        [- 2, - 6], [6, - 2], [- 6, 2], [2, 6]
+        [- 2, -6], [6, -2], [- 6, 2], [2, 6]
     ],
     [
-        [1, - 3], [- 1, 3], [5, 1], [- 3, - 5],
-        [- 5, 5], [- 7, - 1], [3, 7], [7, - 7]
+        [1, -3], [- 1, 3], [5, 1], [- 3, -5],
+        [- 5, 5], [- 7, -1], [3, 7], [7, -7]
     ],
     [
-        [1, 1], [- 1, - 3], [- 3, 2], [4, - 1],
-        [- 5, - 2], [2, 5], [5, 3], [3, - 5],
-        [- 2, 6], [0, - 7], [- 4, - 6], [- 6, 4],
-        [- 8, 0], [7, - 4], [6, 7], [- 7, - 8]
+        [1, 1], [- 1, -3], [- 3, 2], [4, -1],
+        [- 5, -2], [2, 5], [5, 3], [3, -5],
+        [- 2, 6], [0, -7], [- 4, -6], [- 6, 4],
+        [- 8, 0], [7, -4], [6, 7], [- 7, -8]
     ],
     [
-        [- 4, - 7], [- 7, - 5], [- 3, - 5], [- 5, - 4],
-        [- 1, - 4], [- 2, - 2], [- 6, - 1], [- 4, 0],
+        [- 4, -7], [- 7, -5], [- 3, -5], [- 5, -4],
+        [- 1, -4], [- 2, -2], [- 6, -1], [- 4, 0],
         [- 7, 1], [- 1, 2], [- 6, 3], [- 3, 3],
         [- 7, 6], [- 3, 6], [- 5, 7], [- 1, 7],
-        [5, - 7], [1, - 6], [6, - 5], [4, - 4],
-        [2, - 3], [7, - 2], [1, - 1], [4, - 1],
+        [5, -7], [1, -6], [6, -5], [4, -4],
+        [2, -3], [7, -2], [1, -1], [4, -1],
         [2, 1], [6, 2], [0, 4], [4, 4],
         [2, 5], [7, 5], [5, 6], [3, 7]
     ]

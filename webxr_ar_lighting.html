@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,9 +29,9 @@
     <script type="module">
 
       import * as v3d from 'v3d';
-      import { RGBELoader } from './jsm/loaders/RGBELoader.js';
-      import { ARButton } from './jsm/webxr/ARButton.js';
-      import { XREstimatedLight } from './jsm/webxr/XREstimatedLight.js';
+      import { RGBELoader } from 'v3d/addons/loaders/RGBELoader.js';
+      import { ARButton } from 'v3d/addons/webxr/ARButton.js';
+      import { XREstimatedLight } from 'v3d/addons/webxr/XREstimatedLight.js';
 
       let camera, scene, renderer;
       let controller;
@@ -114,9 +115,9 @@
 
         //
 
-        const ballGeometry = new v3d.SphereBufferGeometry(0.175, 32, 32);
+        const ballGeometry = new v3d.SphereGeometry(0.175, 32, 32);
         const ballGroup = new v3d.Group();
-        ballGroup.position.z = - 2;
+        ballGroup.position.z = -2;
 
         const rows = 3;
         const cols = 3;
@@ -144,7 +145,7 @@
 
         function onSelect() {
 
-          ballGroup.position.set(0, 0, - 2).applyMatrix4(controller.matrixWorld);
+          ballGroup.position.set(0, 0, -2).applyMatrix4(controller.matrixWorld);
           ballGroup.quaternion.setFromRotationMatrix(controller.matrixWorld);
 
         }

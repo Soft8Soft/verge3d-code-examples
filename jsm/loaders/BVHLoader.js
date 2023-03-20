@@ -397,7 +397,7 @@ class BVHLoader extends Loader {
 
             }
 
-            return new AnimationClip('animation', - 1, tracks);
+            return new AnimationClip('animation', -1, tracks);
 
         }
 

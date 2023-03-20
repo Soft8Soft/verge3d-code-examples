@@ -22,7 +22,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -31,19 +32,19 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { FirstPersonControls } from './jsm/controls/FirstPersonControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { FontLoader } from './jsm/loaders/FontLoader.js';
-      import { TextGeometry } from './jsm/geometries/TextGeometry.js';
-      import { ShadowMapViewer } from './jsm/utils/ShadowMapViewer.js';
+      import { FirstPersonControls } from 'v3d/addons/controls/FirstPersonControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { FontLoader } from 'v3d/addons/loaders/FontLoader.js';
+      import { TextGeometry } from 'v3d/addons/geometries/TextGeometry.js';
+      import { ShadowMapViewer } from 'v3d/addons/utils/ShadowMapViewer.js';
 
       const SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 1024;
 
       let SCREEN_WIDTH = window.innerWidth;
       let SCREEN_HEIGHT = window.innerHeight;
-      const FLOOR = - 250;
+      const FLOOR = -250;
 
       let camera, controls, scene, renderer;
       let container, stats;
@@ -171,7 +172,7 @@
 
         lightShadowMapViewer = new ShadowMapViewer(light);
         lightShadowMapViewer.position.x = 10;
-        lightShadowMapViewer.position.y = SCREEN_HEIGHT - (SHADOW_MAP_HEIGHT / 4) - 10;
+        lightShadowMapViewer.position.y = SCREEN_HEIGHT - (SHADOW_MAP_HEIGHT / 4) -10;
         lightShadowMapViewer.size.width = SHADOW_MAP_WIDTH / 4;
         lightShadowMapViewer.size.height = SHADOW_MAP_HEIGHT / 4;
         lightShadowMapViewer.update();
@@ -216,7 +217,7 @@
           });
 
           textGeo.computeBoundingBox();
-          const centerOffset = - 0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
+          const centerOffset = -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
 
           const textMaterial = new v3d.MeshPhongMaterial({ color: 0xff0000, specular: 0xffffff });
 
@@ -300,9 +301,9 @@
           addMorph(mesh, clip, 550, 1, 100 - Math.random() * 1000, FLOOR, 450, true);
           addMorph(mesh, clip, 550, 1, 100 - Math.random() * 1000, FLOOR, 600, true);
 
-          addMorph(mesh, clip, 550, 1, 100 - Math.random() * 1000, FLOOR, - 300, true);
-          addMorph(mesh, clip, 550, 1, 100 - Math.random() * 1000, FLOOR, - 450, true);
-          addMorph(mesh, clip, 550, 1, 100 - Math.random() * 1000, FLOOR, - 600, true);
+          addMorph(mesh, clip, 550, 1, 100 - Math.random() * 1000, FLOOR, -300, true);
+          addMorph(mesh, clip, 550, 1, 100 - Math.random() * 1000, FLOOR, -450, true);
+          addMorph(mesh, clip, 550, 1, 100 - Math.random() * 1000, FLOOR, -600, true);
 
         });
 
@@ -358,7 +359,7 @@
 
           if (morph.position.x > 2000) {
 
-            morph.position.x = - 1000 - Math.random() * 500;
+            morph.position.x = -1000 - Math.random() * 500;
 
           }
 

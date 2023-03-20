@@ -29,7 +29,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -38,11 +39,11 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { Curves } from './jsm/curves/CurveExtras.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import * as Curves from 'v3d/addons/curves/CurveExtras.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       let container, stats;
 
@@ -55,7 +56,7 @@
       const lookAt = new v3d.Vector3();
 
       const pipeSpline = new v3d.CatmullRomCurve3([
-        new v3d.Vector3(0, 10, - 10), new v3d.Vector3(10, 0, - 10),
+        new v3d.Vector3(0, 10, -10), new v3d.Vector3(10, 0, -10),
         new v3d.Vector3(20, 0, 0), new v3d.Vector3(30, 0, 10),
         new v3d.Vector3(30, 0, 20), new v3d.Vector3(20, 0, 30),
         new v3d.Vector3(10, 0, 30), new v3d.Vector3(0, 0, 30),
@@ -64,19 +65,19 @@
         new v3d.Vector3(20, 30, 15), new v3d.Vector3(10, 30, 10),
         new v3d.Vector3(0, 30, 10), new v3d.Vector3(- 10, 20, 10),
         new v3d.Vector3(- 10, 10, 10), new v3d.Vector3(0, 0, 10),
-        new v3d.Vector3(10, - 10, 10), new v3d.Vector3(20, - 15, 10),
-        new v3d.Vector3(30, - 15, 10), new v3d.Vector3(40, - 15, 10),
-        new v3d.Vector3(50, - 15, 10), new v3d.Vector3(60, 0, 10),
+        new v3d.Vector3(10, -10, 10), new v3d.Vector3(20, -15, 10),
+        new v3d.Vector3(30, -15, 10), new v3d.Vector3(40, -15, 10),
+        new v3d.Vector3(50, -15, 10), new v3d.Vector3(60, 0, 10),
         new v3d.Vector3(70, 0, 0), new v3d.Vector3(80, 0, 0),
         new v3d.Vector3(90, 0, 0), new v3d.Vector3(100, 0, 0)
       ]);
 
       const sampleClosedSpline = new v3d.CatmullRomCurve3([
-        new v3d.Vector3(0, - 40, - 40),
-        new v3d.Vector3(0, 40, - 40),
-        new v3d.Vector3(0, 140, - 40),
+        new v3d.Vector3(0, -40, -40),
+        new v3d.Vector3(0, 40, -40),
+        new v3d.Vector3(0, 140, -40),
         new v3d.Vector3(0, 40, 40),
-        new v3d.Vector3(0, - 40, 40)
+        new v3d.Vector3(0, -40, 40)
       ]);
 
       sampleClosedSpline.curveType = 'catmullrom';

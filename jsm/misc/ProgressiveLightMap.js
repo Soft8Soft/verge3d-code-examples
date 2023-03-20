@@ -45,7 +45,7 @@ class ProgressiveLightMap {
             // Vertex Shader: Set Vertex Positions to the Unwrapped UV Positions
             shader.vertexShader =
                 '#define USE_LIGHTMAP\n' +
-                shader.vertexShader.slice(0, - 1) +
+                shader.vertexShader.slice(0, -1) +
                 '    gl_Position = vec4((uv2 - 0.5) * 2.0, 1.0, 1.0); }';
 
             // Fragment Shader: Set Pixels to average in the Previous frame's Shadows
@@ -54,7 +54,7 @@ class ProgressiveLightMap {
                 'varying vec2 vUv2;\n' +
                 shader.fragmentShader.slice(0, bodyStart) +
                 '    uniform sampler2D previousShadowMap;\n    uniform float averagingWindow;\n' +
-                shader.fragmentShader.slice(bodyStart - 1, - 1) +
+                shader.fragmentShader.slice(bodyStart - 1, -1) +
                 `\nvec3 texelOld = texture2D(previousShadowMap, vUv2).rgb;
                 gl_FragColor.rgb = mix(texelOld, gl_FragColor.rgb, 1.0/averagingWindow);
             }`;
@@ -268,13 +268,13 @@ class ProgressiveLightMap {
         const blurMaterial = new v3d.MeshBasicMaterial();
         blurMaterial.uniforms = { previousShadowMap: { value: null },
                                   pixelOffset: { value: 1.0 / res },
-                                  polygonOffset: true, polygonOffsetFactor: - 1, polygonOffsetUnits: 3.0 };
+                                  polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: 3.0 };
         blurMaterial.onBeforeCompile = (shader) => {
 
             // Vertex Shader: Set Vertex Positions to the Unwrapped UV Positions
             shader.vertexShader =
                 '#define USE_UV\n' +
-                shader.vertexShader.slice(0, - 1) +
+                shader.vertexShader.slice(0, -1) +
                 '    gl_Position = vec4((uv - 0.5) * 2.0, 1.0, 1.0); }';
 
             // Fragment Shader: Set Pixels to 9-tap box blur the current frame's Shadows
@@ -283,7 +283,7 @@ class ProgressiveLightMap {
                 '#define USE_UV\n' +
                 shader.fragmentShader.slice(0, bodyStart) +
                 '    uniform sampler2D previousShadowMap;\n    uniform float pixelOffset;\n' +
-                shader.fragmentShader.slice(bodyStart - 1, - 1) +
+                shader.fragmentShader.slice(bodyStart - 1, -1) +
                     `    gl_FragColor.rgb = (
                                     texture2D(previousShadowMap, vUv + vec2(pixelOffset,  0.0        )).rgb +
                                     texture2D(previousShadowMap, vUv + vec2(0.0        ,  pixelOffset)).rgb +
@@ -307,7 +307,7 @@ class ProgressiveLightMap {
 
         };
 
-        this.blurringPlane = new v3d.Mesh(new v3d.PlaneBufferGeometry(1, 1), blurMaterial);
+        this.blurringPlane = new v3d.Mesh(new v3d.PlaneGeometry(1, 1), blurMaterial);
         this.blurringPlane.name = 'Blurring Plane';
         this.blurringPlane.frustumCulled = false;
         this.blurringPlane.renderOrder = 0;

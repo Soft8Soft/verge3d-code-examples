@@ -115,6 +115,8 @@ class LightningStrike extends BufferGeometry {
 
         super();
 
+        this.isLightningStrike = true;
+
         this.type = 'LightningStrike';
 
         // Set parameters, and set undefined parameters to default values
@@ -916,7 +918,7 @@ class LightningStrike extends BufferGeometry {
 
             vec1Pos.subVectors(parentSubray.pos1, parentSubray.pos0);
             vec2Forward.copy(vec1Pos).normalize();
-            vec1Pos.multiplyScalar(segment.fraction0 + (1 - segment.fraction0) * ((2 * random1() - 1) * heightFactor));
+            vec1Pos.multiplyScalar(segment.fraction0 + (1 - segment.fraction0) * ((2 * random1() -1) * heightFactor));
             const length = vec1Pos.length();
             vec3Side.crossVectors(parentSubray.up0, vec2Forward);
             const angle = 2 * Math.PI * random1();
@@ -1000,8 +1002,6 @@ class LightningStrike extends BufferGeometry {
     }
 
 }
-
-LightningStrike.prototype.isLightningStrike = true;
 
 // Ray states
 LightningStrike.RAY_INITIALIZED = 0;

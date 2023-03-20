@@ -14,7 +14,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,8 +30,8 @@
         RollerCoasterLiftersGeometry,
         TreesGeometry,
         SkyGeometry
-      } from './jsm/misc/RollerCoaster.js';
-      import { VRButton } from './jsm/webxr/VRButton.js';
+      } from 'v3d/addons/misc/RollerCoaster.js';
+      import { VRButton } from 'v3d/addons/webxr/VRButton.js';
 
       let mesh, material, geometry;
 
@@ -73,7 +74,7 @@
         vertex.x += Math.random() * 10 - 5;
         vertex.z += Math.random() * 10 - 5;
 
-        const distance = (vertex.distanceTo(scene.position) / 5) - 25;
+        const distance = (vertex.distanceTo(scene.position) / 5) -25;
         vertex.y = Math.random() * Math.max(0, distance);
 
         vertex.toArray(positions, i);
@@ -169,7 +170,7 @@
         color: 0xff8080
       });
       mesh = new v3d.Mesh(geometry, material);
-      mesh.position.set(- 80, 10, - 70);
+      mesh.position.set(- 80, 10, -70);
       mesh.rotation.x = Math.PI / 2;
       scene.add(mesh);
 

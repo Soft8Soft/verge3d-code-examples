@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Verge3D webgl - modifier - Subdivisions using Loop Subdivision Scheme</title>
+    <title>Verge3D webgl - modifier - simplify modifier</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link type="text/css" rel="stylesheet" href="main.css">
@@ -15,7 +15,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -24,9 +25,9 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { SimplifyModifier } from './jsm/modifiers/SimplifyModifier.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { SimplifyModifier } from 'v3d/addons/modifiers/SimplifyModifier.js';
 
       let renderer, scene, camera;
 
@@ -66,7 +67,7 @@
         new GLTFLoader().load('models/gltf/LeePerrySmith/LeePerrySmith.glb', function(gltf) {
 
           const mesh = gltf.scene.children[0];
-          mesh.position.x = - 3;
+          mesh.position.x = -3;
           mesh.rotation.y = Math.PI / 2;
           scene.add(mesh);
 

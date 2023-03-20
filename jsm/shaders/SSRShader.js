@@ -7,7 +7,7 @@ import {
  * https://lettier.github.io/3d-game-shaders-for-beginners/screen-space-reflection.html
  */
 
-var SSRShader = {
+const SSRShader = {
 
     defines: {
         MAX_STEP: 0,
@@ -95,9 +95,9 @@ var SSRShader = {
             #endif
         }
         vec3 getViewPosition(const in vec2 uv, const in float depth/*clip space*/, const in float clipW) {
-            vec4 clipPosition = vec4((vec3(uv, depth) - 0.5) * 2.0, 1.0);//ndc
+            vec4 clipPosition = vec4((vec3(uv, depth) -0.5) * 2.0, 1.0); //ndc
             clipPosition *= clipW; //clip
-            return (cameraInverseProjectionMatrix * clipPosition).xyz;//view
+            return (cameraInverseProjectionMatrix * clipPosition).xyz; //view
         }
         vec3 getViewNormal(const in vec2 uv) {
             return unpackRGBToNormal(texture2D(tNormal, uv).xyz);
@@ -105,11 +105,11 @@ var SSRShader = {
         vec2 viewPositionToXY(vec3 viewPosition){
             vec2 xy;
             vec4 clip=cameraProjectionMatrix*vec4(viewPosition,1);
-            xy=clip.xy;//clip
+            xy=clip.xy; //clip
             float clipW=clip.w;
-            xy/=clipW;//NDC
-            xy=(xy+1.)/2.;//uv
-            xy*=resolution;//screen
+            xy/=clipW; //NDC
+            xy=(xy+1.)/2.; //uv
+            xy*=resolution; //screen
             return xy;
         }
         void main(){
@@ -231,7 +231,7 @@ var SSRShader = {
 
 };
 
-var SSRDepthShader = {
+const SSRDepthShader = {
 
     defines: {
         'PERSPECTIVE_CAMERA': 1
@@ -298,7 +298,7 @@ var SSRDepthShader = {
 
 };
 
-var SSRBlurShader = {
+const SSRBlurShader = {
 
     uniforms: {
 

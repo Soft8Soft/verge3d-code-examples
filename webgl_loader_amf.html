@@ -23,7 +23,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -32,8 +33,8 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { AMFLoader } from './jsm/loaders/AMFLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { AMFLoader } from 'v3d/addons/loaders/AMFLoader.js';
 
       let camera, scene, renderer;
 
@@ -51,7 +52,7 @@
         // Z is up for objects intended to be 3D printed.
 
         camera.up.set(0, 0, 1);
-        camera.position.set(0, - 9, 6);
+        camera.position.set(0, -9, 6);
 
         camera.add(new v3d.PointLight(0xffffff, 0.8));
 

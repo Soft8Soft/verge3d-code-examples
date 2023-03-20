@@ -8,8 +8,7 @@
   </head>
   <body>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - exporter - stl<br/><br/>
-      <button id="exportASCII">export ASCII</button> <button id="exportBinary">export binary</button>
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - exporter - stl
     </div>
 
     <!-- Import maps polyfill -->
@@ -19,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,10 +28,16 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { STLExporter } from './jsm/exporters/STLExporter.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { STLExporter } from 'v3d/addons/exporters/STLExporter.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       let scene, camera, renderer, exporter, mesh;
+
+      const params = {
+        exportASCII: exportASCII,
+        exportBinary: exportBinary
+      };
 
       init();
       animate();
@@ -57,8 +63,8 @@
         directionalLight.position.set(0, 200, 100);
         directionalLight.castShadow = true;
         directionalLight.shadow.camera.top = 180;
-        directionalLight.shadow.camera.bottom = - 100;
-        directionalLight.shadow.camera.left = - 120;
+        directionalLight.shadow.camera.bottom = -100;
+        directionalLight.shadow.camera.left = -120;
         directionalLight.shadow.camera.right = 120;
         scene.add(directionalLight);
 
@@ -102,11 +108,11 @@
 
         window.addEventListener('resize', onWindowResize);
 
-        const buttonExportASCII = document.getElementById('exportASCII');
-        buttonExportASCII.addEventListener('click', exportASCII);
+        const gui = new GUI();
 
-        const buttonExportBinary = document.getElementById('exportBinary');
-        buttonExportBinary.addEventListener('click', exportBinary);
+        gui.add(params, 'exportASCII').name('Export STL (ASCII)');
+        gui.add(params, 'exportBinary').name('Export STL (Binary)');
+        gui.open();
 
       }
 

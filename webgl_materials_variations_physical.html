@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,12 +29,12 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { RGBELoader } from './jsm/loaders/RGBELoader.js';
-      import { FontLoader } from './jsm/loaders/FontLoader.js';
-      import { TextGeometry } from './jsm/geometries/TextGeometry.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { RGBELoader } from 'v3d/addons/loaders/RGBELoader.js';
+      import { FontLoader } from 'v3d/addons/loaders/FontLoader.js';
+      import { TextGeometry } from 'v3d/addons/geometries/TextGeometry.js';
 
       let container, stats;
 
@@ -141,10 +142,10 @@
         addLabel('+clearcoat', new v3d.Vector3(- 350, 0, 0));
         addLabel('-clearcoat', new v3d.Vector3(350, 0, 0));
 
-        addLabel('+clearcoatRoughness', new v3d.Vector3(0, - 300, 0));
+        addLabel('+clearcoatRoughness', new v3d.Vector3(0, -300, 0));
         addLabel('-clearcoatRoughness', new v3d.Vector3(0, 300, 0));
 
-        addLabel('+reflectivity', new v3d.Vector3(0, 0, - 300));
+        addLabel('+reflectivity', new v3d.Vector3(0, 0, -300));
         addLabel('-reflectivity', new v3d.Vector3(0, 0, 300));
 
         particleLight = new v3d.Mesh(new v3d.SphereGeometry(4, 8, 8), new v3d.MeshBasicMaterial({ color: 0xffffff }));

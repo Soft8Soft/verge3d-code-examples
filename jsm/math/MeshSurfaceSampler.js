@@ -128,7 +128,7 @@ class MeshSurfaceSampler {
         let start = 0;
         let end = dist.length - 1;
 
-        let index = - 1;
+        let index = -1;
 
         while (start <= end) {
 

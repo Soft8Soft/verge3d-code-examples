@@ -18,7 +18,7 @@
       #button {
         position: absolute;
         bottom: 15px;
-        left: calc(50% - 40px);
+        left: calc(50% -40px);
 
       }
     </style>
@@ -42,7 +42,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -51,11 +52,11 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { RoomEnvironment } from './jsm/environments/RoomEnvironment.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { RoomEnvironment } from 'v3d/addons/environments/RoomEnvironment.js';
 
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { USDZExporter } from './jsm/exporters/USDZExporter.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { USDZExporter } from 'v3d/addons/exporters/USDZExporter.js';
 
       let camera, scene, renderer;
 
@@ -86,8 +87,8 @@
           scene.add(gltf.scene);
 
           const shadowMesh = createSpotShadowMesh();
-          shadowMesh.position.y = - 1.1;
-          shadowMesh.position.z = - 0.25;
+          shadowMesh.position.y = -1.1;
+          shadowMesh.position.z = -0.25;
           shadowMesh.scale.setScalar(2);
           scene.add(shadowMesh);
 
@@ -108,7 +109,7 @@
         controls.addEventListener('change', render); // use if there is no animation loop
         controls.minDistance = 2;
         controls.maxDistance = 10;
-        controls.target.set(0, - 0.15, - 0.2);
+        controls.target.set(0, -0.15, -0.2);
         controls.update();
 
         window.addEventListener('resize', onWindowResize);

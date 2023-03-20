@@ -75,7 +75,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -84,7 +85,7 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       let scene, camera, renderer;
       let geometry, mesh, material;
@@ -108,7 +109,7 @@
 
         scene = new v3d.Scene();
         center = new v3d.Vector3();
-        center.z = - 1000;
+        center.z = -1000;
 
         const video = document.getElementById('video');
 

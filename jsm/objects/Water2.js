@@ -27,6 +27,8 @@ class Water extends Mesh {
 
         super(geometry);
 
+        this.isWater = true;
+
         this.type = 'Water';
 
         const scope = this;
@@ -201,8 +203,6 @@ class Water extends Mesh {
 
 }
 
-Water.prototype.isWater = true;
-
 Water.WaterShader = {
 
     uniforms: {
@@ -320,7 +320,7 @@ Water.WaterShader = {
             #else
                 flow = flowDirection;
             #endif
-            flow.x *= - 1.0;
+            flow.x *= -1.0;
 
             // sample normal maps (distort uvs with flowdata)
             vec4 normalColor0 = texture2D(tNormalMap0, (vUv * scale) + flow * flowMapOffset0);

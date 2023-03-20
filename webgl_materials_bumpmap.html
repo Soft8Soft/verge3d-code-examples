@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,9 +30,9 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
 
       const statsEnabled = true;
 
@@ -87,7 +88,7 @@
 
         spotLight.shadow.camera.fov = 40;
 
-        spotLight.shadow.bias = - 0.005;
+        spotLight.shadow.bias = -0.005;
 
         //
 
@@ -136,7 +137,7 @@
 
         mesh = new v3d.Mesh(geometry, material);
 
-        mesh.position.y = - 50;
+        mesh.position.y = -50;
         mesh.scale.set(scale, scale, scale);
 
         mesh.castShadow = true;

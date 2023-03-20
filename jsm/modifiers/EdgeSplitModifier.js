@@ -153,13 +153,6 @@ class EdgeSplitModifier {
 
         }
 
-        if (geometry.isGeometry === true) {
-
-            console.error('v3d.EdgeSplitModifier no longer supports v3d.Geometry. Use BufferGeometry instead.');
-            return;
-
-        }
-
         let hadNormals = false;
         let oldNormals = null;
 
@@ -198,7 +191,7 @@ class EdgeSplitModifier {
 
         for (const vertexIndexes of pointToIndexMap) {
 
-            edgeSplit(vertexIndexes, Math.cos(cutOffAngle) - 0.001);
+            edgeSplit(vertexIndexes, Math.cos(cutOffAngle) -0.001);
 
         }
 

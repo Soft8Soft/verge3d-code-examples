@@ -27,7 +27,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -36,8 +37,8 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { CSS3DRenderer, CSS3DObject } from './jsm/renderers/CSS3DRenderer.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { CSS3DRenderer, CSS3DObject } from 'v3d/addons/renderers/CSS3DRenderer.js';
 
       let camera, scene, renderer;
 
@@ -51,7 +52,7 @@
       function init() {
 
         const aspect = window.innerWidth / window.innerHeight;
-        camera = new v3d.OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 1000);
+        camera = new v3d.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 1, 1000);
 
         camera.position.set(- 200, 200, 200);
 
@@ -67,7 +68,7 @@
           100, 100,
           'chocolate',
           new v3d.Vector3(- 50, 0, 0),
-          new v3d.Euler(0, - 90 * v3d.MathUtils.DEG2RAD, 0)
+          new v3d.Euler(0, -90 * v3d.MathUtils.DEG2RAD, 0)
         );
         // right
         createPlane(
@@ -87,7 +88,7 @@
         createPlane(
           300, 300,
           'seagreen',
-          new v3d.Vector3(0, - 50, 0),
+          new v3d.Vector3(0, -50, 0),
           new v3d.Euler(- 90 * v3d.MathUtils.DEG2RAD, 0, 0)
         );
 

@@ -21,18 +21,19 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
 
     <script type="module">
       import * as v3d from 'v3d';
-      import { TransformControls } from './jsm/controls/TransformControls.js';
-      import Stats from './jsm/libs/stats.module.js';
-      import { InstancedFlow } from './jsm/modifiers/CurveModifier.js';
-      import { FontLoader } from './jsm/loaders/FontLoader.js';
-      import { TextGeometry } from './jsm/geometries/TextGeometry.js';
+      import { TransformControls } from 'v3d/addons/controls/TransformControls.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { InstancedFlow } from 'v3d/addons/modifiers/CurveModifier.js';
+      import { FontLoader } from 'v3d/addons/loaders/FontLoader.js';
+      import { TextGeometry } from 'v3d/addons/geometries/TextGeometry.js';
 
       const ACTION_SELECT = 1, ACTION_NONE = 0;
       const curveHandles = [];
@@ -67,16 +68,16 @@
         const boxMaterial = new v3d.MeshBasicMaterial();
 
         const curves = [[
-          { x: 1, y: - 0.5, z: - 1 },
-          { x: 1, y: - 0.5, z: 1 },
-          { x: - 1, y: - 0.5, z: 1 },
-          { x: - 1, y: - 0.5, z: - 1 },
+          { x: 1, y: -0.5, z: -1 },
+          { x: 1, y: -0.5, z: 1 },
+          { x: -1, y: -0.5, z: 1 },
+          { x: -1, y: -0.5, z: -1 },
         ],
         [
-          { x: - 1, y: 0.5, z: - 1 },
-          { x: - 1, y: 0.5, z: 1 },
+          { x: -1, y: 0.5, z: -1 },
+          { x: -1, y: 0.5, z: 1 },
           { x: 1, y: 0.5, z: 1 },
-          { x: 1, y: 0.5, z: - 1 },
+          { x: 1, y: 0.5, z: -1 },
         ]].map(function(curvePoints) {
 
           const curveVertices = curvePoints.map(function(handlePos) {

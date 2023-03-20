@@ -41,14 +41,6 @@ class VRMLLoader extends Loader {
 
         super(manager);
 
-        // dependency check
-
-        if (typeof chevrotain === 'undefined') { // eslint-disable-line no-undef
-
-            throw Error('v3d.VRMLLoader: External library chevrotain.min.js required.');
-
-        }
-
     }
 
     load(url, onLoad, onProgress, onError) {
@@ -128,7 +120,7 @@ class VRMLLoader extends Loader {
 
         function createTokens() {
 
-            const createToken = chevrotain.createToken; // eslint-disable-line no-undef
+            const createToken = chevrotain.createToken;
 
             // from http://gun.teipir.gr/VRML-amgem/spec/part1/concepts.html#SyntaxBasics
 
@@ -203,7 +195,7 @@ class VRMLLoader extends Loader {
             const Comment = createToken({
                 name: 'Comment',
                 pattern: /#.*/,
-                group: chevrotain.Lexer.SKIPPED // eslint-disable-line no-undef
+                group: chevrotain.Lexer.SKIPPED
             });
 
             // commas, blanks, tabs, newlines and carriage returns are whitespace characters wherever they appear outside of string fields
@@ -211,7 +203,7 @@ class VRMLLoader extends Loader {
             const WhiteSpace = createToken({
                 name: 'WhiteSpace',
                 pattern: /[,\s]/,
-                group: chevrotain.Lexer.SKIPPED // eslint-disable-line no-undef
+                group: chevrotain.Lexer.SKIPPED
             });
 
             const tokens = [
@@ -258,19 +250,17 @@ class VRMLLoader extends Loader {
 
             // the visitor is created dynmaically based on the given base class
 
-            function VRMLToASTVisitor() {
+            class VRMLToASTVisitor extends BaseVRMLVisitor {
 
-                BaseVRMLVisitor.call(this);
+                constructor() {
 
-                this.validateVisitor();
+                    super();
 
-            }
+                    this.validateVisitor();
 
-            VRMLToASTVisitor.prototype = Object.assign(Object.create(BaseVRMLVisitor.prototype), {
+                }
 
-                constructor: VRMLToASTVisitor,
-
-                vrml: function(ctx) {
+                vrml(ctx) {
 
                     const data = {
                         version: this.visit(ctx.version),
@@ -300,15 +290,15 @@ class VRMLLoader extends Loader {
 
                     return data;
 
-                },
+                }
 
-                version: function(ctx) {
+                version(ctx) {
 
                     return ctx.Version[0].image;
 
-                },
+                }
 
-                node: function(ctx) {
+                node(ctx) {
 
                     const data = {
                         name: ctx.NodeName[0].image,
@@ -337,9 +327,9 @@ class VRMLLoader extends Loader {
 
                     return data;
 
-                },
+                }
 
-                field: function(ctx) {
+                field(ctx) {
 
                     const data = {
                         name: ctx.Identifier[0].image,
@@ -370,33 +360,33 @@ class VRMLLoader extends Loader {
 
                     return data;
 
-                },
+                }
 
-                def: function(ctx) {
+                def(ctx) {
 
                     return (ctx.Identifier || ctx.NodeName)[0].image;
 
-                },
+                }
 
-                use: function(ctx) {
+                use(ctx) {
 
                     return { USE: (ctx.Identifier || ctx.NodeName)[0].image };
 
-                },
+                }
 
-                singleFieldValue: function(ctx) {
-
-                    return processField(this, ctx);
-
-                },
-
-                multiFieldValue: function(ctx) {
+                singleFieldValue(ctx) {
 
                     return processField(this, ctx);
 
-                },
+                }
 
-                route: function(ctx) {
+                multiFieldValue(ctx) {
+
+                    return processField(this, ctx);
+
+                }
+
+                route(ctx) {
 
                     const data = {
                         FROM: ctx.RouteIdentifier[0].image,
@@ -407,7 +397,7 @@ class VRMLLoader extends Loader {
 
                 }
 
-            });
+            }
 
             function processField(scope, ctx) {
 
@@ -627,6 +617,7 @@ class VRMLLoader extends Loader {
 
             switch (nodeName) {
 
+                case 'Anchor':
                 case 'Group':
                 case 'Transform':
                 case 'Collision':
@@ -708,7 +699,6 @@ class VRMLLoader extends Loader {
                     build = buildWorldInfoNode(node);
                     break;
 
-                case 'Anchor':
                 case 'Billboard':
 
                 case 'Inline':
@@ -796,7 +786,15 @@ class VRMLLoader extends Loader {
                         parseFieldChildren(fieldValues, object);
                         break;
 
+                    case 'description':
+                        // field not supported
+                        break;
+
                     case 'collide':
+                        // field not supported
+                        break;
+
+                    case 'parameter':
                         // field not supported
                         break;
 
@@ -819,6 +817,10 @@ class VRMLLoader extends Loader {
                         break;
 
                     case 'proxy':
+                        // field not supported
+                        break;
+
+                    case 'url':
                         // field not supported
                         break;
 
@@ -2439,7 +2441,7 @@ class VRMLLoader extends Loader {
 
         function buildExtrusionNode(node) {
 
-            let crossSection = [1, 1, 1, - 1, - 1, - 1, - 1, 1, 1, 1];
+            let crossSection = [1, 1, 1, -1, -1, -1, -1, 1, 1, 1];
             let spine = [0, 0, 0, 0, 1, 0];
             let scale;
             let orientation;
@@ -2727,7 +2729,7 @@ class VRMLLoader extends Loader {
 
                 // an index of -1 indicates that the current face has ended and the next one begins
 
-                if (index[i + 3] === - 1 || i + 3 >= l) {
+                if (index[i + 3] === -1 || i + 3 >= l) {
 
                     i += 3;
                     start = i + 1;
@@ -2758,7 +2760,7 @@ class VRMLLoader extends Loader {
 
                 // an index of -1 indicates that the current face has ended and the next one begins
 
-                if (index[i + 3] === - 1 || i + 3 >= l) {
+                if (index[i + 3] === -1 || i + 3 >= l) {
 
                     i += 3;
                     start ++;
@@ -2806,7 +2808,7 @@ class VRMLLoader extends Loader {
 
                 // an index of -1 indicates that the current line has ended and the next one begins
 
-                if (index[i + 2] === - 1 || i + 2 >= l) {
+                if (index[i + 2] === -1 || i + 2 >= l) {
 
                     i += 2;
 
@@ -2836,7 +2838,7 @@ class VRMLLoader extends Loader {
 
                 // an index of -1 indicates that the current line has ended and the next one begins
 
-                if (index[i + 2] === - 1 || i + 2 >= l) {
+                if (index[i + 2] === -1 || i + 2 >= l) {
 
                     i += 2;
                     start ++;
@@ -3179,7 +3181,7 @@ class VRMLLoader extends Loader {
 
         // check version (only 2.0 is supported)
 
-        if (data.indexOf('#VRML V2.0') === - 1) {
+        if (data.indexOf('#VRML V2.0') === -1) {
 
             throw Error('v3d.VRMLLexer: Version of VRML asset not supported.');
 
@@ -3203,7 +3205,7 @@ class VRMLLexer {
 
     constructor(tokens) {
 
-        this.lexer = new chevrotain.Lexer(tokens); // eslint-disable-line no-undef
+        this.lexer = new chevrotain.Lexer(tokens);
 
     }
 
@@ -3225,7 +3227,7 @@ class VRMLLexer {
 
 }
 
-const CstParser = chevrotain.CstParser;// eslint-disable-line no-undef
+const CstParser = chevrotain.CstParser;
 
 class VRMLParser extends CstParser {
 

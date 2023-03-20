@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,13 +30,13 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { LineMaterial } from './jsm/lines/LineMaterial.js';
-      import { Wireframe } from './jsm/lines/Wireframe.js';
-      import { WireframeGeometry2 } from './jsm/lines/WireframeGeometry2.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { LineMaterial } from 'v3d/addons/lines/LineMaterial.js';
+      import { Wireframe } from 'v3d/addons/lines/Wireframe.js';
+      import { WireframeGeometry2 } from 'v3d/addons/lines/WireframeGeometry2.js';
 
       let wireframe, renderer, scene, camera, camera2, controls;
       let wireframe1;
@@ -191,14 +192,14 @@
 
           switch (val) {
 
-            case '0':
+            case 0:
               wireframe.visible = true;
 
               wireframe1.visible = false;
 
               break;
 
-            case '1':
+            case 1:
               wireframe.visible = false;
 
               wireframe1.visible = true;
@@ -222,7 +223,7 @@
           // dashed is implemented as a defines -- not as a uniform. this could be changed.
           // ... or v3d.LineDashedMaterial could be implemented as a separate material
           // temporary hack - renderer should do this eventually
-          if (val) matLine.defines.USE_DASH = ""; else delete matLine.defines.USE_DASH;
+          if (val) matLine.defines.USE_DASH = ''; else delete matLine.defines.USE_DASH;
           matLine.needsUpdate = true;
 
           wireframe1.material = val ? matLineDashed : matLineBasic;
@@ -240,7 +241,7 @@
 
           switch (val) {
 
-            case '0':
+            case 0:
               matLine.dashSize = 2;
               matLine.gapSize = 1;
 
@@ -249,7 +250,7 @@
 
               break;
 
-            case '1':
+            case 1:
               matLine.dashSize = 1;
               matLine.gapSize = 1;
 
@@ -258,7 +259,7 @@
 
               break;
 
-            case '2':
+            case 2:
               matLine.dashSize = 1;
               matLine.gapSize = 2;
 

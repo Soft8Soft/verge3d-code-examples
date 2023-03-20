@@ -29,7 +29,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -38,10 +39,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { TrackballControls } from './jsm/controls/TrackballControls.js';
+      import { TrackballControls } from 'v3d/addons/controls/TrackballControls.js';
 
       let perspectiveCamera, orthographicCamera, controls, scene, renderer, stats;
 
@@ -61,7 +62,7 @@
         perspectiveCamera = new v3d.PerspectiveCamera(60, aspect, 1, 1000);
         perspectiveCamera.position.z = 500;
 
-        orthographicCamera = new v3d.OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 1000);
+        orthographicCamera = new v3d.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 1, 1000);
         orthographicCamera.position.z = 500;
 
         // world
@@ -76,9 +77,9 @@
         for (let i = 0; i < 500; i++) {
 
           const mesh = new v3d.Mesh(geometry, material);
-          mesh.position.x = (Math.random() - 0.5) * 1000;
-          mesh.position.y = (Math.random() - 0.5) * 1000;
-          mesh.position.z = (Math.random() - 0.5) * 1000;
+          mesh.position.x = (Math.random() -0.5) * 1000;
+          mesh.position.y = (Math.random() -0.5) * 1000;
+          mesh.position.z = (Math.random() -0.5) * 1000;
           mesh.updateMatrix();
           mesh.matrixAutoUpdate = false;
           scene.add(mesh);
@@ -92,7 +93,7 @@
         scene.add(dirLight1);
 
         const dirLight2 = new v3d.DirectionalLight(0x002288);
-        dirLight2.position.set(- 1, - 1, - 1);
+        dirLight2.position.set(- 1, -1, -1);
         scene.add(dirLight2);
 
         const ambientLight = new v3d.AmbientLight(0x222222);

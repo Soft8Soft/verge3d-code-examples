@@ -19,7 +19,7 @@ function createText(message, height) {
 
     const texture = new v3d.Texture(canvas);
     texture.needsUpdate = true;
-    //var spriteAlignment = new v3d.Vector2(0,0) ;
+
     const material = new v3d.MeshBasicMaterial({
         color: 0xffffff,
         side: v3d.DoubleSide,

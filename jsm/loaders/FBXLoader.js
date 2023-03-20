@@ -389,6 +389,15 @@ class FBXTreeParser {
 
         }
 
+        if ('Translation' in textureNode) {
+
+            const values = textureNode.Translation.value;
+
+            texture.offset.x = values[0];
+            texture.offset.y = values[1];
+
+        }
+
         return texture;
 
     }
@@ -1474,6 +1483,12 @@ class FBXTreeParser {
 // parse Geometry data from FBXTree and return map of BufferGeometries
 class GeometryParser {
 
+    constructor() {
+
+        this.negativeMaterialIndices = false;
+
+    }
+
     // Parse nodes in FBXTree.Objects.Geometry
     parse(deformers) {
 
@@ -1491,6 +1506,14 @@ class GeometryParser {
                 geometryMap.set(parseInt(nodeID), geo);
 
             }
+
+        }
+
+        // report warnings
+
+        if (this.negativeMaterialIndices === true) {
+
+            console.warn('v3d.FBXLoader: The FBX file contains invalid (negative) material indices. The asset might not render as expected.');
 
         }
 
@@ -1785,10 +1808,10 @@ class GeometryParser {
             //  a: 0, 1, 3, -3, 2, 3, 5, -5, 4, 5, 7, -7, 6, 7, 1, -1, 1, 7, 5, -4, 6, 0, 2, -5
             //  }
             // Negative numbers mark the end of a face - first face here is 0, 1, 3, -3
-            // to find index of last vertex bit shift the index: ^ - 1
+            // to find index of last vertex bit shift the index: ^ -1
             if (vertexIndex < 0) {
 
-                vertexIndex = vertexIndex ^ - 1; // equivalent to (x * -1) - 1
+                vertexIndex = vertexIndex ^ -1; // equivalent to (x * -1) -1
                 endOfFace = true;
 
             }
@@ -1888,6 +1911,13 @@ class GeometryParser {
 
                 materialIndex = getData(polygonVertexIndex, polygonIndex, vertexIndex, geoInfo.material)[0];
 
+                if (materialIndex < 0) {
+
+                    scope.negativeMaterialIndices = true;
+                    materialIndex = 0; // fallback
+
+                }
+
             }
 
             if (geoInfo.uv) {
@@ -1912,6 +1942,8 @@ class GeometryParser {
             faceLength ++;
 
             if (endOfFace) {
+
+                if (faceLength > 4) console.warn('v3d.FBXLoader: Polygons with more than four sides are not supported. Make sure to triangulate the geometry during export.');
 
                 scope.genFace(buffers, geoInfo, facePositionIndexes, materialIndex, faceNormals, faceColors, faceUVs, faceWeights, faceWeightIndices, faceLength);
 
@@ -2238,13 +2270,6 @@ class GeometryParser {
 
     // Generate a NurbGeometry from a node in FBXTree.Objects.Geometry
     parseNurbsGeometry(geoNode) {
-
-        if (NURBSCurve === undefined) {
-
-            console.error('v3d.FBXLoader: The loader relies on NURBSCurve for any nurbs present in the model. Nurbs will show up as empty geometry.');
-            return new BufferGeometry();
-
-        }
 
         const order = parseInt(geoNode.Order);
 
@@ -2607,7 +2632,7 @@ class AnimationParser {
 
         });
 
-        return new AnimationClip(rawClip.name, - 1, tracks);
+        return new AnimationClip(rawClip.name, -1, tracks);
 
     }
 
@@ -2799,9 +2824,9 @@ class AnimationParser {
 
         const values = [];
 
-        let xIndex = - 1;
-        let yIndex = - 1;
-        let zIndex = - 1;
+        let xIndex = -1;
+        let yIndex = -1;
+        let zIndex = -1;
 
         times.forEach(function(time) {
 
@@ -2810,7 +2835,7 @@ class AnimationParser {
             if (curves.z) zIndex = curves.z.times.indexOf(time);
 
             // if there is an x value defined for this frame, use that
-            if (xIndex !== - 1) {
+            if (xIndex !== -1) {
 
                 const xValue = curves.x.values[xIndex];
                 values.push(xValue);
@@ -2823,7 +2848,7 @@ class AnimationParser {
 
             }
 
-            if (yIndex !== - 1) {
+            if (yIndex !== -1) {
 
                 const yValue = curves.y.values[yIndex];
                 values.push(yValue);
@@ -2835,7 +2860,7 @@ class AnimationParser {
 
             }
 
-            if (zIndex !== - 1) {
+            if (zIndex !== -1) {
 
                 const zValue = curves.z.values[zIndex];
                 values.push(zValue);
@@ -3268,13 +3293,13 @@ class BinaryParser {
     endOfContent(reader) {
 
         // footer size: 160bytes + 16-byte alignment padding
-        // - 16bytes: magic
+        // -16bytes: magic
         // - padding til 16-byte alignment (at least 1byte?)
         //    (seems like some exporters embed fixed 15 or 16bytes?)
-        // - 4bytes: magic
-        // - 4bytes: version
-        // - 120bytes: zero
-        // - 16bytes: magic
+        // -4bytes: magic
+        // -4bytes: version
+        // -120bytes: zero
+        // -16bytes: magic
         if (reader.size() % 16 === 0) {
 
             return ((reader.getOffset() + 160 + 16) & ~ 0xf) >= reader.size();
@@ -3526,13 +3551,7 @@ class BinaryParser {
 
                 }
 
-                if (typeof fflate === 'undefined') {
-
-                    console.error('v3d.FBXLoader: External library fflate.min.js required.');
-
-                }
-
-                const data = fflate.unzlibSync(new Uint8Array(reader.getArrayBuffer(compressedLength))); // eslint-disable-line no-undef
+                const data = fflate.unzlibSync(new Uint8Array(reader.getArrayBuffer(compressedLength)));
                 const reader2 = new BinaryReader(data.buffer);
 
                 switch (type) {
@@ -3554,6 +3573,8 @@ class BinaryParser {
                         return reader2.getInt64Array(arrayLength);
 
                 }
+
+                break; // cannot happen but is required by the DeepScan
 
             default:
                 throw new Error('v3d.FBXLoader: Unknown property type ' + type);
@@ -3947,7 +3968,7 @@ function generateTransform(transformData) {
     if (transformData.preRotation) {
 
         const array = transformData.preRotation.map(MathUtils.degToRad);
-        array.push(transformData.eulerOrder);
+        array.push(transformData.eulerOrder || Euler.DefaultOrder);
         lPreRotationM.makeRotationFromEuler(tempEuler.fromArray(array));
 
     }
@@ -3955,7 +3976,7 @@ function generateTransform(transformData) {
     if (transformData.rotation) {
 
         const array = transformData.rotation.map(MathUtils.degToRad);
-        array.push(transformData.eulerOrder);
+        array.push(transformData.eulerOrder || Euler.DefaultOrder);
         lRotationM.makeRotationFromEuler(tempEuler.fromArray(array));
 
     }
@@ -3963,7 +3984,7 @@ function generateTransform(transformData) {
     if (transformData.postRotation) {
 
         const array = transformData.postRotation.map(MathUtils.degToRad);
-        array.push(transformData.eulerOrder);
+        array.push(transformData.eulerOrder || Euler.DefaultOrder);
         lPostRotationM.makeRotationFromEuler(tempEuler.fromArray(array));
         lPostRotationM.invert();
 

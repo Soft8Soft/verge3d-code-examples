@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,11 +30,11 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { SMAAPass } from './jsm/postprocessing/SMAAPass.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { SMAAPass } from 'v3d/addons/postprocessing/SMAAPass.js';
 
       let camera, scene, renderer, composer, stats;
 
@@ -63,7 +64,7 @@
         const material1 = new v3d.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
 
         const mesh1 = new v3d.Mesh(geometry, material1);
-        mesh1.position.x = - 100;
+        mesh1.position.x = -100;
         scene.add(mesh1);
 
         const texture = new v3d.TextureLoader().load('textures/brick_diffuse.jpg');

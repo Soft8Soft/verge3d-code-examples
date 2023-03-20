@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,7 +29,7 @@
 
       import * as v3d from 'v3d';
 
-      import { StereoEffect } from './jsm/effects/StereoEffect.js';
+      import { StereoEffect } from 'v3d/addons/effects/StereoEffect.js';
 
       let container, camera, scene, renderer, effect;
 

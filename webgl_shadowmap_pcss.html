@@ -125,7 +125,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -134,9 +135,9 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       let stats;
       let camera, scene, renderer;
@@ -199,8 +200,8 @@
           const material = new v3d.MeshPhongMaterial({ color: Math.random() * 0xffffff });
 
           const sphere = new v3d.Mesh(geometry, material);
-          sphere.position.x = Math.random() - 0.5;
-          sphere.position.z = Math.random() - 0.5;
+          sphere.position.x = Math.random() -0.5;
+          sphere.position.z = Math.random() -0.5;
           sphere.position.normalize();
           sphere.position.multiplyScalar(Math.random() * 2 + 1);
           sphere.castShadow = true;

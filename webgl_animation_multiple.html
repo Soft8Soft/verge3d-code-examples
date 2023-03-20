@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,8 +29,8 @@
 
       import * as v3d from 'v3d';
 
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import * as SkeletonUtils from './jsm/utils/SkeletonUtils.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import * as SkeletonUtils from 'v3d/addons/utils/SkeletonUtils.js';
 
       let camera, scene, renderer;
       let clock;
@@ -42,7 +43,7 @@
       function init() {
 
         camera = new v3d.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-        camera.position.set(2, 3, - 6);
+        camera.position.set(2, 3, -6);
         camera.lookAt(0, 1, 0);
 
         clock = new v3d.Clock();
@@ -56,11 +57,11 @@
         scene.add(hemiLight);
 
         const dirLight = new v3d.DirectionalLight(0xffffff);
-        dirLight.position.set(- 3, 10, - 10);
+        dirLight.position.set(- 3, 10, -10);
         dirLight.castShadow = true;
         dirLight.shadow.camera.top = 4;
-        dirLight.shadow.camera.bottom = - 4;
-        dirLight.shadow.camera.left = - 4;
+        dirLight.shadow.camera.bottom = -4;
+        dirLight.shadow.camera.left = -4;
         dirLight.shadow.camera.right = 4;
         dirLight.shadow.camera.near = 0.1;
         dirLight.shadow.camera.far = 40;
@@ -96,7 +97,7 @@
           mixer2.clipAction(gltf.animations[1]).play(); // run
           mixer3.clipAction(gltf.animations[3]).play(); // walk
 
-          model1.position.x = - 2;
+          model1.position.x = -2;
           model2.position.x = 0;
           model3.position.x = 2;
 

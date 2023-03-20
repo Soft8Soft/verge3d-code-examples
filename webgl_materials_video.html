@@ -30,7 +30,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -39,11 +40,11 @@
 
       import * as v3d from 'v3d';
 
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
-      import { BloomPass } from './jsm/postprocessing/BloomPass.js';
-      import { CopyShader } from './jsm/shaders/CopyShader.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { ShaderPass } from 'v3d/addons/postprocessing/ShaderPass.js';
+      import { BloomPass } from 'v3d/addons/postprocessing/BloomPass.js';
+      import { CopyShader } from 'v3d/addons/shaders/CopyShader.js';
 
       let container;
 
@@ -271,8 +272,8 @@
 
             mesh = meshes[i];
 
-            mesh.dx *= - 1;
-            mesh.dy *= - 1;
+            mesh.dx *= -1;
+            mesh.dy *= -1;
 
           }
 

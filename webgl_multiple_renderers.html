@@ -26,7 +26,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -55,7 +56,7 @@
         scene.add(light1);
 
         const light2 = new v3d.DirectionalLight(0xffff00, 0.75);
-        light2.position.set(0, 0, - 1);
+        light2.position.set(0, 0, -1);
         scene.add(light2);
 
         // shadow
@@ -80,19 +81,19 @@
         let shadowMesh;
 
         shadowMesh = new v3d.Mesh(shadowGeo, shadowMaterial);
-        shadowMesh.position.y = - 250;
+        shadowMesh.position.y = -250;
         shadowMesh.rotation.x = - Math.PI / 2;
         scene.add(shadowMesh);
 
         shadowMesh = new v3d.Mesh(shadowGeo, shadowMaterial);
-        shadowMesh.position.x = - 400;
-        shadowMesh.position.y = - 250;
+        shadowMesh.position.x = -400;
+        shadowMesh.position.y = -250;
         shadowMesh.rotation.x = - Math.PI / 2;
         scene.add(shadowMesh);
 
         shadowMesh = new v3d.Mesh(shadowGeo, shadowMaterial);
         shadowMesh.position.x = 400;
-        shadowMesh.position.y = - 250;
+        shadowMesh.position.y = -250;
         shadowMesh.rotation.x = - Math.PI / 2;
         scene.add(shadowMesh);
 
@@ -136,8 +137,8 @@
         const wireframeMaterial = new v3d.MeshBasicMaterial({ color: 0x000000, wireframe: true, transparent: true });
 
         mesh1 = new v3d.Mesh(geometry1, material);
-        mesh1.position.x = - 400;
-        mesh1.rotation.x = - 1.87;
+        mesh1.position.x = -400;
+        mesh1.rotation.x = -1.87;
         scene.add(mesh1);
 
         const wireframe1 = new v3d.Mesh(geometry1, wireframeMaterial);

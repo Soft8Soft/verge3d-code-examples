@@ -50,7 +50,7 @@
     // HSL to RGB Convertion helpers
     vec3 HUEtoRGB(float H){
       H = mod(H,1.0);
-      float R = abs(H * 6.0 - 3.0) - 1.0;
+      float R = abs(H * 6.0 - 3.0) -1.0;
       float G = 2.0 - abs(H * 6.0 - 2.0);
       float B = 2.0 - abs(H * 6.0 - 4.0);
       return clamp(vec3(R,G,B),0.0,1.0);
@@ -77,7 +77,8 @@
   <script type="importmap">
     {
       "imports": {
-        "v3d": "../build/v3d.module.js"
+        "v3d": "../build/v3d.module.js",
+        "v3d/addons/": "./jsm/"
       }
     }
   </script>
@@ -85,7 +86,7 @@
   <script type="module">
     import * as v3d from 'v3d';
 
-    import Stats from './jsm/libs/stats.module.js';
+    import Stats from 'v3d/addons/libs/stats.module.js';
 
     let container, stats;
 

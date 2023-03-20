@@ -15,7 +15,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -24,10 +25,10 @@
 
       import * as v3d from 'v3d';
 
-      import { MeshSurfaceSampler } from './jsm/math/MeshSurfaceSampler.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { MeshSurfaceSampler } from 'v3d/addons/math/MeshSurfaceSampler.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       let camera, scene, renderer, stats;
 
@@ -132,7 +133,7 @@
         scene.background = new v3d.Color(api.backgroundColor);
 
         const pointLight = new v3d.PointLight(0xAA8899, 0.75);
-        pointLight.position.set(50, - 25, 75);
+        pointLight.position.set(50, -25, 75);
         scene.add(pointLight);
 
         scene.add(new v3d.HemisphereLight());

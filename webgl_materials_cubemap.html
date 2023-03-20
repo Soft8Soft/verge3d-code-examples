@@ -21,7 +21,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -30,10 +31,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { OBJLoader } from 'v3d/addons/loaders/OBJLoader.js';
 
       let container, stats;
 
@@ -89,11 +90,11 @@
           const head = object.children[0];
 
           head.scale.multiplyScalar(15);
-          head.position.y = - 500;
+          head.position.y = -500;
           head.material = cubeMaterial1;
 
           const head2 = head.clone();
-          head2.position.x = - 900;
+          head2.position.x = -900;
           head2.material = cubeMaterial2;
 
           const head3 = head.clone();

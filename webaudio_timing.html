@@ -24,7 +24,8 @@
   <script type="importmap">
     {
       "imports": {
-        "v3d": "../build/v3d.module.js"
+        "v3d": "../build/v3d.module.js",
+        "v3d/addons/": "./jsm/"
       }
     }
   </script>
@@ -32,7 +33,7 @@
   <script type="module">
     import * as v3d from 'v3d';
 
-    import { OrbitControls } from './jsm/controls/OrbitControls.js';
+    import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
     let scene, camera, renderer, clock;
 
@@ -96,7 +97,7 @@
       const floorMaterial = new v3d.MeshLambertMaterial({ color: 0x4676b6 });
 
       const floor = new v3d.Mesh(floorGeometry, floorMaterial);
-      floor.rotation.x = Math.PI * - 0.5;
+      floor.rotation.x = Math.PI * -0.5;
       floor.receiveShadow = true;
       scene.add(floor);
 

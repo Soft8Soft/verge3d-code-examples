@@ -26,7 +26,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -34,11 +35,11 @@
     <script type="module">
 
       import * as v3d from 'v3d';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { HorizontalBlurShader } from './jsm/shaders/HorizontalBlurShader.js';
-      import { VerticalBlurShader } from './jsm/shaders/VerticalBlurShader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { HorizontalBlurShader } from 'v3d/addons/shaders/HorizontalBlurShader.js';
+      import { VerticalBlurShader } from 'v3d/addons/shaders/VerticalBlurShader.js';
 
       let camera, scene, renderer, stats, gui;
 
@@ -109,7 +110,7 @@
 
         // the container, if you need to move the plane just move this
         shadowGroup = new v3d.Group();
-        shadowGroup.position.y = - 0.3;
+        shadowGroup.position.y = -0.3;
         scene.add(shadowGroup);
 
         // the render target that will show the shadows in the plane texture
@@ -135,7 +136,7 @@
         shadowGroup.add(plane);
 
         // the y from the texture is flipped!
-        plane.scale.y = - 1;
+        plane.scale.y = -1;
 
         // the plane onto which to blur the texture
         blurPlane = new v3d.Mesh(planeGeometry);

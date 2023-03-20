@@ -18,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,11 +28,11 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { EXRLoader } from './jsm/loaders/EXRLoader.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { EXRLoader } from 'v3d/addons/loaders/EXRLoader.js';
 
       const params = {
         envMap: 'EXR',
@@ -61,13 +62,20 @@
         scene = new v3d.Scene();
 
         renderer = new v3d.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        container.appendChild(renderer.domElement);
+
+        renderer.toneMapping = v3d.ACESFilmicToneMapping;
+        renderer.outputEncoding = v3d.sRGBEncoding;
 
         //
 
         let geometry = new v3d.TorusKnotGeometry(18, 8, 150, 20);
         let material = new v3d.MeshStandardMaterial({
-          metalness: params.roughness,
-          roughness: params.metalness,
+          metalness: params.metalness,
+          roughness: params.roughness,
           envMapIntensity: 1.0
         });
 
@@ -78,7 +86,7 @@
         material = new v3d.MeshBasicMaterial();
 
         planeMesh = new v3d.Mesh(geometry, material);
-        planeMesh.position.y = - 50;
+        planeMesh.position.y = -50;
         planeMesh.rotation.x = - Math.PI * 0.5;
         scene.add(planeMesh);
 
@@ -88,38 +96,27 @@
 
         };
 
-        new EXRLoader()
-          .load('textures/piz_compressed.exr', function(texture) {
+        new EXRLoader().load('textures/piz_compressed.exr', function(texture) {
 
-            exrCubeRenderTarget = pmremGenerator.fromEquirectangular(texture);
-            exrBackground = exrCubeRenderTarget.texture;
+          texture.mapping = v3d.EquirectangularReflectionMapping;
 
-            texture.dispose();
+          exrCubeRenderTarget = pmremGenerator.fromEquirectangular(texture);
+          exrBackground = texture;
 
-          });
+        });
 
         new v3d.TextureLoader().load('textures/equirectangular.png', function(texture) {
 
+          texture.mapping = v3d.EquirectangularReflectionMapping;
           texture.encoding = v3d.sRGBEncoding;
 
           pngCubeRenderTarget = pmremGenerator.fromEquirectangular(texture);
-
-          pngBackground = pngCubeRenderTarget.texture;
-
-          texture.dispose();
+          pngBackground = texture;
 
         });
 
         const pmremGenerator = new v3d.PMREMGenerator(renderer);
         pmremGenerator.compileEquirectangularShader();
-
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-
-        container.appendChild(renderer.domElement);
-
-        renderer.toneMapping = v3d.ACESFilmicToneMapping;
-        renderer.outputEncoding = v3d.sRGBEncoding;
 
         stats = new Stats();
         container.appendChild(stats.dom);

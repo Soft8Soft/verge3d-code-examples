@@ -22,7 +22,7 @@ class ConvexHull {
 
     constructor() {
 
-        this.tolerance = - 1;
+        this.tolerance = -1;
 
         this.faces = []; // the generated faces of the convex hull
         this.newFaces = []; // this array holds the faces that are generated within a single iteration
@@ -78,26 +78,17 @@ class ConvexHull {
 
             if (geometry !== undefined) {
 
-                if (geometry.isGeometry) {
+                const attribute = geometry.attributes.position;
 
-                    console.error('v3d.ConvexHull no longer supports Geometry. Use v3d.BufferGeometry instead.');
-                    return;
+                if (attribute !== undefined) {
 
-                } else if (geometry.isBufferGeometry) {
+                    for (let i = 0, l = attribute.count; i < l; i++) {
 
-                    const attribute = geometry.attributes.position;
+                        const point = new Vector3();
 
-                    if (attribute !== undefined) {
+                        point.fromBufferAttribute(attribute, i).applyMatrix4(node.matrixWorld);
 
-                        for (let i = 0, l = attribute.count; i < l; i++) {
-
-                            const point = new Vector3();
-
-                            point.fromBufferAttribute(attribute, i).applyMatrix4(node.matrixWorld);
-
-                            points.push(point);
-
-                        }
+                        points.push(point);
 
                     }
 
@@ -131,7 +122,7 @@ class ConvexHull {
 
     intersectRay(ray, target) {
 
-        // based on "Fast Ray-Convex Polyhedron Intersection"  by Eric Haines, GRAPHICS GEMS II
+        // based on "Fast Ray-Convex Polyhedron Intersection" by Eric Haines, GRAPHICS GEMS II
 
         const faces = this.faces;
 
@@ -165,7 +156,7 @@ class ConvexHull {
 
             if (vD > 0) {
 
-                //  plane faces away from the ray, so this plane is a back-face
+                // plane faces away from the ray, so this plane is a back-face
 
                 tFar = Math.min(t, tFar);
 
@@ -272,7 +263,7 @@ class ConvexHull {
 
     }
 
-    // Removes all the visible vertices that a given face is able to see which are stored in the 'assigned' vertext list
+    // Removes all the visible vertices that a given face is able to see which are stored in the 'assigned' vertex list
 
     removeAllVerticesFromFace(face) {
 
@@ -547,7 +538,7 @@ class ConvexHull {
 
         // 3. The next vertex 'v3' is the one farthest to the plane 'v0', 'v1', 'v2'
 
-        maxDistance = - 1;
+        maxDistance = -1;
         _plane.setFromCoplanarPoints(v0.point, v1.point, v2.point);
 
         for (let i = 0, l = this.vertices.length; i < l; i++) {
@@ -1277,4 +1268,4 @@ class VertexList {
 
 }
 
-export { ConvexHull };
+export { ConvexHull, Face, HalfEdge, VertexNode, VertexList };

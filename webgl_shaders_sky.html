@@ -18,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,9 +28,9 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { Sky } from './jsm/objects/Sky.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { Sky } from 'v3d/addons/objects/Sky.js';
 
       let camera, scene, renderer;
 
@@ -86,7 +87,7 @@
         gui.add(effectController, 'mieCoefficient', 0.0, 0.1, 0.001).onChange(guiChanged);
         gui.add(effectController, 'mieDirectionalG', 0.0, 1, 0.001).onChange(guiChanged);
         gui.add(effectController, 'elevation', 0, 90, 0.1).onChange(guiChanged);
-        gui.add(effectController, 'azimuth', - 180, 180, 0.1).onChange(guiChanged);
+        gui.add(effectController, 'azimuth', -180, 180, 0.1).onChange(guiChanged);
         gui.add(effectController, 'exposure', 0, 1, 0.0001).onChange(guiChanged);
 
         guiChanged();

@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,8 +29,8 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       let mesh, renderer, scene, camera;
 
@@ -149,7 +150,7 @@
         gui.add(API, 'offsetY', 0.0, 1.0).name('offset.y').onChange(updateUvTransform);
         gui.add(API, 'repeatX', 0.25, 2.0).name('repeat.x').onChange(updateUvTransform);
         gui.add(API, 'repeatY', 0.25, 2.0).name('repeat.y').onChange(updateUvTransform);
-        gui.add(API, 'rotation', - 2.0, 2.0).name('rotation').onChange(updateUvTransform);
+        gui.add(API, 'rotation', -2.0, 2.0).name('rotation').onChange(updateUvTransform);
         gui.add(API, 'centerX', 0.0, 1.0).name('center.x').onChange(updateUvTransform);
         gui.add(API, 'centerY', 0.0, 1.0).name('center.y').onChange(updateUvTransform);
 

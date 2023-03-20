@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,7 +29,7 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       let camera, controls;
       let renderer;
@@ -55,7 +56,7 @@
         controls.enableZoom = false;
         controls.enablePan = false;
         controls.enableDamping = true;
-        controls.rotateSpeed = - 0.25;
+        controls.rotateSpeed = -0.25;
 
         const textures = getTexturesFromAtlasFile('textures/cube/sun_temple_stripe.jpg', 6);
 
@@ -68,7 +69,7 @@
         }
 
         const skyBox = new v3d.Mesh(new v3d.BoxGeometry(1, 1, 1), materials);
-        skyBox.geometry.scale(1, 1, - 1);
+        skyBox.geometry.scale(1, 1, -1);
         scene.add(skyBox);
 
         window.addEventListener('resize', onWindowResize);

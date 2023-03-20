@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,10 +29,10 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { TeapotGeometry } from './jsm/geometries/TeapotGeometry.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { TeapotGeometry } from 'v3d/addons/geometries/TeapotGeometry.js';
 
       let camera, scene, renderer;
       let cameraControls;
@@ -39,7 +40,7 @@
       const teapotSize = 300;
       let ambientLight, light;
 
-      let tess = - 1;  // force initialization
+      let tess = -1;  // force initialization
       let bBottom;
       let bLid;
       let bBody;

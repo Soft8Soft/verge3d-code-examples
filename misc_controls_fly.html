@@ -34,7 +34,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -43,12 +44,12 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { FlyControls } from './jsm/controls/FlyControls.js';
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { FilmPass } from './jsm/postprocessing/FilmPass.js';
+      import { FlyControls } from 'v3d/addons/controls/FlyControls.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { FilmPass } from 'v3d/addons/postprocessing/FilmPass.js';
 
       const radius = 6371;
       const tilt = 0.41;
@@ -93,12 +94,12 @@
 
           specular: 0x333333,
           shininess: 15,
-          map: textureLoader.load("textures/planets/earth_atmos_2048.jpg"),
-          specularMap: textureLoader.load("textures/planets/earth_specular_2048.jpg"),
-          normalMap: textureLoader.load("textures/planets/earth_normal_2048.jpg"),
+          map: textureLoader.load('textures/planets/earth_atmos_2048.jpg'),
+          specularMap: textureLoader.load('textures/planets/earth_specular_2048.jpg'),
+          normalMap: textureLoader.load('textures/planets/earth_normal_2048.jpg'),
 
           // y scale is negated to compensate for normal map handedness.
-          normalScale: new v3d.Vector2(0.85, - 0.85)
+          normalScale: new v3d.Vector2(0.85, -0.85)
 
         });
 
@@ -115,7 +116,7 @@
 
         const materialClouds = new v3d.MeshLambertMaterial({
 
-          map: textureLoader.load("textures/planets/earth_clouds_1024.png"),
+          map: textureLoader.load('textures/planets/earth_clouds_1024.png'),
           transparent: true
 
         });
@@ -129,7 +130,7 @@
 
         const materialMoon = new v3d.MeshPhongMaterial({
 
-          map: textureLoader.load("textures/planets/moon_1024.jpg")
+          map: textureLoader.load('textures/planets/moon_1024.jpg')
 
         });
 

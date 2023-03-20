@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,9 +29,9 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { LightProbeHelper } from './jsm/helpers/LightProbeHelper.js';
-      import { LightProbeGenerator } from './jsm/lights/LightProbeGenerator.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { LightProbeHelper } from 'v3d/addons/helpers/LightProbeHelper.js';
+      import { LightProbeGenerator } from 'v3d/addons/lights/LightProbeGenerator.js';
 
       let renderer, scene, camera, cubeCamera;
 

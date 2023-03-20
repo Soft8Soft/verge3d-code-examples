@@ -52,7 +52,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -61,14 +62,14 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
-      import { AdaptiveToneMappingPass } from './jsm/postprocessing/AdaptiveToneMappingPass.js';
-      import { BloomPass } from './jsm/postprocessing/BloomPass.js';
-      import { GammaCorrectionShader } from './jsm/shaders/GammaCorrectionShader.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { ShaderPass } from 'v3d/addons/postprocessing/ShaderPass.js';
+      import { AdaptiveToneMappingPass } from 'v3d/addons/postprocessing/AdaptiveToneMappingPass.js';
+      import { BloomPass } from 'v3d/addons/postprocessing/BloomPass.js';
+      import { GammaCorrectionShader } from 'v3d/addons/shaders/GammaCorrectionShader.js';
 
       let bloomPass, adaptToneMappingPass, ldrToneMappingPass, hdrToneMappingPass;
       let params;
@@ -115,7 +116,7 @@
         camera.position.z = 800;
         cameraCube = new v3d.PerspectiveCamera(70, windowThirdX / window.innerHeight, 1, 100000);
 
-        cameraBG = new v3d.OrthographicCamera(-windowHalfX, windowHalfX, windowHalfY, - windowHalfY, - 10000, 10000);
+        cameraBG = new v3d.OrthographicCamera(-windowHalfX, windowHalfX, windowHalfY, - windowHalfY, -10000, 10000);
         cameraBG.position.z = 100;
 
         orbitControls = new OrbitControls(camera, container);
@@ -144,61 +145,61 @@
           lights: true,
           uniforms: v3d.UniformsUtils.merge([
 
-            v3d.UniformsLib["common"],
-            v3d.UniformsLib["lights"]
+            v3d.UniformsLib['common'],
+            v3d.UniformsLib['lights']
 
           ]),
           vertexShader: [
-            "varying vec3 vViewPosition;",
-            "varying vec3 vNormal;",
-            "void main() {",
-            v3d.ShaderChunk["beginnormal_vertex"],
-            v3d.ShaderChunk["defaultnormal_vertex"],
+            'varying vec3 vViewPosition;',
+            'varying vec3 vNormal;',
+            'void main() {',
+            v3d.ShaderChunk['beginnormal_vertex'],
+            v3d.ShaderChunk['defaultnormal_vertex'],
 
-            "  vNormal = normalize(transformedNormal);",
-            "vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);",
-            "vViewPosition = -mvPosition.xyz;",
-            "gl_Position = projectionMatrix * mvPosition;",
-            "}"
+            '  vNormal = normalize(transformedNormal);',
+            'vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);',
+            'vViewPosition = -mvPosition.xyz;',
+            'gl_Position = projectionMatrix * mvPosition;',
+            '}'
 
-          ].join("\n"),
+          ].join('\n'),
 
           fragmentShader: [
 
-            v3d.ShaderChunk["common"],
-            v3d.ShaderChunk["bsdfs"],
-            v3d.ShaderChunk["lights_pars_begin"],
-            v3d.ShaderChunk["normal_pars_fragment"],
-            v3d.ShaderChunk["lights_phong_pars_fragment"],
+            v3d.ShaderChunk['common'],
+            v3d.ShaderChunk['bsdfs'],
+            v3d.ShaderChunk['lights_pars_begin'],
+            v3d.ShaderChunk['normal_pars_fragment'],
+            v3d.ShaderChunk['lights_phong_pars_fragment'],
 
-            "void main() {",
-            "vec3 normal = normalize(-vNormal);",
-            "vec3 viewPosition = normalize(vViewPosition);",
-            "#if NUM_DIR_LIGHTS > 0",
+            'void main() {',
+            'vec3 normal = normalize(-vNormal);',
+            'vec3 viewPosition = normalize(vViewPosition);',
+            '#if NUM_DIR_LIGHTS > 0',
 
-            "vec3 dirDiffuse = vec3(0.0);",
+            'vec3 dirDiffuse = vec3(0.0);',
 
-            "for(int i = 0; i < NUM_DIR_LIGHTS; i++) {",
+            'for(int i = 0; i < NUM_DIR_LIGHTS; i++) {',
 
-            "vec4 lDirection = viewMatrix * vec4(directionalLights[i].direction, 0.0);",
-            "vec3 dirVector = normalize(lDirection.xyz);",
-            "float dotProduct = dot(viewPosition, dirVector);",
-            "dotProduct = 1.0 * max(dotProduct, 0.0) + (1.0 - max(-dot(normal, dirVector), 0.0));",
-            "dotProduct *= dotProduct;",
-            "dirDiffuse += max(0.5 * dotProduct, 0.0) * directionalLights[i].color;",
-            "}",
-            "#endif",
+            'vec4 lDirection = viewMatrix * vec4(directionalLights[i].direction, 0.0);',
+            'vec3 dirVector = normalize(lDirection.xyz);',
+            'float dotProduct = dot(viewPosition, dirVector);',
+            'dotProduct = 1.0 * max(dotProduct, 0.0) + (1.0 - max(-dot(normal, dirVector), 0.0));',
+            'dotProduct *= dotProduct;',
+            'dirDiffuse += max(0.5 * dotProduct, 0.0) * directionalLights[i].color;',
+            '}',
+            '#endif',
 
             //Fade out atmosphere at edge
-            "float viewDot = abs(dot(normal, viewPosition));",
-            "viewDot = clamp(pow(viewDot + 0.6, 10.0), 0.0, 1.0);",
+            'float viewDot = abs(dot(normal, viewPosition));',
+            'viewDot = clamp(pow(viewDot + 0.6, 10.0), 0.0, 1.0);',
 
-            "vec3 color = vec3(0.05, 0.09, 0.13) * dirDiffuse;",
-            "gl_FragColor = vec4(color, viewDot);",
+            'vec3 color = vec3(0.05, 0.09, 0.13) * dirDiffuse;',
+            'gl_FragColor = vec4(color, viewDot);',
 
-            "}"
+            '}'
 
-          ].join("\n")
+          ].join('\n')
         };
 
         const earthAtmoMat = new v3d.ShaderMaterial(atmoShader);
@@ -270,34 +271,34 @@
 
         const vBGShader = [
           // "attribute vec2 uv;",
-          "varying vec2 vUv;",
-          "void main() {",
-          "vUv = uv;",
-          "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
-          "}"
+          'varying vec2 vUv;',
+          'void main() {',
+          'vUv = uv;',
+          'gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
+          '}'
 
-        ].join("\n");
+        ].join('\n');
 
         const pBGShader = [
 
-          "uniform sampler2D map;",
-          "varying vec2 vUv;",
+          'uniform sampler2D map;',
+          'varying vec2 vUv;',
 
-          "void main() {",
+          'void main() {',
 
-          "vec2 sampleUV = vUv;",
-          "vec4 color = texture2D(map, sampleUV, 0.0);",
+          'vec2 sampleUV = vUv;',
+          'vec4 color = texture2D(map, sampleUV, 0.0);',
 
-          "gl_FragColor = vec4(color.xyz, 1.0);",
+          'gl_FragColor = vec4(color.xyz, 1.0);',
 
-          "}"
+          '}'
 
-        ].join("\n");
+        ].join('\n');
 
         // Skybox
         adaptiveLuminanceMat = new v3d.ShaderMaterial({
           uniforms: {
-            "map": { value: null }
+            'map': { value: null }
           },
           vertexShader: vBGShader,
           fragmentShader: pBGShader,
@@ -308,7 +309,7 @@
 
         currentLuminanceMat = new v3d.ShaderMaterial({
           uniforms: {
-            "map": { value: null }
+            'map': { value: null }
           },
           vertexShader: vBGShader,
           fragmentShader: pBGShader,
@@ -318,21 +319,21 @@
         });
 
         let quadBG = new v3d.Mesh(new v3d.PlaneGeometry(0.1, 0.1), currentLuminanceMat);
-        quadBG.position.z = - 500;
+        quadBG.position.z = -500;
         quadBG.position.x = -window.innerWidth * 0.5 + window.innerWidth * 0.05;
         quadBG.scale.set(window.innerWidth, window.innerHeight, 1);
         debugScene.add(quadBG);
 
         quadBG = new v3d.Mesh(new v3d.PlaneGeometry(0.1, 0.1), adaptiveLuminanceMat);
-        quadBG.position.z = - 500;
+        quadBG.position.z = -500;
         quadBG.position.x = -window.innerWidth * 0.5 + window.innerWidth * 0.15;
         quadBG.scale.set(window.innerWidth, window.innerHeight, 1);
         debugScene.add(quadBG);
 
-        const r = "textures/cube/MilkyWay/";
-        const urls = [r + "dark-s_px.jpg", r + "dark-s_nx.jpg",
-               r + "dark-s_py.jpg", r + "dark-s_ny.jpg",
-               r + "dark-s_pz.jpg", r + "dark-s_nz.jpg"];
+        const r = 'textures/cube/MilkyWay/';
+        const urls = [r + 'dark-s_px.jpg', r + 'dark-s_nx.jpg',
+               r + 'dark-s_py.jpg', r + 'dark-s_ny.jpg',
+               r + 'dark-s_pz.jpg', r + 'dark-s_nz.jpg'];
 
         const textureCube = new v3d.CubeTextureLoader().load(urls);
         textureCube.encoding = v3d.sRGBEncoding;
@@ -441,15 +442,15 @@
         requestAnimationFrame(animate);
         if (bloomPass) {
 
-          bloomPass.copyUniforms["opacity"].value = params.bloomAmount;
+          bloomPass.combineUniforms['strength'].value = params.bloomAmount;
 
         }
 
         if (adaptToneMappingPass) {
 
           adaptToneMappingPass.setAdaptionRate(params.adaptionRate);
-          adaptiveLuminanceMat.uniforms["map"].value = adaptToneMappingPass.luminanceRT;
-          currentLuminanceMat.uniforms["map"].value = adaptToneMappingPass.currentLuminanceRT;
+          adaptiveLuminanceMat.uniforms['map'].value = adaptToneMappingPass.luminanceRT;
+          currentLuminanceMat.uniforms['map'].value = adaptToneMappingPass.currentLuminanceRT;
 
           adaptToneMappingPass.enabled = params.enabled;
           adaptToneMappingPass.setMaxLuminance(params.maxLuminance);

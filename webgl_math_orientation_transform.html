@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -116,7 +117,7 @@
         // generate a random point on a sphere
 
         spherical.theta = Math.random() * Math.PI * 2;
-        spherical.phi = Math.acos((2 * Math.random()) - 1);
+        spherical.phi = Math.acos((2 * Math.random()) -1);
         spherical.radius = 2;
 
         target.position.setFromSpherical(spherical);

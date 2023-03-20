@@ -82,7 +82,7 @@ var hMap = (function(cd, mb, r) {
     var l = new u16(mb);
     // length of cd must be 288 (total # of codes)
     for (; i < s; ++i)
-        ++l[cd[i] - 1];
+        ++l[cd[i] -1];
     // u16 "map": index -> minimum code for bit length = index
     var le = new u16(mb);
     for (i = 0; i < mb; ++i) {
@@ -102,9 +102,9 @@ var hMap = (function(cd, mb, r) {
                 // free bits
                 var r_1 = mb - cd[i];
                 // start value
-                var v = le[cd[i] - 1]++ << r_1;
+                var v = le[cd[i] -1]++ << r_1;
                 // m is end value
-                for (var m = v | ((1 << r_1) - 1); v <= m; ++v) {
+                for (var m = v | ((1 << r_1) -1); v <= m; ++v) {
                     // every 16 bit value starting with the code yields the same result
                     co[rev[v] >>> rvb] = sv;
                 }
@@ -115,7 +115,7 @@ var hMap = (function(cd, mb, r) {
         co = new u16(s);
         for (i = 0; i < s; ++i) {
             if (cd[i]) {
-                co[i] = rev[le[cd[i] - 1]++] >>> (15 - cd[i]);
+                co[i] = rev[le[cd[i] -1]++] >>> (15 - cd[i]);
             }
         }
     }
@@ -243,7 +243,7 @@ var inflt = function(dat, buf, st) {
                 }
                 pos += hcLen * 3;
                 // code lengths bits
-                var clb = max(clt), clbmsk = (1 << clb) - 1;
+                var clb = max(clt), clbmsk = (1 << clb) -1;
                 // code lengths map
                 var clm = hMap(clt, clb, 1);
                 for (var i = 0; i < tl;) {
@@ -290,7 +290,7 @@ var inflt = function(dat, buf, st) {
         // Maximum chunk size (practically, theoretically infinite) is 2^17;
         if (noBuf)
             cbuf(bt + 131072);
-        var lms = (1 << lbt) - 1, dms = (1 << dbt) - 1;
+        var lms = (1 << lbt) -1, dms = (1 << dbt) -1;
         var lpos = pos;
         for (;; lpos = pos) {
             // bits read, code
@@ -315,7 +315,7 @@ var inflt = function(dat, buf, st) {
                 if (sym > 264) {
                     // index
                     var i = sym - 257, b = fleb[i];
-                    add = bits(dat, pos, (1 << b) - 1) + fl[i];
+                    add = bits(dat, pos, (1 << b) -1) + fl[i];
                     pos += b;
                 }
                 // dist
@@ -326,7 +326,7 @@ var inflt = function(dat, buf, st) {
                 var dt = fd[dsym];
                 if (dsym > 3) {
                     var b = fdeb[dsym];
-                    dt += bits16(dat, pos) & ((1 << b) - 1), pos += b;
+                    dt += bits16(dat, pos) & ((1 << b) -1), pos += b;
                 }
                 if (pos > tbts) {
                     if (noSt)
@@ -429,7 +429,7 @@ var hTree = function(d, mb) {
         while (dt > 0) {
             var i2_2 = t2[i].s;
             if (tr[i2_2] < mb)
-                dt -= 1 << (mb - tr[i2_2]++ - 1);
+                dt -= 1 << (mb - tr[i2_2]++ -1);
             else
                 ++i;
         }
@@ -603,7 +603,7 @@ var dflt = function(dat, lvl, plvl, pre, post, lst) {
     else {
         var opt = deo[lvl - 1];
         var n = opt >>> 13, c = opt & 8191;
-        var msk_1 = (1 << plvl) - 1;
+        var msk_1 = (1 << plvl) -1;
         //    prev 2-byte val map    curr 2-byte val map
         var prev = new u16(32768), head = new u16(msk_1 + 1);
         var bs1_1 = Math.ceil(plvl / 3), bs2_1 = 2 * bs1_1;
@@ -639,7 +639,7 @@ var dflt = function(dat, lvl, plvl, pre, post, lst) {
                 //  len    dist   chain
                 var l = 2, d = 0, ch_1 = c, dif = (imod - pimod) & 32767;
                 if (rem > 2 && hv == hsh(i - dif)) {
-                    var maxn = Math.min(n, rem) - 1;
+                    var maxn = Math.min(n, rem) -1;
                     var maxd = Math.min(32767, i);
                     // max possible length
                     // not capped at dif because decompressors implement "rolling" index population
@@ -1507,7 +1507,7 @@ var dutf8 = function(d) {
         if (!eb)
             r += String.fromCharCode(c);
         else if (eb == 3) {
-            c = ((c & 15) << 18 | (d[i++] & 63) << 12 | (d[i++] & 63) << 6 | (d[i++] & 63)) - 65536,
+            c = ((c & 15) << 18 | (d[i++] & 63) << 12 | (d[i++] & 63) << 6 | (d[i++] & 63)) -65536,
                 r += String.fromCharCode(55296 | (c >> 10), 56320 | (c & 1023));
         }
         else if (eb & 1)
@@ -1695,7 +1695,7 @@ var wzh = function(d, b, f, fn, u, c, ce, co) {
     d[b] = 20, b += 2; // spec compliance? what's that?
     d[b++] = (f.flag << 1) | (c == null && 8), d[b++] = u && 8;
     d[b++] = f.compression & 255, d[b++] = f.compression >> 8;
-    var dt = new Date(f.mtime == null ? Date.now() : f.mtime), y = dt.getFullYear() - 1980;
+    var dt = new Date(f.mtime == null ? Date.now() : f.mtime), y = dt.getFullYear() -1980;
     if (y < 0 || y > 119)
         throw 'date not in range 1980-2099';
     wbytes(d, b, (y << 25) | ((dt.getMonth() + 1) << 21) | (dt.getDate() << 16) | (dt.getHours() << 11) | (dt.getMinutes() << 5) | (dt.getSeconds() >>> 1)), b += 4;

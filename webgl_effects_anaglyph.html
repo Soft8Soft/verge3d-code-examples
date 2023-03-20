@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,7 +29,7 @@
 
       import * as v3d from 'v3d';
 
-      import { AnaglyphEffect } from './jsm/effects/AnaglyphEffect.js';
+      import { AnaglyphEffect } from 'v3d/addons/effects/AnaglyphEffect.js';
 
       let container, camera, scene, renderer, effect;
 

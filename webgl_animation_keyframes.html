@@ -34,7 +34,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -43,13 +44,13 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { RoomEnvironment } from './jsm/environments/RoomEnvironment.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { RoomEnvironment } from 'v3d/addons/environments/RoomEnvironment.js';
 
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { DRACOLoader } from './jsm/loaders/DRACOLoader.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { DRACOLoader } from 'v3d/addons/loaders/DRACOLoader.js';
 
       let mixer;
 
@@ -81,7 +82,7 @@
       controls.enableDamping = true;
 
       const dracoLoader = new DRACOLoader();
-      dracoLoader.setDecoderPath('js/libs/draco/gltf/');
+      dracoLoader.setDecoderPath('jsm/libs/draco/gltf/');
 
       const loader = new GLTFLoader();
       loader.setDRACOLoader(dracoLoader);

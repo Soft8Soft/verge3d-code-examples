@@ -18,10 +18,12 @@ class LineSegmentsGeometry extends InstancedBufferGeometry {
 
         super();
 
+        this.isLineSegmentsGeometry = true;
+
         this.type = 'LineSegmentsGeometry';
 
-        const positions = [- 1, 2, 0, 1, 2, 0, - 1, 1, 0, 1, 1, 0, - 1, 0, 0, 1, 0, 0, - 1, - 1, 0, 1, - 1, 0];
-        const uvs = [- 1, 2, 1, 2, - 1, 1, 1, 1, - 1, - 1, 1, - 1, - 1, - 2, 1, - 2];
+        const positions = [- 1, 2, 0, 1, 2, 0, -1, 1, 0, 1, 1, 0, -1, 0, 0, 1, 0, 0, -1, -1, 0, 1, -1, 0];
+        const uvs = [- 1, 2, 1, 2, -1, 1, 1, 1, -1, -1, 1, -1, -1, -2, 1, -2];
         const index = [0, 2, 1, 2, 3, 1, 2, 4, 3, 4, 5, 3, 4, 6, 5, 6, 7, 5];
 
         this.setIndex(index);
@@ -142,16 +144,7 @@ class LineSegmentsGeometry extends InstancedBufferGeometry {
 
         const geometry = lineSegments.geometry;
 
-        if (geometry.isGeometry) {
-
-            console.error('v3d.LineSegmentsGeometry no longer supports Geometry. Use v3d.BufferGeometry instead.');
-            return;
-
-        } else if (geometry.isBufferGeometry) {
-
-            this.setPositions(geometry.attributes.position.array); // assumes non-indexed
-
-        }
+        this.setPositions(geometry.attributes.position.array); // assumes non-indexed
 
         // set colors, maybe
 
@@ -244,7 +237,5 @@ class LineSegmentsGeometry extends InstancedBufferGeometry {
     }
 
 }
-
-LineSegmentsGeometry.prototype.isLineSegmentsGeometry = true;
 
 export { LineSegmentsGeometry };

@@ -53,7 +53,7 @@ function frameCorners(camera, bottomLeftCorner, bottomRightCorner, topLeftCorner
         2.0 * n / (t - b),
         (t + b) / (t - b), 0.0, 0.0, 0.0,
         (f + n) / (n - f),
-        2.0 * f * n / (n - f), 0.0, 0.0, - 1.0, 0.0);
+        2.0 * f * n / (n - f), 0.0, 0.0, -1.0, 0.0);
     camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
 
     // FoV estimation to fix frustum culling

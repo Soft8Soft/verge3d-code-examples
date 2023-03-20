@@ -31,7 +31,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -40,7 +41,7 @@
 
       import * as v3d from 'v3d';
 
-      import { UVsDebug } from './jsm/utils/UVsDebug.js';
+      import { UVsDebug } from 'v3d/addons/utils/UVsDebug.js';
 
       /*
        * This is to help debug UVs problems in geometry,

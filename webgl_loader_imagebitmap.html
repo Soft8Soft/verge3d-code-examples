@@ -18,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -36,7 +37,6 @@
       function addImageBitmap() {
 
         new v3d.ImageBitmapLoader()
-          .setOptions({ imageOrientation: 'none' })
           .load('textures/planets/earth_atmos_2048.jpg?' + performance.now(), function(imageBitmap) {
 
             const texture = new v3d.CanvasTexture(imageBitmap);

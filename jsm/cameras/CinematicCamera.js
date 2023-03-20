@@ -119,7 +119,7 @@ class CinematicCamera extends PerspectiveCamera {
 
             this.postprocessing.scene = new Scene();
 
-            this.postprocessing.camera = new OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2,    window.innerHeight / 2, window.innerHeight / - 2, - 10000, 10000);
+            this.postprocessing.camera = new OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2,    window.innerHeight / 2, window.innerHeight / -2, -10000, 10000);
 
             this.postprocessing.scene.add(this.postprocessing.camera);
 
@@ -164,7 +164,7 @@ class CinematicCamera extends PerspectiveCamera {
             });
 
             this.postprocessing.quad = new Mesh(new PlaneGeometry(window.innerWidth, window.innerHeight), this.postprocessing.materialBokeh);
-            this.postprocessing.quad.position.z = - 500;
+            this.postprocessing.quad.position.z = -500;
             this.postprocessing.scene.add(this.postprocessing.quad);
 
         }

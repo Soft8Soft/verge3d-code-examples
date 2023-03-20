@@ -50,7 +50,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -169,20 +170,20 @@
             zscene.add(zmesh);
 
             const meshFrame = new v3d.Mesh(geometry, new v3d.MeshBasicMaterial({ color: 0x000000 }));
-            meshFrame.position.z = - 10.0;
+            meshFrame.position.z = -10.0;
             meshFrame.scale.x = 1.1 * image.width / 100;
             meshFrame.scale.y = 1.1 * image.height / 100;
             zscene.add(meshFrame);
 
             const meshShadow = new v3d.Mesh(geometry, new v3d.MeshBasicMaterial({ color: 0x000000, opacity: 0.75, transparent: true }));
-            meshShadow.position.y = - 1.1 * image.height / 2;
-            meshShadow.position.z = - 1.1 * image.height / 2;
+            meshShadow.position.y = -1.1 * image.height / 2;
+            meshShadow.position.z = -1.1 * image.height / 2;
             meshShadow.rotation.x = - Math.PI / 2;
             meshShadow.scale.x = 1.1 * image.width / 100;
             meshShadow.scale.y = 1.1 * image.height / 100;
             zscene.add(meshShadow);
 
-            const floorHeight = - 1.117 * image.height / 2;
+            const floorHeight = -1.117 * image.height / 2;
             meshCanvas1.position.y = meshCanvas2.position.y = floorHeight;
 
           }

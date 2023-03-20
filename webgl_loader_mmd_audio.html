@@ -8,6 +8,7 @@
     <style>
       body {
         color: #444;
+        background: #fff;
       }
       a {
         color: #08f;
@@ -29,7 +30,7 @@
     Camera is customized from <a href="http://www.nicovideo.jp/watch/sm19168559" target="_blank" rel="noopener">this Data</a>
     </div>
 
-    <script src="js/libs/ammo.wasm.js"></script>
+    <script src="jsm/libs/ammo.wasm.js"></script>
 
     <!-- Import maps polyfill -->
     <!-- Remove this when import maps will be widely supported -->
@@ -38,7 +39,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -47,9 +49,9 @@
 
       import * as v3d from 'v3d';
 
-      import { OutlineEffect } from './jsm/effects/OutlineEffect.js';
-      import { MMDLoader } from './jsm/loaders/MMDLoader.js';
-      import { MMDAnimationHelper } from './jsm/animation/MMDAnimationHelper.js';
+      import { OutlineEffect } from 'v3d/addons/effects/OutlineEffect.js';
+      import { MMDLoader } from 'v3d/addons/loaders/MMDLoader.js';
+      import { MMDAnimationHelper } from 'v3d/addons/animation/MMDAnimationHelper.js';
 
       let mesh, camera, scene, renderer, effect;
       let helper;
@@ -85,7 +87,7 @@
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0xffffff);
 
-        scene.add(new v3d.PolarGridHelper(30, 10));
+        scene.add(new v3d.PolarGridHelper(30, 0));
 
         const listener = new v3d.AudioListener();
         camera.add(listener);

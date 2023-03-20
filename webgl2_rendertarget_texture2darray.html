@@ -81,7 +81,7 @@
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">
         Verge3D
       </a>
-      - 2D Texture array framebuffer color attachment
+      -2D Texture array framebuffer color attachment
       <br />
 
       <p>
@@ -102,7 +102,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -111,11 +112,11 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { unzipSync } from './jsm/libs/fflate.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { unzipSync } from 'v3d/addons/libs/fflate.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import WebGL from './jsm/capabilities/WebGL.js';
+      import WebGL from 'v3d/addons/capabilities/WebGL.js';
 
       if (WebGL.isWebGL2Available() === false) {
 
@@ -136,15 +137,10 @@
       /** Post-processing objects */
 
       const postProcessScene = new v3d.Scene();
-      const postProcessCamera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
+      const postProcessCamera = new v3d.OrthographicCamera(- 1, 1, 1, -1, 0, 1);
 
-      const renderTargetTexture = new v3d.DataTexture2DArray();
-      renderTargetTexture.format = v3d.RedFormat;
-      renderTargetTexture.type = v3d.UnsignedByteType;
-
-      const renderTarget = new v3d.WebGLRenderTarget(DIMENSIONS.width, DIMENSIONS.height);
-      renderTarget.depth = DIMENSIONS.depth;
-      renderTarget.setTexture(renderTargetTexture);
+      const renderTarget = new v3d.WebGLArrayRenderTarget(DIMENSIONS.width, DIMENSIONS.height, DIMENSIONS.depth);
+      renderTarget.texture.format = v3d.RedFormat;
 
       const postProcessMaterial = new v3d.ShaderMaterial({
         uniforms: {
@@ -177,7 +173,7 @@
 
         /** Post-processing scene */
 
-        const planeGeometry = new v3d.PlaneBufferGeometry(2, 2);
+        const planeGeometry = new v3d.PlaneGeometry(2, 2);
         const screenQuad = new v3d.Mesh(planeGeometry, postProcessMaterial);
         postProcessScene.add(screenQuad);
 
@@ -207,7 +203,7 @@
             var zip = unzipSync(new Uint8Array(data));
             const array = new Uint8Array(zip['head256x256x109'].buffer);
 
-            const texture = new v3d.DataTexture2DArray(array, DIMENSIONS.width, DIMENSIONS.height, DIMENSIONS.depth);
+            const texture = new v3d.DataArrayTexture(array, DIMENSIONS.width, DIMENSIONS.height, DIMENSIONS.depth);
             texture.format = v3d.RedFormat;
             texture.needsUpdate = true;
 
@@ -221,7 +217,7 @@
               fragmentShader: document.getElementById('fs').textContent.trim()
             });
 
-            var geometry = new v3d.PlaneBufferGeometry(planeWidth, planeHeight);
+            var geometry = new v3d.PlaneGeometry(planeWidth, planeHeight);
 
             mesh = new v3d.Mesh(geometry, material);
 
@@ -282,8 +278,7 @@
 
       function render() {
 
-        // Step 1 - Render the input DataTexture2DArray into a
-        // DataTexture2DArray render target.
+        // Step 1 - Render the input DataArrayTexture into render target
         renderTo2DArray();
 
         // Step 2 - Renders the scene containing the plane with a material

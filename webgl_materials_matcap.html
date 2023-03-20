@@ -10,7 +10,7 @@
   <body>
     <div id="info">
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - webgl materials matcap<br />
-      Drag-and-drop JPG, PNG, or EXR MatCap image files<br/>
+      Drag-and-drop JPG, PNG, WebP, or EXR MatCap image files<br/>
     </div>
 
     <!-- Import maps polyfill -->
@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,10 +30,10 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { EXRLoader } from './jsm/loaders/EXRLoader.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { EXRLoader } from 'v3d/addons/loaders/EXRLoader.js';
 
       let mesh, renderer, scene, camera;
 
@@ -86,7 +87,7 @@
         new GLTFLoader(manager).load('models/gltf/LeePerrySmith/LeePerrySmith.glb', function(gltf) {
 
           mesh = gltf.scene.children[0];
-          mesh.position.y = - 0.25;
+          mesh.position.y = -0.25;
 
           mesh.material = new v3d.MeshMatcapMaterial({
 
@@ -168,7 +169,7 @@
 
       }
 
-      function handleJPG(event) { // PNG, too
+      function handleJPG(event) { // PNG, WebP, too
 
         function imgCallback(event) {
 

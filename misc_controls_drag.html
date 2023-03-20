@@ -30,7 +30,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -39,7 +40,7 @@
 
       import * as v3d from 'v3d';
 
-      import { DragControls } from './jsm/controls/DragControls.js';
+      import { DragControls } from 'v3d/addons/controls/DragControls.js';
 
       let container;
       let camera, scene, renderer;

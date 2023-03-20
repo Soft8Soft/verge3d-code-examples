@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,7 +29,7 @@
 
       import * as v3d from 'v3d';
 
-      import { PVRLoader } from './jsm/loaders/PVRLoader.js';
+      import { PVRLoader } from 'v3d/addons/loaders/PVRLoader.js';
 
       let camera, scene, renderer;
       const meshes = [];
@@ -103,13 +104,13 @@
         //
 
         let mesh = new v3d.Mesh(geometry, material1);
-        mesh.position.x = - 500;
+        mesh.position.x = -500;
         mesh.position.y = 200;
         scene.add(mesh);
         meshes.push(mesh);
 
         mesh = new v3d.Mesh(geometry, material2);
-        mesh.position.x = - 166;
+        mesh.position.x = -166;
         mesh.position.y = 200;
         scene.add(mesh);
         meshes.push(mesh);
@@ -127,14 +128,14 @@
         meshes.push(mesh);
 
         mesh = new v3d.Mesh(geometry, material4);
-        mesh.position.x = - 500;
-        mesh.position.y = - 200;
+        mesh.position.x = -500;
+        mesh.position.y = -200;
         scene.add(mesh);
         meshes.push(mesh);
 
         mesh = new v3d.Mesh(geometry, material5);
-        mesh.position.x = - 166;
-        mesh.position.y = - 200;
+        mesh.position.x = -166;
+        mesh.position.y = -200;
         scene.add(mesh);
         meshes.push(mesh);
 
@@ -142,13 +143,13 @@
 
         mesh = new v3d.Mesh(torus, material6);
         mesh.position.x = 166;
-        mesh.position.y = - 200;
+        mesh.position.y = -200;
         scene.add(mesh);
         meshes.push(mesh);
 
         mesh = new v3d.Mesh(torus, material8);
         mesh.position.x = 500;
-        mesh.position.y = - 200;
+        mesh.position.y = -200;
         scene.add(mesh);
         meshes.push(mesh);
 

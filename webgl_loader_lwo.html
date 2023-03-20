@@ -22,7 +22,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -31,8 +32,8 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { LWOLoader } from './jsm/loaders/LWOLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { LWOLoader } from 'v3d/addons/loaders/LWOLoader.js';
 
       let camera, scene, renderer;
 
@@ -71,7 +72,7 @@
           standard.position.set(2, 12, 0);
 
           const rocket = object.meshes[2];
-          rocket.position.set(0, 10.5, - 1);
+          rocket.position.set(0, 10.5, -1);
 
           scene.add(phong, standard, rocket);
 
@@ -86,7 +87,7 @@
         container.appendChild(renderer.domElement);
 
         const controls = new OrbitControls(camera, renderer.domElement);
-        controls.target.set(1.33, 10, - 6.7);
+        controls.target.set(1.33, 10, -6.7);
         controls.update();
 
         window.addEventListener('resize', onWindowResize);

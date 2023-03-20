@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,9 +28,9 @@
     <script type="module">
 
       import * as v3d from 'v3d';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { MarchingCubes } from './jsm/objects/MarchingCubes.js';
-      import { VRButton } from './jsm/webxr/VRButton.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { MarchingCubes } from 'v3d/addons/objects/MarchingCubes.js';
+      import { VRButton } from 'v3d/addons/webxr/VRButton.js';
 
       let container;
       let camera, scene, renderer;
@@ -135,7 +136,7 @@
 
         const pivot = new v3d.Mesh(new v3d.IcosahedronGeometry(0.01, 3));
         pivot.name = 'pivot';
-        pivot.position.z = - 0.05;
+        pivot.position.z = -0.05;
         mesh.add(pivot);
 
         controller1.add(mesh.clone());
@@ -181,7 +182,7 @@
 
         points = [
           { position: new v3d.Vector3(), strength: 0.04, subtract: 10 },
-          { position: new v3d.Vector3(), strength: - 0.08, subtract: 10 }
+          { position: new v3d.Vector3(), strength: -0.08, subtract: 10 }
         ];
 
       }

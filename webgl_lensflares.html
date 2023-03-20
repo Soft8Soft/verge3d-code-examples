@@ -21,7 +21,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -30,10 +31,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { FlyControls } from './jsm/controls/FlyControls.js';
-      import { Lensflare, LensflareElement } from './jsm/objects/Lensflare.js';
+      import { FlyControls } from 'v3d/addons/controls/FlyControls.js';
+      import { Lensflare, LensflareElement } from 'v3d/addons/objects/Lensflare.js';
 
       let container, stats;
 
@@ -72,9 +73,9 @@
 
           const mesh = new v3d.Mesh(geometry, material);
 
-          mesh.position.x = 8000 * (2.0 * Math.random() - 1.0);
-          mesh.position.y = 8000 * (2.0 * Math.random() - 1.0);
-          mesh.position.z = 8000 * (2.0 * Math.random() - 1.0);
+          mesh.position.x = 8000 * (2.0 * Math.random() -1.0);
+          mesh.position.y = 8000 * (2.0 * Math.random() -1.0);
+          mesh.position.z = 8000 * (2.0 * Math.random() -1.0);
 
           mesh.rotation.x = Math.random() * Math.PI;
           mesh.rotation.y = Math.random() * Math.PI;
@@ -91,7 +92,7 @@
         // lights
 
         const dirLight = new v3d.DirectionalLight(0xffffff, 0.05);
-        dirLight.position.set(0, - 1, 0).normalize();
+        dirLight.position.set(0, -1, 0).normalize();
         dirLight.color.setHSL(0.1, 0.7, 0.5);
         scene.add(dirLight);
 
@@ -101,9 +102,9 @@
         const textureFlare0 = textureLoader.load('textures/lensflare/lensflare0.png');
         const textureFlare3 = textureLoader.load('textures/lensflare/lensflare3.png');
 
-        addLight(0.55, 0.9, 0.5, 5000, 0, - 1000);
-        addLight(0.08, 0.8, 0.5, 0, 0, - 1000);
-        addLight(0.995, 0.5, 0.9, 5000, 5000, - 1000);
+        addLight(0.55, 0.9, 0.5, 5000, 0, -1000);
+        addLight(0.08, 0.8, 0.5, 0, 0, -1000);
+        addLight(0.995, 0.5, 0.9, 5000, 5000, -1000);
 
         function addLight(h, s, l, x, y, z) {
 

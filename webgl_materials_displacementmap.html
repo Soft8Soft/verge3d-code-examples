@@ -21,7 +21,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -30,11 +31,11 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { OBJLoader } from 'v3d/addons/loaders/OBJLoader.js';
       let stats;
 
       let camera, scene, renderer, controls;
@@ -103,7 +104,7 @@
 
         gui.add(settings, 'normalScale').min(- 1).max(1).onChange(function(value) {
 
-          material.normalScale.set(1, - 1).multiplyScalar(value);
+          material.normalScale.set(1, -1).multiplyScalar(value);
 
         });
 
@@ -146,7 +147,7 @@
         camera.add(pointLight2);
 
         const pointLight3 = new v3d.PointLight(0x0000ff, 0.5);
-        pointLight3.position.x = - 1000;
+        pointLight3.position.x = -1000;
         pointLight3.position.z = 1000;
         scene.add(pointLight3);
 
@@ -179,14 +180,14 @@
           metalness: settings.metalness,
 
           normalMap: normalMap,
-          normalScale: new v3d.Vector2(1, - 1), // why does the normal map require negation in this case?
+          normalScale: new v3d.Vector2(1, -1), // why does the normal map require negation in this case?
 
           aoMap: aoMap,
           aoMapIntensity: 1,
 
           displacementMap: displacementMap,
           displacementScale: settings.displacementScale,
-          displacementBias: - 0.428408, // from original model
+          displacementBias: -0.428408, // from original model
 
           envMap: reflectionCube,
           envMapIntensity: settings.envMapIntensity,

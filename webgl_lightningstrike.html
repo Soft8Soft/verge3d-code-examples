@@ -18,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,15 +28,15 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { LightningStrike } from './jsm/geometries/LightningStrike.js';
-      import { LightningStorm } from './jsm/objects/LightningStorm.js';
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { OutlinePass } from './jsm/postprocessing/OutlinePass.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { LightningStrike } from 'v3d/addons/geometries/LightningStrike.js';
+      import { LightningStorm } from 'v3d/addons/objects/LightningStorm.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { OutlinePass } from 'v3d/addons/postprocessing/OutlinePass.js';
 
       let container, stats;
 
@@ -125,7 +126,7 @@
         });
 
         scene.userData.timeRate = 1;
-        sceneFolder.add(scene.userData, 'timeRate', scene.userData.canGoBackwardsInTime ? - 1 : 0, 1).name('Time rate');
+        sceneFolder.add(scene.userData, 'timeRate', scene.userData.canGoBackwardsInTime ? -1 : 0, 1).name('Time rate');
 
         sceneFolder.open();
 
@@ -651,7 +652,7 @@
 
         scene.userData.lightningMaterial = new v3d.MeshBasicMaterial({ color: scene.userData.lightningColor });
 
-        const rayDirection = new v3d.Vector3(0, - 1, 0);
+        const rayDirection = new v3d.Vector3(0, -1, 0);
         let rayLength = 0;
         const vec1 = new v3d.Vector3();
         const vec2 = new v3d.Vector3();

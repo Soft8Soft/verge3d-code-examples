@@ -21,6 +21,8 @@ class Lensflare extends Mesh {
 
         super(Lensflare.Geometry, new MeshBasicMaterial({ opacity: 0, transparent: true }));
 
+        this.isLensflare = true;
+
         this.type = 'Lensflare';
         this.frustumCulled = false;
         this.renderOrder = Infinity;
@@ -265,8 +267,6 @@ class Lensflare extends Mesh {
 
 }
 
-Lensflare.prototype.isLensflare = true;
-
 //
 
 class LensflareElement {
@@ -359,10 +359,10 @@ Lensflare.Geometry = (function() {
     const geometry = new BufferGeometry();
 
     const float32Array = new Float32Array([
-        - 1, - 1, 0, 0, 0,
-        1, - 1, 0, 1, 0,
+        -1, -1, 0, 0, 0,
+        1, -1, 0, 1, 0,
         1, 1, 0, 1, 1,
-        - 1, 1, 0, 0, 1
+        -1, 1, 0, 0, 1
     ]);
 
     const interleavedBuffer = new InterleavedBuffer(float32Array, 5);

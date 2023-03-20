@@ -168,7 +168,7 @@ const VolumeRenderShader1 = {
                         }
 
                         // Refine location, gives crispier images
-                        vec3 iloc = start_loc + step * (float(max_i) - 0.5);
+                        vec3 iloc = start_loc + step * (float(max_i) -0.5);
                         vec3 istep = step / float(REFINEMENT_STEPS);
                         for (int i=0; i<REFINEMENT_STEPS; i++) {
                                 max_val = max(max_val, sample1(iloc));

@@ -15,7 +15,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -46,7 +47,7 @@
 
             const subcamera = new v3d.PerspectiveCamera(40, ASPECT_RATIO, 0.1, 10);
             subcamera.viewport = new v3d.Vector4(Math.floor(x * WIDTH), Math.floor(y * HEIGHT), Math.ceil(WIDTH), Math.ceil(HEIGHT));
-            subcamera.position.x = (x / AMOUNT) - 0.5;
+            subcamera.position.x = (x / AMOUNT) -0.5;
             subcamera.position.y = 0.5 - (y / AMOUNT);
             subcamera.position.z = 1.5;
             subcamera.position.multiplyScalar(2);
@@ -76,7 +77,7 @@
 
         const background = new v3d.Mesh(geometryBackground, materialBackground);
         background.receiveShadow = true;
-        background.position.set(0, 0, - 1);
+        background.position.set(0, 0, -1);
         scene.add(background);
 
         const geometryCylinder = new v3d.CylinderGeometry(0.5, 0.5, 1, 32);

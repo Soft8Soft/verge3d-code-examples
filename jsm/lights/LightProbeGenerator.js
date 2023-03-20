@@ -61,7 +61,7 @@ class LightProbeGenerator {
 
                 const pixelIndex = i / 4;
 
-                const col = - 1 + (pixelIndex % imageWidth + 0.5) * pixelSize;
+                const col = -1 + (pixelIndex % imageWidth + 0.5) * pixelSize;
 
                 const row = 1 - (Math.floor(pixelIndex / imageWidth) + 0.5) * pixelSize;
 
@@ -73,11 +73,11 @@ class LightProbeGenerator {
 
                     case 2: coord.set(- col, 1, - row); break;
 
-                    case 3: coord.set(- col, - 1, row); break;
+                    case 3: coord.set(- col, -1, row); break;
 
                     case 4: coord.set(- col, row, 1); break;
 
-                    case 5: coord.set(col, row, - 1); break;
+                    case 5: coord.set(col, row, -1); break;
 
                 }
 
@@ -159,7 +159,7 @@ class LightProbeGenerator {
 
                 const pixelIndex = i / 4;
 
-                const col = - 1 + (pixelIndex % imageWidth + 0.5) * pixelSize;
+                const col = -1 + (pixelIndex % imageWidth + 0.5) * pixelSize;
 
                 const row = 1 - (Math.floor(pixelIndex / imageWidth) + 0.5) * pixelSize;
 
@@ -171,11 +171,11 @@ class LightProbeGenerator {
 
                     case 2: coord.set(col, 1, - row); break;
 
-                    case 3: coord.set(col, - 1, row); break;
+                    case 3: coord.set(col, -1, row); break;
 
                     case 4: coord.set(col, row, 1); break;
 
-                    case 5: coord.set(- col, row, - 1); break;
+                    case 5: coord.set(- col, row, -1); break;
 
                 }
 

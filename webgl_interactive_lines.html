@@ -24,7 +24,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -33,7 +34,7 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
       let container, stats;
       let camera, scene, raycaster, renderer, parentTransform, sphereInter;
@@ -78,9 +79,9 @@
 
         for (let i = 0; i < 50; i++) {
 
-          direction.x += Math.random() - 0.5;
-          direction.y += Math.random() - 0.5;
-          direction.z += Math.random() - 0.5;
+          direction.x += Math.random() -0.5;
+          direction.y += Math.random() -0.5;
+          direction.z += Math.random() -0.5;
           direction.normalize().multiplyScalar(10);
 
           point.add(direction);

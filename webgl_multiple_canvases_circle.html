@@ -138,7 +138,8 @@
   <script type="importmap">
     {
       "imports": {
-        "v3d": "../build/v3d.module.js"
+        "v3d": "../build/v3d.module.js",
+        "v3d/addons/": "./jsm/"
       }
     }
   </script>
@@ -204,8 +205,8 @@
       const fudge = 0.45; // I don't know why this is needed :-(
       const rot = 30 * v3d.MathUtils.DEG2RAD;
 
-      views.push(new View(canvas1, rot * - 2 * fudge));
-      views.push(new View(canvas2, rot * - 1 * fudge));
+      views.push(new View(canvas1, rot * -2 * fudge));
+      views.push(new View(canvas2, rot * -1 * fudge));
       views.push(new View(canvas3, rot *  0 * fudge));
       views.push(new View(canvas4, rot *  1 * fudge));
       views.push(new View(canvas5, rot *  2 * fudge));
@@ -244,7 +245,7 @@
 
         const shadowMesh = new v3d.Mesh(shadowGeo, shadowMaterial);
         shadowMesh.position.x = - (noof_balls - 1) / 2 * 400 + i * 400;
-        shadowMesh.position.y = - 250;
+        shadowMesh.position.y = -250;
         shadowMesh.rotation.x = - Math.PI / 2;
         scene.add(shadowMesh);
 

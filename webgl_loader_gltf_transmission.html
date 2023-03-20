@@ -21,7 +21,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -30,11 +31,11 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { RGBELoader } from './jsm/loaders/RGBELoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { RGBELoader } from 'v3d/addons/loaders/RGBELoader.js';
 
-      import { DRACOLoader } from './jsm/loaders/DRACOLoader.js';
+      import { DRACOLoader } from 'v3d/addons/loaders/DRACOLoader.js';
 
       let camera, scene, renderer, controls, clock, mixer;
 
@@ -66,7 +67,7 @@
 
             new GLTFLoader()
               .setPath('models/gltf/')
-              .setDRACOLoader(new DRACOLoader().setDecoderPath('js/libs/draco/gltf/'))
+              .setDRACOLoader(new DRACOLoader().setDecoderPath('jsm/libs/draco/gltf/'))
               .load('IridescentDishWithOlives.glb', function(gltf) {
 
                 mixer = new v3d.AnimationMixer(gltf.scene);

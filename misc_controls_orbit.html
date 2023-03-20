@@ -29,7 +29,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -38,7 +39,7 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       let camera, controls, scene, renderer;
 
@@ -101,7 +102,7 @@
         scene.add(dirLight1);
 
         const dirLight2 = new v3d.DirectionalLight(0x002288);
-        dirLight2.position.set(- 1, - 1, - 1);
+        dirLight2.position.set(- 1, -1, -1);
         scene.add(dirLight2);
 
         const ambientLight = new v3d.AmbientLight(0x222222);

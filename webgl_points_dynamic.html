@@ -22,7 +22,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -31,15 +32,15 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
-      import { BloomPass } from './jsm/postprocessing/BloomPass.js';
-      import { FilmPass } from './jsm/postprocessing/FilmPass.js';
-      import { FocusShader } from './jsm/shaders/FocusShader.js';
-      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { ShaderPass } from 'v3d/addons/postprocessing/ShaderPass.js';
+      import { BloomPass } from 'v3d/addons/postprocessing/BloomPass.js';
+      import { FilmPass } from 'v3d/addons/postprocessing/FilmPass.js';
+      import { FocusShader } from 'v3d/addons/shaders/FocusShader.js';
+      import { OBJLoader } from 'v3d/addons/loaders/OBJLoader.js';
 
       let camera, scene, renderer, mesh;
 
@@ -75,10 +76,10 @@
 
           const positions = combineBuffer(object, 'position');
 
-          createMesh(positions, scene, 4.05, - 500, - 350, 600, 0xff7744);
-          createMesh(positions, scene, 4.05, 500, - 350, 0, 0xff5522);
-          createMesh(positions, scene, 4.05, - 250, - 350, 1500, 0xff9922);
-          createMesh(positions, scene, 4.05, - 250, - 350, - 1500, 0xff99ff);
+          createMesh(positions, scene, 4.05, -500, -350, 600, 0xff7744);
+          createMesh(positions, scene, 4.05, 500, -350, 0, 0xff5522);
+          createMesh(positions, scene, 4.05, -250, -350, 1500, 0xff9922);
+          createMesh(positions, scene, 4.05, -250, -350, -1500, 0xff99ff);
 
         });
 
@@ -86,11 +87,11 @@
 
           const positions = combineBuffer(object, 'position');
 
-          createMesh(positions, scene, 4.05, - 1000, - 350, 0, 0xffdd44);
-          createMesh(positions, scene, 4.05, 0, - 350, 0, 0xffffff);
-          createMesh(positions, scene, 4.05, 1000, - 350, 400, 0xff4422);
-          createMesh(positions, scene, 4.05, 250, - 350, 1500, 0xff9955);
-          createMesh(positions, scene, 4.05, 250, - 350, 2500, 0xff77dd);
+          createMesh(positions, scene, 4.05, -1000, -350, 0, 0xffdd44);
+          createMesh(positions, scene, 4.05, 0, -350, 0, 0xffffff);
+          createMesh(positions, scene, 4.05, 1000, -350, 400, 0xff4422);
+          createMesh(positions, scene, 4.05, 250, -350, 1500, 0xff9955);
+          createMesh(positions, scene, 4.05, 250, -350, 2500, 0xff77dd);
 
         });
 
@@ -105,7 +106,7 @@
         scene.add(parent);
 
         const grid = new v3d.Points(new v3d.PlaneGeometry(15000, 15000, 64, 64), new v3d.PointsMaterial({ color: 0xff0000, size: 10 }));
-        grid.position.y = - 400;
+        grid.position.y = -400;
         grid.rotation.x = - Math.PI / 2;
         parent.add(grid);
 
@@ -117,8 +118,8 @@
 
         effectFocus = new ShaderPass(FocusShader);
 
-        effectFocus.uniforms["screenWidth"].value = window.innerWidth * window.devicePixelRatio;
-        effectFocus.uniforms["screenHeight"].value = window.innerHeight * window.devicePixelRatio;
+        effectFocus.uniforms['screenWidth'].value = window.innerWidth * window.devicePixelRatio;
+        effectFocus.uniforms['screenHeight'].value = window.innerHeight * window.devicePixelRatio;
 
         composer = new EffectComposer(renderer);
 
@@ -146,8 +147,8 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         composer.setSize(window.innerWidth, window.innerHeight);
 
-        effectFocus.uniforms["screenWidth"].value = window.innerWidth * window.devicePixelRatio;
-        effectFocus.uniforms["screenHeight"].value = window.innerHeight * window.devicePixelRatio;
+        effectFocus.uniforms['screenWidth'].value = window.innerWidth * window.devicePixelRatio;
+        effectFocus.uniforms['screenHeight'].value = window.innerHeight * window.devicePixelRatio;
 
       }
 
@@ -198,13 +199,13 @@
 
         const clones = [
 
-          [6000, 0, - 4000],
+          [6000, 0, -4000],
           [5000, 0, 0],
           [1000, 0, 5000],
-          [1000, 0, - 5000],
+          [1000, 0, -5000],
           [4000, 0, 2000],
           [- 4000, 0, 1000],
-          [- 5000, 0, - 5000],
+          [- 5000, 0, -5000],
 
           [0, 0, 0]
 
@@ -248,12 +249,12 @@
 
         delta = delta < 2 ? delta : 2;
 
-        parent.rotation.y += - 0.02 * delta;
+        parent.rotation.y += -0.02 * delta;
 
         for (let j = 0; j < clonemeshes.length; j ++) {
 
           const cm = clonemeshes[j];
-          cm.mesh.rotation.y += - 0.1 * delta * cm.speed;
+          cm.mesh.rotation.y += -0.1 * delta * cm.speed;
 
         }
 
@@ -273,7 +274,7 @@
 
             if (data.direction === 0) {
 
-              data.direction = - 1;
+              data.direction = -1;
 
             }
 
@@ -360,7 +361,7 @@
 
             if (data.delay <= 0) {
 
-              data.direction = - 1;
+              data.direction = -1;
               data.speed = 15;
               data.verticesUp = 0;
               data.delay = 120;

@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,7 +30,7 @@
 
       import * as v3d from 'v3d';
 
-      import { XYZLoader } from './jsm/loaders/XYZLoader.js';
+      import { XYZLoader } from 'v3d/addons/loaders/XYZLoader.js';
 
       let camera, scene, renderer, clock;
 

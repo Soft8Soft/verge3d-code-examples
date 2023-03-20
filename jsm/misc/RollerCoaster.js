@@ -35,12 +35,12 @@ class RollerCoasterGeometry extends BufferGeometry {
 
         const step = [
             new Vector3(- 0.225, 0, 0),
-            new Vector3(0, - 0.050, 0),
-            new Vector3(0, - 0.175, 0),
+            new Vector3(0, -0.050, 0),
+            new Vector3(0, -0.175, 0),
 
-            new Vector3(0, - 0.050, 0),
+            new Vector3(0, -0.050, 0),
             new Vector3(0.225, 0, 0),
-            new Vector3(0, - 0.175, 0)
+            new Vector3(0, -0.175, 0)
         ];
 
         const PI2 = Math.PI * 2;
@@ -70,7 +70,7 @@ class RollerCoasterGeometry extends BufferGeometry {
 
         function drawShape(shape, color) {
 
-            normal.set(0, 0, - 1).applyQuaternion(quaternion);
+            normal.set(0, 0, -1).applyQuaternion(quaternion);
 
             for (let j = 0; j < shape.length; j ++) {
 
@@ -201,7 +201,7 @@ class RollerCoasterGeometry extends BufferGeometry {
 
             }
 
-            extrudeShape(tube1, offset.set(0, - 0.125, 0), color2);
+            extrudeShape(tube1, offset.set(0, -0.125, 0), color2);
             extrudeShape(tube2, offset.set(0.2, 0, 0), color1);
             extrudeShape(tube2, offset.set(- 0.2, 0, 0), color1);
 
@@ -239,19 +239,19 @@ class RollerCoasterLiftersGeometry extends BufferGeometry {
         // shapes
 
         const tube1 = [
-            new Vector3(0, 0.05, - 0.05),
+            new Vector3(0, 0.05, -0.05),
             new Vector3(0, 0.05, 0.05),
-            new Vector3(0, - 0.05, 0)
+            new Vector3(0, -0.05, 0)
         ];
 
         const tube2 = [
             new Vector3(- 0.05, 0, 0.05),
-            new Vector3(- 0.05, 0, - 0.05),
+            new Vector3(- 0.05, 0, -0.05),
             new Vector3(0.05, 0, 0)
         ];
 
         const tube3 = [
-            new Vector3(0.05, 0, - 0.05),
+            new Vector3(0.05, 0, -0.05),
             new Vector3(0.05, 0, 0.05),
             new Vector3(- 0.05, 0, 0)
         ];
@@ -343,17 +343,17 @@ class RollerCoasterLiftersGeometry extends BufferGeometry {
 
             if (point.y > 10) {
 
-                fromPoint.set(- 0.75, - 0.35, 0);
+                fromPoint.set(- 0.75, -0.35, 0);
                 fromPoint.applyQuaternion(quaternion);
                 fromPoint.add(point);
 
-                toPoint.set(0.75, - 0.35, 0);
+                toPoint.set(0.75, -0.35, 0);
                 toPoint.applyQuaternion(quaternion);
                 toPoint.add(point);
 
                 extrudeShape(tube1, fromPoint, toPoint);
 
-                fromPoint.set(- 0.7, - 0.3, 0);
+                fromPoint.set(- 0.7, -0.3, 0);
                 fromPoint.applyQuaternion(quaternion);
                 fromPoint.add(point);
 
@@ -363,7 +363,7 @@ class RollerCoasterLiftersGeometry extends BufferGeometry {
 
                 extrudeShape(tube2, fromPoint, toPoint);
 
-                fromPoint.set(0.7, - 0.3, 0);
+                fromPoint.set(0.7, -0.3, 0);
                 fromPoint.applyQuaternion(quaternion);
                 fromPoint.add(point);
 
@@ -375,7 +375,7 @@ class RollerCoasterLiftersGeometry extends BufferGeometry {
 
             } else {
 
-                fromPoint.set(0, - 0.2, 0);
+                fromPoint.set(0, -0.2, 0);
                 fromPoint.applyQuaternion(quaternion);
                 fromPoint.add(point);
 
@@ -511,7 +511,7 @@ class TreesGeometry extends BufferGeometry {
         const colors = [];
 
         const raycaster = new Raycaster();
-        raycaster.ray.direction.set(0, - 1, 0);
+        raycaster.ray.direction.set(0, -1, 0);
 
         for (let i = 0; i < 2000; i++) {
 

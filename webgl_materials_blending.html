@@ -15,7 +15,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -87,8 +88,8 @@
         addImageRow(map0, 300);
         addImageRow(map1, 150);
         addImageRow(map2, 0);
-        addImageRow(map3, - 150);
-        addImageRow(map4, - 300);
+        addImageRow(map3, -150);
+        addImageRow(map4, -300);
 
         function addImageRow(map, y) {
 
@@ -154,7 +155,7 @@
         ctx.fillRect(0, 0, 128, 32);
 
         ctx.fillStyle = 'white';
-        ctx.font = '12pt arial bold';
+        ctx.font = 'bold 12pt arial';
         ctx.fillText(text, 10, 22);
 
         const map = new v3d.CanvasTexture(canvas);
@@ -170,8 +171,8 @@
         requestAnimationFrame(animate);
 
         const time = Date.now() * 0.00025;
-        const ox = (time * - 0.01 * mapBg.repeat.x) % 1;
-        const oy = (time * - 0.01 * mapBg.repeat.y) % 1;
+        const ox = (time * -0.01 * mapBg.repeat.x) % 1;
+        const oy = (time * -0.01 * mapBg.repeat.y) % 1;
 
         mapBg.offset.set(ox, oy);
 

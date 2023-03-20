@@ -46,12 +46,17 @@ class OculusHandPointerModel extends v3d.Object3D {
         hand.addEventListener('connected', (event) => {
 
             const xrInputSource = event.data;
+
             if (xrInputSource.hand) {
 
                 this.visible = true;
                 this.xrInputSource = xrInputSource;
 
-                this.createPointer();
+                if (this.pointerObject === null) {
+
+                    this.createPointer();
+
+                }
 
             }
 
@@ -62,7 +67,7 @@ class OculusHandPointerModel extends v3d.Object3D {
     _drawVerticesRing(vertices, baseVector, ringIndex) {
 
         const segmentVector = baseVector.clone();
-        for (var i = 0; i < POINTER_SEGMENTS; i++) {
+        for (let i = 0; i < POINTER_SEGMENTS; i++) {
 
             segmentVector.applyAxisAngle(ZAXIS, (Math.PI * 2) / POINTER_SEGMENTS);
             const vid = ringIndex * POINTER_SEGMENTS + i;
@@ -81,7 +86,7 @@ class OculusHandPointerModel extends v3d.Object3D {
         const frontFaceBase = new v3d.Vector3(
             POINTER_FRONT_RADIUS,
             0,
-            - 1 * (POINTER_LENGTH - rearRadius)
+            -1 * (POINTER_LENGTH - rearRadius)
         );
         this._drawVerticesRing(vertices, frontFaceBase, 0);
 
@@ -91,12 +96,12 @@ class OculusHandPointerModel extends v3d.Object3D {
             Math.cos((Math.PI * POINTER_HEMISPHERE_ANGLE) / 180) * rearRadius,
             0
         );
-        for (var i = 0; i < POINTER_RINGS; i++) {
+        for (let i = 0; i < POINTER_RINGS; i++) {
 
             this._drawVerticesRing(vertices, rearBase, i + 1);
             rearBase.applyAxisAngle(
                 YAXIS,
-                (Math.PI * POINTER_HEMISPHERE_ANGLE) / 180 / (POINTER_RINGS * - 2)
+                (Math.PI * POINTER_HEMISPHERE_ANGLE) / 180 / (POINTER_RINGS * -2)
             );
 
         }
@@ -107,7 +112,7 @@ class OculusHandPointerModel extends v3d.Object3D {
         const frontCenter = new v3d.Vector3(
             0,
             0,
-            - 1 * (POINTER_LENGTH - rearRadius)
+            -1 * (POINTER_LENGTH - rearRadius)
         );
         vertices[frontCenterIndex * 3] = frontCenter.x;
         vertices[frontCenterIndex * 3 + 1] = frontCenter.y;
@@ -127,7 +132,7 @@ class OculusHandPointerModel extends v3d.Object3D {
 
     createPointer() {
 
-        var i, j;
+        let i, j;
         const vertices = new Array(
             ((POINTER_RINGS + 1) * POINTER_SEGMENTS + 2) * 3
         ).fill(0);
@@ -191,7 +196,7 @@ class OculusHandPointerModel extends v3d.Object3D {
         indices.push(frontCenterIndex, 0, POINTER_SEGMENTS - 1);
         indices.push(
             rearCenterIndex,
-            POINTER_SEGMENTS * (POINTER_RINGS + 1) - 1,
+            POINTER_SEGMENTS * (POINTER_RINGS + 1) -1,
             POINTER_SEGMENTS * POINTER_RINGS
         );
 
@@ -203,7 +208,7 @@ class OculusHandPointerModel extends v3d.Object3D {
 
         this.pointerMesh = new v3d.Mesh(this.pointerGeometry, material);
 
-        this.pointerMesh.position.set(0, 0, - 1 * POINTER_REAR_RADIUS);
+        this.pointerMesh.position.set(0, 0, -1 * POINTER_REAR_RADIUS);
         this.pointerObject = new v3d.Object3D();
         this.pointerObject.add(this.pointerMesh);
 
@@ -230,7 +235,7 @@ class OculusHandPointerModel extends v3d.Object3D {
             const tempMatrix = new v3d.Matrix4();
             tempMatrix.identity().extractRotation(pointerMatrix);
             this.raycaster.ray.origin.setFromMatrixPosition(pointerMatrix);
-            this.raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
+            this.raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
 
         }
 
@@ -256,7 +261,7 @@ class OculusHandPointerModel extends v3d.Object3D {
         if (pinchScale > 1) {
 
             this._updatePointerVertices(POINTER_REAR_RADIUS);
-            this.pointerMesh.position.set(0, 0, - 1 * POINTER_REAR_RADIUS);
+            this.pointerMesh.position.set(0, 0, -1 * POINTER_REAR_RADIUS);
             this.pointerMesh.material.opacity = POINTER_OPACITY_MIN;
 
         } else if (pinchScale > 0) {
@@ -270,7 +275,7 @@ class OculusHandPointerModel extends v3d.Object3D {
                 this.pointerMesh.position.set(
                     0,
                     0,
-                    - 1 * rearRadius - (1 - focusScale) * POINTER_ADVANCE_MAX
+                    -1 * rearRadius - (1 - focusScale) * POINTER_ADVANCE_MAX
                 );
                 this.pointerMesh.material.opacity =
           POINTER_OPACITY_MIN +
@@ -278,7 +283,7 @@ class OculusHandPointerModel extends v3d.Object3D {
 
             } else {
 
-                this.pointerMesh.position.set(0, 0, - 1 * rearRadius);
+                this.pointerMesh.position.set(0, 0, -1 * rearRadius);
                 this.pointerMesh.material.opacity = POINTER_OPACITY_MIN;
 
             }
@@ -289,7 +294,7 @@ class OculusHandPointerModel extends v3d.Object3D {
             this.pointerMesh.position.set(
                 0,
                 0,
-                - 1 * POINTER_REAR_RADIUS_MIN - POINTER_ADVANCE_MAX
+                -1 * POINTER_REAR_RADIUS_MIN - POINTER_ADVANCE_MAX
             );
             this.pointerMesh.material.opacity = POINTER_OPACITY_MAX;
 
@@ -354,7 +359,7 @@ class OculusHandPointerModel extends v3d.Object3D {
         if (this.raycaster && ! this.attached) {
 
             const intersections = this.raycaster.intersectObjects(objects, recursive);
-            const direction = new v3d.Vector3(0, 0, - 1);
+            const direction = new v3d.Vector3(0, 0, -1);
             if (intersections.length > 0) {
 
                 const intersection = intersections[0];
@@ -373,7 +378,7 @@ class OculusHandPointerModel extends v3d.Object3D {
 
     setCursor(distance) {
 
-        const direction = new v3d.Vector3(0, 0, - 1);
+        const direction = new v3d.Vector3(0, 0, -1);
         if (this.raycaster && ! this.attached) {
 
             this.cursorObject.position.copy(direction.multiplyScalar(distance));

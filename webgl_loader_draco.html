@@ -21,7 +21,8 @@
   <script type="importmap">
     {
       "imports": {
-        "v3d": "../build/v3d.module.js"
+        "v3d": "../build/v3d.module.js",
+        "v3d/addons/": "./jsm/"
       }
     }
   </script>
@@ -29,7 +30,7 @@
   <script type="module">
     import * as v3d from 'v3d';
 
-    import { DRACOLoader } from './jsm/loaders/DRACOLoader.js';
+    import { DRACOLoader } from 'v3d/addons/loaders/DRACOLoader.js';
 
     let camera, scene, renderer;
 
@@ -37,7 +38,7 @@
 
     // Configure and create Draco decoder.
     const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('js/libs/draco/');
+    dracoLoader.setDecoderPath('jsm/libs/draco/');
     dracoLoader.setDecoderConfig({ type: 'js' });
 
     init();

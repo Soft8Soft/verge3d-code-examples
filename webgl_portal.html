@@ -27,7 +27,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -36,8 +37,8 @@
 
       import * as v3d from 'v3d';
 
-      import * as CameraUtils from './jsm/utils/CameraUtils.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import * as CameraUtils from 'v3d/addons/utils/CameraUtils.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       let camera, scene, renderer;
 
@@ -102,7 +103,7 @@
 
         leftPortalTexture = new v3d.WebGLRenderTarget(256, 256);
         leftPortal = new v3d.Mesh(planeGeo, new v3d.MeshBasicMaterial({ map: leftPortalTexture.texture }));
-        leftPortal.position.x = - 30;
+        leftPortal.position.x = -30;
         leftPortal.position.y = 20;
         leftPortal.scale.set(0.35, 0.35, 0.35);
         scene.add(leftPortal);
@@ -131,7 +132,7 @@
         scene.add(planeFront);
 
         const planeBack = new v3d.Mesh(planeGeo, new v3d.MeshPhongMaterial({ color: 0xff7fff }));
-        planeBack.position.z = - 50;
+        planeBack.position.z = -50;
         planeBack.position.y = 50;
         //planeBack.rotateY(Math.PI);
         scene.add(planeBack);
@@ -143,7 +144,7 @@
         scene.add(planeRight);
 
         const planeLeft = new v3d.Mesh(planeGeo, new v3d.MeshPhongMaterial({ color: 0xff0000 }));
-        planeLeft.position.x = - 50;
+        planeLeft.position.x = -50;
         planeLeft.position.y = 50;
         planeLeft.rotateY(Math.PI / 2);
         scene.add(planeLeft);
@@ -182,14 +183,14 @@
 
         // set the portal camera position to be reflected about the portal plane
         thisPortalMesh.worldToLocal(reflectedPosition.copy(camera.position));
-        reflectedPosition.x *= - 1.0; reflectedPosition.z *= - 1.0;
+        reflectedPosition.x *= -1.0; reflectedPosition.z *= -1.0;
         otherPortalMesh.localToWorld(reflectedPosition);
         portalCamera.position.copy(reflectedPosition);
 
         // grab the corners of the other portal
         // - note: the portal is viewed backwards; flip the left/right coordinates
-        otherPortalMesh.localToWorld(bottomLeftCorner.set(50.05, - 50.05, 0.0));
-        otherPortalMesh.localToWorld(bottomRightCorner.set(- 50.05, - 50.05, 0.0));
+        otherPortalMesh.localToWorld(bottomLeftCorner.set(50.05, -50.05, 0.0));
+        otherPortalMesh.localToWorld(bottomRightCorner.set(- 50.05, -50.05, 0.0));
         otherPortalMesh.localToWorld(topLeftCorner.set(50.05, 50.05, 0.0));
         // set the projection matrix to encompass the portal's frame
         CameraUtils.frameCorners(portalCamera, bottomLeftCorner, bottomRightCorner, topLeftCorner, false);

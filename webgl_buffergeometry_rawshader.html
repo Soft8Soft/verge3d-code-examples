@@ -64,7 +64,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -73,7 +74,7 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
       let container, stats;
 
@@ -104,9 +105,9 @@
         for (let i = 0; i < vertexCount; i++) {
 
           // adding x,y,z
-          positions.push(Math.random() - 0.5);
-          positions.push(Math.random() - 0.5);
-          positions.push(Math.random() - 0.5);
+          positions.push(Math.random() -0.5);
+          positions.push(Math.random() -0.5);
+          positions.push(Math.random() -0.5);
 
           // adding r,g,b,a
           colors.push(Math.random() * 255);

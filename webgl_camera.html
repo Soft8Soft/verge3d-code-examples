@@ -23,7 +23,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -32,7 +33,7 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
       let SCREEN_WIDTH = window.innerWidth;
       let SCREEN_HEIGHT = window.innerHeight;
@@ -66,7 +67,7 @@
         scene.add(cameraPerspectiveHelper);
 
         //
-        cameraOrtho = new v3d.OrthographicCamera(0.5 * frustumSize * aspect / - 2, 0.5 * frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 150, 1000);
+        cameraOrtho = new v3d.OrthographicCamera(0.5 * frustumSize * aspect / -2, 0.5 * frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 150, 1000);
 
         cameraOrthoHelper = new v3d.CameraHelper(cameraOrtho);
         scene.add(cameraOrthoHelper);
@@ -190,7 +191,7 @@
         cameraPerspective.aspect = 0.5 * aspect;
         cameraPerspective.updateProjectionMatrix();
 
-        cameraOrtho.left = - 0.5 * frustumSize * aspect / 2;
+        cameraOrtho.left = -0.5 * frustumSize * aspect / 2;
         cameraOrtho.right = 0.5 * frustumSize * aspect / 2;
         cameraOrtho.top = frustumSize / 2;
         cameraOrtho.bottom = -frustumSize / 2;

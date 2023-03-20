@@ -23,7 +23,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -32,11 +33,11 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { SSAOPass } from './jsm/postprocessing/SSAOPass.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { SSAOPass } from 'v3d/addons/postprocessing/SSAOPass.js';
 
       let container, stats;
       let camera, scene, renderer;

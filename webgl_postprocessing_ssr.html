@@ -24,7 +24,8 @@
   <script type="importmap">
     {
       "imports": {
-        "v3d": "../build/v3d.module.js"
+        "v3d": "../build/v3d.module.js",
+        "v3d/addons/": "./jsm/"
       }
     }
   </script>
@@ -32,18 +33,18 @@
   <script type="module">
     import * as v3d from 'v3d';
 
-    import Stats from './jsm/libs/stats.module.js';
+    import Stats from 'v3d/addons/libs/stats.module.js';
 
-    import { OrbitControls } from './jsm/controls/OrbitControls.js';
+    import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
-    import { GUI } from './jsm/libs/lil-gui.module.min.js';
-    import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-    import { SSRPass } from './jsm/postprocessing/SSRPass.js';
-    import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
-    import { GammaCorrectionShader } from './jsm/shaders/GammaCorrectionShader.js';
-    import { ReflectorForSSRPass } from './jsm/objects/ReflectorForSSRPass.js';
+    import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+    import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+    import { SSRPass } from 'v3d/addons/postprocessing/SSRPass.js';
+    import { ShaderPass } from 'v3d/addons/postprocessing/ShaderPass.js';
+    import { GammaCorrectionShader } from 'v3d/addons/shaders/GammaCorrectionShader.js';
+    import { ReflectorForSSRPass } from 'v3d/addons/objects/ReflectorForSSRPass.js';
 
-    import { DRACOLoader } from './jsm/loaders/DRACOLoader.js';
+    import { DRACOLoader } from 'v3d/addons/loaders/DRACOLoader.js';
 
     const params = {
       enableSSR: true,
@@ -65,7 +66,7 @@
 
     // Configure and create Draco decoder.
     const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('js/libs/draco/');
+    dracoLoader.setDecoderPath('jsm/libs/draco/');
     dracoLoader.setDecoderConfig({ type: 'js' });
 
     init();
@@ -86,7 +87,7 @@
         new v3d.MeshPhongMaterial({ color: 0x999999, specular: 0x101010 })
       );
       plane.rotation.x = - Math.PI / 2;
-      plane.position.y = - 0.0001;
+      plane.position.y = -0.0001;
       // plane.receiveShadow = true;
       scene.add(plane);
 
@@ -107,7 +108,7 @@
 
         const material = new v3d.MeshStandardMaterial({ color: 0x606060 });
         const mesh = new v3d.Mesh(geometry, material);
-        mesh.position.y = - 0.0365;
+        mesh.position.y = -0.0365;
         scene.add(mesh);
         selects.push(mesh);
 
@@ -118,7 +119,7 @@
 
       let geometry, material, mesh;
 
-      geometry = new v3d.BoxBufferGeometry(.05, .05, .05);
+      geometry = new v3d.BoxGeometry(.05, .05, .05);
       material = new v3d.MeshStandardMaterial({ color: 'green' });
       mesh = new v3d.Mesh(geometry, material);
       mesh.position.set(- .12, .025, .015);
@@ -126,7 +127,7 @@
       otherMeshes.push(mesh);
       selects.push(mesh);
 
-      geometry = new v3d.IcosahedronBufferGeometry(.025, 4);
+      geometry = new v3d.IcosahedronGeometry(.025, 4);
       material = new v3d.MeshStandardMaterial({ color: 'cyan' });
       mesh = new v3d.Mesh(geometry, material);
       mesh.position.set(- .05, .025, .08);
@@ -134,7 +135,7 @@
       otherMeshes.push(mesh);
       selects.push(mesh);
 
-      geometry = new v3d.ConeBufferGeometry(.025, .05, 64);
+      geometry = new v3d.ConeGeometry(.025, .05, 64);
       material = new v3d.MeshStandardMaterial({ color: 'yellow' });
       mesh = new v3d.Mesh(geometry, material);
       mesh.position.set(- .05, .025, - .055);
@@ -142,7 +143,7 @@
       otherMeshes.push(mesh);
       selects.push(mesh);
 
-      geometry = new v3d.PlaneBufferGeometry(1, 1);
+      geometry = new v3d.PlaneGeometry(1, 1);
       groundReflector = new ReflectorForSSRPass(geometry, {
         clipBias: 0.0003,
         textureWidth: window.innerWidth,

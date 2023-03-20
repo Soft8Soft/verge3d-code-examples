@@ -336,13 +336,7 @@ class MMDLoader extends Loader {
 
         if (this.parser === null) {
 
-            if (typeof MMDParser === 'undefined') {
-
-                throw new Error('v3d.MMDLoader: Import MMDParser https://github.com/takahirox/mmd-parser');
-
-            }
-
-            this.parser = new MMDParser.Parser(); // eslint-disable-line no-undef
+            this.parser = new MMDParser.Parser();
 
         }
 
@@ -470,7 +464,7 @@ function initBones(mesh) {
 
             const gbone = geometry.bones[i];
 
-            if ((gbone.parent !== - 1) && (gbone.parent !== null) && (bones[gbone.parent] !== undefined)) {
+            if ((gbone.parent !== -1) && (gbone.parent !== null) && (bones[gbone.parent] !== undefined)) {
 
                 // subsequent bones in the hierarchy
 
@@ -626,10 +620,10 @@ class GeometryBuilder {
                 pos: boneData.position.slice(0, 3),
                 rotq: [0, 0, 0, 1],
                 scl: [1, 1, 1],
-                rigidBodyType: boneTypeTable[i] !== undefined ? boneTypeTable[i] : - 1
+                rigidBodyType: boneTypeTable[i] !== undefined ? boneTypeTable[i] : -1
             };
 
-            if (bone.parent !== - 1) {
+            if (bone.parent !== -1) {
 
                 bone.pos[0] -= data.bones[bone.parent].position[0];
                 bone.pos[1] -= data.bones[bone.parent].position[1];
@@ -944,7 +938,7 @@ class GeometryBuilder {
                  */
             if (data.metadata.format === 'pmx') {
 
-                if (params.boneIndex !== - 1) {
+                if (params.boneIndex !== -1) {
 
                     const bone = data.bones[params.boneIndex];
                     params.position[0] -= bone.position[0];
@@ -978,7 +972,7 @@ class GeometryBuilder {
             // Refer to http://www20.atpages.jp/katwat/wp/?p=4135
             if (bodyA.type !== 0 && bodyB.type === 2) {
 
-                if (bodyA.boneIndex !== - 1 && bodyB.boneIndex !== - 1 &&
+                if (bodyA.boneIndex !== -1 && bodyB.boneIndex !== -1 &&
                          data.bones[bodyB.boneIndex].parentIndex === bodyA.boneIndex) {
 
                     bodyB.type = 1;
@@ -1171,7 +1165,7 @@ class MaterialBuilder {
 
                 // gradientMap
 
-                const toonFileName = (material.toonIndex === - 1)
+                const toonFileName = (material.toonIndex === -1)
                     ? 'toon00.bmp'
                     : data.toonTextures[material.toonIndex].fileName;
 
@@ -1197,7 +1191,7 @@ class MaterialBuilder {
 
                 // map
 
-                if (material.textureIndex !== - 1) {
+                if (material.textureIndex !== -1) {
 
                     params.map = this._loadTexture(data.textures[material.textureIndex], textures);
 
@@ -1210,7 +1204,7 @@ class MaterialBuilder {
 
                 // envMap TODO: support m.envFlag === 3
 
-                if (material.envTextureIndex !== - 1 && (material.envFlag === 1 || material.envFlag == 2)) {
+                if (material.envTextureIndex !== -1 && (material.envFlag === 1 || material.envFlag == 2)) {
 
                     params.matcap = this._loadTexture(
                         data.textures[material.envTextureIndex],
@@ -1230,7 +1224,7 @@ class MaterialBuilder {
 
                 let toonFileName, isDefaultToon;
 
-                if (material.toonIndex === - 1 || material.toonFlag !== 0) {
+                if (material.toonIndex === -1 || material.toonFlag !== 0) {
 
                     toonFileName = 'toon' + ('0' + (material.toonIndex + 1)).slice(- 2) + '.bmp';
                     isDefaultToon = true;
@@ -1287,7 +1281,7 @@ class MaterialBuilder {
 
                     const element = elements[i];
 
-                    if (element.index === - 1) continue;
+                    if (element.index === -1) continue;
 
                     const material = materials[element.index];
 
@@ -1601,7 +1595,7 @@ class AnimationBuilder {
 
         }
 
-        return new AnimationClip('', - 1, tracks);
+        return new AnimationClip('', -1, tracks);
 
     }
 
@@ -1687,7 +1681,7 @@ class AnimationBuilder {
 
         }
 
-        return new AnimationClip('', - 1, tracks);
+        return new AnimationClip('', -1, tracks);
 
     }
 
@@ -1739,7 +1733,7 @@ class AnimationBuilder {
 
         }
 
-        return new AnimationClip('', - 1, tracks);
+        return new AnimationClip('', -1, tracks);
 
     }
 
@@ -1855,7 +1849,7 @@ class AnimationBuilder {
         tracks.push(this._createTrack('.position', VectorKeyframeTrack, times, positions, pInterpolations));
         tracks.push(this._createTrack('.fov', NumberKeyframeTrack, times, fovs, fInterpolations));
 
-        return new AnimationClip('', - 1, tracks);
+        return new AnimationClip('', -1, tracks);
 
     }
 
@@ -2080,6 +2074,10 @@ class MMDToonMaterial extends ShaderMaterial {
 
         super();
 
+        this.isMMDToonMaterial = true;
+
+        this.type = 'MMDToonMaterial';
+
         this._matcapCombine = AddOperation;
         this.emissiveIntensity = 1.0;
         this.normalMapType = TangentSpaceNormalMap;
@@ -2133,7 +2131,6 @@ class MMDToonMaterial extends ShaderMaterial {
         // merged from MeshToon/Phong/MatcapMaterial
         const exposePropertyNames = [
             'specular',
-            'shininess',
             'opacity',
             'diffuse',
 
@@ -2188,6 +2185,25 @@ class MMDToonMaterial extends ShaderMaterial {
 
         }
 
+        // Special path for shininess to handle zero shininess properly
+        this._shininess = 30;
+        Object.defineProperty(this, 'shininess', {
+
+            get: function() {
+
+                return this._shininess;
+
+            },
+
+            set: function(value) {
+
+                this._shininess = value;
+                this.uniforms.shininess.value = Math.max(this._shininess, 1e-4); // To prevent pow(0.0, 0.0)
+
+            },
+
+        });
+
         Object.defineProperty(
             this,
             'color',
@@ -2218,7 +2234,5 @@ class MMDToonMaterial extends ShaderMaterial {
     }
 
 }
-
-MMDToonMaterial.prototype.isMMDToonMaterial = true;
 
 export { MMDLoader };

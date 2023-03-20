@@ -17,16 +17,17 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
 
     <script type="module">
       import * as v3d from 'v3d';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import Stats from './jsm/libs/stats.module.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
       let camera, scene, renderer, object, stats;
       let planes, planeObjects, planeHelpers;
@@ -117,9 +118,9 @@
         dirLight.position.set(5, 10, 7.5);
         dirLight.castShadow = true;
         dirLight.shadow.camera.right = 2;
-        dirLight.shadow.camera.left = - 2;
+        dirLight.shadow.camera.left = -2;
         dirLight.shadow.camera.top  = 2;
-        dirLight.shadow.camera.bottom = - 2;
+        dirLight.shadow.camera.bottom = -2;
 
         dirLight.shadow.mapSize.width = 1024;
         dirLight.shadow.mapSize.height = 1024;
@@ -127,8 +128,8 @@
 
         planes = [
           new v3d.Plane(new v3d.Vector3(- 1, 0, 0), 0),
-          new v3d.Plane(new v3d.Vector3(0, - 1, 0), 0),
-          new v3d.Plane(new v3d.Vector3(0, 0, - 1), 0)
+          new v3d.Plane(new v3d.Vector3(0, -1, 0), 0),
+          new v3d.Plane(new v3d.Vector3(0, 0, -1), 0)
         ];
 
         planeHelpers = planes.map(p => new v3d.PlaneHelper(p, 2, 0xffffff));
@@ -210,7 +211,7 @@
         );
 
         ground.rotation.x = - Math.PI / 2; // rotates X/Y to X/Z
-        ground.position.y = - 1;
+        ground.position.y = -1;
         ground.receiveShadow = true;
         scene.add(ground);
 

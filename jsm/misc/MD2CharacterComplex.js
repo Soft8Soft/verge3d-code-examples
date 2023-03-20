@@ -24,7 +24,7 @@ class MD2CharacterComplex {
         // movement model parameters
 
         this.maxSpeed = 275;
-        this.maxReverseSpeed = - 275;
+        this.maxReverseSpeed = -275;
 
         this.frontAcceleration = 600;
         this.backAcceleration = 600;
@@ -480,7 +480,7 @@ class MD2CharacterComplex {
 
         function exponentialEaseOut(k) {
 
-            return k === 1 ? 1 : - Math.pow(2, - 10 * k) + 1;
+            return k === 1 ? 1 : - Math.pow(2, -10 * k) + 1;
 
         }
 

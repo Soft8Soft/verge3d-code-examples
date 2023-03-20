@@ -64,13 +64,6 @@ class DecalGeometry extends BufferGeometry {
 
             // handle different geometry types
 
-            if (mesh.geometry.isGeometry === true) {
-
-                console.error('v3d.DecalGeometry no longer supports v3d.Geometry. Use BufferGeometry instead.');
-                return;
-
-            }
-
             const geometry = mesh.geometry;
 
             const positionAttribute = geometry.attributes.position;
@@ -116,9 +109,9 @@ class DecalGeometry extends BufferGeometry {
             decalVertices = clipGeometry(decalVertices, plane.set(1, 0, 0));
             decalVertices = clipGeometry(decalVertices, plane.set(- 1, 0, 0));
             decalVertices = clipGeometry(decalVertices, plane.set(0, 1, 0));
-            decalVertices = clipGeometry(decalVertices, plane.set(0, - 1, 0));
+            decalVertices = clipGeometry(decalVertices, plane.set(0, -1, 0));
             decalVertices = clipGeometry(decalVertices, plane.set(0, 0, 1));
-            decalVertices = clipGeometry(decalVertices, plane.set(0, 0, - 1));
+            decalVertices = clipGeometry(decalVertices, plane.set(0, 0, -1));
 
             // third, generate final vertices, normals and uvs
 

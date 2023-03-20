@@ -4,7 +4,7 @@ async function OimoPhysics() {
 
     const frameRate = 60;
 
-    const world = new OIMO.World(2, new OIMO.Vec3(0, - 9.8, 0));
+    const world = new OIMO.World(2, new OIMO.Vec3(0, -9.8, 0));
 
     //
 

@@ -29,7 +29,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -38,9 +39,9 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
 
       let container, stats;
       let camera, scene, renderer;
@@ -73,7 +74,7 @@
         scene.add(light1);
 
         const light2 = new v3d.DirectionalLight(0xffefef, 1.5);
-        light2.position.set(- 1, - 1, - 1).normalize();
+        light2.position.set(- 1, -1, -1).normalize();
         scene.add(light2);
 
         const loader = new GLTFLoader();

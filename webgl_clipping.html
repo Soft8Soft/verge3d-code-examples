@@ -15,7 +15,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -24,10 +25,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       let camera, scene, renderer, startTime, object, stats;
 
@@ -64,9 +65,9 @@
         dirLight.shadow.camera.far = 10;
 
         dirLight.shadow.camera.right = 1;
-        dirLight.shadow.camera.left = - 1;
+        dirLight.shadow.camera.left = -1;
         dirLight.shadow.camera.top  = 1;
-        dirLight.shadow.camera.bottom = - 1;
+        dirLight.shadow.camera.bottom = -1;
 
         dirLight.shadow.mapSize.width = 1024;
         dirLight.shadow.mapSize.height = 1024;
@@ -74,7 +75,7 @@
 
         // ***** Clipping planes: *****
 
-        const localPlane = new v3d.Plane(new v3d.Vector3(0, - 1, 0), 0.8);
+        const localPlane = new v3d.Plane(new v3d.Vector3(0, -1, 0), 0.8);
         const globalPlane = new v3d.Plane(new v3d.Vector3(- 1, 0, 0), 0.1);
 
         // Geometry
@@ -204,7 +205,7 @@
         folderLocal.add(propsLocal, 'Plane', 0.3, 1.25);
 
         folderGlobal.add(propsGlobal, 'Enabled');
-        folderGlobal.add(propsGlobal, 'Plane', - 0.4, 3);
+        folderGlobal.add(propsGlobal, 'Plane', -0.4, 3);
 
         // Start
 

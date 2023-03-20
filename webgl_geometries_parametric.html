@@ -18,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,11 +28,11 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { Curves } from './jsm/curves/CurveExtras.js';
-      import { ParametricGeometry } from './jsm/geometries/ParametricGeometry.js';
-      import { ParametricGeometries } from './jsm/geometries/ParametricGeometries.js';
+      import * as Curves from 'v3d/addons/curves/CurveExtras.js';
+      import { ParametricGeometry } from 'v3d/addons/geometries/ParametricGeometry.js';
+      import { ParametricGeometries } from 'v3d/addons/geometries/ParametricGeometries.js';
 
       let camera, scene, renderer, stats;
 
@@ -95,15 +96,15 @@
         const tube = new ParametricGeometries.TubeGeometry(GrannyKnot, 100, 3, 8, true);
 
         object = new v3d.Mesh(torus, material);
-        object.position.set(- 200, 0, - 200);
+        object.position.set(- 200, 0, -200);
         scene.add(object);
 
         object = new v3d.Mesh(sphere, material);
-        object.position.set(0, 0, - 200);
+        object.position.set(0, 0, -200);
         scene.add(object);
 
         object = new v3d.Mesh(tube, material);
-        object.position.set(200, 0, - 200);
+        object.position.set(200, 0, -200);
         object.scale.multiplyScalar(2);
         scene.add(object);
 

@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,8 +29,8 @@
 
       import * as v3d from 'v3d';
 
-      import { MTLLoader } from './jsm/loaders/MTLLoader.js';
-      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
+      import { MTLLoader } from 'v3d/addons/loaders/MTLLoader.js';
+      import { OBJLoader } from 'v3d/addons/loaders/OBJLoader.js';
 
       let camera, scene, renderer;
 
@@ -86,7 +87,7 @@
               .setPath('models/obj/male02/')
               .load('male02.obj', function(object) {
 
-                object.position.y = - 95;
+                object.position.y = -95;
                 scene.add(object);
 
               }, onProgress);

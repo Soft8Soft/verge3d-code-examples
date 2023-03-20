@@ -42,10 +42,10 @@ class CSMFrustum {
         // 2 --- 1
         // clip space spans from [-1, 1]
 
-        this.vertices.near[0].set(1, 1, - 1);
-        this.vertices.near[1].set(1, - 1, - 1);
-        this.vertices.near[2].set(- 1, - 1, - 1);
-        this.vertices.near[3].set(- 1, 1, - 1);
+        this.vertices.near[0].set(1, 1, -1);
+        this.vertices.near[1].set(1, -1, -1);
+        this.vertices.near[2].set(- 1, -1, -1);
+        this.vertices.near[3].set(- 1, 1, -1);
         this.vertices.near.forEach(function(v) {
 
             v.applyMatrix4(inverseProjectionMatrix);
@@ -53,8 +53,8 @@ class CSMFrustum {
         });
 
         this.vertices.far[0].set(1, 1, 1);
-        this.vertices.far[1].set(1, - 1, 1);
-        this.vertices.far[2].set(- 1, - 1, 1);
+        this.vertices.far[1].set(1, -1, 1);
+        this.vertices.far[2].set(- 1, -1, 1);
         this.vertices.far[3].set(- 1, 1, 1);
         this.vertices.far.forEach(function(v) {
 
@@ -133,7 +133,7 @@ class CSMFrustum {
 
     toSpace(cameraMatrix, target) {
 
-        for (var i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; i++) {
 
             target.vertices.near[i]
                 .copy(this.vertices.near[i])

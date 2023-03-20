@@ -9,7 +9,7 @@
 
   <body>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - 3DS loader
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> -3DS loader
     </div>
 
     <!-- Import maps polyfill -->
@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,8 +29,8 @@
 
       import * as v3d from 'v3d';
 
-      import { TrackballControls } from './jsm/controls/TrackballControls.js';
-      import { TDSLoader } from './jsm/loaders/TDSLoader.js';
+      import { TrackballControls } from 'v3d/addons/controls/TrackballControls.js';
+      import { TDSLoader } from 'v3d/addons/loaders/TDSLoader.js';
 
       let container, controls;
       let camera, scene, renderer;

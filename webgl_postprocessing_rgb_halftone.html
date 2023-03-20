@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,13 +29,13 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { HalftonePass } from './jsm/postprocessing/HalftonePass.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { HalftonePass } from 'v3d/addons/postprocessing/HalftonePass.js';
 
       let renderer, clock, camera, stats;
 
@@ -73,7 +74,7 @@
 
         group = new v3d.Group();
         const floor = new v3d.Mesh(new v3d.BoxGeometry(100, 1, 100), new v3d.MeshPhongMaterial({}));
-        floor.position.y = - 10;
+        floor.position.y = -10;
         const light = new v3d.PointLight(0xffffff, 1.0, 50, 2);
         light.position.y = 2;
         group.add(floor, light);

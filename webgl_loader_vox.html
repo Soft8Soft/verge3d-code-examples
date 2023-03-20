@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,8 +29,8 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { VOXLoader, VOXMesh } from './jsm/loaders/VOXLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { VOXLoader, VOXMesh } from 'v3d/addons/loaders/VOXLoader.js';
 
       let camera, controls, scene, renderer;
 
@@ -54,7 +55,7 @@
         scene.add(dirLight);
 
         const dirLight2 = new v3d.DirectionalLight(0xffffff, 0.5);
-        dirLight2.position.set(- 1.5, - 3, - 2.5);
+        dirLight2.position.set(- 1.5, -3, -2.5);
         scene.add(dirLight2);
 
         const loader = new VOXLoader();

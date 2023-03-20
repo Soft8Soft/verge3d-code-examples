@@ -21,7 +21,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -30,12 +31,12 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { DecalGeometry } from './jsm/geometries/DecalGeometry.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { DecalGeometry } from 'v3d/addons/geometries/DecalGeometry.js';
 
       const container = document.getElementById('container');
 
@@ -66,7 +67,7 @@
         depthTest: true,
         depthWrite: false,
         polygonOffset: true,
-        polygonOffsetFactor: - 4,
+        polygonOffsetFactor: -4,
         wireframe: false
       });
 
@@ -87,7 +88,8 @@
         }
       };
 
-      window.addEventListener('load', init);
+      init();
+      animate();
 
       function init() {
 
@@ -115,7 +117,7 @@
         scene.add(dirLight1);
 
         const dirLight2 = new v3d.DirectionalLight(0xccccff, 1);
-        dirLight2.position.set(- 1, 0.75, - 0.5);
+        dirLight2.position.set(- 1, 0.75, -0.5);
         scene.add(dirLight2);
 
         const geometry = new v3d.BufferGeometry();
@@ -220,9 +222,6 @@
         gui.add(params, 'rotate');
         gui.add(params, 'clear');
         gui.open();
-
-        onWindowResize();
-        animate();
 
       }
 

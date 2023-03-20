@@ -36,7 +36,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -45,10 +46,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { SelectionBox } from './jsm/interactive/SelectionBox.js';
-      import { SelectionHelper } from './jsm/interactive/SelectionHelper.js';
+      import { SelectionBox } from 'v3d/addons/interactive/SelectionBox.js';
+      import { SelectionHelper } from 'v3d/addons/interactive/SelectionHelper.js';
 
       let container, stats;
       let camera, scene, renderer;
@@ -149,7 +150,7 @@
       }
 
       const selectionBox = new SelectionBox(camera, scene);
-      const helper = new SelectionHelper(selectionBox, renderer, 'selectBox');
+      const helper = new SelectionHelper(renderer, 'selectBox');
 
       document.addEventListener('pointerdown', function(event) {
 

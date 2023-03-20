@@ -19,7 +19,7 @@
 
       void main(void) {
 
-        vec2 position = - 1.0 + 2.0 * vUv;
+        vec2 position = -1.0 + 2.0 * vUv;
 
         float red = abs(sin(position.x * position.y + time / 5.0));
         float green = abs(sin(position.x * position.y + time / 4.0));
@@ -62,7 +62,7 @@
 
       void main(void) {
 
-        vec2 position = - 1.0 + 2.0 * vUv;
+        vec2 position = -1.0 + 2.0 * vUv;
 
         float a = atan(position.y, position.x);
         float r = sqrt(dot(position, position));
@@ -88,7 +88,7 @@
 
       void main(void) {
 
-        vec2 p = - 1.0 + 2.0 * vUv;
+        vec2 p = -1.0 + 2.0 * vUv;
         float a = time * 40.0;
         float d, e, f, g = 1.0 / 40.0 ,h ,i ,r ,q;
 
@@ -138,7 +138,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -147,7 +148,7 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
       let stats;
 
@@ -172,15 +173,15 @@
         const geometry = new v3d.BoxGeometry(0.75, 0.75, 0.75);
 
         uniforms1 = {
-          "time": { value: 1.0 }
+          'time': { value: 1.0 }
         };
 
         uniforms2 = {
-          "time": { value: 1.0 },
-          "colorTexture": { value: new v3d.TextureLoader().load('textures/disturb.jpg') }
+          'time': { value: 1.0 },
+          'colorTexture': { value: new v3d.TextureLoader().load('textures/disturb.jpg') }
         };
 
-        uniforms2["colorTexture"].value.wrapS = uniforms2["colorTexture"].value.wrapT = v3d.RepeatWrapping;
+        uniforms2['colorTexture'].value.wrapS = uniforms2['colorTexture'].value.wrapT = v3d.RepeatWrapping;
 
         const params = [
           ['fragment_shader1', uniforms1],
@@ -243,15 +244,15 @@
 
         const delta = clock.getDelta();
 
-        uniforms1["time"].value += delta * 5;
-        uniforms2["time"].value = clock.elapsedTime;
+        uniforms1['time'].value += delta * 5;
+        uniforms2['time'].value = clock.elapsedTime;
 
         for (let i = 0; i < scene.children.length; i++) {
 
           const object = scene.children[i];
 
-          object.rotation.y += delta * 0.5 * (i % 2 ? 1 : - 1);
-          object.rotation.x += delta * 0.5 * (i % 2 ? - 1 : 1);
+          object.rotation.y += delta * 0.5 * (i % 2 ? 1 : -1);
+          object.rotation.x += delta * 0.5 * (i % 2 ? -1 : 1);
 
         }
 

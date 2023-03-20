@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,10 +30,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { FBXLoader } from './jsm/loaders/FBXLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { FBXLoader } from 'v3d/addons/loaders/FBXLoader.js';
 
       let camera, scene, renderer, stats;
 
@@ -63,8 +64,8 @@
         dirLight.position.set(0, 200, 100);
         dirLight.castShadow = true;
         dirLight.shadow.camera.top = 180;
-        dirLight.shadow.camera.bottom = - 100;
-        dirLight.shadow.camera.left = - 120;
+        dirLight.shadow.camera.bottom = -100;
+        dirLight.shadow.camera.left = -120;
         dirLight.shadow.camera.right = 120;
         scene.add(dirLight);
 

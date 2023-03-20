@@ -6,30 +6,6 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link type="text/css" rel="stylesheet" href="main.css">
     <style>
-      #menu {
-        position: absolute;
-        bottom: 20px;
-        width: 100%;
-        text-align: center;
-        padding: 0;
-        margin: 0;
-      }
-
-      button {
-        color: rgb(255,255,255);
-        background: transparent;
-        border: 0px;
-        padding: 5px 10px;
-        cursor: pointer;
-      }
-      button:hover {
-        background-color: rgba(0,255,255,0.5);
-      }
-      button:active {
-        color: #000000;
-        background-color: rgba(0,255,255,1);
-      }
-
       .label {
         text-shadow: -1px 1px 1px rgb(0,0,0);
         margin-left: 25px;
@@ -40,7 +16,6 @@
   <body>
     <div id="container"></div>
     <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D webgl</a> - molecules</div>
-    <div id="menu"></div>
 
     <!-- Import maps polyfill -->
     <!-- Remove this when import maps will be widely supported -->
@@ -49,7 +24,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -58,9 +34,10 @@
 
       import * as v3d from 'v3d';
 
-      import { TrackballControls } from './jsm/controls/TrackballControls.js';
-      import { PDBLoader } from './jsm/loaders/PDBLoader.js';
-      import { CSS2DRenderer, CSS2DObject } from './jsm/renderers/CSS2DRenderer.js';
+      import { TrackballControls } from 'v3d/addons/controls/TrackballControls.js';
+      import { PDBLoader } from 'v3d/addons/loaders/PDBLoader.js';
+      import { CSS2DRenderer, CSS2DObject } from 'v3d/addons/renderers/CSS2DRenderer.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       let camera, scene, renderer, labelRenderer;
       let controls;
@@ -87,10 +64,12 @@
         'Graphite': 'graphite.pdb'
       };
 
+      const params = {
+        molecule: 'caffeine.pdb'
+      };
+
       const loader = new PDBLoader();
       const offset = new v3d.Vector3();
-
-      const menu = document.getElementById('menu');
 
       init();
       animate();
@@ -109,7 +88,7 @@
         scene.add(light1);
 
         const light2 = new v3d.DirectionalLight(0xffffff, 0.5);
-        light2.position.set(- 1, - 1, 1);
+        light2.position.set(- 1, -1, 1);
         scene.add(light2);
 
         root = new v3d.Group();
@@ -137,46 +116,26 @@
 
         //
 
-        loadMolecule('models/pdb/caffeine.pdb');
-        createMenu();
+        loadMolecule(params.molecule);
 
         //
 
         window.addEventListener('resize', onWindowResize);
 
-      }
+        //
 
-      //
+        const gui = new GUI();
 
-      function generateButtonCallback(url) {
-
-        return function() {
-
-          loadMolecule(url);
-
-        };
-
-      }
-
-      function createMenu() {
-
-        for (const m in MOLECULES) {
-
-          const button = document.createElement('button');
-          button.innerHTML = m;
-          menu.appendChild(button);
-
-          const url = 'models/pdb/' + MOLECULES[m];
-
-          button.addEventListener('click', generateButtonCallback(url));
-
-        }
+        gui.add(params, 'molecule', MOLECULES).onChange(loadMolecule);
+        gui.open();
 
       }
 
       //
 
-      function loadMolecule(url) {
+      function loadMolecule(model) {
+
+        const url = 'models/pdb/' + model;
 
         while (root.children.length > 0) {
 

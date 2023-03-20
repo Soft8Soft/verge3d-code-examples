@@ -18,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,7 +28,7 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
       let stats;
 
@@ -52,7 +53,7 @@
         // Grid
 
         const helper = new v3d.GridHelper(1000, 40, 0x303030, 0x303030);
-        helper.position.y = - 75;
+        helper.position.y = -75;
         scene.add(helper);
 
         // Materials
@@ -90,9 +91,9 @@
 
         const directionalLight = new v3d.DirectionalLight(0xffffff, 0.125);
 
-        directionalLight.position.x = Math.random() - 0.5;
-        directionalLight.position.y = Math.random() - 0.5;
-        directionalLight.position.z = Math.random() - 0.5;
+        directionalLight.position.x = Math.random() -0.5;
+        directionalLight.position.y = Math.random() -0.5;
+        directionalLight.position.z = Math.random() -0.5;
         directionalLight.position.normalize();
 
         scene.add(directionalLight);

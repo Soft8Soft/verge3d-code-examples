@@ -61,7 +61,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -70,8 +71,8 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       let postCamera, postScene, renderer;
       let postMaterial, noiseRandom1DMaterial, noiseRandom2DMaterial, noiseRandom3DMaterial, postQuad;
@@ -104,7 +105,7 @@
         container.appendChild(stats.dom);
 
         // Setup post processing stage
-        postCamera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
+        postCamera = new v3d.OrthographicCamera(- 1, 1, 1, -1, 0, 1);
         noiseRandom1DMaterial = new v3d.ShaderMaterial({
           vertexShader: document.querySelector('#procedural-vert').textContent.trim(),
           fragmentShader: document.querySelector('#noiseRandom1D-frag').textContent.trim()

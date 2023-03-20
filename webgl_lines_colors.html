@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,7 +30,7 @@
 
       import * as v3d from 'v3d';
 
-      import * as GeometryUtils from './jsm/utils/GeometryUtils.js';
+      import * as GeometryUtils from 'v3d/addons/utils/GeometryUtils.js';
 
       let mouseX = 0, mouseY = 0;
 
@@ -222,7 +223,7 @@
 
           if (object.isLine) {
 
-            object.rotation.y = time * (i % 2 ? 1 : - 1);
+            object.rotation.y = time * (i % 2 ? 1 : -1);
 
           }
 

@@ -69,7 +69,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -78,10 +79,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       let camera, scene, renderer, controls, stats;
       let target;
@@ -167,7 +168,7 @@
       function setupPost() {
 
         // Setup post processing stage
-        postCamera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
+        postCamera = new v3d.OrthographicCamera(- 1, 1, 1, -1, 0, 1);
         postMaterial = new v3d.ShaderMaterial({
           vertexShader: document.querySelector('#post-vert').textContent.trim(),
           fragmentShader: document.querySelector('#post-frag').textContent.trim(),
@@ -198,7 +199,7 @@
         for (let i = 0; i < count; i++) {
 
           const r = Math.random() * 2.0 * Math.PI;
-          const z = (Math.random() * 2.0) - 1.0;
+          const z = (Math.random() * 2.0) -1.0;
           const zScale = Math.sqrt(1.0 - z * z) * scale;
 
           const mesh = new v3d.Mesh(geometry, material);

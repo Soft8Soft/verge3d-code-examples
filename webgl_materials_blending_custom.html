@@ -15,7 +15,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -24,7 +25,7 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       let camera, scene, renderer;
 
@@ -216,7 +217,7 @@
         ctx.fillRect(0, 0, 128, 32);
 
         ctx.fillStyle = 'white';
-        ctx.font = '12pt arial bold';
+        ctx.font = 'bold 11pt arial';
         ctx.fillText(text, 8, 22);
 
         const map = new v3d.CanvasTexture(canvas);
@@ -241,8 +242,8 @@
         requestAnimationFrame(animate);
 
         const time = Date.now() * 0.00025;
-        const ox = (time * - 0.01 * mapBg.repeat.x) % 1;
-        const oy = (time * - 0.01 * mapBg.repeat.y) % 1;
+        const ox = (time * -0.01 * mapBg.repeat.x) % 1;
+        const oy = (time * -0.01 * mapBg.repeat.y) % 1;
 
         mapBg.offset.set(ox, oy);
 

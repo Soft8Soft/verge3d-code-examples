@@ -80,8 +80,8 @@ class IFCParser {
         this.state = state;
         this.BVH = BVH;
         this.loadedModels = 0;
-        this.currentWebIfcID = - 1;
-        this.currentModelID = - 1;
+        this.currentWebIfcID = -1;
+        this.currentModelID = -1;
 
     }
 
@@ -363,7 +363,7 @@ class SubsetManager {
 
     isValid(item) {
 
-        return item != undefined && item != null;
+        return item !== undefined && item !== null;
 
     }
 
@@ -1877,7 +1877,6 @@ class TypeManager {
 
     getAllTypesOfModel(modelID) {
 
-        this.state.models[modelID].types;
         const elements = Object.keys(IfcElements).map((e) => parseInt(e));
         const types = this.state.models[modelID].types;
         elements.forEach((type) => {

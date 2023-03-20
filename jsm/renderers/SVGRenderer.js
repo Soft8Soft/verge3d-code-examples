@@ -18,13 +18,13 @@ class SVGObject extends Object3D {
 
         super();
 
+        this.isSVGObject = true;
+
         this.node = node;
 
     }
 
 }
-
-SVGObject.prototype.isSVGObject = true;
 
 class SVGRenderer {
 
@@ -227,7 +227,7 @@ class SVGRenderer {
 
                     if (_clipBox.intersectsBox(_elemBox) === true) {
 
-                        renderLine(_v1, _v2, element, material);
+                        renderLine(_v1, _v2, material);
 
                     }
 
@@ -235,9 +235,9 @@ class SVGRenderer {
 
                     _v1 = element.v1; _v2 = element.v2; _v3 = element.v3;
 
-                    if (_v1.positionScreen.z < - 1 || _v1.positionScreen.z > 1) continue;
-                    if (_v2.positionScreen.z < - 1 || _v2.positionScreen.z > 1) continue;
-                    if (_v3.positionScreen.z < - 1 || _v3.positionScreen.z > 1) continue;
+                    if (_v1.positionScreen.z < -1 || _v1.positionScreen.z > 1) continue;
+                    if (_v2.positionScreen.z < -1 || _v2.positionScreen.z > 1) continue;
+                    if (_v3.positionScreen.z < -1 || _v3.positionScreen.z > 1) continue;
 
                     _v1.positionScreen.x *= _svgWidthHalf; _v1.positionScreen.y *= -_svgHeightHalf;
                     _v2.positionScreen.x *= _svgWidthHalf; _v2.positionScreen.y *= -_svgHeightHalf;
@@ -276,7 +276,7 @@ class SVGRenderer {
                     _vector3.setFromMatrixPosition(object.matrixWorld);
                     _vector3.applyMatrix4(_viewProjectionMatrix);
 
-                    if (_vector3.z < - 1 || _vector3.z > 1) return;
+                    if (_vector3.z < -1 || _vector3.z > 1) return;
 
                     const x = _vector3.x * _svgWidthHalf;
                     const y = -_vector3.y * _svgHeightHalf;
@@ -397,7 +397,7 @@ class SVGRenderer {
 
         }
 
-        function renderLine(v1, v2, element, material) {
+        function renderLine(v1, v2, material) {
 
             const path = 'M' + convert(v1.positionScreen.x) + ',' + convert(v1.positionScreen.y) + 'L' + convert(v2.positionScreen.x) + ',' + convert(v2.positionScreen.y);
 

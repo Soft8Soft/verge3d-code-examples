@@ -19,18 +19,18 @@ class AnaglyphEffect {
         // Dubois matrices from https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.7.6968&rep=rep1&type=pdf#page=4
 
         this.colorMatrixLeft = new Matrix3().fromArray([
-            0.456100, - 0.0400822, - 0.0152161,
-            0.500484, - 0.0378246, - 0.0205971,
-            0.176381, - 0.0157589, - 0.00546856
+            0.456100, -0.0400822, -0.0152161,
+            0.500484, -0.0378246, -0.0205971,
+            0.176381, -0.0157589, -0.00546856
         ]);
 
         this.colorMatrixRight = new Matrix3().fromArray([
-            - 0.0434706, 0.378476, - 0.0721527,
-            - 0.0879388, 0.73364, - 0.112961,
-            - 0.00155529, - 0.0184503, 1.2264
+            -0.0434706, 0.378476, -0.0721527,
+            -0.0879388, 0.73364, -0.112961,
+            -0.00155529, -0.0184503, 1.2264
         ]);
 
-        const _camera = new OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
+        const _camera = new OrthographicCamera(- 1, 1, 1, -1, 0, 1);
 
         const _scene = new Scene();
 
@@ -131,9 +131,9 @@ class AnaglyphEffect {
 
             const currentRenderTarget = renderer.getRenderTarget();
 
-            scene.updateMatrixWorld();
+            if (scene.matrixWorldAutoUpdate === true) scene.updateMatrixWorld();
 
-            if (camera.parent === null) camera.updateMatrixWorld();
+            if (camera.parent === null && camera.matrixWorldAutoUpdate === true) camera.updateMatrixWorld();
 
             _stereo.update(camera);
 
@@ -154,10 +154,10 @@ class AnaglyphEffect {
 
         this.dispose = function() {
 
-            if (_renderTargetL) _renderTargetL.dispose();
-            if (_renderTargetR) _renderTargetR.dispose();
-            if (_mesh) _mesh.geometry.dispose();
-            if (_material) _material.dispose();
+            _renderTargetL.dispose();
+            _renderTargetR.dispose();
+            _mesh.geometry.dispose();
+            _mesh.material.dispose();
 
         };
 

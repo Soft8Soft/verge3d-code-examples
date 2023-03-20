@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,9 +29,9 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       let camera, scene, renderer, stats, material;
       let mouseX = 0, mouseY = 0;
@@ -56,9 +57,9 @@
 
         for (let i = 0; i < 10000; i++) {
 
-          const x = 2000 * Math.random() - 1000;
-          const y = 2000 * Math.random() - 1000;
-          const z = 2000 * Math.random() - 1000;
+          const x = 2000 * Math.random() -1000;
+          const y = 2000 * Math.random() -1000;
+          const z = 2000 * Math.random() -1000;
 
           vertices.push(x, y, z);
 

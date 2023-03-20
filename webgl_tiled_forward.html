@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,12 +29,12 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { OBJLoader } from 'v3d/addons/loaders/OBJLoader.js';
 
-      import { UnrealBloomPass } from './jsm/postprocessing/UnrealBloomPass.js';
+      import { UnrealBloomPass } from 'v3d/addons/postprocessing/UnrealBloomPass.js';
 
       // Simple form of tiled forward lighting
       // using texels as bitmasks of 32 lights
@@ -273,7 +274,7 @@
           materials.push(mtl);
 
           const obj = new v3d.Mesh(geom, mtl);
-          obj.position.y = - 37;
+          obj.position.y = -37;
           mtl.side = tIndex === index ? v3d.FrontSide : v3d.DoubleSide;
 
           g.rotation.y = index * Math.PI / 2;
@@ -314,7 +315,7 @@
               py: Math.random() * Math.PI,
               pr: Math.random() * Math.PI,
               pc: Math.random() * Math.PI,
-              dir: Math.random() > 0.5 ? 1 : - 1
+              dir: Math.random() > 0.5 ? 1 : -1
             };
 
             lights.push(l);

@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,11 +30,11 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { RectAreaLightHelper } from './jsm/helpers/RectAreaLightHelper.js';
-      import { RectAreaLightUniformsLib } from './jsm/lights/RectAreaLightUniformsLib.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { RectAreaLightHelper } from 'v3d/addons/helpers/RectAreaLightHelper.js';
+      import { RectAreaLightUniformsLib } from 'v3d/addons/lights/RectAreaLightUniformsLib.js';
 
       let renderer, scene, camera;
       let stats;
@@ -50,7 +51,7 @@
         document.body.appendChild(renderer.domElement);
 
         camera = new v3d.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-        camera.position.set(0, 5, - 15);
+        camera.position.set(0, 5, -15);
 
         scene = new v3d.Scene();
 

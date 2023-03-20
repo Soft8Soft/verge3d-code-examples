@@ -19,9 +19,7 @@
     <div id="container"></div>
     <div id="info">
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - webgl hemisphere light example<br/>
-      flamingo by <a href="https://mirada.com/" target="_blank" rel="noopener">mirada</a> from <a href="http://www.ro.me" target="_blank" rel="noopener">ro.me</a><br/><br/>
-      <button id="hemisphereButton">toggle hemisphere light</button>
-      <button id="directionalButton">toggle directional light</button>
+      flamingo by <a href="https://mirada.com/" target="_blank" rel="noopener">mirada</a> from <a href="http://www.ro.me" target="_blank" rel="noopener">ro.me</a>
     </div>
 
     <script type="x-shader/x-vertex" id="vertexShader">
@@ -64,7 +62,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -73,10 +72,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
 
       let camera, scene, renderer;
       const mixers = [];
@@ -130,7 +129,7 @@
         dirLight.shadow.camera.bottom = - d;
 
         dirLight.shadow.camera.far = 3500;
-        dirLight.shadow.bias = - 0.0001;
+        dirLight.shadow.bias = -0.0001;
 
         const dirLightHelper = new v3d.DirectionalLightHelper(dirLight, 10);
         scene.add(dirLightHelper);
@@ -142,7 +141,7 @@
         groundMat.color.setHSL(0.095, 1, 0.75);
 
         const ground = new v3d.Mesh(groundGeo, groundMat);
-        ground.position.y = - 33;
+        ground.position.y = -33;
         ground.rotation.x = - Math.PI / 2;
         ground.receiveShadow = true;
         scene.add(ground);
@@ -183,7 +182,7 @@
           const s = 0.35;
           mesh.scale.set(s, s, s);
           mesh.position.y = 15;
-          mesh.rotation.y = - 1;
+          mesh.rotation.y = -1;
 
           mesh.castShadow = true;
           mesh.receiveShadow = true;
@@ -212,23 +211,30 @@
 
         //
 
+        const params = {
+          toggleHemisphereLight: function() {
+
+            hemiLight.visible = ! hemiLight.visible;
+            hemiLightHelper.visible = ! hemiLightHelper.visible;
+
+          },
+          toggleDirectionalLight: function() {
+
+            dirLight.visible = ! dirLight.visible;
+            dirLightHelper.visible = ! dirLightHelper.visible;
+
+          }
+        };
+
+        const gui = new GUI();
+
+        gui.add(params, 'toggleHemisphereLight').name('toggle hemisphere light');
+        gui.add(params, 'toggleDirectionalLight').name('toggle directional light');
+        gui.open();
+
+        //
+
         window.addEventListener('resize', onWindowResize);
-
-        const hemisphereButton = document.getElementById('hemisphereButton');
-        hemisphereButton.addEventListener('click', function() {
-
-          hemiLight.visible = ! hemiLight.visible;
-          hemiLightHelper.visible = ! hemiLightHelper.visible;
-
-        });
-
-        const directionalButton = document.getElementById('directionalButton');
-        directionalButton.addEventListener('click', function() {
-
-          dirLight.visible = ! dirLight.visible;
-          dirLightHelper.visible = ! dirLightHelper.visible;
-
-        });
 
       }
 

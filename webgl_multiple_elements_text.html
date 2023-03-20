@@ -86,7 +86,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -95,9 +96,11 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       const scenes = [];
+
+      const clock = new v3d.Clock();
 
       let views, t, canvas, renderer;
 
@@ -274,7 +277,7 @@
 
         });
 
-        t ++;
+        t += clock.getDelta() * 60;
 
       }
 
@@ -335,7 +338,8 @@
 
     <script>
 
-      const parent = document.scripts[document.scripts.length - 1].parentNode;
+      /* eslint-disable prefer-const*/
+      let parent = document.scripts[document.scripts.length - 1].parentNode;
 
       parent.displacement = function(x, y, z, t, target) {
 

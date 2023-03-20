@@ -22,7 +22,8 @@
   <script type="importmap">
     {
       "imports": {
-        "v3d": "../build/v3d.module.js"
+        "v3d": "../build/v3d.module.js",
+        "v3d/addons/": "./jsm/"
       }
     }
   </script>
@@ -30,13 +31,13 @@
   <script type="module">
 
     import * as v3d from 'v3d';
-    import { VRButton } from './jsm/webxr/VRButton.js';
-    import { XRControllerModelFactory } from './jsm/webxr/XRControllerModelFactory.js';
-    import { OculusHandModel } from './jsm/webxr/OculusHandModel.js';
-    import { OculusHandPointerModel } from './jsm/webxr/OculusHandPointerModel.js';
-    import { createText } from './jsm/webxr/Text2D.js';
+    import { VRButton } from 'v3d/addons/webxr/VRButton.js';
+    import { XRControllerModelFactory } from 'v3d/addons/webxr/XRControllerModelFactory.js';
+    import { OculusHandModel } from 'v3d/addons/webxr/OculusHandModel.js';
+    import { OculusHandPointerModel } from 'v3d/addons/webxr/OculusHandPointerModel.js';
+    import { createText } from 'v3d/addons/webxr/Text2D.js';
 
-    import { World, System, Component, TagComponent, Types } from './jsm/libs/ecsy.module.js';
+    import { World, System, Component, TagComponent, Types } from 'v3d/addons/libs/ecsy.module.js';
 
     class Object3D extends Component { }
 
@@ -308,9 +309,9 @@
       light.position.set(0, 6, 0);
       light.castShadow = true;
       light.shadow.camera.top = 2;
-      light.shadow.camera.bottom = - 2;
+      light.shadow.camera.bottom = -2;
       light.shadow.camera.right = 2;
-      light.shadow.camera.left = - 2;
+      light.shadow.camera.left = -2;
       light.shadow.mapSize.set(4096, 4096);
       scene.add(light);
 
@@ -372,7 +373,7 @@
         transparent: true,
       });
       const menuMesh = new v3d.Mesh(menuGeometry, menuMaterial);
-      menuMesh.position.set(0.4, 1, - 1);
+      menuMesh.position.set(0.4, 1, -1);
       menuMesh.rotation.y = - Math.PI / 12;
       scene.add(menuMesh);
 
@@ -388,29 +389,29 @@
       const resetButtonText = createText('reset', 0.06);
       resetButton.add(resetButtonText);
       resetButtonText.position.set(0, 0, 0.0051);
-      resetButton.position.set(0, - 0.06, 0);
+      resetButton.position.set(0, -0.06, 0);
       menuMesh.add(resetButton);
 
       const exitButton = makeButtonMesh(0.2, 0.1, 0.01, 0xff0000);
       const exitButtonText = createText('exit', 0.06);
       exitButton.add(exitButtonText);
       exitButtonText.position.set(0, 0, 0.0051);
-      exitButton.position.set(0, - 0.18, 0);
+      exitButton.position.set(0, -0.18, 0);
       menuMesh.add(exitButton);
 
       const tkGeometry = new v3d.TorusKnotGeometry(0.5, 0.2, 200, 32);
       const tkMaterial = new v3d.MeshPhongMaterial({ color: 0xffffff });
       tkMaterial.metalness = 0.8;
       const torusKnot = new v3d.Mesh(tkGeometry, tkMaterial);
-      torusKnot.position.set(0, 1, - 5);
+      torusKnot.position.set(0, 1, -5);
       scene.add(torusKnot);
 
       const instructionText = createText('This is a WebXR Hands demo, please explore with hands.', 0.04);
-      instructionText.position.set(0, 1.6, - 0.6);
+      instructionText.position.set(0, 1.6, -0.6);
       scene.add(instructionText);
 
       const exitText = createText('Exiting session...', 0.04);
-      exitText.position.set(0, 1.5, - 0.6);
+      exitText.position.set(0, 1.5, -0.6);
       exitText.visible = false;
       scene.add(exitText);
 
@@ -432,7 +433,7 @@
 
       const menuEntity = world.createEntity();
       menuEntity.addComponent(Intersectable);
-      menuEntity.addComponent(OffsetFromCamera, { x: 0.4, y: 0, z: - 1 });
+      menuEntity.addComponent(OffsetFromCamera, { x: 0.4, y: 0, z: -1 });
       menuEntity.addComponent(NeedCalibration);
       menuEntity.addComponent(Object3D, { object: menuMesh });
 

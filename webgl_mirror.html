@@ -27,7 +27,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -36,8 +37,8 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { Reflector } from './jsm/objects/Reflector.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { Reflector } from 'v3d/addons/objects/Reflector.js';
 
       let camera, scene, renderer;
 
@@ -100,7 +101,7 @@
           color: 0x889999
         });
         verticalMirror.position.y = 50;
-        verticalMirror.position.z = - 50;
+        verticalMirror.position.z = -50;
         scene.add(verticalMirror);
 
 
@@ -110,7 +111,7 @@
         geometry = new v3d.CylinderGeometry(0.1, 15 * Math.cos(Math.PI / 180 * 30), 0.1, 24, 1);
         material = new v3d.MeshPhongMaterial({ color: 0xffffff, emissive: 0x444444 });
         const sphereCap = new v3d.Mesh(geometry, material);
-        sphereCap.position.y = - 15 * Math.sin(Math.PI / 180 * 30) - 0.05;
+        sphereCap.position.y = -15 * Math.sin(Math.PI / 180 * 30) -0.05;
         sphereCap.rotateX(- Math.PI);
 
         geometry = new v3d.SphereGeometry(15, 24, 24, Math.PI / 2, Math.PI * 2, 0, Math.PI / 180 * 120);
@@ -150,7 +151,7 @@
         scene.add(planeRight);
 
         const planeLeft = new v3d.Mesh(planeGeo, new v3d.MeshPhongMaterial({ color: 0xff0000 }));
-        planeLeft.position.x = - 50;
+        planeLeft.position.x = -50;
         planeLeft.position.y = 50;
         planeLeft.rotateY(Math.PI / 2);
         scene.add(planeLeft);

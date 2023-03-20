@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,8 +30,8 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
 
       let camera, scene, renderer, clock;
 
@@ -58,7 +59,7 @@
         scene.add(light1);
 
         const light2 = new v3d.PointLight(0x22ff00, 0.7);
-        light2.position.set(- 100, - 100, - 100);
+        light2.position.set(- 100, -100, -100);
         scene.add(light2);
 
         scene.add(new v3d.AmbientLight(0x111111));
@@ -151,7 +152,7 @@
 
           if (mesh.morphTargetInfluences[1] <= 0 || mesh.morphTargetInfluences[1] >= 1) {
 
-            sign *= - 1;
+            sign *= -1;
 
           }
 

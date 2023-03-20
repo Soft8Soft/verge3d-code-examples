@@ -12,7 +12,7 @@
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> physics - ammo.js instancing
     </div>
 
-    <script src="js/libs/ammo.wasm.js"></script>
+    <script src="jsm/libs/ammo.wasm.js"></script>
 
     <!-- Import maps polyfill -->
     <!-- Remove this when import maps will be widely supported -->
@@ -21,7 +21,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,9 +30,9 @@
     <script type="module">
 
       import * as v3d from 'v3d';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { AmmoPhysics } from './jsm/physics/AmmoPhysics.js';
-      import Stats from './jsm/libs/stats.module.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { AmmoPhysics } from 'v3d/addons/physics/AmmoPhysics.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
       let camera, scene, renderer, stats;
       let physics, position;
@@ -68,7 +69,7 @@
           new v3d.BoxGeometry(10, 5, 10),
           new v3d.ShadowMaterial({ color: 0x111111 })
         );
-        floor.position.y = - 2.5;
+        floor.position.y = -2.5;
         floor.receiveShadow = true;
         scene.add(floor);
         physics.addMesh(floor);
@@ -91,7 +92,7 @@
 
         for (let i = 0; i < boxes.count; i++) {
 
-          matrix.setPosition(Math.random() - 0.5, Math.random() * 2, Math.random() - 0.5);
+          matrix.setPosition(Math.random() -0.5, Math.random() * 2, Math.random() -0.5);
           boxes.setMatrixAt(i, matrix);
           boxes.setColorAt(i, color.setHex(0xffffff * Math.random()));
 
@@ -110,7 +111,7 @@
 
         for (let i = 0; i < spheres.count; i++) {
 
-          matrix.setPosition(Math.random() - 0.5, Math.random() * 2, Math.random() - 0.5);
+          matrix.setPosition(Math.random() -0.5, Math.random() * 2, Math.random() -0.5);
           spheres.setMatrixAt(i, matrix);
           spheres.setColorAt(i, color.setHex(0xffffff * Math.random()));
 
@@ -138,25 +139,27 @@
 
         animate();
 
+        setInterval(() => {
+
+          let index = Math.floor(Math.random() * boxes.count);
+
+          position.set(0, Math.random() + 1, 0);
+          physics.setMeshPosition(boxes, position, index);
+
+          //
+
+          index = Math.floor(Math.random() * spheres.count);
+
+          position.set(0, Math.random() + 1, 0);
+          physics.setMeshPosition(spheres, position, index);
+
+        }, 1000 / 60);
+
       }
 
       function animate() {
 
         requestAnimationFrame(animate);
-
-        //
-
-        let index = Math.floor(Math.random() * boxes.count);
-
-        position.set(0, Math.random() + 1, 0);
-        physics.setMeshPosition(boxes, position, index);
-
-        //
-
-        index = Math.floor(Math.random() * spheres.count);
-
-        position.set(0, Math.random() + 1, 0);
-        physics.setMeshPosition(spheres, position, index);
 
         renderer.render(scene, camera);
 

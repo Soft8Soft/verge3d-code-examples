@@ -309,7 +309,7 @@ class BasisTextureLoader extends Loader {
 
                 this.workerPool.sort(function(a, b) {
 
-                    return a._taskLoad > b._taskLoad ? - 1 : 1;
+                    return a._taskLoad > b._taskLoad ? -1 : 1;
 
                 });
 
@@ -541,7 +541,7 @@ BasisTextureLoader.BasisWorker = function() {
                     hasAlpha,
                     false,
                     0, 0,
-                    - 1, - 1
+                    -1, -1
                 );
 
                 assert(ok, 'v3d.BasisTextureLoader: transcodeUASTCImage() failed for level ' + level.index + '.');

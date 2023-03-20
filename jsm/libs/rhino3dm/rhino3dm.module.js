@@ -1,7 +1,7 @@
 
 var rhino3dm = (function() {
   var _scriptDir = import.meta.url;
-  
+
   return (
 function(rhino3dm) {
   rhino3dm = rhino3dm || {};

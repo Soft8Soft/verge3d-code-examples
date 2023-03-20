@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,12 +30,12 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { TrackballControls } from './jsm/controls/TrackballControls.js';
-      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
-      import { RGBELoader } from './jsm/loaders/RGBELoader.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { TrackballControls } from 'v3d/addons/controls/TrackballControls.js';
+      import { OBJLoader } from 'v3d/addons/loaders/OBJLoader.js';
+      import { RGBELoader } from 'v3d/addons/loaders/RGBELoader.js';
 
       const statsEnabled = true;
 
@@ -108,7 +109,7 @@
 
             });
 
-            group.position.x = - 0.45;
+            group.position.x = -0.45;
             group.rotation.y = - Math.PI / 2;
             scene.add(group);
 

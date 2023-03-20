@@ -18,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,10 +28,10 @@
 
       import * as v3d from 'v3d';
 
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
 
-      import { VertexNormalsHelper } from './jsm/helpers/VertexNormalsHelper.js';
-      import { VertexTangentsHelper } from './jsm/helpers/VertexTangentsHelper.js';
+      import { VertexNormalsHelper } from 'v3d/addons/helpers/VertexNormalsHelper.js';
+      import { VertexTangentsHelper } from 'v3d/addons/helpers/VertexTangentsHelper.js';
 
       let scene, renderer;
       let camera, light;
@@ -61,12 +62,12 @@
         scene.add(new v3d.PointLightHelper(light, 15));
 
         const gridHelper = new v3d.GridHelper(400, 40, 0x0000ff, 0x808080);
-        gridHelper.position.y = - 150;
-        gridHelper.position.x = - 150;
+        gridHelper.position.y = -150;
+        gridHelper.position.x = -150;
         scene.add(gridHelper);
 
         const polarGridHelper = new v3d.PolarGridHelper(200, 16, 8, 64, 0x0000ff, 0x808080);
-        polarGridHelper.position.y = - 150;
+        polarGridHelper.position.y = -150;
         polarGridHelper.position.x = 200;
         scene.add(polarGridHelper);
 
@@ -108,7 +109,7 @@
           line.material.depthTest = false;
           line.material.opacity = 0.25;
           line.material.transparent = true;
-          line.position.x = - 4;
+          line.position.x = -4;
           group.add(line);
           scene.add(new v3d.BoxHelper(line));
 

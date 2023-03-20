@@ -56,7 +56,7 @@ class ShadowMapViewer {
             height: 256
         };
 
-        const camera = new OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 10);
+        const camera = new OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 1, 10);
         camera.position.set(0, 0, 2);
         const scene = new Scene();
 
@@ -180,10 +180,10 @@ class ShadowMapViewer {
 
             if (this.enabled) {
 
-                 camera.left = window.innerWidth / - 2;
+                 camera.left = window.innerWidth / -2;
                  camera.right = window.innerWidth / 2;
                  camera.top = window.innerHeight / 2;
-                 camera.bottom = window.innerHeight / - 2;
+                 camera.bottom = window.innerHeight / -2;
                  camera.updateProjectionMatrix();
 
                  this.update();

@@ -39,7 +39,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -48,10 +49,10 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { Rhino3dmLoader } from './jsm/loaders/3DMLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { Rhino3dmLoader } from 'v3d/addons/loaders/3DMLoader.js';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       let camera, scene, renderer;
       let controls, gui;
@@ -70,7 +71,7 @@
         document.body.appendChild(renderer.domElement);
 
         camera = new v3d.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-        camera.position.set(26, - 40, 5);
+        camera.position.set(26, -40, 5);
 
         scene = new v3d.Scene();
 

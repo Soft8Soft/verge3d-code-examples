@@ -16,13 +16,13 @@ class GlitchPass extends Pass {
 
         super();
 
-        if (DigitalGlitch === undefined) console.error('v3d.GlitchPass relies on DigitalGlitch');
-
         const shader = DigitalGlitch;
 
         this.uniforms = UniformsUtils.clone(shader.uniforms);
 
-        this.uniforms['tDisp'].value = this.generateHeightmap(dt_size);
+        this.heightMap = this.generateHeightmap(dt_size);
+
+        this.uniforms['tDisp'].value = this.heightMap;
 
         this.material = new ShaderMaterial({
             uniforms: this.uniforms,
@@ -43,7 +43,7 @@ class GlitchPass extends Pass {
         if (renderer.capabilities.isWebGL2 === false) this.uniforms['tDisp'].value.format = LuminanceFormat;
 
         this.uniforms['tDiffuse'].value = readBuffer.texture;
-        this.uniforms['seed'].value = Math.random();//default seeding
+        this.uniforms['seed'].value = Math.random(); //default seeding
         this.uniforms['byp'].value = 0;
 
         if (this.curF % this.randX == 0 || this.goWild == true) {
@@ -110,6 +110,16 @@ class GlitchPass extends Pass {
         const texture = new DataTexture(data_arr, dt_size, dt_size, RedFormat, FloatType);
         texture.needsUpdate = true;
         return texture;
+
+    }
+
+    dispose() {
+
+        this.material.dispose();
+
+        this.heightMap.dispose();
+
+        this.fsQuad.dispose();
 
     }
 

@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,18 +29,18 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GodRaysFakeSunShader, GodRaysDepthMaskShader, GodRaysCombineShader, GodRaysGenerateShader } from './jsm/shaders/GodRaysShader.js';
+      import { OBJLoader } from 'v3d/addons/loaders/OBJLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GodRaysFakeSunShader, GodRaysDepthMaskShader, GodRaysCombineShader, GodRaysGenerateShader } from 'v3d/addons/shaders/GodRaysShader.js';
 
       let container, stats;
       let camera, scene, renderer, materialDepth;
 
       let sphereMesh;
 
-      const sunPosition = new v3d.Vector3(0, 1000, - 1000);
+      const sunPosition = new v3d.Vector3(0, 1000, -1000);
       const clipPosition = new v3d.Vector4();
       const screenSpacePosition = new v3d.Vector3();
 
@@ -80,7 +81,7 @@
         loader.load('models/obj/tree.obj', function(object) {
 
           object.material = materialScene;
-          object.position.set(0, - 150, - 150);
+          object.position.set(0, -150, -150);
           object.scale.multiplyScalar(400);
           scene.add(object);
 
@@ -148,7 +149,7 @@
 
         postprocessing.scene = new v3d.Scene();
 
-        postprocessing.camera = new v3d.OrthographicCamera(- 0.5, 0.5, 0.5, - 0.5, - 10000, 10000);
+        postprocessing.camera = new v3d.OrthographicCamera(- 0.5, 0.5, 0.5, -0.5, -10000, 10000);
         postprocessing.camera.position.z = 100;
 
         postprocessing.scene.add(postprocessing.camera);
@@ -223,7 +224,7 @@
           new v3d.PlaneGeometry(1.0, 1.0),
           postprocessing.materialGodraysGenerate
         );
-        postprocessing.quad.position.z = - 9900;
+        postprocessing.quad.position.z = -9900;
         postprocessing.scene.add(postprocessing.quad);
 
       }
@@ -262,7 +263,7 @@
         const time = Date.now() / 4000;
 
         sphereMesh.position.x = orbitRadius * Math.cos(time);
-        sphereMesh.position.z = orbitRadius * Math.sin(time) - 100;
+        sphereMesh.position.z = orbitRadius * Math.sin(time) -100;
 
         if (postprocessing.enabled) {
 

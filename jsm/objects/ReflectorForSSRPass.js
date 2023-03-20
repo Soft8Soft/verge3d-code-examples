@@ -11,7 +11,8 @@ import {
     DepthTexture,
     UnsignedShortType,
     NearestFilter,
-    Plane
+    Plane,
+    HalfFloatType
 } from 'v3d';
 
 class ReflectorForSSRPass extends Mesh {
@@ -19,6 +20,8 @@ class ReflectorForSSRPass extends Mesh {
     constructor(geometry, options = {}) {
 
         super(geometry);
+
+        this.isReflectorForSSRPass = true;
 
         this.type = 'ReflectorForSSRPass';
 
@@ -81,7 +84,7 @@ class ReflectorForSSRPass extends Mesh {
         const reflectorWorldPosition = new Vector3();
         const cameraWorldPosition = new Vector3();
         const rotationMatrix = new Matrix4();
-        const lookAtPosition = new Vector3(0, 0, - 1);
+        const lookAtPosition = new Vector3(0, 0, -1);
 
         const view = new Vector3();
         const target = new Vector3();
@@ -102,6 +105,7 @@ class ReflectorForSSRPass extends Mesh {
 
         const parameters = {
             depthTexture: useDepthTexture ? depthTexture : null,
+            type: HalfFloatType
         };
 
         const renderTarget = new WebGLRenderTarget(textureWidth, textureHeight, parameters);
@@ -159,7 +163,7 @@ class ReflectorForSSRPass extends Mesh {
 
             rotationMatrix.extractRotation(camera.matrixWorld);
 
-            lookAtPosition.set(0, 0, - 1);
+            lookAtPosition.set(0, 0, -1);
             lookAtPosition.applyMatrix4(rotationMatrix);
             lookAtPosition.add(cameraWorldPosition);
 
@@ -195,10 +199,6 @@ class ReflectorForSSRPass extends Mesh {
             textureMatrix.multiply(virtualCamera.projectionMatrix);
             textureMatrix.multiply(virtualCamera.matrixWorldInverse);
             textureMatrix.multiply(scope.matrixWorld);
-
-            // Render
-
-            renderTarget.texture.encoding = renderer.outputEncoding;
 
             // scope.visible = false;
 
@@ -248,8 +248,6 @@ class ReflectorForSSRPass extends Mesh {
     }
 
 }
-
-ReflectorForSSRPass.prototype.isReflectorForSSRPass = true;
 
 ReflectorForSSRPass.ReflectorShader = {
 
@@ -316,9 +314,9 @@ ReflectorForSSRPass.ReflectorShader = {
             return perspectiveDepthToViewZ(depth, virtualCameraNear, virtualCameraFar);
         }
         vec3 getViewPosition(const in vec2 uv, const in float depth/*clip space*/, const in float clipW) {
-            vec4 clipPosition = vec4((vec3(uv, depth) - 0.5) * 2.0, 1.0);//ndc
+            vec4 clipPosition = vec4((vec3(uv, depth) -0.5) * 2.0, 1.0); //ndc
             clipPosition *= clipW; //clip
-            return (virtualCameraProjectionMatrixInverse * clipPosition).xyz;//view
+            return (virtualCameraProjectionMatrixInverse * clipPosition).xyz; //view
         }
         void main() {
             vec4 base = texture2DProj(tDiffuse, vUv);

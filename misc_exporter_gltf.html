@@ -8,19 +8,7 @@
   </head>
   <body>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - exporter - gltf<br/><br/>
-      <button id="export_scene">Export Scene1</button>
-      <button id="export_scenes">Export Scene1 and v3d.Scene 2</button>
-      <button id="export_object">Export Sphere</button><br/>
-      <button id="export_obj">Export WaltHead</button>
-      <button id="export_objects">Export Sphere and Grid</button>
-      <button id="export_scene_object">Export Scene1 and Sphere</button>
-      <br/><br/>
-      <label><input id="option_trs" name="trs" type="checkbox"/>TRS</label>
-      <label><input id="option_visible" name="visible" type="checkbox" checked="checked"/>Only Visible</label>
-      <label><input id="option_drawrange" name="visible" type="checkbox" checked="checked"/>Truncate drawRange</label><br/>
-      <label><input id="option_binary" name="visible" type="checkbox">Binary (<code>.glb</code>)</label>
-      <label><input id="option_maxsize" name="maxSize" type="number" value="4096" min="2" max="8192" step="1"> Max texture size</label>
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - exporter - gltf
     </div>
 
     <!-- Import maps polyfill -->
@@ -30,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -39,19 +28,19 @@
 
       import * as v3d from 'v3d';
 
-      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
-      import { GLTFExporter } from './jsm/exporters/GLTFExporter.js';
+      import { OBJLoader } from 'v3d/addons/loaders/OBJLoader.js';
+      import { GLTFExporter } from 'v3d/addons/exporters/GLTFExporter.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       function exportGLTF(input) {
 
         const gltfExporter = new GLTFExporter();
 
         const options = {
-          trs: document.getElementById('option_trs').checked,
-          onlyVisible: document.getElementById('option_visible').checked,
-          truncateDrawRange: document.getElementById('option_drawrange').checked,
-          binary: document.getElementById('option_binary').checked,
-          maxTextureSize: Number(document.getElementById('option_maxsize').value) || Infinity // To prevent NaN value
+          trs: params.trs,
+          onlyVisible: params.onlyVisible,
+          binary: params.binary,
+          maxTextureSize: params.maxTextureSize
         };
         gltfExporter.parse(
           input,
@@ -79,43 +68,6 @@
         );
 
       }
-
-      document.getElementById('export_scene').addEventListener('click', function() {
-
-        exportGLTF(scene1);
-
-      });
-
-      document.getElementById('export_scenes').addEventListener('click', function() {
-
-        exportGLTF([scene1, scene2]);
-
-      });
-
-      document.getElementById('export_object').addEventListener('click', function() {
-
-        exportGLTF(sphere);
-
-      });
-
-      document.getElementById('export_obj').addEventListener('click', function() {
-
-        exportGLTF(waltHead);
-
-      });
-
-      document.getElementById('export_objects').addEventListener('click', function() {
-
-        exportGLTF([sphere, gridHelper]);
-
-      });
-
-      document.getElementById('export_scene_object').addEventListener('click', function() {
-
-        exportGLTF([scene1, gridHelper]);
-
-      });
-
 
       const link = document.createElement('a');
       link.style.display = 'none';
@@ -149,6 +101,19 @@
       let camera, object, object2, material, geometry, scene1, scene2, renderer;
       let gridHelper, sphere, waltHead;
 
+      const params = {
+        trs: false,
+        onlyVisible: true,
+        binary: false,
+        maxTextureSize: 4096,
+        exportScene1: exportScene1,
+        exportScenes: exportScenes,
+        exportSphere: exportSphere,
+        exportHead: exportHead,
+        exportObjects: exportObjects,
+        exportSceneObject: exportSceneObject
+      };
+
       init();
       animate();
 
@@ -170,7 +135,7 @@
             data[stride] = Math.round(255 * y / 99);
             data[stride + 1] = Math.round(255 - 255 * y / 99);
             data[stride + 2] = 0;
-            data[stride + 3] = 1;
+            data[stride + 3] = 255;
 
           }
 
@@ -204,9 +169,9 @@
         // DirectLight
         // ---------------------------------------------------------------------
         const dirLight = new v3d.DirectionalLight(0xffffff, 1);
-        dirLight.target.position.set(0, 0, - 1);
+        dirLight.target.position.set(0, 0, -1);
         dirLight.add(dirLight.target);
-        dirLight.lookAt(- 1, - 1, 0);
+        dirLight.lookAt(- 1, -1, 0);
         dirLight.name = 'DirectionalLight';
         scene1.add(dirLight);
 
@@ -214,7 +179,7 @@
         // Grid
         // ---------------------------------------------------------------------
         gridHelper = new v3d.GridHelper(2000, 20, 0x888888, 0x444444);
-        gridHelper.position.y = - 50;
+        gridHelper.position.y = -50;
         gridHelper.name = 'Grid';
         scene1.add(gridHelper);
 
@@ -352,7 +317,7 @@
 
         geometry.setAttribute('position', new v3d.BufferAttribute(positions, 3));
         object = new v3d.Line(geometry, new v3d.LineBasicMaterial({ color: 0xffff00 }));
-        object.position.set(- 50, 0, - 200);
+        object.position.set(- 50, 0, -200);
         scene1.add(object);
 
         // ---------------------------------------------------------------------
@@ -374,45 +339,7 @@
 
         geometry.setAttribute('position', new v3d.BufferAttribute(positions, 3));
         object = new v3d.LineLoop(geometry, new v3d.LineBasicMaterial({ color: 0xffff00 }));
-        object.position.set(0, 0, - 200);
-
-        scene1.add(object);
-
-        // ---------------------------------------------------------------------
-        // Buffer geometry truncated (DrawRange)
-        // ---------------------------------------------------------------------
-        geometry = new v3d.BufferGeometry();
-        const numElements = 6;
-        const outOfRange = 3;
-
-        positions = new Float32Array((numElements + outOfRange) * 3);
-        const colors = new Float32Array((numElements + outOfRange) * 3);
-
-        positions.set([
-          0, 0, 0,
-          0, 80, 0,
-          80, 0, 0,
-          80, 0, 0,
-          0, 80, 0,
-          80, 80, 0
-        ]);
-
-        colors.set([
-          1, 0, 0,
-          1, 0, 0,
-          1, 1, 0,
-          1, 1, 0,
-          0, 0, 1,
-          0, 0, 1,
-        ]);
-
-        geometry.setAttribute('position', new v3d.BufferAttribute(positions, 3));
-        geometry.setAttribute('color', new v3d.BufferAttribute(colors, 3));
-        geometry.setDrawRange(0, numElements);
-
-        object = new v3d.Mesh(geometry, new v3d.MeshBasicMaterial({ side: v3d.DoubleSide, vertexColors: true }));
-        object.name = 'Custom buffered truncated';
-        object.position.set(140, - 40, - 200);
+        object.position.set(0, 0, -200);
 
         scene1.add(object);
 
@@ -423,9 +350,9 @@
         const pointsArray = new Float32Array(numPoints * 3);
         for (let i = 0; i < numPoints; i++) {
 
-          pointsArray[3 * i] = - 50 + Math.random() * 100;
+          pointsArray[3 * i] = -50 + Math.random() * 100;
           pointsArray[3 * i + 1] = Math.random() * 100;
-          pointsArray[3 * i + 2] = - 50 + Math.random() * 100;
+          pointsArray[3 * i + 2] = -50 + Math.random() * 100;
 
         }
 
@@ -435,13 +362,13 @@
         const pointsMaterial = new v3d.PointsMaterial({ color: 0xffff00, size: 5 });
         const pointCloud = new v3d.Points(pointsGeo, pointsMaterial);
         pointCloud.name = 'Points';
-        pointCloud.position.set(- 200, 0, - 200);
+        pointCloud.position.set(- 200, 0, -200);
         scene1.add(pointCloud);
 
         // ---------------------------------------------------------------------
         // Ortho camera
         // ---------------------------------------------------------------------
-        const cameraOrtho = new v3d.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 0.1, 10);
+        const cameraOrtho = new v3d.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 0.1, 10);
         scene1.add(cameraOrtho);
         cameraOrtho.name = 'OrthographicCamera';
 
@@ -451,15 +378,15 @@
         });
 
         object = new v3d.Mesh(new v3d.CircleGeometry(50, 20, 0, Math.PI * 2), material);
-        object.position.set(200, 0, - 400);
+        object.position.set(200, 0, -400);
         scene1.add(object);
 
         object = new v3d.Mesh(new v3d.RingGeometry(10, 50, 20, 5, 0, Math.PI * 2), material);
-        object.position.set(0, 0, - 400);
+        object.position.set(0, 0, -400);
         scene1.add(object);
 
         object = new v3d.Mesh(new v3d.CylinderGeometry(25, 75, 100, 40, 5), material);
-        object.position.set(- 200, 0, - 400);
+        object.position.set(- 200, 0, -400);
         scene1.add(object);
 
         //
@@ -495,7 +422,7 @@
 
           waltHead = obj;
           waltHead.scale.multiplyScalar(1.5);
-          waltHead.position.set(400, 0, 0);
+          waltHead.position.set(200, -40, -200);
           scene1.add(waltHead);
 
         });
@@ -522,6 +449,60 @@
         //
 
         window.addEventListener('resize', onWindowResize);
+
+        const gui = new GUI();
+
+        let h = gui.addFolder('Settings');
+        h.add(params, 'trs').name('Use TRS');
+        h.add(params, 'onlyVisible').name('Only Visible Objects');
+        h.add(params, 'binary').name('Binary (GLB)');
+        h.add(params, 'maxTextureSize', 2, 8192).name('Max Texture Size').step(1);
+
+        h = gui.addFolder('Export');
+        h.add(params, 'exportScene1').name('Export Scene 1');
+        h.add(params, 'exportScenes').name('Export Scene 1 and 2');
+        h.add(params, 'exportSphere').name('Export Sphere');
+        h.add(params, 'exportHead').name('Export Head');
+        h.add(params, 'exportObjects').name('Export Sphere With Grid');
+        h.add(params, 'exportSceneObject').name('Export Scene 1 and Object');
+
+        gui.open();
+
+      }
+
+      function exportScene1() {
+
+        exportGLTF(scene1);
+
+      }
+
+      function exportScenes() {
+
+        exportGLTF([scene1, scene2]);
+
+      }
+
+      function exportSphere() {
+
+        exportGLTF(sphere);
+
+      }
+
+      function exportHead() {
+
+        exportGLTF(waltHead);
+
+      }
+
+      function exportObjects() {
+
+        exportGLTF([sphere, gridHelper]);
+
+      }
+
+      function exportSceneObject() {
+
+        exportGLTF([scene1, gridHelper]);
 
       }
 

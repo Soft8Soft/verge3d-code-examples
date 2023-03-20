@@ -134,7 +134,7 @@ class ArcballControls extends EventDispatcher {
         this._gizmoMatrixState0 = new Matrix4();
 
         //pointers array
-        this._button = - 1;
+        this._button = -1;
         this._touchStart = [];
         this._touchCurrent = [];
         this._input = INPUT.NONE;
@@ -172,8 +172,8 @@ class ArcballControls extends EventDispatcher {
 
 
         //animations
-        this._timeStart = - 1; //initial time
-        this._animationId = - 1;
+        this._timeStart = -1; //initial time
+        this._animationId = -1;
 
         //focus animation
         this.focusAnimationTime = 500; //duration of focus animation in ms
@@ -184,7 +184,7 @@ class ArcballControls extends EventDispatcher {
         this._anglePrev = 0; //angle of previous rotation
         this._angleCurrent = 0; //angle of current rotation
         this._cursorPosPrev = new Vector3();    //cursor position when previous rotate operation has been detected
-        this._cursorPosCurr = new Vector3();//cursor position when current rotate operation has been detected
+        this._cursorPosCurr = new Vector3(); //cursor position when current rotate operation has been detected
         this._wPrev = 0; //angular velocity of the previous rotate operation
         this._wCurr = 0; //angular velocity of the current rotate operation
 
@@ -534,7 +534,7 @@ class ArcballControls extends EventDispatcher {
 
             this._input = INPUT.NONE;
             this.onSinglePanEnd();
-            this._button = - 1;
+            this._button = -1;
 
         }
 
@@ -794,11 +794,11 @@ class ArcballControls extends EventDispatcher {
 
                     }
 
-                    if (this._animationId != - 1) {
+                    if (this._animationId != -1) {
 
                         cancelAnimationFrame(this._animationId);
-                        this._animationId = - 1;
-                        this._timeStart = - 1;
+                        this._animationId = -1;
+                        this._timeStart = -1;
 
                         this.activateGizmos(false);
                         this.dispatchEvent(_changeEvent);
@@ -824,11 +824,11 @@ class ArcballControls extends EventDispatcher {
 
                     }
 
-                    if (this._animationId != - 1) {
+                    if (this._animationId != -1) {
 
                         cancelAnimationFrame(this._animationId);
-                        this._animationId = - 1;
-                        this._timeStart = - 1;
+                        this._animationId = -1;
+                        this._timeStart = -1;
 
                     }
 
@@ -857,11 +857,11 @@ class ArcballControls extends EventDispatcher {
 
                     }
 
-                    if (this._animationId != - 1) {
+                    if (this._animationId != -1) {
 
                         cancelAnimationFrame(this._animationId);
-                        this._animationId = - 1;
-                        this._timeStart = - 1;
+                        this._animationId = -1;
+                        this._timeStart = -1;
 
                         this.activateGizmos(false);
                         this.dispatchEvent(_changeEvent);
@@ -881,11 +881,11 @@ class ArcballControls extends EventDispatcher {
 
                     }
 
-                    if (this._animationId != - 1) {
+                    if (this._animationId != -1) {
 
                         cancelAnimationFrame(this._animationId);
-                        this._animationId = - 1;
-                        this._timeStart = - 1;
+                        this._animationId = -1;
+                        this._timeStart = -1;
 
                         this.activateGizmos(false);
                         this.dispatchEvent(_changeEvent);
@@ -1040,7 +1040,9 @@ class ArcballControls extends EventDispatcher {
 
                             }
 
-                            this.applyTransformMatrix(this.scale(size, this._gizmos.position));
+                            this._v3_1.setFromMatrixPosition(this._gizmoMatrixState);
+
+                            this.applyTransformMatrix(this.scale(size, this._v3_1));
 
                         }
 
@@ -1209,13 +1211,13 @@ class ArcballControls extends EventDispatcher {
             if (hitP != null && this.enableAnimations) {
 
                 const self = this;
-                if (this._animationId != - 1) {
+                if (this._animationId != -1) {
 
                     window.cancelAnimationFrame(this._animationId);
 
                 }
 
-                this._timeStart = - 1;
+                this._timeStart = -1;
                 this._animationId = window.requestAnimationFrame(function(t) {
 
                     self.updateTbState(STATE.ANIMATION_FOCUS, true);
@@ -2063,7 +2065,7 @@ class ArcballControls extends EventDispatcher {
      */
     dispose = () => {
 
-        if (this._animationId != - 1) {
+        if (this._animationId != -1) {
 
             window.cancelAnimationFrame(this._animationId);
 
@@ -2277,7 +2279,7 @@ class ArcballControls extends EventDispatcher {
         this._gizmoMatrixState0.identity().setPosition(tbCenter);
         this._gizmoMatrixState.copy(this._gizmoMatrixState0);
 
-        if (this.camera.zoom != 1) {
+        if (this.camera.zoom !== 1) {
 
             //adapt gizmos size to camera zoom
             const size = 1 / this.camera.zoom;
@@ -2292,7 +2294,22 @@ class ArcballControls extends EventDispatcher {
 
         this._gizmoMatrixState.decompose(this._gizmos.position, this._gizmos.quaternion, this._gizmos.scale);
 
+        //
+
+        this._gizmos.traverse(function(object) {
+
+            if (object.isLine) {
+
+                object.geometry.dispose();
+                object.material.dispose();
+
+            }
+
+        });
+
         this._gizmos.clear();
+
+        //
 
         this._gizmos.add(gizmoX);
         this._gizmos.add(gizmoY);
@@ -2309,7 +2326,7 @@ class ArcballControls extends EventDispatcher {
      */
     onFocusAnim = (time, point, cameraMatrix, gizmoMatrix) => {
 
-        if (this._timeStart == - 1) {
+        if (this._timeStart == -1) {
 
             //animation start
             this._timeStart = time;
@@ -2331,7 +2348,7 @@ class ArcballControls extends EventDispatcher {
 
                 this.focus(point, this.scaleFactor);
 
-                this._timeStart = - 1;
+                this._timeStart = -1;
                 this.updateTbState(STATE.IDLE, false);
                 this.activateGizmos(false);
 
@@ -2359,8 +2376,8 @@ class ArcballControls extends EventDispatcher {
 
             //interrupt animation
 
-            this._animationId = - 1;
-            this._timeStart = - 1;
+            this._animationId = -1;
+            this._timeStart = -1;
 
         }
 
@@ -2374,7 +2391,7 @@ class ArcballControls extends EventDispatcher {
      */
     onRotationAnim = (time, rotationAxis, w0) => {
 
-        if (this._timeStart == - 1) {
+        if (this._timeStart == -1) {
 
             //animation start
             this._anglePrev = 0;
@@ -2404,8 +2421,8 @@ class ArcballControls extends EventDispatcher {
 
             } else {
 
-                this._animationId = - 1;
-                this._timeStart = - 1;
+                this._animationId = -1;
+                this._timeStart = -1;
 
                 this.updateTbState(STATE.IDLE, false);
                 this.activateGizmos(false);
@@ -2418,8 +2435,8 @@ class ArcballControls extends EventDispatcher {
 
             //interrupt animation
 
-            this._animationId = - 1;
-            this._timeStart = - 1;
+            this._animationId = -1;
+            this._timeStart = -1;
 
             if (this._state != STATE.ROTATE) {
 
@@ -2871,7 +2888,7 @@ class ArcballControls extends EventDispatcher {
             //unproject cursor on the near plane
             this._v2_1.copy(this.getCursorNDC(cursorX, cursorY, canvas));
 
-            this._v3_1.set(this._v2_1.x, this._v2_1.y, - 1);
+            this._v3_1.set(this._v2_1.x, this._v2_1.y, -1);
             this._v3_1.applyMatrix4(camera.projectionMatrixInverse);
 
             const rayDir = this._v3_1.clone().normalize(); //unprojected ray direction
@@ -2985,7 +3002,7 @@ class ArcballControls extends EventDispatcher {
             this._v2_1.copy(this.getCursorNDC(cursorX, cursorY, canvas));
 
             //unproject cursor on the near plane
-            this._v3_1.set(this._v2_1.x, this._v2_1.y, - 1);
+            this._v3_1.set(this._v2_1.x, this._v2_1.y, -1);
             this._v3_1.applyMatrix4(camera.projectionMatrixInverse);
 
             const rayDir = this._v3_1.clone().normalize(); //unprojected ray direction

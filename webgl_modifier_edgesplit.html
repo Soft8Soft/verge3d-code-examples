@@ -15,7 +15,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -24,12 +25,12 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
-      import { EdgeSplitModifier } from './jsm/modifiers/EdgeSplitModifier.js';
-      import * as BufferGeometryUtils from './jsm/utils/BufferGeometryUtils.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { OBJLoader } from 'v3d/addons/loaders/OBJLoader.js';
+      import { EdgeSplitModifier } from 'v3d/addons/modifiers/EdgeSplitModifier.js';
+      import * as BufferGeometryUtils from 'v3d/addons/utils/BufferGeometryUtils.js';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       let renderer, scene, camera;
       let modifier, mesh, baseGeometry;

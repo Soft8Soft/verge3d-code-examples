@@ -15,7 +15,7 @@ class ParallaxBarrierEffect {
 
     constructor(renderer) {
 
-        const _camera = new OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
+        const _camera = new OrthographicCamera(- 1, 1, 1, -1, 0, 1);
 
         const _scene = new Scene();
 
@@ -90,9 +90,9 @@ class ParallaxBarrierEffect {
 
         this.render = function(scene, camera) {
 
-            scene.updateMatrixWorld();
+            if (scene.matrixWorldAutoUpdate === true) scene.updateMatrixWorld();
 
-            if (camera.parent === null) camera.updateMatrixWorld();
+            if (camera.parent === null && camera.matrixWorldAutoUpdate === true) camera.updateMatrixWorld();
 
             _stereo.update(camera);
 

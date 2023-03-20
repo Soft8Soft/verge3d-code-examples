@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,12 +29,12 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { SAOPass } from './jsm/postprocessing/SAOPass.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { SAOPass } from 'v3d/addons/postprocessing/SAOPass.js';
 
       let container, stats;
       let camera, scene, renderer;
@@ -68,20 +69,20 @@
 
         const light = new v3d.PointLight(0xddffdd, 0.8);
         light.position.z = 70;
-        light.position.y = - 70;
-        light.position.x = - 70;
+        light.position.y = -70;
+        light.position.x = -70;
         scene.add(light);
 
         const light2 = new v3d.PointLight(0xffdddd, 0.8);
         light2.position.z = 70;
-        light2.position.x = - 70;
+        light2.position.x = -70;
         light2.position.y = 70;
         scene.add(light2);
 
         const light3 = new v3d.PointLight(0xddddff, 0.8);
         light3.position.z = 70;
         light3.position.x = 70;
-        light3.position.y = - 70;
+        light3.position.y = -70;
         scene.add(light3);
 
         const light4 = new v3d.AmbientLight(0xffffff, 0.05);
@@ -131,7 +132,7 @@
           saoPass.params.output = parseInt(value);
 
         });
-        gui.add(saoPass.params, 'saoBias', - 1, 1);
+        gui.add(saoPass.params, 'saoBias', -1, 1);
         gui.add(saoPass.params, 'saoIntensity', 0, 1);
         gui.add(saoPass.params, 'saoScale', 0, 10);
         gui.add(saoPass.params, 'saoKernelRadius', 1, 100);

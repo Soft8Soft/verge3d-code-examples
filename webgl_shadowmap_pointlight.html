@@ -18,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,9 +28,9 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       let camera, scene, renderer, stats;
       let pointLight, pointLight2;
@@ -49,11 +50,11 @@
 
         function createLight(color) {
 
-          const intensity = 1.5;
+          const intensity = 2;
 
           const light = new v3d.PointLight(color, intensity, 20);
           light.castShadow = true;
-          light.shadow.bias = - 0.005; // reduces self-shadowing on double-sided objects
+          light.shadow.bias = -0.005; // reduces self-shadowing on double-sided objects
 
           let geometry = new v3d.SphereGeometry(0.3, 12, 6);
           let material = new v3d.MeshBasicMaterial({ color: color });
@@ -78,13 +79,6 @@
           sphere.castShadow = true;
           sphere.receiveShadow = true;
           light.add(sphere);
-
-          // custom distance material
-          const distanceMaterial = new v3d.MeshDistanceMaterial({
-            alphaMap: material.alphaMap,
-            alphaTest: material.alphaTest
-          });
-          sphere.customDistanceMaterial = distanceMaterial;
 
           return light;
 

@@ -28,7 +28,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -37,10 +38,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
 
       let scene, renderer, camera, stats;
       let model, skeleton, mixer, clock;
@@ -81,8 +82,8 @@
         dirLight.position.set(3, 10, 10);
         dirLight.castShadow = true;
         dirLight.shadow.camera.top = 2;
-        dirLight.shadow.camera.bottom = - 2;
-        dirLight.shadow.camera.left = - 2;
+        dirLight.shadow.camera.bottom = -2;
+        dirLight.shadow.camera.left = -2;
         dirLight.shadow.camera.right = 2;
         dirLight.shadow.camera.near = 0.1;
         dirLight.shadow.camera.far = 40;
@@ -203,7 +204,11 @@
             const currentAction = currentSettings ? currentSettings.action : null;
             const action = settings ? settings.action : null;
 
-            prepareCrossFade(currentAction, action, 0.35);
+            if (currentAction !== action) {
+
+              prepareCrossFade(currentAction, action, 0.35);
+
+            }
 
           };
 

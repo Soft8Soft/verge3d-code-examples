@@ -26,6 +26,8 @@ class Water extends Mesh {
 
         super(geometry);
 
+        this.isWater = true;
+
         const scope = this;
 
         const textureWidth = options.textureWidth !== undefined ? options.textureWidth : 512;
@@ -50,7 +52,7 @@ class Water extends Mesh {
         const mirrorWorldPosition = new Vector3();
         const cameraWorldPosition = new Vector3();
         const rotationMatrix = new Matrix4();
-        const lookAtPosition = new Vector3(0, 0, - 1);
+        const lookAtPosition = new Vector3(0, 0, -1);
         const clipPlane = new Vector4();
 
         const view = new Vector3();
@@ -228,7 +230,7 @@ class Water extends Mesh {
 
             rotationMatrix.extractRotation(camera.matrixWorld);
 
-            lookAtPosition.set(0, 0, - 1);
+            lookAtPosition.set(0, 0, -1);
             lookAtPosition.applyMatrix4(rotationMatrix);
             lookAtPosition.add(cameraWorldPosition);
 
@@ -268,7 +270,7 @@ class Water extends Mesh {
 
             q.x = (Math.sign(clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0];
             q.y = (Math.sign(clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5];
-            q.z = - 1.0;
+            q.z = -1.0;
             q.w = (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
 
             // Calculate the scaled plane vector
@@ -323,7 +325,5 @@ class Water extends Mesh {
     }
 
 }
-
-Water.prototype.isWater = true;
 
 export { Water };

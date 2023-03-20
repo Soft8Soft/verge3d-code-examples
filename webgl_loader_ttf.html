@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,9 +29,9 @@
 
       import * as v3d from 'v3d';
 
-      import { TTFLoader } from './jsm/loaders/TTFLoader.js';
-      import { Font } from './jsm/loaders/FontLoader.js';
-      import { TextGeometry } from './jsm/geometries/TextGeometry.js';
+      import { TTFLoader } from 'v3d/addons/loaders/TTFLoader.js';
+      import { Font } from 'v3d/addons/loaders/FontLoader.js';
+      import { TextGeometry } from 'v3d/addons/geometries/TextGeometry.js';
 
       let container;
       let camera, cameraTarget, scene, renderer;
@@ -208,7 +209,7 @@
         textGeo.computeBoundingBox();
         textGeo.computeVertexNormals();
 
-        const centerOffset = - 0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
+        const centerOffset = -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
 
         textMesh1 = new v3d.Mesh(textGeo, material);
 

@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,9 +29,9 @@
 
       import * as v3d from 'v3d';
 
-      import { BoxLineGeometry } from './jsm/geometries/BoxLineGeometry.js';
-      import { VRButton } from './jsm/webxr/VRButton.js';
-      import { XRControllerModelFactory } from './jsm/webxr/XRControllerModelFactory.js';
+      import { BoxLineGeometry } from 'v3d/addons/geometries/BoxLineGeometry.js';
+      import { VRButton } from 'v3d/addons/webxr/VRButton.js';
+      import { XRControllerModelFactory } from 'v3d/addons/webxr/XRControllerModelFactory.js';
 
       const clock = new v3d.Clock();
 
@@ -158,7 +159,7 @@
           case 'tracked-pointer':
 
             geometry = new v3d.BufferGeometry();
-            geometry.setAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0, 0, 0, - 1], 3));
+            geometry.setAttribute('position', new v3d.Float32BufferAttribute([0, 0, 0, 0, 0, -1], 3));
             geometry.setAttribute('color', new v3d.Float32BufferAttribute([0.5, 0.5, 0.5, 0, 0, 0], 3));
 
             material = new v3d.LineBasicMaterial({ vertexColors: true, blending: v3d.AdditiveBlending });
@@ -167,7 +168,7 @@
 
           case 'gaze':
 
-            geometry = new v3d.RingGeometry(0.02, 0.04, 32).translate(0, 0, - 1);
+            geometry = new v3d.RingGeometry(0.02, 0.04, 32).translate(0, 0, -1);
             material = new v3d.MeshBasicMaterial({ opacity: 0.5, transparent: true });
             return new v3d.Mesh(geometry, material);
 
@@ -202,8 +203,8 @@
           room.remove(cube);
 
           cube.position.copy(controller.position);
-          cube.userData.velocity.x = (Math.random() - 0.5) * 0.02 * delta;
-          cube.userData.velocity.y = (Math.random() - 0.5) * 0.02 * delta;
+          cube.userData.velocity.x = (Math.random() -0.5) * 0.02 * delta;
+          cube.userData.velocity.y = (Math.random() -0.5) * 0.02 * delta;
           cube.userData.velocity.z = (Math.random() * 0.01 - 0.05) * delta;
           cube.userData.velocity.applyQuaternion(controller.quaternion);
           room.add(cube);
@@ -215,7 +216,7 @@
         tempMatrix.identity().extractRotation(controller.matrixWorld);
 
         raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-        raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
+        raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
 
         const intersects = raycaster.intersectObjects(room.children, false);
 
@@ -249,9 +250,9 @@
 
           cube.position.add(cube.userData.velocity);
 
-          if (cube.position.x < - 3 || cube.position.x > 3) {
+          if (cube.position.x < -3 || cube.position.x > 3) {
 
-            cube.position.x = v3d.MathUtils.clamp(cube.position.x, - 3, 3);
+            cube.position.x = v3d.MathUtils.clamp(cube.position.x, -3, 3);
             cube.userData.velocity.x = - cube.userData.velocity.x;
 
           }
@@ -263,9 +264,9 @@
 
           }
 
-          if (cube.position.z < - 3 || cube.position.z > 3) {
+          if (cube.position.z < -3 || cube.position.z > 3) {
 
-            cube.position.z = v3d.MathUtils.clamp(cube.position.z, - 3, 3);
+            cube.position.z = v3d.MathUtils.clamp(cube.position.z, -3, 3);
             cube.userData.velocity.z = - cube.userData.velocity.z;
 
           }

@@ -11,7 +11,8 @@ import {
     MeshPhongMaterial,
     Points,
     PointsMaterial,
-    Vector3
+    Vector3,
+    Color
 } from 'v3d';
 
 // o object_name | g group_name
@@ -22,6 +23,7 @@ const _material_library_pattern = /^mtllib /;
 const _material_use_pattern = /^usemtl /;
 // usemap map_name
 const _map_use_pattern = /^usemap /;
+const _face_vertex_data_separator_pattern = /\s+/;
 
 const _vA = new Vector3();
 const _vB = new Vector3();
@@ -29,6 +31,8 @@ const _vC = new Vector3();
 
 const _ab = new Vector3();
 const _cb = new Vector3();
+
+const _color = new Color();
 
 function ParserState() {
 
@@ -96,8 +100,8 @@ function ParserState() {
                         mtllib: (Array.isArray(libraries) && libraries.length > 0 ? libraries[libraries.length - 1] : ''),
                         smooth: (previous !== undefined ? previous.smooth : this.smooth),
                         groupStart: (previous !== undefined ? previous.groupEnd : 0),
-                        groupEnd: - 1,
-                        groupCount: - 1,
+                        groupEnd: -1,
+                        groupCount: -1,
                         inherited: false,
 
                         clone: function(index) {
@@ -108,8 +112,8 @@ function ParserState() {
                                 mtllib: this.mtllib,
                                 smooth: this.smooth,
                                 groupStart: 0,
-                                groupEnd: - 1,
-                                groupCount: - 1,
+                                groupEnd: -1,
+                                groupCount: -1,
                                 inherited: false
                             };
                             cloned.clone = this.clone.bind(cloned);
@@ -139,7 +143,7 @@ function ParserState() {
                 _finalize: function(end) {
 
                     const lastMultiMaterial = this.currentMaterial();
-                    if (lastMultiMaterial && lastMultiMaterial.groupEnd === - 1) {
+                    if (lastMultiMaterial && lastMultiMaterial.groupEnd === -1) {
 
                         lastMultiMaterial.groupEnd = this.geometry.vertices.length / 3;
                         lastMultiMaterial.groupCount = lastMultiMaterial.groupEnd - lastMultiMaterial.groupStart;
@@ -485,14 +489,14 @@ class OBJLoader extends Loader {
 
         const state = new ParserState();
 
-        if (text.indexOf('\r\n') !== - 1) {
+        if (text.indexOf('\r\n') !== -1) {
 
             // This is faster than String.split with regex that splits on both
             text = text.replace(/\r\n/g, '\n');
 
         }
 
-        if (text.indexOf('\\\n') !== - 1) {
+        if (text.indexOf('\\\n') !== -1) {
 
             // join lines separated by a line continuation character (\)
             text = text.replace(/\\\n/g, '');
@@ -500,31 +504,22 @@ class OBJLoader extends Loader {
         }
 
         const lines = text.split('\n');
-        let line = '', lineFirstChar = '';
-        let lineLength = 0;
         let result = [];
-
-        // Faster to just trim left side of the line. Use if available.
-        const trimLeft = (typeof ''.trimLeft === 'function');
 
         for (let i = 0, l = lines.length; i < l; i++) {
 
-            line = lines[i];
+            const line = lines[i].trimStart();
 
-            line = trimLeft ? line.trimLeft() : line.trim();
+            if (line.length === 0) continue;
 
-            lineLength = line.length;
-
-            if (lineLength === 0) continue;
-
-            lineFirstChar = line.charAt(0);
+            const lineFirstChar = line.charAt(0);
 
             // @todo invoke passed in handler if any
             if (lineFirstChar === '#') continue;
 
             if (lineFirstChar === 'v') {
 
-                const data = line.split(/\s+/);
+                const data = line.split(_face_vertex_data_separator_pattern);
 
                 switch (data[0]) {
 
@@ -536,12 +531,13 @@ class OBJLoader extends Loader {
                         );
                         if (data.length >= 7) {
 
-                            state.colors.push(
+                            _color.setRGB(
                                 parseFloat(data[4]),
                                 parseFloat(data[5]),
                                 parseFloat(data[6])
+                            ).convertSRGBToLinear();
 
-                            );
+                            state.colors.push(_color.r, _color.g, _color.b);
 
                         } else {
 
@@ -570,8 +566,8 @@ class OBJLoader extends Loader {
 
             } else if (lineFirstChar === 'f') {
 
-                const lineData = line.substr(1).trim();
-                const vertexData = lineData.split(/\s+/);
+                const lineData = line.slice(1).trim();
+                const vertexData = lineData.split(_face_vertex_data_separator_pattern);
                 const faceVertices = [];
 
                 // Parse the face vertex data into an easy to work with format
@@ -612,7 +608,7 @@ class OBJLoader extends Loader {
                 let lineVertices = [];
                 const lineUVs = [];
 
-                if (line.indexOf('/') === - 1) {
+                if (line.indexOf('/') === -1) {
 
                     lineVertices = lineParts;
 
@@ -633,7 +629,7 @@ class OBJLoader extends Loader {
 
             } else if (lineFirstChar === 'p') {
 
-                const lineData = line.substr(1).trim();
+                const lineData = line.slice(1).trim();
                 const pointData = lineData.split(' ');
 
                 state.addPointGeometry(pointData);
@@ -645,8 +641,8 @@ class OBJLoader extends Loader {
                 // g group_name
 
                 // WORKAROUND: https://bugs.chromium.org/p/v8/issues/detail?id=2869
-                // let name = result[0].substr(1).trim();
-                const name = (' ' + result[0].substr(1).trim()).substr(1);
+                // let name = result[0].slice(1).trim();
+                const name = (' ' + result[0].slice(1).trim()).slice(1);
 
                 state.startObject(name);
 

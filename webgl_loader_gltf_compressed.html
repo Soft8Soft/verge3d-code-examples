@@ -21,7 +21,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -30,12 +31,12 @@
 
       import * as v3d from 'v3d';
 
-      import { RoomEnvironment } from './jsm/environments/RoomEnvironment.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+      import { RoomEnvironment } from 'v3d/addons/environments/RoomEnvironment.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
 
-      import { KTX2Loader } from './jsm/loaders/KTX2Loader.js';
-      import { MeshoptDecoder } from './jsm/libs/meshopt_decoder.module.js';
+      import { KTX2Loader } from 'v3d/addons/loaders/KTX2Loader.js';
+      import { MeshoptDecoder } from 'v3d/addons/libs/meshopt_decoder.module.js';
 
       let camera, scene, renderer;
 
@@ -64,6 +65,7 @@
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0xbbbbbb);
         scene.environment = pmremGenerator.fromScene(environment).texture;
+        environment.dispose();
 
         const grid = new v3d.GridHelper(500, 10, 0xffffff, 0xffffff);
         grid.material.opacity = 0.5;
@@ -72,7 +74,7 @@
         scene.add(grid);
 
         const ktx2Loader = new KTX2Loader()
-          .setTranscoderPath('js/libs/basis/')
+          .setTranscoderPath('jsm/libs/basis/')
           .detectSupport(renderer);
 
         const loader = new GLTFLoader().setPath('models/gltf/');
@@ -96,7 +98,7 @@
         controls.addEventListener('change', render); // use if there is no animation loop
         controls.minDistance = 400;
         controls.maxDistance = 1000;
-        controls.target.set(10, 90, - 16);
+        controls.target.set(10, 90, -16);
         controls.update();
 
         window.addEventListener('resize', onWindowResize);

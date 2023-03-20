@@ -27,7 +27,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -36,9 +37,9 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { SVGLoader } from './jsm/loaders/SVGLoader.js';
-      import { FontLoader } from './jsm/loaders/FontLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { SVGLoader } from 'v3d/addons/loaders/SVGLoader.js';
+      import { FontLoader } from 'v3d/addons/loaders/FontLoader.js';
 
       let camera, scene, renderer;
 
@@ -47,7 +48,7 @@
       function init() {
 
         camera = new v3d.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.set(0, - 400, 600);
+        camera.position.set(0, -400, 600);
 
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0xf0f0f0);
@@ -77,14 +78,14 @@
 
           geometry.computeBoundingBox();
 
-          const xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+          const xMid = -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
 
           geometry.translate(xMid, 0, 0);
 
           // make shape (N.B. edge view not visible)
 
           const text = new v3d.Mesh(geometry, matLite);
-          text.position.z = - 150;
+          text.position.z = -150;
           scene.add(text);
 
           // make line shape (N.B. edge view remains visible)

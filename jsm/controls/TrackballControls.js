@@ -16,11 +16,8 @@ class TrackballControls extends EventDispatcher {
 
         super();
 
-        if (domElement === undefined) console.warn('v3d.TrackballControls: The second parameter "domElement" is now mandatory.');
-        if (domElement === document) console.error('v3d.TrackballControls: "document" should not be used as the target "domElement". Please use "renderer.domElement" instead.');
-
         const scope = this;
-        const STATE = { NONE: - 1, ROTATE: 0, ZOOM: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_ZOOM_PAN: 4 };
+        const STATE = { NONE: -1, ROTATE: 0, ZOOM: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_ZOOM_PAN: 4 };
 
         this.object = object;
         this.domElement = domElement;
@@ -541,9 +538,6 @@ class TrackballControls extends EventDispatcher {
                         _state = STATE.PAN;
                         break;
 
-                    default:
-                        _state = STATE.NONE;
-
                 }
 
             }
@@ -706,8 +700,20 @@ class TrackballControls extends EventDispatcher {
 
                 case 2:
                     _state = STATE.TOUCH_ZOOM_PAN;
-                    _moveCurr.copy(getMouseOnCircle(event.pageX - _movePrev.pageX, event.pageY - _movePrev.pageY));
-                    _movePrev.copy(_moveCurr);
+
+                    for (let i = 0; i < _pointers.length; i++) {
+
+                        if (_pointers[i].pointerId !== event.pointerId) {
+
+                            const position = _pointerPositions[_pointers[i].pointerId];
+                            _moveCurr.copy(getMouseOnCircle(position.x, position.y));
+                            _movePrev.copy(_moveCurr);
+                            break;
+
+                        }
+
+                    }
+
                     break;
 
             }

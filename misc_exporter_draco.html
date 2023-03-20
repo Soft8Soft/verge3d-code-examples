@@ -8,11 +8,10 @@
   </head>
   <body>
     <div id="info">
-      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - exporter - draco<br/><br/>
-      <button id="exportFile">Export DRC</button>
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - exporter - draco
     </div>
 
-    <script src="js/libs/draco/draco_encoder.js"></script>
+    <script src="jsm/libs/draco/draco_encoder.js"></script>
 
     <!-- Import maps polyfill -->
     <!-- Remove this when import maps will be widely supported -->
@@ -21,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -30,10 +30,15 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { DRACOExporter } from './jsm/exporters/DRACOExporter.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { DRACOExporter } from 'v3d/addons/exporters/DRACOExporter.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       let scene, camera, renderer, exporter, mesh;
+
+      const params = {
+        export: exportFile
+      };
 
       init();
       animate();
@@ -59,8 +64,8 @@
         directionalLight.position.set(0, 200, 100);
         directionalLight.castShadow = true;
         directionalLight.shadow.camera.top = 180;
-        directionalLight.shadow.camera.bottom = - 100;
-        directionalLight.shadow.camera.left = - 120;
+        directionalLight.shadow.camera.bottom = -100;
+        directionalLight.shadow.camera.left = -120;
         directionalLight.shadow.camera.right = 120;
         scene.add(directionalLight);
 
@@ -71,14 +76,14 @@
           new v3d.MeshPhongMaterial({ color: 0x999999, depthWrite: false })
         );
         ground.rotation.x = - Math.PI / 2;
-        ground.position.y = - 75;
+        ground.position.y = -75;
         ground.receiveShadow = true;
         scene.add(ground);
 
         const grid = new v3d.GridHelper(2000, 20, 0x000000, 0x000000);
         grid.material.opacity = 0.2;
         grid.material.transparent = true;
-        grid.position.y = - 75;
+        grid.position.y = -75;
         scene.add(grid);
 
         // export mesh
@@ -108,8 +113,11 @@
 
         window.addEventListener('resize', onWindowResize);
 
-        const exportButton = document.getElementById('exportFile');
-        exportButton.addEventListener('click', exportFile);
+        const gui = new GUI();
+
+        gui.add(params, 'export').name('Export DRC');
+        gui.open();
+
 
       }
 

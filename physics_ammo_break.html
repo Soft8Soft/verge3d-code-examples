@@ -15,7 +15,7 @@
   <div id="info">Physics threejs demo with convex objects breaking in real time<br />Press mouse to throw balls and move the camera.</div>
   <div id="container"></div>
 
-  <script src="js/libs/ammo.wasm.js"></script>
+  <script src="jsm/libs/ammo.wasm.js"></script>
 
   <!-- Import maps polyfill -->
   <!-- Remove this when import maps will be widely supported -->
@@ -24,7 +24,8 @@
   <script type="importmap">
     {
       "imports": {
-        "v3d": "../build/v3d.module.js"
+        "v3d": "../build/v3d.module.js",
+        "v3d/addons/": "./jsm/"
       }
     }
   </script>
@@ -32,11 +33,11 @@
   <script type="module">
     import * as v3d from 'v3d';
 
-    import Stats from './jsm/libs/stats.module.js';
+    import Stats from 'v3d/addons/libs/stats.module.js';
 
-    import { OrbitControls } from './jsm/controls/OrbitControls.js';
-    import { ConvexObjectBreaker } from './jsm/misc/ConvexObjectBreaker.js';
-    import { ConvexGeometry } from './jsm/geometries/ConvexGeometry.js';
+    import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+    import { ConvexObjectBreaker } from 'v3d/addons/misc/ConvexObjectBreaker.js';
+    import { ConvexGeometry } from 'v3d/addons/geometries/ConvexGeometry.js';
 
     // - Global variables -
 
@@ -191,7 +192,7 @@
     function createObjects() {
 
       // Ground
-      pos.set(0, - 0.5, 0);
+      pos.set(0, -0.5, 0);
       quat.set(0, 0, 0, 1);
       const ground = createParalellepipedWithPhysics(40, 1, 40, 0, pos, quat, new v3d.MeshPhongMaterial({ color: 0xFFFFFF }));
       ground.receiveShadow = true;
@@ -240,7 +241,7 @@
       // Mountain
       const mountainMass = 860;
       const mountainHalfExtents = new v3d.Vector3(4, 5, 4);
-      pos.set(5, mountainHalfExtents.y * 0.5, - 7);
+      pos.set(5, mountainHalfExtents.y * 0.5, -7);
       quat.set(0, 0, 0, 1);
       const mountainPoints = [];
       mountainPoints.push(new v3d.Vector3(mountainHalfExtents.x, - mountainHalfExtents.y, mountainHalfExtents.z));

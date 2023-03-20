@@ -19,13 +19,6 @@ class SimplifyModifier {
 
     modify(geometry, count) {
 
-        if (geometry.isGeometry === true) {
-
-            console.error('v3d.SimplifyModifier no longer supports Geometry. Use BufferGeometry instead.');
-            return;
-
-        }
-
         geometry = geometry.clone();
         const attributes = geometry.attributes;
 
@@ -158,14 +151,14 @@ class SimplifyModifier {
 
 function pushIfUnique(array, object) {
 
-    if (array.indexOf(object) === - 1) array.push(object);
+    if (array.indexOf(object) === -1) array.push(object);
 
 }
 
 function removeFromArray(array, object) {
 
-    var k = array.indexOf(object);
-    if (k > - 1) array.splice(k, 1);
+    const k = array.indexOf(object);
+    if (k > -1) array.splice(k, 1);
 
 }
 
@@ -243,7 +236,7 @@ function computeEdgeCostAtVertex(v) {
 
         // collapse if no neighbors.
         v.collapseNeighbor = null;
-        v.collapseCost = - 0.01;
+        v.collapseCost = -0.01;
 
         return;
 
@@ -349,7 +342,7 @@ function collapse(vertices, faces, u, v) { // u and v are pointers to vertices o
     // delete triangles on edge uv:
     for (let i = u.faces.length - 1; i >= 0; i --) {
 
-        if (u.faces[i].hasVertex(v)) {
+        if (u.faces[i] && u.faces[i].hasVertex(v)) {
 
             removeFace(u.faces[i], faces);
 
@@ -491,7 +484,7 @@ class Vertex {
 
         this.position = v;
 
-        this.id = - 1; // external use position in vertices list (for e.g. face generation)
+        this.id = -1; // external use position in vertices list (for e.g. face generation)
 
         this.faces = []; // faces vertex is connected
         this.neighbors = []; // neighbouring vertices aka "adjacentVertices"
@@ -515,7 +508,7 @@ class Vertex {
 
         const offset = neighbors.indexOf(n);
 
-        if (offset === - 1) return;
+        if (offset === -1) return;
 
         for (let i = 0; i < faces.length; i++) {
 

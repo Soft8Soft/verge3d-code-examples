@@ -91,7 +91,7 @@ ShaderLib['line'] = {
             // conservative estimate of the near plane
             float a = projectionMatrix[2][2]; // 3nd entry in 3th column
             float b = projectionMatrix[3][2]; // 3nd entry in 4th column
-            float nearEstimate = - 0.5 * b / a;
+            float nearEstimate = -0.5 * b / a;
 
             float alpha = (nearEstimate - start.z) / (end.z - start.z);
 
@@ -136,7 +136,7 @@ ShaderLib['line'] = {
             // but we need to perform ndc-space calculations in the shader, so we must address this issue directly
             // perhaps there is a more elegant solution -- WestLangley
 
-            bool perspective = (projectionMatrix[2][3] == - 1.0); // 4th entry in the 3rd column
+            bool perspective = (projectionMatrix[2][3] == -1.0); // 4th entry in the 3rd column
 
             if (perspective) {
 
@@ -183,7 +183,7 @@ ShaderLib['line'] = {
                 }
 
                 // sign flip
-                if (position.x < 0.0) offset *= - 1.0;
+                if (position.x < 0.0) offset *= -1.0;
 
                 float forwardOffset = dot(worldDir, vec3(0.0, 0.0, 1.0));
 
@@ -219,7 +219,7 @@ ShaderLib['line'] = {
                 vec4 clip = projectionMatrix * worldPos;
 
                 // shift the depth of the projected points so the line
-                // segements overlap neatly
+                // segments overlap neatly
                 vec3 clipPose = (position.y < 0.5) ? ndcStart : ndcEnd;
                 clip.z = clipPose.z * clip.w;
 
@@ -231,7 +231,7 @@ ShaderLib['line'] = {
                 offset.x /= aspect;
 
                 // sign flip
-                if (position.x < 0.0) offset *= - 1.0;
+                if (position.x < 0.0) offset *= -1.0;
 
                 // endcaps
                 if (position.y < 0.0) {
@@ -346,7 +346,7 @@ ShaderLib['line'] = {
 
             #ifdef USE_DASH
 
-                if (vUv.y < - 1.0 || vUv.y > 1.0) discard; // discard endcaps
+                if (vUv.y < -1.0 || vUv.y > 1.0) discard; // discard endcaps
 
                 if (mod(vLineDistance + dashOffset, dashSize + gapSize) > dashSize) discard; // todo - FIX
 
@@ -450,6 +450,8 @@ class LineMaterial extends ShaderMaterial {
             clipping: true // required for clipping support
 
         });
+
+        this.isLineMaterial = true;
 
         Object.defineProperties(this, {
 
@@ -696,7 +698,5 @@ class LineMaterial extends ShaderMaterial {
     }
 
 }
-
-LineMaterial.prototype.isLineMaterial = true;
 
 export { LineMaterial };

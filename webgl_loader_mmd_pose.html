@@ -25,7 +25,7 @@
     <a href="http://seiga.nicovideo.jp/seiga/im5162984" target="_blank" rel="noopener">Pose Data</a>
     </div>
 
-    <script src="js/libs/ammo.wasm.js"></script>
+    <script src="jsm/libs/ammo.wasm.js"></script>
 
     <!-- Import maps polyfill -->
     <!-- Remove this when import maps will be widely supported -->
@@ -34,7 +34,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -43,11 +44,11 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OutlineEffect } from './jsm/effects/OutlineEffect.js';
-      import { MMDLoader } from './jsm/loaders/MMDLoader.js';
-      import { MMDAnimationHelper } from './jsm/animation/MMDAnimationHelper.js';
+      import { OutlineEffect } from 'v3d/addons/effects/OutlineEffect.js';
+      import { MMDLoader } from 'v3d/addons/loaders/MMDLoader.js';
+      import { MMDAnimationHelper } from 'v3d/addons/animation/MMDAnimationHelper.js';
 
       let camera, scene, renderer, effect;
       let mesh, helper;
@@ -127,7 +128,7 @@
         loader.load(modelFile, function(object) {
 
           mesh = object;
-          mesh.position.y = - 10;
+          mesh.position.y = -10;
 
           scene.add(mesh);
 
@@ -191,7 +192,7 @@
 
             }
 
-            controls.pose = - 1;
+            controls.pose = -1;
 
             for (let i = 0; i < vpdFiles.length; i++) {
 
@@ -213,7 +214,7 @@
 
           function initPoses() {
 
-            const files = { default: - 1 };
+            const files = { default: -1 };
 
             for (let i = 0; i < vpdFiles.length; i++) {
 
@@ -251,7 +252,7 @@
 
             const index = parseInt(controls.pose);
 
-            if (index === - 1) {
+            if (index === -1) {
 
               mesh.pose();
 

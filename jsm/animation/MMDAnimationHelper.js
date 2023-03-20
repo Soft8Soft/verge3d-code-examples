@@ -75,7 +75,7 @@ class MMDAnimationHelper {
      * @param {Integer} params.warmup - Only for v3d.SkinnedMesh and physics is true. Default is 60.
      * @param {Number} params.unitStep - Only for v3d.SkinnedMesh and physics is true. Default is 1 / 65.
      * @param {Integer} params.maxStepNum - Only for v3d.SkinnedMesh and physics is true. Default is 3.
-     * @param {Vector3} params.gravity - Only for v3d.SkinnedMesh and physics is true. Default (0, - 9.8 * 10, 0).
+     * @param {Vector3} params.gravity - Only for v3d.SkinnedMesh and physics is true. Default (0, -9.8 * 10, 0).
      * @param {Number} params.delayTime - Only for v3d.Audio. Default is 0.0.
      * @return {MMDAnimationHelper}
      */

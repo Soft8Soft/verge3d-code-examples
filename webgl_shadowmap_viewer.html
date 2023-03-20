@@ -18,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,10 +28,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { ShadowMapViewer } from './jsm/utils/ShadowMapViewer.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { ShadowMapViewer } from 'v3d/addons/utils/ShadowMapViewer.js';
 
       let camera, scene, renderer, clock, stats;
       let dirLight, spotLight;
@@ -84,9 +85,9 @@
         dirLight.shadow.camera.near = 1;
         dirLight.shadow.camera.far = 10;
         dirLight.shadow.camera.right = 15;
-        dirLight.shadow.camera.left = - 15;
+        dirLight.shadow.camera.left = -15;
         dirLight.shadow.camera.top  = 15;
-        dirLight.shadow.camera.bottom = - 15;
+        dirLight.shadow.camera.bottom = -15;
         dirLight.shadow.mapSize.width = 1024;
         dirLight.shadow.mapSize.height = 1024;
         scene.add(dirLight);

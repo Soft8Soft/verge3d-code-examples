@@ -111,7 +111,7 @@ const SSAOShader = {
 
             float clipW = cameraProjectionMatrix[2][3] * viewZ + cameraProjectionMatrix[3][3];
 
-            vec4 clipPosition = vec4((vec3(screenPosition, depth) - 0.5) * 2.0, 1.0);
+            vec4 clipPosition = vec4((vec3(screenPosition, depth) -0.5) * 2.0, 1.0);
 
             clipPosition *= clipW; // unprojection.
 
@@ -268,9 +268,9 @@ const SSAOBlurShader = {
             vec2 texelSize = (1.0 / resolution);
             float result = 0.0;
 
-            for (int i = - 2; i <= 2; i++) {
+            for (int i = -2; i <= 2; i++) {
 
-                for (int j = - 2; j <= 2; j ++) {
+                for (int j = -2; j <= 2; j ++) {
 
                     vec2 offset = (vec2(float(i), float(j))) * texelSize;
                     result += texture2D(tDiffuse, vUv + offset).r;

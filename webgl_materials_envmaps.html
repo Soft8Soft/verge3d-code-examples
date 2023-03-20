@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,8 +30,8 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       let controls, camera, scene, renderer;
       let textureEquirec, textureCube;
@@ -49,11 +50,6 @@
         // SCENE
 
         scene = new v3d.Scene();
-
-        // Lights
-
-        const ambient = new v3d.AmbientLight(0xffffff);
-        scene.add(ambient);
 
         // Textures
 
@@ -74,7 +70,7 @@
         //
 
         const geometry = new v3d.IcosahedronGeometry(400, 15);
-        sphereMaterial = new v3d.MeshLambertMaterial({ envMap: textureCube });
+        sphereMaterial = new v3d.MeshBasicMaterial({ envMap: textureCube });
         sphereMesh = new v3d.Mesh(geometry, sphereMaterial);
         scene.add(sphereMesh);
 

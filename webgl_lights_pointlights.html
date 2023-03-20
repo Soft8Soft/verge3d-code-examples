@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,9 +30,9 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
+      import { OBJLoader } from 'v3d/addons/loaders/OBJLoader.js';
 
       let camera, scene, renderer,
         light1, light2, light3, light4,
@@ -56,7 +57,7 @@
 
           object = obj;
           object.scale.multiplyScalar(0.8);
-          object.position.y = - 30;
+          object.position.y = -30;
           scene.add(object);
 
         });

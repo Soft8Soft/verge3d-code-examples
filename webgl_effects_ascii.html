@@ -17,7 +17,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -26,8 +27,8 @@
 
       import * as v3d from 'v3d';
 
-      import { AsciiEffect } from './jsm/effects/AsciiEffect.js';
-      import { TrackballControls } from './jsm/controls/TrackballControls.js';
+      import { AsciiEffect } from 'v3d/addons/effects/AsciiEffect.js';
+      import { TrackballControls } from 'v3d/addons/controls/TrackballControls.js';
 
       let camera, controls, scene, renderer, effect;
 
@@ -52,7 +53,7 @@
         scene.add(pointLight1);
 
         const pointLight2 = new v3d.PointLight(0xffffff, 0.25);
-        pointLight2.position.set(- 500, - 500, - 500);
+        pointLight2.position.set(- 500, -500, -500);
         scene.add(pointLight2);
 
         sphere = new v3d.Mesh(new v3d.SphereGeometry(200, 20, 10), new v3d.MeshPhongMaterial({ flatShading: true }));
@@ -61,7 +62,7 @@
         // Plane
 
         plane = new v3d.Mesh(new v3d.PlaneGeometry(400, 400), new v3d.MeshBasicMaterial({ color: 0xe0e0e0 }));
-        plane.position.y = - 200;
+        plane.position.y = -200;
         plane.rotation.x = - Math.PI / 2;
         scene.add(plane);
 

@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,9 +30,9 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { PLYLoader } from './jsm/loaders/PLYLoader.js';
+      import { PLYLoader } from 'v3d/addons/loaders/PLYLoader.js';
 
       let container, stats;
 
@@ -48,7 +49,7 @@
         camera = new v3d.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
         camera.position.set(3, 0.15, 3);
 
-        cameraTarget = new v3d.Vector3(0, - 0.1, 0);
+        cameraTarget = new v3d.Vector3(0, -0.1, 0);
 
         scene = new v3d.Scene();
         scene.background = new v3d.Color(0x72645b);
@@ -62,7 +63,7 @@
           new v3d.MeshPhongMaterial({ color: 0x999999, specular: 0x101010 })
         );
         plane.rotation.x = - Math.PI / 2;
-        plane.position.y = - 0.5;
+        plane.position.y = -0.5;
         scene.add(plane);
 
         plane.receiveShadow = true;
@@ -78,7 +79,7 @@
           const material = new v3d.MeshStandardMaterial({ color: 0x0055ff, flatShading: true });
           const mesh = new v3d.Mesh(geometry, material);
 
-          mesh.position.y = - 0.2;
+          mesh.position.y = -0.2;
           mesh.position.z = 0.3;
           mesh.rotation.x = - Math.PI / 2;
           mesh.scale.multiplyScalar(0.001);
@@ -97,9 +98,9 @@
           const material = new v3d.MeshStandardMaterial({ color: 0x0055ff, flatShading: true });
           const mesh = new v3d.Mesh(geometry, material);
 
-          mesh.position.x = - 0.2;
-          mesh.position.y = - 0.02;
-          mesh.position.z = - 0.2;
+          mesh.position.x = -0.2;
+          mesh.position.y = -0.02;
+          mesh.position.z = -0.2;
           mesh.scale.multiplyScalar(0.0006);
 
           mesh.castShadow = true;
@@ -114,7 +115,7 @@
         scene.add(new v3d.HemisphereLight(0x443333, 0x111122));
 
         addShadowedLight(1, 1, 1, 0xffffff, 1.35);
-        addShadowedLight(0.5, 1, - 1, 0xffaa00, 1);
+        addShadowedLight(0.5, 1, -1, 0xffaa00, 1);
 
         // renderer
 
@@ -158,7 +159,7 @@
         directionalLight.shadow.mapSize.width = 1024;
         directionalLight.shadow.mapSize.height = 1024;
 
-        directionalLight.shadow.bias = - 0.001;
+        directionalLight.shadow.bias = -0.001;
 
       }
 

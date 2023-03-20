@@ -22,7 +22,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -31,9 +32,9 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { TWEEN } from './jsm/libs/tween.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { TWEEN } from 'v3d/addons/libs/tween.module.min.js';
 
       let container, stats;
       let renderer;
@@ -69,7 +70,7 @@
 
         const geometryA = new v3d.BoxGeometry(2, 2, 2);
         const geometryB = new v3d.IcosahedronGeometry(1, 1);
-        const sceneA = new FXScene(geometryA, new v3d.Vector3(0, - 0.4, 0), 0xffffff);
+        const sceneA = new FXScene(geometryA, new v3d.Vector3(0, -0.4, 0), 0xffffff);
         const sceneB = new FXScene(geometryB, new v3d.Vector3(0, 0.2, 0.1), 0x000000);
 
         transition = new Transition(sceneA, sceneB);
@@ -219,7 +220,7 @@
         const width = window.innerWidth;
         const height = window.innerHeight;
 
-        const camera = new v3d.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, - 10, 10);
+        const camera = new v3d.OrthographicCamera(width / -2, width / 2, height / 2, height / -2, -10, 10);
 
         const textures = [];
 

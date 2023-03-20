@@ -21,7 +21,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,7 +30,7 @@
     <script type="module">
 
       import * as v3d from 'v3d';
-      import { VRButton } from './jsm/webxr/VRButton.js';
+      import { VRButton } from 'v3d/addons/webxr/VRButton.js';
 
       let camera, scene, renderer, sphere, clock;
 
@@ -57,7 +58,7 @@
         // Create the panoramic sphere material
         const panoSphereMat = new v3d.MeshStandardMaterial({
           side: v3d.BackSide,
-          displacementScale: - 4.0
+          displacementScale: -4.0
         });
 
         // Create the panoramic sphere mesh

@@ -25,10 +25,10 @@
 
       void main(void) {
 
-        vec2 position = - 1.0 + 2.0 * vUv;
+        vec2 position = -1.0 + 2.0 * vUv;
 
         vec4 noise = texture2D(texture1, vUv);
-        vec2 T1 = vUv + vec2(1.5, - 1.5) * time * 0.02;
+        vec2 T1 = vUv + vec2(1.5, -1.5) * time * 0.02;
         vec2 T2 = vUv + vec2(- 0.5, 2.0) * time * 0.01;
 
         T1.x += noise.x * 2.0;
@@ -81,7 +81,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -90,10 +91,10 @@
 
       import * as v3d from 'v3d';
 
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { FilmPass } from './jsm/postprocessing/FilmPass.js';
-      import { BloomPass } from './jsm/postprocessing/BloomPass.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { FilmPass } from 'v3d/addons/postprocessing/FilmPass.js';
+      import { BloomPass } from 'v3d/addons/postprocessing/BloomPass.js';
 
       let camera, renderer, composer, clock;
 

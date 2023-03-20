@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D webgpu - GLTFloader</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
+  </head>
+  <body>
+
+    <div id="info">
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - GLTFLoader<br />
+      Battle Damaged Sci-fi Helmet by
+      <a href="https://sketchfab.com/theblueturtle_" target="_blank" rel="noopener">theblueturtle_</a><br />
+      <a href="https://hdrihaven.com/hdri/?h=royal_esplanade" target="_blank" rel="noopener">Royal Esplanade</a> by <a href="https://hdrihaven.com/" target="_blank" rel="noopener">HDRI Haven</a>
+    </div>
+
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/",
+          "three/nodes": "./jsm/nodes/Nodes.js"
+        }
+      }
+    </script>
+
+    <script type="module">
+
+      import * as v3d from 'v3d';
+      import * as Nodes from 'three/nodes';
+
+      import WebGPU from 'v3d/addons/capabilities/WebGPU.js';
+      import WebGPURenderer from 'v3d/addons/renderers/webgpu/WebGPURenderer.js';
+
+      import { RGBMLoader } from 'v3d/addons/loaders/RGBMLoader.js';
+
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+
+      let camera, scene, renderer;
+
+      init();
+      render();
+
+      function init() {
+
+        if (WebGPU.isAvailable() === false) {
+
+          document.body.appendChild(WebGPU.getErrorMessage());
+
+          throw new Error('No WebGPU support');
+
+        }
+
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+
+        camera = new v3d.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 20);
+        camera.position.set(- 1.8, 0.6, 2.7);
+
+        scene = new v3d.Scene();
+
+        const rgbmUrls = ['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'];
+
+        const cubeTexture = new RGBMLoader()
+          .setMaxRange(16)
+          .setPath('./textures/cube/pisaRGBM16/')
+          .loadCubemap(rgbmUrls);
+
+        cubeTexture.generateMipmaps = true;
+        cubeTexture.minFilter = v3d.LinearMipmapLinearFilter;
+
+        scene.environmentNode = new Nodes.CubeTextureNode(cubeTexture);
+        scene.backgroundNode = scene.environmentNode;
+
+        const loader = new GLTFLoader().setPath('models/gltf/DamagedHelmet/glTF/');
+        loader.load('DamagedHelmet.gltf', function(gltf) {
+
+          //const light = new v3d.PointLight(0xffffff);
+          //camera.add(light);
+
+          const mesh = gltf.scene.children[0];
+          const nodeMaterial = Nodes.NodeMaterial.fromMaterial(mesh.material);
+
+          nodeMaterial.normalNode = Nodes.normalMap(Nodes.texture(nodeMaterial.normalMap));
+          nodeMaterial.normalMap = null; // ignore non-node normalMap material
+
+          // optional: use tangent to compute normalMap
+          mesh.geometry.computeTangents();
+
+          mesh.material = nodeMaterial;
+
+          scene.add(gltf.scene);
+
+          render();
+
+        });
+
+        renderer = new WebGPURenderer();
+
+        /*// WebGLRenderer comparation test
+        renderer = new v3d.WebGLRenderer({ antialias: false });
+        renderer.toneMapping = v3d.LinearToneMapping;
+        renderer.toneMappingExposure = 1;
+        scene.environment = cubeTexture;
+        document.getElementById('info').innerText = 'WebGL';
+        /**/
+
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setAnimationLoop(render);
+        renderer.toneMappingNode = new Nodes.ToneMappingNode(v3d.LinearToneMapping, 1);
+        renderer.outputEncoding = v3d.sRGBEncoding;
+        container.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.minDistance = 2;
+        controls.maxDistance = 10;
+
+        window.addEventListener('resize', onWindowResize);
+
+      }
+
+      function onWindowResize() {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+      }
+
+      //
+
+      function render() {
+
+        renderer.render(scene, camera);
+
+      }
+
+    </script>
+
+  </body>
+</html>

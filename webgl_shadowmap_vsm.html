@@ -18,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,10 +28,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
       let camera, scene, renderer, clock, stats;
       let dirLight, spotLight;
@@ -109,7 +110,7 @@
         spotLight.shadow.camera.far = 200;
         spotLight.shadow.mapSize.width = 256;
         spotLight.shadow.mapSize.height = 256;
-        spotLight.shadow.bias = - 0.002;
+        spotLight.shadow.bias = -0.002;
         spotLight.shadow.radius = 4;
         scene.add(spotLight);
 
@@ -120,13 +121,13 @@
         dirLight.shadow.camera.near = 0.1;
         dirLight.shadow.camera.far = 500;
         dirLight.shadow.camera.right = 17;
-        dirLight.shadow.camera.left = - 17;
+        dirLight.shadow.camera.left = -17;
         dirLight.shadow.camera.top  = 17;
-        dirLight.shadow.camera.bottom = - 17;
+        dirLight.shadow.camera.bottom = -17;
         dirLight.shadow.mapSize.width = 512;
         dirLight.shadow.mapSize.height = 512;
         dirLight.shadow.radius = 4;
-        dirLight.shadow.bias = - 0.0005;
+        dirLight.shadow.bias = -0.0005;
 
         dirGroup = new v3d.Group();
         dirGroup.add(dirLight);
@@ -156,11 +157,11 @@
         pillar1.receiveShadow = true;
 
         const pillar2 = pillar1.clone();
-        pillar2.position.set(8, 3.5, - 8);
+        pillar2.position.set(8, 3.5, -8);
         const pillar3 = pillar1.clone();
         pillar3.position.set(- 8, 3.5, 8);
         const pillar4 = pillar1.clone();
-        pillar4.position.set(- 8, 3.5, - 8);
+        pillar4.position.set(- 8, 3.5, -8);
 
         scene.add(pillar1);
         scene.add(pillar2);

@@ -49,7 +49,7 @@ class Octree {
 
         this.box = this.bounds.clone();
 
-        // offset small ammount to account for regular grid
+        // offset small amount to account for regular grid
         this.box.min.x -= 0.01;
         this.box.min.y -= 0.01;
         this.box.min.z -= 0.01;
@@ -143,7 +143,7 @@ class Octree {
 
                 for (let j = 0; j < subTree.triangles.length; j ++) {
 
-                    if (triangles.indexOf(subTree.triangles[j]) === - 1) triangles.push(subTree.triangles[j]);
+                    if (triangles.indexOf(subTree.triangles[j]) === -1) triangles.push(subTree.triangles[j]);
 
                 }
 
@@ -263,7 +263,7 @@ class Octree {
 
                 for (let j = 0; j < subTree.triangles.length; j ++) {
 
-                    if (triangles.indexOf(subTree.triangles[j]) === - 1) triangles.push(subTree.triangles[j]);
+                    if (triangles.indexOf(subTree.triangles[j]) === -1) triangles.push(subTree.triangles[j]);
 
                 }
 
@@ -289,7 +289,7 @@ class Octree {
 
                 for (let j = 0; j < subTree.triangles.length; j ++) {
 
-                    if (triangles.indexOf(subTree.triangles[j]) === - 1) triangles.push(subTree.triangles[j]);
+                    if (triangles.indexOf(subTree.triangles[j]) === -1) triangles.push(subTree.triangles[j]);
 
                 }
 

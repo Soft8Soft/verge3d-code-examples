@@ -16,7 +16,7 @@ class RectAreaLightHelper extends Line {
 
     constructor(light, color) {
 
-        const positions = [1, 1, 0, - 1, 1, 0, - 1, - 1, 0, 1, - 1, 0, 1, 1, 0];
+        const positions = [1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0, 1, 1, 0];
 
         const geometry = new BufferGeometry();
         geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
@@ -32,7 +32,7 @@ class RectAreaLightHelper extends Line {
 
         //
 
-        const positions2 = [1, 1, 0, - 1, 1, 0, - 1, - 1, 0, 1, 1, 0, - 1, - 1, 0, 1, - 1, 0];
+        const positions2 = [1, 1, 0, -1, 1, 0, -1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0];
 
         const geometry2 = new BufferGeometry();
         geometry2.setAttribute('position', new Float32BufferAttribute(positions2, 3));

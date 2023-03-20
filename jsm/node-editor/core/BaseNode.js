@@ -1,5 +1,17 @@
 import { ObjectNode } from '../../libs/flow.module.js';
 
+export const onNodeValidElement = (inputElement, outputElement) => {
+
+    const outputObject = outputElement.getObject();
+
+    if (!outputObject || ! outputObject.isNode) {
+
+        return false;
+
+    }
+
+};
+
 export class BaseNode extends ObjectNode {
 
     constructor(name, inputLength, value = null, width = 300) {
@@ -18,17 +30,13 @@ export class BaseNode extends ObjectNode {
 
         this.value = value;
 
-        this.onValidElement = (inputElement, outputElement) => {
+        this.onValidElement = onNodeValidElement;
 
-            const outputObject = outputElement.getObject();
+    }
 
-            if (!outputObject || ! outputObject.isNode) {
+    getColor() {
 
-                return false;
-
-            }
-
-        };
+        return (this.getColorValueFromValue(this.value) || '#777777') + 'BB';
 
     }
 
@@ -62,11 +70,16 @@ export class BaseNode extends ObjectNode {
 
         if (value.isMaterial === true) {
 
-            return 'forestgreen';
+            //return 'forestgreen';
+            return '#228b22';
 
         } else if (value.isObject3D === true) {
 
-            return 'orange';
+            return '#ffa500';
+
+        } else if (value.isDataFile === true) {
+
+            return '#00ffff';
 
         }
 

@@ -20,7 +20,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -29,10 +30,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
 
       let camera, scene, renderer, stats;
 
@@ -52,13 +53,13 @@
           const geometry = gltf.scene.children[0].geometry;
 
           let mesh = new v3d.Mesh(geometry, buildTwistMaterial(2.0));
-          mesh.position.x = - 3.5;
-          mesh.position.y = - 0.5;
+          mesh.position.x = -3.5;
+          mesh.position.y = -0.5;
           scene.add(mesh);
 
           mesh = new v3d.Mesh(geometry, buildTwistMaterial(- 2.0));
           mesh.position.x = 3.5;
-          mesh.position.y = - 0.5;
+          mesh.position.y = -0.5;
           scene.add(mesh);
 
         });

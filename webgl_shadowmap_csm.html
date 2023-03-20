@@ -11,7 +11,7 @@
     <div id="container"></div>
     <div id="info">
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - cascaded shadow maps<br>
-      by <a href="https://github.com/vHawk" target="_blank" rel="noopener">vHawk</a> (<a href="https://github.com/vHawk/three-csm" target="_blank" rel="noopener">original repository</a>)
+      by <a href="https://github.com/strandedkitty/" target="_blank" rel="noopener">StrandedKitty</a> (<a href="https://github.com/strandedkitty/three-csm" target="_blank" rel="noopener">original repository</a>)
     </div>
 
     <!-- Import maps polyfill -->
@@ -21,7 +21,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -30,10 +31,10 @@
 
       import * as v3d from 'v3d';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { CSM } from './jsm/csm/CSM.js';
-      import { CSMHelper } from './jsm/csm/CSMHelper.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { CSM } from 'v3d/addons/csm/CSM.js';
+      import { CSMHelper } from 'v3d/addons/csm/CSMHelper.js';
 
       let renderer, scene, camera, orthoCamera, controls, csm, csmHelper;
 
@@ -42,9 +43,9 @@
         fade: false,
         far: 1000,
         mode: 'practical',
-        lightX: - 1,
-        lightY: - 1,
-        lightZ: - 1,
+        lightX: -1,
+        lightY: -1,
+        lightZ: -1,
         margin: 100,
         lightFar: 5000,
         lightNear: 1,
@@ -64,11 +65,11 @@
         const size = controls.target.distanceTo(camera.position);
         const aspect = camera.aspect;
 
-        orthoCamera.left = size * aspect / - 2;
+        orthoCamera.left = size * aspect / -2;
         orthoCamera.right = size * aspect / 2;
 
         orthoCamera.top = size / 2;
-        orthoCamera.bottom = size / - 2;
+        orthoCamera.bottom = size / -2;
         orthoCamera.position.copy(camera.position);
         orthoCamera.rotation.copy(camera.rotation);
         orthoCamera.updateProjectionMatrix();
@@ -96,6 +97,10 @@
 
         const ambientLight = new v3d.AmbientLight(0xffffff, 0.5);
         scene.add(ambientLight);
+
+        const additionalDirectionalLight = new v3d.DirectionalLight(0x000020, 0.5);
+        additionalDirectionalLight.position.set(params.lightX, params.lightY, params.lightZ).normalize().multiplyScalar(- 200);
+        scene.add(additionalDirectionalLight);
 
         csm = new CSM({
           maxFar: params.far,
@@ -141,7 +146,7 @@
           cube2.castShadow = true;
           cube2.receiveShadow = true;
           scene.add(cube2);
-          cube2.position.set(- i * 25, 20, - 30);
+          cube2.position.set(- i * 25, 20, -30);
           cube2.scale.y = Math.random() * 2 + 6;
 
         }
@@ -176,19 +181,19 @@
 
         });
 
-        gui.add(params, 'lightX', - 1, 1).name('light direction x').onChange(function(value) {
+        gui.add(params, 'lightX', -1, 1).name('light direction x').onChange(function(value) {
 
           csm.lightDirection.x = value;
 
         });
 
-        gui.add(params, 'lightY', - 1, 1).name('light direction y').onChange(function(value) {
+        gui.add(params, 'lightY', -1, 1).name('light direction y').onChange(function(value) {
 
           csm.lightDirection.y = value;
 
         });
 
-        gui.add(params, 'lightZ', - 1, 1).name('light direction z').onChange(function(value) {
+        gui.add(params, 'lightZ', -1, 1).name('light direction z').onChange(function(value) {
 
           csm.lightDirection.z = value;
 

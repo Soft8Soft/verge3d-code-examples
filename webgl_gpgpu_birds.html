@@ -201,7 +201,7 @@
 
 
         // this make tends to fly around than down or up
-        // if (velocity.y > 0.) velocity.y *= (1. - 0.2 * delta);
+        // if (velocity.y > 0.) velocity.y *= (1. -0.2 * delta);
 
         // Speed Limits
         if (length(velocity) > limit) {
@@ -304,7 +304,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -313,10 +314,10 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { GPUComputationRenderer } from './jsm/misc/GPUComputationRenderer.js';
+      import { GPUComputationRenderer } from 'v3d/addons/misc/GPUComputationRenderer.js';
 
       /* TEXTURE WIDTH FOR SIMULATION */
       const WIDTH = 32;
@@ -366,15 +367,15 @@
             // Body
 
             verts_push(
-              0, - 0, - 20,
-              0, 4, - 20,
+              0, -0, -20,
+              0, 4, -20,
               0, 0, 30
             );
 
             // Wings
 
             verts_push(
-              0, 0, - 15,
+              0, 0, -15,
               - wingsSpan, 0, 0,
               0, 0, 15
             );
@@ -382,7 +383,7 @@
             verts_push(
               0, 0, 15,
               wingsSpan, 0, 0,
-              0, 0, - 15
+              0, 0, -15
             );
 
           }
@@ -605,9 +606,9 @@
 
         for (let k = 0, kl = theArray.length; k < kl; k += 4) {
 
-          const x = Math.random() - 0.5;
-          const y = Math.random() - 0.5;
-          const z = Math.random() - 0.5;
+          const x = Math.random() -0.5;
+          const y = Math.random() -0.5;
+          const z = Math.random() -0.5;
 
           theArray[k + 0] = x * 10;
           theArray[k + 1] = y * 10;
@@ -665,7 +666,7 @@
         birdUniforms['time'].value = now;
         birdUniforms['delta'].value = delta;
 
-        velocityUniforms['predator'].value.set(0.5 * mouseX / windowHalfX, - 0.5 * mouseY / windowHalfY, 0);
+        velocityUniforms['predator'].value.set(0.5 * mouseX / windowHalfX, -0.5 * mouseY / windowHalfY, 0);
 
         mouseX = 10000;
         mouseY = 10000;

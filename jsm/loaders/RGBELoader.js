@@ -27,7 +27,7 @@ class RGBELoader extends DataTextureLoader {
         const
             /* return codes for rgbe routines */
             //RGBE_RETURN_SUCCESS = 0,
-            RGBE_RETURN_FAILURE = - 1,
+            RGBE_RETURN_FAILURE = -1,
 
             /* default error routine.  change this to change error handling */
             rgbe_read_error = 1,
@@ -74,7 +74,7 @@ class RGBELoader extends DataTextureLoader {
 
                 lineLimit = ! lineLimit ? 1024 : lineLimit;
                 let p = buffer.pos,
-                    i = - 1, len = 0, s = '',
+                    i = -1, len = 0, s = '',
                     chunk = String.fromCharCode.apply(null, new Uint16Array(buffer.subarray(p, p + chunkSize)));
 
                 while ((0 > (i = chunk.indexOf(NEWLINE))) && (len < lineLimit) && (p < buffer.byteLength)) {
@@ -168,20 +168,20 @@ class RGBELoader extends DataTextureLoader {
 
                     if (match = line.match(gamma_re)) {
 
-                        header.gamma = parseFloat(match[1], 10);
+                        header.gamma = parseFloat(match[1]);
 
                     }
 
                     if (match = line.match(exposure_re)) {
 
-                        header.exposure = parseFloat(match[1], 10);
+                        header.exposure = parseFloat(match[1]);
 
                     }
 
                     if (match = line.match(format_re)) {
 
                         header.valid |= RGBE_VALID_FORMAT;
-                        header.format = match[1];//'32-bit_rle_rgbe';
+                        header.format = match[1]; //'32-bit_rle_rgbe';
 
                     }
 
@@ -370,7 +370,7 @@ class RGBELoader extends DataTextureLoader {
 
             if (RGBE_RETURN_FAILURE !== image_rgba_data) {
 
-                let data, format, type;
+                let data, type;
                 let numElements;
 
                 switch (this.type) {
@@ -418,7 +418,6 @@ class RGBELoader extends DataTextureLoader {
                     header: rgbe_header_info.string,
                     gamma: rgbe_header_info.gamma,
                     exposure: rgbe_header_info.exposure,
-                    format: format,
                     type: type
                 };
 
@@ -444,14 +443,6 @@ class RGBELoader extends DataTextureLoader {
             switch (texture.type) {
 
                 case FloatType:
-
-                    texture.encoding = LinearEncoding;
-                    texture.minFilter = LinearFilter;
-                    texture.magFilter = LinearFilter;
-                    texture.generateMipmaps = false;
-                    texture.flipY = true;
-                    break;
-
                 case HalfFloatType:
 
                     texture.encoding = LinearEncoding;
@@ -459,6 +450,7 @@ class RGBELoader extends DataTextureLoader {
                     texture.magFilter = LinearFilter;
                     texture.generateMipmaps = false;
                     texture.flipY = true;
+
                     break;
 
             }

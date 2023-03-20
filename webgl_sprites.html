@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -74,9 +75,9 @@
 
         for (let a = 0; a < amount; a ++) {
 
-          const x = Math.random() - 0.5;
-          const y = Math.random() - 0.5;
-          const z = Math.random() - 0.5;
+          const x = Math.random() -0.5;
+          const y = Math.random() -0.5;
+          const z = Math.random() -0.5;
 
           let material;
 
@@ -88,7 +89,7 @@
 
             material = materialC.clone();
             material.color.setHSL(0.5 * Math.random(), 0.75, 0.5);
-            material.map.offset.set(- 0.5, - 0.5);
+            material.map.offset.set(- 0.5, -0.5);
             material.map.repeat.set(2, 2);
 
           }

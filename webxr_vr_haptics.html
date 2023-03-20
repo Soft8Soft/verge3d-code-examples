@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,9 +28,9 @@
     <script type="module">
 
       import * as v3d from 'v3d';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { VRButton } from './jsm/webxr/VRButton.js';
-      import { XRControllerModelFactory } from './jsm/webxr/XRControllerModelFactory.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { VRButton } from 'v3d/addons/webxr/VRButton.js';
+      import { XRControllerModelFactory } from 'v3d/addons/webxr/XRControllerModelFactory.js';
 
       let container;
       let camera, scene, renderer;
@@ -43,7 +44,7 @@
       let audioCtx = null;
 
       // minor pentatonic scale, so whichever notes is striked would be more pleasant
-      const musicScale = [0, 3, 5, 7, 10, 12];
+      const musicScale = [0, 3, 5, 7, 10];
 
       init();
       animate();
@@ -105,14 +106,14 @@
         light.position.set(0, 6, 0);
         light.castShadow = true;
         light.shadow.camera.top = 2;
-        light.shadow.camera.bottom = - 2;
+        light.shadow.camera.bottom = -2;
         light.shadow.camera.right = 2;
-        light.shadow.camera.left = - 2;
+        light.shadow.camera.left = -2;
         light.shadow.mapSize.set(4096, 4096);
         scene.add(light);
 
         group = new v3d.Group();
-        group.position.z = - 0.5;
+        group.position.z = -0.5;
         scene.add(group);
         const BOXES = 10;
 
@@ -202,7 +203,7 @@
       function controllerDisconnected(evt) {
 
         const index = controllers.findIndex(o => o.controller === evt.target);
-        if (index !== - 1) {
+        if (index !== -1) {
 
           controllers.splice(index, 1);
 
@@ -299,7 +300,7 @@
 
         for (let i = 0; i < group.children.length; i++) {
 
-          let child = group.children[i];
+          const child = group.children[i];
           if (!child.collided) {
 
             // reset uncollided boxes

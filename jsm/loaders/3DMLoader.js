@@ -15,12 +15,12 @@ import {
     PointLight,
     SpotLight,
     RectAreaLight,
-    Vector3,
     Sprite,
     SpriteMaterial,
     CanvasTexture,
     LinearFilter,
     ClampToEdgeWrapping,
+    RepeatWrapping,
     TextureLoader
 } from 'v3d';
 
@@ -288,8 +288,8 @@ class Rhino3dmLoader extends Loader {
 
                 }
 
-                map.wrapS = texture.wrapU === 0 ? v3d.RepeatWrapping : v3d.ClampToEdgeWrapping;
-                map.wrapT = texture.wrapV === 0 ? v3d.RepeatWrapping : v3d.ClampToEdgeWrapping;
+                map.wrapS = texture.wrapU === 0 ? RepeatWrapping : ClampToEdgeWrapping;
+                map.wrapT = texture.wrapV === 0 ? RepeatWrapping : ClampToEdgeWrapping;
                 map.repeat.set(texture.repeat[0], texture.repeat[1]);
 
             }
@@ -624,7 +624,7 @@ class Rhino3dmLoader extends Loader {
                         light.position.set(geometry.location[0] - (height / 2), geometry.location[1], geometry.location[2] - (width / 2));
                         light.height = height;
                         light.width = width;
-                        light.lookAt(new Vector3(geometry.direction[0], geometry.direction[1], geometry.direction[2]));
+                        light.lookAt(geometry.direction[0], geometry.direction[1], geometry.direction[2]);
 
                         break;
 
@@ -761,7 +761,7 @@ class Rhino3dmLoader extends Loader {
 
                 this.workerPool.sort(function(a, b) {
 
-                    return a._taskLoad > b._taskLoad ? - 1 : 1;
+                    return a._taskLoad > b._taskLoad ? -1 : 1;
 
                 });
 

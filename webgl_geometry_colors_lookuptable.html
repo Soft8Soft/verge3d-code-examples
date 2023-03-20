@@ -31,7 +31,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -40,10 +41,10 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { Lut } from './jsm/math/Lut.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { Lut } from 'v3d/addons/math/Lut.js';
 
       let container;
 
@@ -74,7 +75,7 @@
         perpCamera.position.set(0, 0, 10);
         scene.add(perpCamera);
 
-        orthoCamera = new v3d.OrthographicCamera(- 1, 1, 1, - 1, 1, 2);
+        orthoCamera = new v3d.OrthographicCamera(- 1, 1, 1, -1, 1, 2);
         orthoCamera.position.set(0.5, 0, 1);
 
         sprite = new v3d.Sprite(new v3d.SpriteMaterial({

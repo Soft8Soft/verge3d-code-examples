@@ -7,8 +7,8 @@
     <link type="text/css" rel="stylesheet" href="main.css">
     <style>
       body {
-        color: #444;
-        background: #eee;
+        color: #bbbbbb;
+        background: #333333;
       }
       a {
         color: #08f;
@@ -39,7 +39,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -48,13 +49,13 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { RoomEnvironment } from './jsm/environments/RoomEnvironment.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { DRACOLoader } from './jsm/loaders/DRACOLoader.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { DRACOLoader } from 'v3d/addons/loaders/DRACOLoader.js';
+      import { RGBELoader } from 'v3d/addons/loaders/RGBELoader.js';
 
       let camera, scene, renderer;
       let stats;
@@ -85,21 +86,22 @@
         //
 
         camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(4.25, 1.4, - 4.5);
+        camera.position.set(4.25, 1.4, -4.5);
 
         controls = new OrbitControls(camera, container);
+        controls.enableDamping = true;
+        controls.maxDistance = 9;
         controls.target.set(0, 0.5, 0);
         controls.update();
 
-        const pmremGenerator = new v3d.PMREMGenerator(renderer);
-
         scene = new v3d.Scene();
-        scene.background = new v3d.Color(0xeeeeee);
-        scene.environment = pmremGenerator.fromScene(new RoomEnvironment()).texture;
-        scene.fog = new v3d.Fog(0xeeeeee, 10, 50);
+        scene.background = new v3d.Color(0x333333);
+        scene.environment = new RGBELoader().load('textures/equirectangular/venice_sunset_1k.hdr');
+        scene.environment.mapping = v3d.EquirectangularReflectionMapping;
+        scene.fog = new v3d.Fog(0x333333, 10, 15);
 
-        grid = new v3d.GridHelper(100, 40, 0x000000, 0x000000);
-        grid.material.opacity = 0.1;
+        grid = new v3d.GridHelper(20, 40, 0xffffff, 0xffffff);
+        grid.material.opacity = 0.2;
         grid.material.depthWrite = false;
         grid.material.transparent = true;
         scene.add(grid);
@@ -107,7 +109,7 @@
         // materials
 
         const bodyMaterial = new v3d.MeshPhysicalMaterial({
-          color: 0xff0000, metalness: 0.6, roughness: 0.4, clearcoat: 0.05, clearcoatRoughness: 0.05
+          color: 0xff0000, metalness: 1.0, roughness: 0.5, clearcoat: 1.0, clearcoatRoughness: 0.03, sheen: 0.5
         });
 
         const detailsMaterial = new v3d.MeshStandardMaterial({
@@ -115,7 +117,7 @@
         });
 
         const glassMaterial = new v3d.MeshPhysicalMaterial({
-          color: 0xffffff, metalness: 0, roughness: 0.1, transmission: 0.9, transparent: true
+          color: 0xffffff, metalness: 0.25, roughness: 0, transmission: 1.0
         });
 
         const bodyColorInput = document.getElementById('body-color');
@@ -144,7 +146,7 @@
         const shadow = new v3d.TextureLoader().load('models/gltf/ferrari_ao.png');
 
         const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath('js/libs/draco/gltf/');
+        dracoLoader.setDecoderPath('jsm/libs/draco/gltf/');
 
         const loader = new GLTFLoader();
         loader.setDRACOLoader(dracoLoader);
@@ -198,15 +200,17 @@
 
       function render() {
 
+        controls.update();
+
         const time = -performance.now() / 1000;
 
         for (let i = 0; i < wheels.length; i++) {
 
-          wheels[i].rotation.x = time * Math.PI;
+          wheels[i].rotation.x = time * Math.PI * 2;
 
         }
 
-        grid.position.z = - (time) % 5;
+        grid.position.z = - (time) % 1;
 
         renderer.render(scene, camera);
 

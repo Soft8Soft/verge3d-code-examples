@@ -25,7 +25,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -34,17 +35,17 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
 
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { KTX2Loader } from './jsm/loaders/KTX2Loader.js';
-      import { MeshoptDecoder } from './jsm/libs/meshopt_decoder.module.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { KTX2Loader } from 'v3d/addons/loaders/KTX2Loader.js';
+      import { MeshoptDecoder } from 'v3d/addons/libs/meshopt_decoder.module.js';
 
-      import { RoomEnvironment } from './jsm/environments/RoomEnvironment.js';
+      import { RoomEnvironment } from 'v3d/addons/environments/RoomEnvironment.js';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       init();
 
@@ -72,7 +73,7 @@
         container.appendChild(renderer.domElement);
 
         const ktx2Loader = new KTX2Loader()
-          .setTranscoderPath('js/libs/basis/')
+          .setTranscoderPath('jsm/libs/basis/')
           .detectSupport(renderer);
 
         new GLTFLoader()
@@ -119,7 +120,7 @@
         controls.minAzimuthAngle = - Math.PI / 2;
         controls.maxAzimuthAngle = Math.PI / 2;
         controls.maxPolarAngle = Math.PI / 1.8;
-        controls.target.set(0, 0.15, - 0.2);
+        controls.target.set(0, 0.15, -0.2);
 
         const stats = new Stats();
         container.appendChild(stats.dom);

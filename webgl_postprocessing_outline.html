@@ -18,7 +18,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -27,16 +28,16 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { OBJLoader } from './jsm/loaders/OBJLoader.js';
-      import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
-      import { RenderPass } from './jsm/postprocessing/RenderPass.js';
-      import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
-      import { OutlinePass } from './jsm/postprocessing/OutlinePass.js';
-      import { FXAAShader } from './jsm/shaders/FXAAShader.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { OBJLoader } from 'v3d/addons/loaders/OBJLoader.js';
+      import { EffectComposer } from 'v3d/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'v3d/addons/postprocessing/RenderPass.js';
+      import { ShaderPass } from 'v3d/addons/postprocessing/ShaderPass.js';
+      import { OutlinePass } from 'v3d/addons/postprocessing/OutlinePass.js';
+      import { FXAAShader } from 'v3d/addons/shaders/FXAAShader.js';
 
       let container, stats;
       let camera, scene, renderer, controls;
@@ -167,15 +168,7 @@
 
         // model
 
-        const manager = new v3d.LoadingManager();
-
-        manager.onProgress = function(item, loaded, total) {
-
-          console.log(item, loaded, total);
-
-        };
-
-        const loader = new OBJLoader(manager);
+        const loader = new OBJLoader();
         loader.load('models/obj/tree.obj', function(object) {
 
           let scale = 1.0;
@@ -239,7 +232,7 @@
         const torusGeometry = new v3d.TorusGeometry(1, 0.3, 16, 100);
         const torusMaterial = new v3d.MeshPhongMaterial({ color: 0xffaaff });
         const torus = new v3d.Mesh(torusGeometry, torusMaterial);
-        torus.position.z = - 4;
+        torus.position.z = -4;
         group.add(torus);
         torus.receiveShadow = true;
         torus.castShadow = true;

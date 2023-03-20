@@ -21,7 +21,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -30,7 +31,7 @@
 
       import * as v3d from 'v3d';
 
-      import { ShadowMesh } from './jsm/objects/ShadowMesh.js';
+      import { ShadowMesh } from 'v3d/addons/objects/ShadowMesh.js';
 
       let SCREEN_WIDTH = window.innerWidth;
       let SCREEN_HEIGHT = window.innerHeight;
@@ -72,14 +73,14 @@
 
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        document.getElementById("container").appendChild(renderer.domElement);
+        document.getElementById('container').appendChild(renderer.domElement);
         window.addEventListener('resize', onWindowResize);
 
         camera.position.set(0, 2.5, 10);
         scene.add(camera);
         onWindowResize();
 
-        sunLight.position.set(5, 7, - 1);
+        sunLight.position.set(5, 7, -1);
         sunLight.lookAt(scene.position);
         scene.add(sunLight);
 
@@ -101,7 +102,7 @@
         arrowHelper2 = new v3d.ArrowHelper(arrowDirection, arrowPosition2, 0.9, 0xffff00, 0.25, 0.08);
         scene.add(arrowHelper2);
 
-        arrowPosition3.copy(sunLight.position).add(new v3d.Vector3(0, - 0.2, 0));
+        arrowPosition3.copy(sunLight.position).add(new v3d.Vector3(0, -0.2, 0));
         arrowHelper3 = new v3d.ArrowHelper(arrowDirection, arrowPosition3, 0.9, 0xffff00, 0.25, 0.08);
         scene.add(arrowHelper3);
 
@@ -129,7 +130,7 @@
         const cubeGeometry = new v3d.BoxGeometry(1, 1, 1);
         const cubeMaterial = new v3d.MeshLambertMaterial({ color: 'rgb(255,0,0)', emissive: 0x200000 });
         cube = new v3d.Mesh(cubeGeometry, cubeMaterial);
-        cube.position.z = - 1;
+        cube.position.z = -1;
         scene.add(cube);
 
         cubeShadow = new ShadowMesh(cube);
@@ -139,7 +140,7 @@
         const cylinderGeometry = new v3d.CylinderGeometry(0.3, 0.3, 2);
         const cylinderMaterial = new v3d.MeshPhongMaterial({ color: 'rgb(0,0,255)', emissive: 0x000020 });
         cylinder = new v3d.Mesh(cylinderGeometry, cylinderMaterial);
-        cylinder.position.z = - 2.5;
+        cylinder.position.z = -2.5;
         scene.add(cylinder);
 
         cylinderShadow = new ShadowMesh(cylinder);
@@ -149,7 +150,7 @@
         const torusGeometry = new v3d.TorusGeometry(1, 0.2, 10, 16, TWO_PI);
         const torusMaterial = new v3d.MeshPhongMaterial({ color: 'rgb(255,0,255)', emissive: 0x200020 });
         torus = new v3d.Mesh(torusGeometry, torusMaterial);
-        torus.position.z = - 6;
+        torus.position.z = -6;
         scene.add(torus);
 
         torusShadow = new ShadowMesh(torus);
@@ -200,7 +201,7 @@
         if (horizontalAngle > TWO_PI)
           horizontalAngle -= TWO_PI;
         cube.position.x = Math.sin(horizontalAngle) * 4;
-        cylinder.position.x = Math.sin(horizontalAngle) * - 4;
+        cylinder.position.x = Math.sin(horizontalAngle) * -4;
         torus.position.x = Math.cos(horizontalAngle) * 4;
 
         verticalAngle += 1.5 * frameTime;
@@ -243,7 +244,7 @@
           scene.background.setHex(0x0096ff);
 
           groundMesh.material.color.setHex(0x008200);
-          sunLight.position.set(5, 7, - 1);
+          sunLight.position.set(5, 7, -1);
           sunLight.lookAt(scene.position);
 
           lightPosition4D.x = sunLight.position.x;
@@ -258,7 +259,7 @@
           lightSphere.visible = false;
           lightHolder.visible = false;
 
-          document.getElementById('lightButton').value = "Switch to PointLight";
+          document.getElementById('lightButton').value = 'Switch to PointLight';
 
         } else {
 
@@ -266,7 +267,7 @@
 
           groundMesh.material.color.setHex(0x969696);
 
-          sunLight.position.set(0, 6, - 2);
+          sunLight.position.set(0, 6, -2);
           sunLight.lookAt(scene.position);
           lightSphere.position.copy(sunLight.position);
           lightHolder.position.copy(lightSphere.position);
@@ -284,7 +285,7 @@
           lightSphere.visible = true;
           lightHolder.visible = true;
 
-          document.getElementById('lightButton').value = "Switch to v3d.DirectionalLight";
+          document.getElementById('lightButton').value = 'Switch to v3d.DirectionalLight';
 
         }
 

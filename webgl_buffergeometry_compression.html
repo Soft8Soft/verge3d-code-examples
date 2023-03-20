@@ -19,7 +19,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -28,12 +29,12 @@
 
       import * as v3d from 'v3d';
 
-      import Stats from './jsm/libs/stats.module.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import * as GeometryCompressionUtils from './jsm/utils/GeometryCompressionUtils.js';
-      import * as BufferGeometryUtils from './jsm/utils/BufferGeometryUtils.js';
-      import { TeapotGeometry } from './jsm/geometries/TeapotGeometry.js';
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
+      import Stats from 'v3d/addons/libs/stats.module.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import * as GeometryCompressionUtils from 'v3d/addons/utils/GeometryCompressionUtils.js';
+      import * as BufferGeometryUtils from 'v3d/addons/utils/BufferGeometryUtils.js';
+      import { TeapotGeometry } from 'v3d/addons/geometries/TeapotGeometry.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
 
       const statsEnabled = true;
 
@@ -45,17 +46,16 @@
 
       // options
       const data = {
-        "model": "Icosahedron",
-        "wireframe": false,
-        "texture": false,
-        "detail": 4,
-        "rotationSpeed": 0.1,
+        'model': 'Icosahedron',
+        'wireframe': false,
+        'texture': false,
+        'detail': 4,
 
-        "QuantizePosEncoding": false,
-        "NormEncodingMethods": "None", // for normal encodings
-        "DefaultUVEncoding": false,
+        'QuantizePosEncoding': false,
+        'NormEncodingMethods': 'None', // for normal encodings
+        'DefaultUVEncoding': false,
 
-        "totalGPUMemory": "0 bytes"
+        'totalGPUMemory': '0 bytes'
       };
       let memoryDisplay;
 
@@ -64,7 +64,7 @@
 
       // materials
       const lineMaterial = new v3d.LineBasicMaterial({ color: 0xaaaaaa, transparent: true, opacity: 0.8 });
-      const meshMaterial = new v3d.MeshPhongMaterial({ color: 0xffffff, emissive: 0x111111 });
+      const meshMaterial = new v3d.MeshPhongMaterial({ color: 0xffffff, side: v3d.DoubleSide });
 
       // texture
       const texture = new v3d.TextureLoader().load('textures/uv_grid_opengl.jpg');
@@ -79,6 +79,7 @@
       function init() {
 
         //
+
         container = document.createElement('div');
         document.body.appendChild(container);
 
@@ -91,22 +92,24 @@
 
         scene = new v3d.Scene();
 
-        camera = new v3d.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.01, 10000000);
-        camera.position.x = 2 * radius;
-        camera.position.y = 2 * radius;
-        camera.position.z = 2 * radius;
+        camera = new v3d.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+        camera.position.setScalar(2 * radius);
 
         controls = new OrbitControls(camera, renderer.domElement);
+        controls.enablePan = false;
+        controls.enableZoom = false;
 
         //
 
-        lights[0] = new v3d.PointLight(0xffffff, 1, 0);
-        lights[1] = new v3d.PointLight(0xffffff, 1, 0);
-        lights[2] = new v3d.PointLight(0xffffff, 1, 0);
+        scene.add(new v3d.AmbientLight(0xffffff, 0.1));
+
+        lights[0] = new v3d.DirectionalLight(0xffffff, 0.7);
+        lights[1] = new v3d.DirectionalLight(0xffffff, 0.7);
+        lights[2] = new v3d.DirectionalLight(0xffffff, 0.7);
 
         lights[0].position.set(0, 2 * radius, 0);
-        lights[1].position.set(2 * radius, - 2 * radius, 2 * radius);
-        lights[2].position.set(- 2 * radius, - 2 * radius, - 2 * radius);
+        lights[1].position.set(2 * radius, -2 * radius, 2 * radius);
+        lights[2].position.set(- 2 * radius, -2 * radius, -2 * radius);
 
         scene.add(lights[0]);
         scene.add(lights[1]);
@@ -121,10 +124,11 @@
         let geom = newGeometry(data);
 
         const mesh = new v3d.Mesh(geom, meshMaterial);
+        scene.add(mesh);
+
         const lineSegments = new v3d.LineSegments(new v3d.WireframeGeometry(geom), lineMaterial);
         lineSegments.visible = data.wireframe;
 
-        scene.add(mesh);
         scene.add(lineSegments);
 
         //
@@ -136,16 +140,16 @@
 
           switch (data.model) {
 
-            case "Icosahedron":
+            case 'Icosahedron':
               return new v3d.IcosahedronGeometry(radius, data.detail);
-            case "Cylinder":
-              return new v3d.CylinderGeometry(radius, radius, radius * 2, data.detail * 6);
-            case "Teapot":
-              return new TeapotGeometry(radius, data.detail * 3, true, true, true, true, true);
-            case "TorusKnot":
-              return new v3d.TorusKnotGeometry(radius, 10, data.detail * 20, data.detail * 6, 3, 4);
+            case 'Cylinder':
+              return new v3d.CylinderGeometry(radius / 1.5 , radius / 1.5, radius, data.detail * 6);
+            case 'Teapot':
+              return new TeapotGeometry(radius / 1.5, data.detail * 3, true, true, true, true, true);
+            case 'TorusKnot':
+              return new v3d.TorusKnotGeometry(radius / 2, 10, data.detail * 30, data.detail * 6, 3, 4);
 
-    }
+          }
 
         }
 
@@ -153,15 +157,10 @@
 
           geom = newGeometry(data);
 
-          updateGroupGeometry(
-            mesh,
-            lineSegments,
-            geom,
-            data);
+          updateGroupGeometry(mesh, lineSegments, geom, data);
 
         }
 
-        // updateLineSegments
         function updateLineSegments() {
 
           lineSegments.visible = data.wireframe;
@@ -169,11 +168,10 @@
         }
 
         let folder = gui.addFolder('Scene');
-        folder.add(data, 'model', ["Icosahedron", "Cylinder", "TorusKnot", "Teapot"]).onChange(generateGeometry);
+        folder.add(data, 'model', ['Icosahedron', 'Cylinder', 'TorusKnot', 'Teapot']).onChange(generateGeometry);
         folder.add(data, 'wireframe', false).onChange(updateLineSegments);
         folder.add(data, 'texture', false).onChange(generateGeometry);
         folder.add(data, 'detail', 1, 8, 1).onChange(generateGeometry);
-        folder.add(data, 'rotationSpeed', 0, 0.5, 0.1);
         folder.open();
 
         folder = gui.addFolder('Position Compression');
@@ -181,7 +179,7 @@
         folder.open();
 
         folder = gui.addFolder('Normal Compression');
-        folder.add(data, 'NormEncodingMethods', ["None", "DEFAULT", "OCT1Byte", "OCT2Byte", "ANGLES"]).onChange(generateGeometry);
+        folder.add(data, 'NormEncodingMethods', ['None', 'DEFAULT', 'OCT1Byte', 'OCT2Byte', 'ANGLES']).onChange(generateGeometry);
         folder.open();
 
         folder = gui.addFolder('UV Compression');
@@ -190,7 +188,7 @@
 
         folder = gui.addFolder('Memory Info');
         folder.open();
-        memoryDisplay = folder.add(data, 'totalGPUMemory', "0 bytes");
+        memoryDisplay = folder.add(data, 'totalGPUMemory', '0 bytes');
         computeGPUMemory(mesh);
 
         //
@@ -213,20 +211,8 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
 
         camera.aspect = window.innerWidth / window.innerHeight;
+
         camera.updateProjectionMatrix();
-
-      }
-
-      //
-      function updateLightsPossition() {
-
-        lights.forEach(light => {
-
-          const direction = light.position.clone();
-          direction.applyAxisAngle(new v3d.Vector3(1, 1, 0), data.rotationSpeed / 180 * Math.PI);
-          light.position.add(direction.sub(light.position));
-
-        });
 
       }
 
@@ -235,9 +221,6 @@
       function animate() {
 
         requestAnimationFrame(animate);
-
-        controls.update();
-        updateLightsPossition();
 
         renderer.render(scene, camera);
 
@@ -250,27 +233,30 @@
       function updateGroupGeometry(mesh, lineSegments, geometry, data) {
 
         // dispose first
+
         lineSegments.geometry.dispose();
         mesh.geometry.dispose();
+        mesh.material.dispose();
+        if (mesh.material.map) mesh.material.map.dispose();
 
         lineSegments.geometry = new v3d.WireframeGeometry(geometry);
         mesh.geometry = geometry;
-        mesh.material = new v3d.MeshPhongMaterial({ color: 0xffffff, emissive: 0x111111 });
+        mesh.material = new v3d.MeshPhongMaterial({ color: 0xffffff, side: v3d.DoubleSide });
         mesh.material.map = data.texture ? texture : null;
 
-        if (data["QuantizePosEncoding"]) {
+        if (data['QuantizePosEncoding']) {
 
           GeometryCompressionUtils.compressPositions(mesh);
 
         }
 
-        if (data["NormEncodingMethods"] !== "None") {
+        if (data['NormEncodingMethods'] !== 'None') {
 
-          GeometryCompressionUtils.compressNormals(mesh, data["NormEncodingMethods"]);
+          GeometryCompressionUtils.compressNormals(mesh, data['NormEncodingMethods']);
 
         }
 
-        if (data["DefaultUVEncoding"]) {
+        if (data['DefaultUVEncoding']) {
 
           GeometryCompressionUtils.compressUvs(mesh);
 
@@ -284,7 +270,8 @@
       function computeGPUMemory(mesh) {
 
         // Use BufferGeometryUtils to do memory calculation
-        memoryDisplay.setValue(BufferGeometryUtils.estimateBytesUsed(mesh.geometry) + " bytes");
+
+        memoryDisplay.setValue(BufferGeometryUtils.estimateBytesUsed(mesh.geometry) + ' bytes');
 
       }
 

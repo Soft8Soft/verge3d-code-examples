@@ -12,7 +12,7 @@
       <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - Tone Mapping<br />
       Battle Damaged Sci-fi Helmet by
       <a href="https://sketchfab.com/theblueturtle_" target="_blank" rel="noopener">theblueturtle_</a><br />
-      <a href="https://hdrihaven.com/hdri/?h=royal_esplanade" target="_blank" rel="noopener">Royal Esplanade</a> by <a href="https://hdrihaven.com/" target="_blank" rel="noopener">HDRI Haven</a>
+      <a href="https://hdrihaven.com/hdri/?h=venice_sunset" target="_blank" rel="noopener">Venice Sunset</a> by <a href="https://hdrihaven.com/" target="_blank" rel="noopener">HDRI Haven</a>
     </div>
 
     <!-- Import maps polyfill -->
@@ -22,7 +22,8 @@
     <script type="importmap">
       {
         "imports": {
-          "v3d": "../build/v3d.module.js"
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
         }
       }
     </script>
@@ -31,17 +32,18 @@
 
       import * as v3d from 'v3d';
 
-      import { GUI } from './jsm/libs/lil-gui.module.min.js';
-      import { OrbitControls } from './jsm/controls/OrbitControls.js';
-      import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-      import { RGBELoader } from './jsm/loaders/RGBELoader.js';
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { RGBELoader } from 'v3d/addons/loaders/RGBELoader.js';
 
       let mesh, renderer, scene, camera, controls;
       let gui, guiExposure = null;
 
       const params = {
         exposure: 1.0,
-        toneMapping: 'ACESFilmic'
+        toneMapping: 'ACESFilmic',
+        blurriness: 0.3
       };
 
       const toneMappingOptions = {
@@ -76,7 +78,7 @@
 
         v3d.ShaderChunk.tonemapping_pars_fragment = v3d.ShaderChunk.tonemapping_pars_fragment.replace(
           'vec3 CustomToneMapping(vec3 color) { return color; }',
-          `#define Uncharted2Helper(x) max(((x * (0.15 * x + 0.10 * 0.50) + 0.20 * 0.02) / (x * (0.15 * x + 0.50) + 0.20 * 0.30)) - 0.02 / 0.30, vec3(0.0))
+          `#define Uncharted2Helper(x) max(((x * (0.15 * x + 0.10 * 0.50) + 0.20 * 0.02) / (x * (0.15 * x + 0.50) + 0.20 * 0.30)) -0.02 / 0.30, vec3(0.0))
           float toneMappingWhitePoint = 1.0;
           vec3 CustomToneMapping(vec3 color) {
             color *= toneMappingExposure;
@@ -85,6 +87,7 @@
         );
 
         scene = new v3d.Scene();
+        scene.backgroundBlurriness = params.blurriness;
 
         camera = new v3d.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 20);
         camera.position.set(- 1.8, 0.6, 2.7);
@@ -93,7 +96,7 @@
         controls.addEventListener('change', render); // use if there is no animation loop
         controls.enableZoom = false;
         controls.enablePan = false;
-        controls.target.set(0, 0, - 0.2);
+        controls.target.set(0, 0, -0.2);
         controls.update();
 
         const rgbeLoader = new RGBELoader()
@@ -115,16 +118,8 @@
 
         // model
 
-        gltf.scene.traverse(function(child) {
-
-          if (child.isMesh) {
-
-            mesh = child;
-            scene.add(mesh);
-
-          }
-
-        });
+        mesh = gltf.scene.getObjectByName('node_damagedHelmet_-6514');
+        scene.add(mesh);
 
         render();
 
@@ -139,6 +134,15 @@
             updateGUI();
 
             renderer.toneMapping = toneMappingOptions[params.toneMapping];
+            render();
+
+          });
+
+        gui.add(params, 'blurriness', 0, 1)
+
+          .onChange(function(value) {
+
+            scene.backgroundBlurriness = value;
             render();
 
           });

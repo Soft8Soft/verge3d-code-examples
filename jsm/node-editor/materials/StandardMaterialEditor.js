@@ -1,7 +1,6 @@
 import { ColorInput, SliderInput, LabelElement } from '../../libs/flow.module.js';
 import { BaseNode } from '../core/BaseNode.js';
-import { MeshStandardNodeMaterial } from '../../renderers/nodes/Nodes.js';
-import * as v3d from 'v3d';
+import { MeshStandardNodeMaterial } from 'three/nodes';
 
 export class StandardMaterialEditor extends BaseNode {
 
@@ -17,6 +16,8 @@ export class StandardMaterialEditor extends BaseNode {
         const opacity = new LabelElement('opacity').setInput(1);
         const metalness = new LabelElement('metalness').setInput(1);
         const roughness = new LabelElement('roughness').setInput(1);
+        const emissive = new LabelElement('emissive').setInput(3);
+        const normal = new LabelElement('normal').setInput(3);
         const position = new LabelElement('position').setInput(3);
 
         color.add(new ColorInput(material.color.getHex()).onChange((input) => {
@@ -49,18 +50,24 @@ export class StandardMaterialEditor extends BaseNode {
         opacity.onConnect(() => this.update(), true);
         metalness.onConnect(() => this.update(), true);
         roughness.onConnect(() => this.update(), true);
+        emissive.onConnect(() => this.update(), true);
+        normal.onConnect(() => this.update(), true);
         position.onConnect(() => this.update(), true);
 
         this.add(color)
             .add(opacity)
             .add(metalness)
             .add(roughness)
+            .add(emissive)
+            .add(normal)
             .add(position);
 
         this.color = color;
         this.opacity = opacity;
         this.metalness = metalness;
         this.roughness = roughness;
+        this.emissive = emissive;
+        this.normal = normal;
         this.position = position;
 
         this.material = material;
@@ -71,7 +78,7 @@ export class StandardMaterialEditor extends BaseNode {
 
     update() {
 
-        const { material, color, opacity, roughness, metalness, position } = this;
+        const { material, color, opacity, emissive, roughness, metalness, normal, position } = this;
 
         color.setEnabledInputs(! color.getLinkedObject());
         opacity.setEnabledInputs(! opacity.getLinkedObject());
@@ -79,22 +86,17 @@ export class StandardMaterialEditor extends BaseNode {
         metalness.setEnabledInputs(! metalness.getLinkedObject());
 
         material.colorNode = color.getLinkedObject();
-        material.opacityNode = opacity.getLinkedObject() || null;
+        material.opacityNode = opacity.getLinkedObject();
         material.metalnessNode = metalness.getLinkedObject();
         material.roughnessNode = roughness.getLinkedObject();
+        material.emissiveNode = emissive.getLinkedObject();
+        material.normalNode = normal.getLinkedObject();
 
-        material.positionNode = position.getLinkedObject() || null;
+        material.positionNode = position.getLinkedObject();
 
         material.dispose();
 
         this.updateTransparent();
-
-        // TODO: Fix on NodeMaterial System
-        material.customProgramCacheKey = () => {
-
-            return v3d.MathUtils.generateUUID();
-
-        };
 
     }
 
@@ -102,9 +104,14 @@ export class StandardMaterialEditor extends BaseNode {
 
         const { material, opacity } = this;
 
-        material.transparent = opacity.getLinkedObject() || material.opacity < 1 ? true : false;
+        const transparent = opacity.getLinkedObject() || material.opacity < 1 ? true : false;
+        const needsUpdate = transparent !== material.transparent;
+
+        material.transparent = transparent;
 
         opacity.setIcon(material.transparent ? 'ti ti-layers-intersect' : 'ti ti-layers-subtract');
+
+        if (needsUpdate === true) material.dispose();
 
     }
 

@@ -16,7 +16,7 @@ async function AmmoPhysics() {
     const broadphase = new AmmoLib.btDbvtBroadphase();
     const solver = new AmmoLib.btSequentialImpulseConstraintSolver();
     const world = new AmmoLib.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-    world.setGravity(new AmmoLib.btVector3(0, - 9.8, 0));
+    world.setGravity(new AmmoLib.btVector3(0, -9.8, 0));
 
     const worldTransform = new AmmoLib.btTransform();
 

@@ -1,8 +1,8 @@
 import {
     Bone,
     BoxGeometry,
+    CapsuleGeometry,
     Color,
-    CylinderGeometry,
     Euler,
     Matrix4,
     Mesh,
@@ -35,7 +35,7 @@ class MMDPhysics {
      * @param {Object} params - (optional)
      * @param {Number} params.unitStep - Default is 1 / 65.
      * @param {Integer} params.maxStepNum - Default is 3.
-     * @param {Vector3} params.gravity - Default is (0, - 9.8 * 10, 0)
+     * @param {Vector3} params.gravity - Default is (0, -9.8 * 10, 0)
      */
     constructor(mesh, rigidBodyParams, constraintParams = [], params = {}) {
 
@@ -57,7 +57,7 @@ class MMDPhysics {
          */
         this.unitStep = (params.unitStep !== undefined) ? params.unitStep : 1 / 65;
         this.maxStepNum = (params.maxStepNum !== undefined) ? params.maxStepNum : 3;
-        this.gravity = new Vector3(0, - 9.8 * 10, 0);
+        this.gravity = new Vector3(0, -9.8 * 10, 0);
 
         if (params.gravity !== undefined) this.gravity.copy(params.gravity);
 
@@ -209,9 +209,9 @@ class MMDPhysics {
         // mesh's default world transform as position(0, 0, 0),
         // quaternion(0, 0, 0, 1) and scale(0, 0, 0)
 
-        let parent = mesh.parent;
+        const parent = mesh.parent;
 
-        if (parent !== null) parent = null;
+        if (parent !== null) mesh.parent = null;
 
         const currentPosition = manager.allocThreeVector3();
         const currentQuaternion = manager.allocThreeQuaternion();
@@ -833,7 +833,7 @@ class RigidBody {
      */
     updateFromBone() {
 
-        if (this.params.boneIndex !== - 1 && this.params.type === 0) {
+        if (this.params.boneIndex !== -1 && this.params.type === 0) {
 
             this._setTransformFromBone();
 
@@ -850,7 +850,7 @@ class RigidBody {
      */
     updateBone() {
 
-        if (this.params.type === 0 || this.params.boneIndex === - 1) {
+        if (this.params.type === 0 || this.params.boneIndex === -1) {
 
             return this;
 
@@ -903,7 +903,7 @@ class RigidBody {
         const manager = this.manager;
         const params = this.params;
         const bones = this.mesh.skeleton.bones;
-        const bone = (params.boneIndex === - 1)
+        const bone = (params.boneIndex === -1)
             ? new Bone()
             : bones[params.boneIndex];
 
@@ -1292,6 +1292,31 @@ class MMDPhysicsHelper extends Object3D {
 
     }
 
+
+    /**
+     * Frees the GPU-related resources allocated by this instance. Call this method whenever this instance is no longer used in your app.
+     */
+    dispose() {
+
+        const materials = this.materials;
+        const children = this.children;
+
+        for (let i = 0; i < materials.length; i++) {
+
+            materials[i].dispose();
+
+        }
+
+        for (let i = 0; i < children.length; i++) {
+
+            const child = children[i];
+
+            if (child.isMesh) child.geometry.dispose();
+
+        }
+
+    }
+
     /**
      * Updates Rigid Bodies visualization.
      */
@@ -1358,31 +1383,12 @@ class MMDPhysicsHelper extends Object3D {
                     return new BoxGeometry(param.width * 2, param.height * 2, param.depth * 2, 8, 8, 8);
 
                 case 2:
-                    return new createCapsuleGeometry(param.width, param.height, 16, 8);
+                    return new CapsuleGeometry(param.width, param.height, 8, 16);
 
                 default:
                     return null;
 
             }
-
-        }
-
-        function createCapsuleGeometry(radius, cylinderHeight, segmentsRadius, segmentsHeight) {
-
-            var geometry = new CylinderGeometry(radius, radius, cylinderHeight, segmentsRadius, segmentsHeight, true);
-            var upperSphere = new Mesh(new SphereGeometry(radius, segmentsRadius, segmentsHeight, 0, Math.PI * 2, 0, Math.PI / 2));
-            var lowerSphere = new Mesh(new SphereGeometry(radius, segmentsRadius, segmentsHeight, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2));
-
-            upperSphere.position.set(0, cylinderHeight / 2, 0);
-            lowerSphere.position.set(0, - cylinderHeight / 2, 0);
-
-            upperSphere.updateMatrix();
-            lowerSphere.updateMatrix();
-
-            geometry.merge(upperSphere.geometry, upperSphere.matrix);
-            geometry.merge(lowerSphere.geometry, lowerSphere.matrix);
-
-            return geometry;
 
         }
 

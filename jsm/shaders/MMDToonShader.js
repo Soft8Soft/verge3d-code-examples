@@ -15,7 +15,7 @@
 
 import { UniformsUtils, ShaderLib } from 'v3d';
 
-const lights_mmd_toon_pars_fragment = `
+const lights_mmd_toon_pars_fragment = /* glsl */`
 varying vec3 vViewPosition;
 
 struct BlinnPhongMaterial {
@@ -45,11 +45,9 @@ void RE_IndirectDiffuse_BlinnPhong(const in vec3 irradiance, const in GeometricC
 
 #define RE_Direct                RE_Direct_BlinnPhong
 #define RE_IndirectDiffuse        RE_IndirectDiffuse_BlinnPhong
-
-#define Material_LightProbeLOD(material)    (0)
 `;
 
-const mmd_toon_matcap_fragment = `
+const mmd_toon_matcap_fragment = /* glsl */`
 #ifdef USE_MATCAP
 
     vec3 viewDir = normalize(vViewPosition);
